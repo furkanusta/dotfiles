@@ -1,0 +1,43 @@
+;; -*- mode: emacs-lisp; coding: emacs-mule; -*-
+;; --------------------------------------------------------------------------
+;; Desktop File for Emacs
+;; --------------------------------------------------------------------------
+;; Created Wed Jun 21 18:37:55 2017
+;; Desktop file format version 208
+;; Emacs version 25.2.1
+
+;; Global section:
+(setq desktop-saved-frameset [frameset 1 (22858 37587 318764 908000) (desktop . "208") "eksi@linux-jjeq" nil nil ((((font-backend xft x) (font . "-ADBO-Source Code Pro-normal-normal-normal-*-15-*-*-*-m-0-iso10646-1") (font-parameter . "Monospace 11") (border-width . 0) (internal-border-width . 0) (right-divider-width . 0) (bottom-divider-width . 0) (vertical-scroll-bars . right) (horizontal-scroll-bars) (foreground-color . "#f8fbfc") (background-color . "#242728") (mouse-color . "#f8fbfc") (border-color . "black") (screen-gamma) (line-spacing) (left-fringe . 8) (right-fringe . 8) (scroll-bar-foreground) (scroll-bar-background) (menu-bar-lines . 0) (tool-bar-lines . 0) (title) (wait-for-wm . t) (tool-bar-position . top) (icon-type . t) (auto-raise) (auto-lower) (cursor-type . box) (scroll-bar-width . 16) (scroll-bar-height . 0) (alpha) (fullscreen . maximized) (client . "Unprintable entity") (environment "GJS_DEBUG_TOPICS=JS ERROR;JS LOG" "GJS_DEBUG_OUTPUT=stderr" "GIO_LAUNCHED_DESKTOP_FILE_PID=13534" "GIO_LAUNCHED_DESKTOP_FILE=/home/eksi/.local/share/applications/emacsclient.desktop" "SESSION_MANAGER=local/linux-jjeq:@/tmp/.ICE-unix/1840,unix/linux-jjeq:/tmp/.ICE-unix/1840" "GNOME_DESKTOP_SESSION_ID=this-is-deprecated" "XMODIFIERS=@im=ibus" "QT_IM_MODULE=ibus" "LC_TIME=en_GB.UTF-8" "LESSOPEN=lessopen.sh %s" "CVS_RSH=ssh" "CPU=x86_64" "HISTSIZE=1000" "G_BROKEN_FILENAMES=1" "SDL_AUDIODRIVER=pulse" "JAVA_BINDIR=/usr/lib64/jvm/jre/bin" "PATH=~/.local/bin:/usr/local/bin:/usr/bin:/bin" "XDG_CONFIG_DIRS=/etc/xdg" "JRE_HOME=/usr/lib64/jvm/jre" "INPUT_METHOD=ibus" "XAUTHORITY=/run/user/1000/gdm/Xauthority" "XDG_RUNTIME_DIR=/run/user/1000" "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus" "LOGNAME=eksi" "GDMSESSION=gnome" "XSESSION_IS_UP=yes" "MANPATH=/usr/local/man:/usr/share/man" "G_FILENAME_ENCODING=@locale,UTF-8,ISO-8859-15,CP1252" "XDG_SEAT=seat0" "SHLVL=0" "PYTHONSTARTUP=/etc/pythonstart" "XDG_CURRENT_DESKTOP=GNOME" "XCURSOR_THEME=DMZ" "TERM=xterm" "SHELL=/bin/bash" "LESSKEY=/etc/lesskey.bin" "WINDOWPATH=7" "MAIL=/var/spool/mail/eksi" "FROM_HEADER=" "GTK_MODULES=canberra-gtk-module" "LC_NUMERIC=en_GB.UTF-8" "PROFILEREAD=true" "NNTPSERVER=news" "XDG_SESSION_DESKTOP=gnome" "XDG_DATA_DIRS=/usr/share" "XDG_SESSION_TYPE=x11" "XNLSPATH=/usr/share/X11/nls" "HOST=linux-jjeq" "SSH_AGENT_PID=1940" "ALTERNATE_EDITOR=" "JOURNAL_STREAM=9:28525" "HOME=/home/eksi" "SSH_ASKPASS=/usr/lib/ssh/ssh-askpass" "PWD=/home/eksi" "MORE=-sl" "DESKTOP_SESSION=gnome" "PAGER=less" "USER=eksi" "XDG_SESSION_ID=1" "OSTYPE=linux" "QT_SYSTEM_DIR=/usr/share/desktop-data" "MINICOM=-c on" "QEMU_AUDIO_DRV=pa" "SSH_AUTH_SOCK=/run/user/1000/keyring/ssh" "XDG_VTNR=7" "MACHTYPE=x86_64-suse-linux" "ALSA_CONFIG_PATH=/etc/alsa-pulse.conf" "JAVA_HOME=/usr/lib64/jvm/jre" "USERNAME=eksi" "COLORTERM=1" "LESS_ADVANCED_PREPROCESSOR=no" "AUDIODRIVER=pulseaudio" "GPG_TTY=not a tty" "EDITOR=emacsclient" "CSHEDIT=emacs" "CONFIG_SITE=/usr/share/site/x86_64-unknown-linux-gnu" "HOSTNAME=linux-jjeq" "JAVA_ROOT=/usr/lib64/jvm/jre" "DISPLAY=:0" "LESS=-M -I -R" "WINDOWMANAGER=gnome" "LANG=en_US.UTF-8" "XDG_MENU_PREFIX=gnome-" "XKEYSYMDB=/usr/X11R6/lib/X11/XKeysymDB" "LC_MONETARY=en_GB.UTF-8" "LC_PAPER=en_GB.UTF-8" "LESSCLOSE=lessclose.sh %s %s" "XAUTHLOCALHOSTNAME=linux-jjeq" "LC_MEASUREMENT=en_GB.UTF-8" "HOSTTYPE=x86_64") (display-type . color) (background-mode . dark) (cursor-color . "#f8fbfc") (sticky) (powerline-cache) (frameset--id . "034E-3EFD-9FC4-366F") (frameset--mini t . t) (height . 52) (width . 209) (modeline . t) (minibuffer . t) (unsplittable) (left + -1) (top . 26) (icon-name) (visibility . t) (display . ":0") (explicit-name)) ((min-height . 4) (min-width . 20) (min-height-ignore . 3) (min-width-ignore . 16) (min-height-safe . 1) (min-width-safe . 4) (min-pixel-height . 80) (min-pixel-width . 180) (min-pixel-height-ignore . 60) (min-pixel-width-ignore . 144) (min-pixel-height-safe . 20) (min-pixel-width-safe . 36)) hc (pixel-width . 1920) (pixel-height . 1033) (total-width . 213) (total-height . 51) (normal-height . 1.0) (normal-width . 1.0) (combination-limit) (leaf (pixel-width . 957) (pixel-height . 1033) (total-width . 106) (total-height . 51) (normal-height . 1.0) (normal-width . 0.5) (buffer "cmode.el" (selected . t) (hscroll . 0) (fringes 8 8 nil) (margins 2) (scroll-bars nil 2 t nil 0 t) (vscroll . 0) (dedicated) (point . 1606) (start . 310))) (leaf (last . t) (pixel-width . 963) (pixel-height . 1033) (total-width . 107) (total-height . 51) (normal-height . 1.0) (normal-width . 0.5) (buffer "*Messages*" (selected) (hscroll . 0) (fringes 8 8 nil) (margins 2) (scroll-bars nil 2 t nil 0 t) (vscroll . 0) (dedicated) (point . 2868) (start . 1223)))) (((foreground-color . "unspecified-fg") (menu-bar-lines . 0) (tool-bar-lines . 0) (powerline-cache) (background-color . "unspecified-bg") (display-type . mono) (background-mode . dark) (cursor-color . "white") (font . "tty") (height . 11) (width . 10) (modeline . t) (unsplittable) (frameset--id . "8448-EC3E-893E-056E") (frameset--mini t) (minibuffer . t)) ((min-height . 4) (min-width . 10) (min-height-ignore . 2) (min-width-ignore . 3) (min-height-safe . 1) (min-width-safe . 2) (min-pixel-height . 4) (min-pixel-width . 10) (min-pixel-height-ignore . 2) (min-pixel-width-ignore . 3) (min-pixel-height-safe . 1) (min-pixel-width-safe . 2)) leaf (pixel-width . 10) (pixel-height . 10) (total-width . 10) (total-height . 10) (normal-height . 1.0) (normal-width . 1.0) (buffer "*scratch*" (selected) (hscroll . 0) (fringes 0 0 nil) (margins 1) (scroll-bars nil 0 t nil 0 t) (vscroll . 0) (dedicated) (point . 145) (start . 1))))])
+(setq desktop-missing-file-warning nil)
+(setq tags-file-name nil)
+(setq tags-table-list nil)
+(setq search-ring nil)
+(setq regexp-search-ring nil)
+(setq register-alist nil)
+(setq file-name-history '("~/.emacs.d/elisp/cmode.el" "~/Projects/cpp-std/cpp-ext/include/foo.cpp" "~/Projects/cpp-std/cpp-ext/.dir-locals.el" "~/Projects/Benchmark/cpp/.dir-locals.el" "~/Projects/cpp-std/cpp-ext/include/string.hpp" "~/Projects/cpp-std/cpp-ext/README.org" "~/Projects/cpp-std/List.org" "~/.emacs.d/init.el" "~/.emacs.d/elpa/company-c-headers-20170531.1330/company-c-headers-autoloads.el" "~/Projects/cpp-std/cpp-ext/include/colorsys.hpp" "~/.emacs.d/elisp/defaults.el" "~/Projects/cpp-std/cpp-ext/include/encoding/base64.hpp" "~/Projects/cpp-std/cpp-ext/include/encoding/foo.cpp" "~/Projects/Learn/Projects/List.org" "~/Projects/Learn/Projects/Java/coreutils/README.org" "~/Projects/Learn/Projects/README.org" "~/Projects/Learn/languages.org" "~/Projects/Learn/Learn.org" "~/.emacs.d/elisp/command.el" "~/.emacs.d/elisp/custom.el"))
+
+;; Buffer section -- buffers listed in same order as in buffer list:
+(desktop-create-buffer 208
+  "/home/eksi/.emacs.d/elisp/cmode.el"
+  "cmode.el"
+  'emacs-lisp-mode
+  '(override-global-mode company-mode flycheck-mode helm-mode drag-stuff-mode linum-mode indent-guide-mode immortal-scratch-mode hs-minor-mode)
+  1606
+  '(992 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . prefer-utf-8-unix))
+  '((mark-ring nil)))
+
+(desktop-create-buffer 208
+  "/home/eksi/Projects/cpp-std/cpp-ext/include/foo.cpp"
+  "foo.cpp"
+  'c++-mode
+  '(abbrev-mode override-global-mode company-mode irony-mode flycheck-mode helm-mode drag-stuff-mode linum-mode indent-guide-mode immortal-scratch-mode hs-minor-mode modern-c++-font-lock-mode)
+  53
+  '(nil nil)
+  nil
+  nil
+  '((tab-width . 4) (indent-tabs-mode) (buffer-file-coding-system . undecided-unix))
+  '((mark-ring nil)))
+

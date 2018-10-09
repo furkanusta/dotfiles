@@ -1,0 +1,393 @@
+<keymap version="1" name="Emacs+ Copy" parent="Emacs">
+  <action id="$Copy" />
+  <action id="$Cut" />
+  <action id="$Paste" />
+  <action id="$Redo">
+    <keyboard-shortcut first-keystroke="shift ctrl z" />
+    <keyboard-shortcut first-keystroke="shift alt minus" />
+    <keyboard-shortcut first-keystroke="shift ctrl equals" />
+  </action>
+  <action id="Android.HotswapChanges">
+    <keyboard-shortcut first-keystroke="ctrl f10" />
+    <keyboard-shortcut first-keystroke="shift ctrl f10" />
+  </action>
+  <action id="Arrangement.Alias.Rule.Match.Condition.Move.Up" />
+  <action id="Arrangement.Rule.Match.Condition.Move.Down" />
+  <action id="Arrangement.Rule.Match.Condition.Move.Up" />
+  <action id="CheckinProject" />
+  <action id="ChoosePrevSubsequentPropertyValueEditorAction">
+    <keyboard-shortcut first-keystroke="ctrl alt a" />
+  </action>
+  <action id="CommentByBlockComment" />
+  <action id="CommentByLineComment">
+    <keyboard-shortcut first-keystroke="ctrl c" second-keystroke="ctrl c" />
+    <keyboard-shortcut first-keystroke="alt semicolon" />
+  </action>
+  <action id="CompareTwoFiles" />
+  <action id="Console.Open" />
+  <action id="Diff.KeymapGroup">
+    <keyboard-shortcut first-keystroke="ctrl c" second-keystroke="ctrl e" />
+  </action>
+  <action id="Diff.ShowDiff" />
+  <action id="Editor Redo">
+    <keyboard-shortcut first-keystroke="shift ctrl equals" />
+  </action>
+  <action id="EditorAddOrRemoveCaret" />
+  <action id="EditorChooseLookupItem">
+    <keyboard-shortcut first-keystroke="enter" />
+  </action>
+  <action id="EditorChooseLookupItemCompleteStatement" />
+  <action id="EditorChooseLookupItemDot" />
+  <action id="EditorChooseLookupItemReplace" />
+  <action id="EditorCodeBlockEnd">
+    <keyboard-shortcut first-keystroke="ctrl alt f" />
+  </action>
+  <action id="EditorCodeBlockEndWithSelection" />
+  <action id="EditorCodeBlockStart" />
+  <action id="EditorCodeBlockStartWithSelection" />
+  <action id="EditorCreateRectangularSelection" />
+  <action id="EditorCutLineBackward" />
+  <action id="EditorCutLineEnd" />
+  <action id="EditorDeleteLine">
+    <keyboard-shortcut first-keystroke="alt k" />
+  </action>
+  <action id="EditorDeleteToWordStart" />
+  <action id="EditorDuplicate" />
+  <action id="EditorDuplicateLines">
+    <keyboard-shortcut first-keystroke="ctrl c" second-keystroke="d" />
+  </action>
+  <action id="EditorEscape">
+    <keyboard-shortcut first-keystroke="escape" second-keystroke="escape" />
+  </action>
+  <action id="EditorIndentSelection" />
+  <action id="EditorJoinLines" />
+  <action id="EditorKillRegion" />
+  <action id="EditorKillToWordEnd" />
+  <action id="EditorKillToWordStart" />
+  <action id="EditorMatchBrace">
+    <keyboard-shortcut first-keystroke="shift ctrl m" />
+    <keyboard-shortcut first-keystroke="ctrl alt b" />
+  </action>
+  <action id="EditorNextWord" />
+  <action id="EditorPreviousWord" />
+  <action id="EditorScrollToCenter" />
+  <action id="EditorSelectWord">
+    <keyboard-shortcut first-keystroke="shift alt 2" />
+  </action>
+  <action id="EditorStartNewLine" />
+  <action id="EditorSwapSelectionBoundaries" />
+  <action id="EditorTextEnd">
+    <keyboard-shortcut first-keystroke="ctrl end" />
+  </action>
+  <action id="EditorTextStart">
+    <keyboard-shortcut first-keystroke="ctrl home" />
+  </action>
+  <action id="EditorToggleColumnMode" />
+  <action id="EditorToggleStickySelection">
+    <keyboard-shortcut first-keystroke="ctrl space" />
+  </action>
+  <action id="EditorUnindentSelection" />
+  <action id="Emacs+.AppendNextKill">
+    <keyboard-shortcut first-keystroke="ctrl alt w" />
+  </action>
+  <action id="Emacs+.BackToIndentation">
+    <keyboard-shortcut first-keystroke="alt m" />
+    <keyboard-shortcut first-keystroke="escape" second-keystroke="m" />
+  </action>
+  <action id="Emacs+.BackwardWord">
+    <keyboard-shortcut first-keystroke="ctrl left" />
+    <keyboard-shortcut first-keystroke="alt b" />
+  </action>
+  <action id="Emacs+.CapitalizeWord">
+    <keyboard-shortcut first-keystroke="alt c" />
+  </action>
+  <action id="Emacs+.CutLineBackwardKey">
+    <keyboard-shortcut first-keystroke="alt minus" second-keystroke="ctrl k" />
+  </action>
+  <action id="Emacs+.DeleteBlankLines">
+    <keyboard-shortcut first-keystroke="ctrl x" second-keystroke="ctrl o" />
+  </action>
+  <action id="Emacs+.DeleteHorizSpace">
+    <keyboard-shortcut first-keystroke="alt back_slash" />
+    <keyboard-shortcut first-keystroke="escape" second-keystroke="back_slash" />
+  </action>
+  <action id="Emacs+.DeleteIndentation">
+    <keyboard-shortcut first-keystroke="shift alt 6" />
+    <keyboard-shortcut first-keystroke="alt circumflex" />
+  </action>
+  <action id="Emacs+.DeleteOtherWindows">
+    <keyboard-shortcut first-keystroke="ctrl x" second-keystroke="1" />
+  </action>
+  <action id="Emacs+.DowncaseWord">
+    <keyboard-shortcut first-keystroke="alt l" />
+    <keyboard-shortcut first-keystroke="escape" second-keystroke="l" />
+  </action>
+  <action id="Emacs+.ExchangePointAndMark">
+    <keyboard-shortcut first-keystroke="ctrl x" second-keystroke="ctrl x" />
+  </action>
+  <action id="Emacs+.ForwardWord">
+    <keyboard-shortcut first-keystroke="ctrl right" />
+    <keyboard-shortcut first-keystroke="alt right" />
+    <keyboard-shortcut first-keystroke="alt f" />
+    <keyboard-shortcut first-keystroke="escape" second-keystroke="f" />
+    <keyboard-shortcut first-keystroke="escape" second-keystroke="right" />
+  </action>
+  <action id="Emacs+.ISCase">
+    <keyboard-shortcut first-keystroke="alt c" />
+  </action>
+  <action id="Emacs+.ISDeleteChar">
+    <keyboard-shortcut first-keystroke="ctrl alt w" />
+  </action>
+  <action id="Emacs+.ISEnter">
+    <keyboard-shortcut first-keystroke="enter" />
+  </action>
+  <action id="Emacs+.ISForwardDelete">
+    <keyboard-shortcut first-keystroke="ctrl d" />
+  </action>
+  <action id="Emacs+.ISMultiLine">
+    <keyboard-shortcut first-keystroke="alt m" />
+  </action>
+  <action id="Emacs+.ISRegex">
+    <keyboard-shortcut first-keystroke="alt r" />
+  </action>
+  <action id="Emacs+.ISWords">
+    <keyboard-shortcut first-keystroke="alt w" />
+  </action>
+  <action id="Emacs+.ISYankChar">
+    <keyboard-shortcut first-keystroke="ctrl alt y" />
+  </action>
+  <action id="Emacs+.ISYankLast">
+    <keyboard-shortcut first-keystroke="alt y" />
+  </action>
+  <action id="Emacs+.ISYankLine">
+    <keyboard-shortcut first-keystroke="ctrl y" />
+  </action>
+  <action id="Emacs+.ISYankNextWord">
+    <keyboard-shortcut first-keystroke="ctrl w" />
+  </action>
+  <action id="Emacs+.ISearchBackward">
+    <keyboard-shortcut first-keystroke="ctrl r" />
+  </action>
+  <action id="Emacs+.ISearchBackwardRegexp">
+    <keyboard-shortcut first-keystroke="ctrl alt r" />
+  </action>
+  <action id="Emacs+.ISearchForward">
+    <keyboard-shortcut first-keystroke="ctrl s" />
+  </action>
+  <action id="Emacs+.ISearchForwardRegexp">
+    <keyboard-shortcut first-keystroke="ctrl alt s" />
+  </action>
+  <action id="Emacs+.ISearchHistoryNext">
+    <keyboard-shortcut first-keystroke="alt n" />
+  </action>
+  <action id="Emacs+.ISearchHistoryPrevious">
+    <keyboard-shortcut first-keystroke="alt p" />
+  </action>
+  <action id="Emacs+.JustOneSpace">
+    <keyboard-shortcut first-keystroke="alt space" />
+    <keyboard-shortcut first-keystroke="escape" second-keystroke="space" />
+  </action>
+  <action id="Emacs+.KeyboardQuit">
+    <keyboard-shortcut first-keystroke="ctrl g" />
+  </action>
+  <action id="Emacs+.KillLine">
+    <keyboard-shortcut first-keystroke="ctrl k" />
+  </action>
+  <action id="Emacs+.KillRegion">
+    <keyboard-shortcut first-keystroke="ctrl w" />
+  </action>
+  <action id="Emacs+.KillWholeLine">
+    <keyboard-shortcut first-keystroke="shift ctrl back_space" />
+  </action>
+  <action id="Emacs+.KillWord">
+    <keyboard-shortcut first-keystroke="alt d" />
+  </action>
+  <action id="Emacs+.KillWordBackward">
+    <keyboard-shortcut first-keystroke="alt back_space" />
+  </action>
+  <action id="Emacs+.QueryReplace">
+    <keyboard-shortcut first-keystroke="shift alt 5" />
+  </action>
+  <action id="Emacs+.QueryReplaceRegexp">
+    <keyboard-shortcut first-keystroke="shift ctrl alt 5" />
+  </action>
+  <action id="Emacs+.Recenter">
+    <keyboard-shortcut first-keystroke="ctrl l" />
+  </action>
+  <action id="Emacs+.SaveRegion">
+    <keyboard-shortcut first-keystroke="alt w" />
+  </action>
+  <action id="Emacs+.SwitchToBuffer">
+    <keyboard-shortcut first-keystroke="ctrl x" second-keystroke="b" />
+  </action>
+  <action id="Emacs+.TWBegin">
+    <keyboard-shortcut first-keystroke="shift alt comma" />
+    <keyboard-shortcut first-keystroke="alt less" />
+  </action>
+  <action id="Emacs+.TWEnd">
+    <keyboard-shortcut first-keystroke="shift alt period" />
+    <keyboard-shortcut first-keystroke="alt greater" />
+  </action>
+  <action id="Emacs+.TWInterrupt">
+    <keyboard-shortcut first-keystroke="ctrl g" />
+    <keyboard-shortcut first-keystroke="ctrl x" second-keystroke="o" />
+  </action>
+  <action id="Emacs+.TWScrollDown">
+    <keyboard-shortcut first-keystroke="alt v" />
+  </action>
+  <action id="Emacs+.TWScrollUp">
+    <keyboard-shortcut first-keystroke="ctrl v" />
+  </action>
+  <action id="Emacs+.TWSelectNext">
+    <keyboard-shortcut first-keystroke="ctrl n" />
+  </action>
+  <action id="Emacs+.TWSelectPrevious">
+    <keyboard-shortcut first-keystroke="ctrl p" />
+  </action>
+  <action id="Emacs+.TransposeChars">
+    <keyboard-shortcut first-keystroke="ctrl t" />
+  </action>
+  <action id="Emacs+.TransposeLines">
+    <keyboard-shortcut first-keystroke="ctrl x" second-keystroke="ctrl t" />
+  </action>
+  <action id="Emacs+.TransposeWords">
+    <keyboard-shortcut first-keystroke="alt t" />
+  </action>
+  <action id="Emacs+.UpcaseWord">
+    <keyboard-shortcut first-keystroke="alt u" />
+    <keyboard-shortcut first-keystroke="escape" second-keystroke="u" />
+  </action>
+  <action id="Emacs+.WhatCursorPos">
+    <keyboard-shortcut first-keystroke="ctrl x" second-keystroke="equals" />
+  </action>
+  <action id="Emacs+.Yank">
+    <keyboard-shortcut first-keystroke="ctrl y" />
+  </action>
+  <action id="Emacs+.YankPop">
+    <keyboard-shortcut first-keystroke="alt y" />
+    <keyboard-shortcut first-keystroke="escape" second-keystroke="y" />
+  </action>
+  <action id="EmacsStyleIndent">
+    <keyboard-shortcut first-keystroke="alt i" />
+    <keyboard-shortcut first-keystroke="tab" />
+  </action>
+  <action id="EvaluateExpression">
+    <keyboard-shortcut first-keystroke="ctrl c" second-keystroke="ctrl p" />
+  </action>
+  <action id="ExpandAllRegions">
+    <keyboard-shortcut first-keystroke="shift ctrl add" />
+  </action>
+  <action id="ExpandLiveTemplateByTab" />
+  <action id="FileChooser.TogglePathShowing">
+    <keyboard-shortcut first-keystroke="ctrl x" second-keystroke="ctrl p" />
+  </action>
+  <action id="Find" />
+  <action id="FindInPath">
+    <keyboard-shortcut first-keystroke="alt s" />
+  </action>
+  <action id="FindPrevious" />
+  <action id="FindUsages">
+    <keyboard-shortcut first-keystroke="alt f7" />
+  </action>
+  <action id="GotoAction">
+    <keyboard-shortcut first-keystroke="alt x" />
+  </action>
+  <action id="GotoDeclaration">
+    <keyboard-shortcut first-keystroke="alt period" />
+    <keyboard-shortcut first-keystroke="escape" second-keystroke="period" />
+    <mouse-shortcut keystroke="control button1" />
+  </action>
+  <action id="GotoImplementation">
+    <keyboard-shortcut first-keystroke="ctrl u" second-keystroke="alt period" />
+  </action>
+  <action id="GotoLine">
+    <keyboard-shortcut first-keystroke="alt g" second-keystroke="g" />
+    <keyboard-shortcut first-keystroke="alt g" second-keystroke="alt g" />
+  </action>
+  <action id="GotoNextError">
+    <keyboard-shortcut first-keystroke="alt g" second-keystroke="n" />
+    <keyboard-shortcut first-keystroke="alt g" second-keystroke="alt n" />
+    <keyboard-shortcut first-keystroke="f2" />
+    <keyboard-shortcut first-keystroke="ctrl x" second-keystroke="back_quote" />
+  </action>
+  <action id="HideActiveWindow">
+    <keyboard-shortcut first-keystroke="ctrl x" second-keystroke="0" />
+  </action>
+  <action id="JumpToLastChange" />
+  <action id="MaximizeToolWindow">
+    <keyboard-shortcut first-keystroke="ctrl x" second-keystroke="1" />
+  </action>
+  <action id="MethodDown">
+    <keyboard-shortcut first-keystroke="ctrl alt e" />
+  </action>
+  <action id="MethodUp">
+    <keyboard-shortcut first-keystroke="ctrl alt a" />
+  </action>
+  <action id="MoveLineDown">
+    <keyboard-shortcut first-keystroke="alt down" />
+  </action>
+  <action id="MoveLineUp">
+    <keyboard-shortcut first-keystroke="alt up" />
+  </action>
+  <action id="NewClass">
+    <keyboard-shortcut first-keystroke="ctrl x" second-keystroke="ctrl n" />
+  </action>
+  <action id="NextEditorTab">
+    <keyboard-shortcut first-keystroke="shift alt right" />
+    <keyboard-shortcut first-keystroke="ctrl c" second-keystroke="ctrl t" />
+  </action>
+  <action id="NextParameter" />
+  <action id="NextProjectWindow" />
+  <action id="NextTemplateParameter" />
+  <action id="NextTemplateVariable">
+    <keyboard-shortcut first-keystroke="enter" />
+    <keyboard-shortcut first-keystroke="ctrl m" />
+  </action>
+  <action id="OptimizeImports">
+    <keyboard-shortcut first-keystroke="ctrl alt o" />
+    <keyboard-shortcut first-keystroke="shift ctrl o" />
+  </action>
+  <action id="PasteMultiple" />
+  <action id="RecentFiles" />
+  <action id="ReloadFromDisk">
+    <keyboard-shortcut first-keystroke="ctrl x" second-keystroke="ctrl v" />
+  </action>
+  <action id="Replace" />
+  <action id="Resume">
+    <keyboard-shortcut first-keystroke="ctrl c" second-keystroke="ctrl r" />
+  </action>
+  <action id="RunClass" />
+  <action id="RunToCursor">
+    <keyboard-shortcut first-keystroke="ctrl c" second-keystroke="ctrl u" />
+  </action>
+  <action id="ShowContent" />
+  <action id="ShowUsages">
+    <keyboard-shortcut first-keystroke="ctrl alt f7" />
+    <keyboard-shortcut first-keystroke="shift alt s" />
+  </action>
+  <action id="StepInto">
+    <keyboard-shortcut first-keystroke="ctrl c" second-keystroke="ctrl s" />
+  </action>
+  <action id="StepOver">
+    <keyboard-shortcut first-keystroke="ctrl c" second-keystroke="ctrl n" />
+  </action>
+  <action id="Switcher" />
+  <action id="ToggleBookmark">
+    <keyboard-shortcut first-keystroke="ctrl f10" />
+  </action>
+  <action id="ToggleLineBreakpoint">
+    <keyboard-shortcut first-keystroke="ctrl x" second-keystroke="space" />
+  </action>
+  <action id="ToggleTemporaryLineBreakpoint" />
+  <action id="UnsplitAll" />
+  <action id="Vcs.QuickListPopupAction">
+    <keyboard-shortcut first-keystroke="ctrl x" second-keystroke="v" />
+  </action>
+  <action id="Vcs.UpdateProject" />
+  <action id="XDebugger.MoveWatchDown">
+    <keyboard-shortcut first-keystroke="ctrl alt e" />
+  </action>
+  <action id="XDebugger.MoveWatchUp">
+    <keyboard-shortcut first-keystroke="ctrl alt a" />
+  </action>
+</keymap>
