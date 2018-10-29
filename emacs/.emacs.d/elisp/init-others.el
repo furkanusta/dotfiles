@@ -1,5 +1,5 @@
 (defun disable-linum-mode ()
-  (linum-mode -1))
+  (display-line-numbers-mode -1))
 
 (use-package dired
   :init (setq-default dired-dwim-target t))
@@ -163,9 +163,14 @@
                   "http://danluu.com/atom.xml"
                   "http://tenderlovemaking.com/atom.xml"
                   "http://feeds.feedburner.com/codinghorror/"
-                  "https://www.discoverdev.io/rss.xml"
                   "http://www.snarky.ca/feed"
                   "http://blog.regehr.org/feed"
+                  "https://www.reddit.com/r/selfhosted/top/.rss?t=month"
+                  "https://www.reddit.com/r/ruby/top/.rss?t=month"
+                  "https://www.reddit.com/r/python/top/.rss?t=month"
+                  "https://www.reddit.com/r/java/top/.rss?t=month"
+                  "https://www.reddit.com/r/perl/top/.rss?t=month"
+                  "https://www.reddit.com/r/commandline/top/.rss?t=month"
                   ("http://planet.emacsen.org/atom.xml" emacs)
                   ("http://planet.gnome.org/rss20.xml" gnome)
                   ("http://arne-mertz.de/feed/" cpp)
