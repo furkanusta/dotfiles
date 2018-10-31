@@ -120,8 +120,6 @@
          ("C-c <up>" . windmove-up)
          ("C-c <down>" . windmove-down)))
 
-(use-package winner :init (winner-mode 1))
-
 (use-package which-func :init (which-function-mode t))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -284,8 +282,8 @@
 
 (use-package diminish)
 
-(use-package monokai-theme
-  :config (load-theme 'monokai t))
+(use-package monokai-theme)
+;; (use-package doom-themes :init (load-theme doom-molokai))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Tools & Utils          ;;
@@ -330,7 +328,9 @@
 (use-package vlf
   :after dired
   :hook (vlf-view-mode . disable-line-numbers)
-  :init (require 'vlf-setup))
+  :init (require 'vlf-setup)
+  :config
+  (add-to-list 'vlf-forbidden-modes-list 'pdf-view-mode))
 
 (defun pdf-view-page-number ()
   (interactive)
@@ -377,7 +377,12 @@
   :diminish company-mode
   :commands company-complete
   :hook (after-init . global-company-mode)
-  :bind ("<C-tab>" .(function company-complete)))
+  :bind ("<C-tab>" . (function company-complete)))
+
+;; ;; Doesn't work with company-quickhelp but can provide fuzzy matching where company-flx cannot
+;; (use-package helm-company
+;;   :after company
+;;   :bind ("<C-tab>" . (function helm-company)))
 
 (use-package company-flx
   :after company
@@ -391,6 +396,12 @@
   ("C-c a p" . helm-do-ag-project-root)
   ("C-c a g" .  helm-do-ag))
 
+;; Has quite ugly arguments line at the beginning and does not support edit mode
+;; (use-package helm-rg
+;;   :init (custom-set-variables '(helm-follow-mode-persistent t))
+;;   :bind
+;;   ("C-c r g" .  helm-rg))
+
 (use-package magit
   :bind ("C-c g s" . magit-status))
 
@@ -398,7 +409,10 @@
 
 (use-package diff-hl :config (setq-default global-diff-hl-mode t))
 
-(use-package flycheck :init (global-flycheck-mode))
+(use-package flycheck
+  :init (global-flycheck-mode)
+  :config
+  (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc verilog-verilator)))
 
 (use-package helm-flycheck
   :after flycheck
@@ -414,8 +428,20 @@
 ;;          Navigation          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(use-package ace-window
+  :bind ("C-c o" . ace-window))
+
+;; (use-package beacon
+;;   :init (beacon-mode 1)
+;;   :config (setq-default
+;;            beacon-blink-when-window-changes nil
+;;            beacon-blink-when-buffer-changes nil))
+
 (use-package bm
-  :init (setq bm-restore-repository-on-load t)
+  :init (setq-default
+         bm-restore-repository-on-load t
+         bm-repository-file "~/.emacs.d/bm-repository"
+         bm-buffer-persistence t)
   :hook (find-file-hooks . bm-buffer-restore)
   :config (setq-default bm-cycle-all-buffers t)
   :bind
@@ -449,6 +475,43 @@
         ("C-c C-w <left>" . eyebrowse-prev-window-config)
         ("C-c C-w l" . eyebrowse-switch-to-window-config)
         ("C-c C-w <right>" . eyebrowse-next-window-config)))
+
+
+;; (use-package treemacs
+;;   :hook (treemacs-mode . disable-line-numbers)
+;; ;;   :config
+;; ;;   (setq-default treemacs-collapse-dirs              3
+;; ;;                 treemacs-deferred-git-apply-delay   0.5
+;; ;;                 treemacs-display-in-side-window     t
+;; ;;                 treemacs-file-event-delay           5000
+;; ;;                 treemacs-file-follow-delay          0.2
+;; ;;                 treemacs-follow-after-init          t
+;; ;;                 treemacs-follow-recenter-distance   0.1
+;; ;;                 treemacs-goto-tag-strategy          'refetch-index
+;; ;;                 treemacs-indentation                2
+;; ;;                 treemacs-indentation-string         " "
+;; ;;                 treemacs-is-never-other-window      nil
+;; ;;                 treemacs-max-git-entries            5000
+;; ;;                 treemacs-no-png-images              nil
+;; ;;                 treemacs-project-follow-cleanup     nil
+;; ;;                 treemacs-persist-file               (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
+;; ;;                 treemacs-recenter-after-file-follow nil
+;; ;;                 treemacs-recenter-after-tag-follow  nil
+;; ;;                 treemacs-show-cursor                nil
+;; ;;                 treemacs-show-hidden-files          t
+;; ;;                 treemacs-silent-filewatch           nil
+;; ;;                 treemacs-silent-refresh             nil
+;; ;;                 treemacs-sorting                    'alphabetic-desc
+;; ;;                 treemacs-space-between-root-nodes   t
+;; ;;                 treemacs-tag-follow-cleanup         t
+;; ;;                 treemacs-tag-follow-delay           1.5
+;; ;;                 treemacs-width                      35)
+;; ;;   (treemacs-follow-mode t)
+;; ;;   (treemacs-filewatch-mode t)
+;; ;;   (treemacs-fringe-indicator-mode t)
+;;   :bind
+;;   ("M-0"       . treemacs-select-window)
+;;   ("C-x t t"   . treemacs))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -490,40 +553,40 @@
       (if (and b e (< (point) e)) (setq rlt nil)))
     (setq ad-return-value rlt)))
 
-(use-package org-journal
-  :config
-  (setq-default org-journal-dir (concat org-directory "/journal/")
-                org-journal-carryover-items nil)
-  :bind ("C-c i j" . org-journal-new-entry))
+;; (use-package org-journal
+;;   :config
+;;   (setq-default org-journal-dir (concat org-directory "/journal/")
+;;                 org-journal-carryover-items nil)
+;;   :bind ("C-c i j" . org-journal-new-entry))
 
-(use-package org-agenda
-  :bind ("C-c a l" . org-agenda-list)
-  :config (setq-default org-agenda-files (list org-directory)))
+;; (use-package org-agenda
+;;   :bind ("C-c a l" . org-agenda-list)
+;;   :config (setq-default org-agenda-files (list org-directory)))
 
-(defun my/org-ref-open-pdf-at-point ()
-  "Open the pdf for bibtex key under point if it exists."
-  (interactive)
-  (let* ((key (thing-at-point 'filename t))
-         (pdf-file (funcall org-ref-get-pdf-filename-function key)))
-    (if (file-exists-p pdf-file)
-        (find-file pdf-file)
-      (message "No PDF found for %s" key))))
+;; (defun my/org-ref-open-pdf-at-point ()
+;;   "Open the pdf for bibtex key under point if it exists."
+;;   (interactive)
+;;   (let* ((key (thing-at-point 'filename t))
+;;          (pdf-file (funcall org-ref-get-pdf-filename-function key)))
+;;     (if (file-exists-p pdf-file)
+;;         (find-file pdf-file)
+;;       (message "No PDF found for %s" key))))
 
-(use-package org-ref
-  :config
-  (setq-default reftex-default-bibliography (list (concat org-directory "/Bibliography.bib"))
-                org-ref-bibliography-notes (concat org-directory "/Readings.org")
-                org-ref-default-bibliography (list (concat org-directory "/Bibliography.bib"))
-                org-ref-pdf-directory "~/Documents/Nextcloud/Papers/"
-                org-ref-open-pdf-function 'my/org-ref-open-pdf-at-point))
+;; (use-package org-ref
+;;   :config
+;;   (setq-default reftex-default-bibliography (list (concat org-directory "/Bibliography.bib"))
+;;                 org-ref-bibliography-notes (concat org-directory "/Readings.org")
+;;                 org-ref-default-bibliography (list (concat org-directory "/Bibliography.bib"))
+;;                 org-ref-pdf-directory "~/Documents/Nextcloud/Papers/"
+;;                 org-ref-open-pdf-function 'my/org-ref-open-pdf-at-point))
 
-(use-package ox-latex
-  :config
-  (setq-default org-latex-pdf-process
-                '("pdflatex -interaction nonstopmode -output-directory %o %f"
-                  "bibtex %b"
-                  "pdflatex -interaction nonstopmode -output-directory %o %f"
-                  "pdflatex -interaction nonstopmode -output-directory %o %f")))
+;; (use-package ox-latex
+;;   :config
+;;   (setq-default org-latex-pdf-process
+;;                 '("pdflatex -interaction nonstopmode -output-directory %o %f"
+;;                   "bibtex %b"
+;;                   "pdflatex -interaction nonstopmode -output-directory %o %f"
+;;                   "pdflatex -interaction nonstopmode -output-directory %o %f")))
 
 (use-package org-cliplink
   :bind
@@ -595,21 +658,21 @@
   (with-eval-after-load 'company
     (add-to-list 'company-backends 'company-irony)))
 
-(use-package quickrun
-  :bind
-  ("C-c e e" . quickrun-region)
-  ("C-c e q" . quickrun-replace-region))
+;; (use-package quickrun
+;;   :bind
+;;   ("C-c e e" . quickrun-region)
+;;   ("C-c e q" . quickrun-replace-region))
 
-(use-package semantic
-  :hook ((python-mode . semantic-mode)
-         (c++-mode . semantic-mode)))
+;; (use-package semantic
+;;   :hook ((python-mode . semantic-mode)
+;;          (c++-mode . semantic-mode)))
 
-(use-package srefactor
-  :after semantic
-  :config (setq-default srefactor-ui-menu-show-help nil)
-  :bind
-  (:map c++-mode-map
-        ("C-c r s" . srefactor-refactor-at-point)))
+;; (use-package srefactor
+;;   :after semantic
+;;   :config (setq-default srefactor-ui-menu-show-help nil)
+;;   :bind
+;;   (:map c++-mode-map
+;;         ("C-c r s" . srefactor-refactor-at-point)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -643,6 +706,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Python          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Although elpy provide refactoring, goto-defitnition didn't work and it messes with defaults
+;;   (even though sane defaults weren't selected).
+;; jedi is also fine but I am continouing with anaconda simply because I used it before and
+;;   since I am not working on huge projects I didn't encounter any performacne issues
+
 (use-package virtualenvwrapper :init (venv-initialize-interactive-shells))
 (use-package auto-virtualenvwrapper :after virtualenvwrapper)
 
@@ -682,11 +750,19 @@
 (use-package shell
   :bind (:map shell-mode-map ("<tab>" . completion-at-point)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;          Docker          ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(use-package dockerfile-mode :mode ("Dockerfile\\'" "\\.docker"))
+;; Broken
+;; (use-package readline-complete)
 
-(use-package docker-compose-mode :mode ("docker-compose\\.yml\\'" "-compose.yml\\'"))
+;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ;;          Docker          ;;
+;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; (use-package dockerfile-mode :mode ("Dockerfile\\'" "\\.docker"))
 
-(use-package docker-tramp)
+;; (use-package docker-compose-mode :mode ("docker-compose\\.yml\\'" "-compose.yml\\'"))
+
+;; (use-package docker-tramp)
+
+
+;; Java: Megahanda, Eclim, Subword Mode
+;; Ruby: inf-ruby, enh-ruby,
+;; Scala: ensime
