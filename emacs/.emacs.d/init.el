@@ -420,9 +420,18 @@
 
 (use-package evil-nerd-commenter :bind ("M-;" . evilnc-comment-or-uncomment-lines))
 
+(use-package projectile
+  :init (projectile-mode 1)
+  :config (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
+
 (use-package visual-regexp-steroids
   :init (require 'visual-regexp-steroids)
   :bind ("C-r" . vr/replace))
+
+;; (use-package quickrun
+;;   :bind
+;;   ("C-c e e" . quickrun-region)
+;;   ("C-c e q" . quickrun-replace-region))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Navigation          ;;
@@ -658,10 +667,9 @@
   (with-eval-after-load 'company
     (add-to-list 'company-backends 'company-irony)))
 
-;; (use-package quickrun
-;;   :bind
-;;   ("C-c e e" . quickrun-region)
-;;   ("C-c e q" . quickrun-replace-region))
+(use-package flycheck-clang-analyzer
+  :after flycheck
+  :config (flycheck-clang-analyzer-setup))
 
 ;; (use-package semantic
 ;;   :hook ((python-mode . semantic-mode)
