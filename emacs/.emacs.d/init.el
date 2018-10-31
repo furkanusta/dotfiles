@@ -291,11 +291,11 @@
 ;;          Tools & Utils          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun disable-linum-mode ()
+(defun disable-line-numbers ()
   (display-line-numbers-mode -1))
 
 (use-package image-mode
-  :hook (image-mode . disable-linum-mode))
+  :hook (image-mode . disable-line-numbers))
 
 (use-package image+
   :after image-mode
@@ -329,7 +329,7 @@
 
 (use-package vlf
   :after dired
-  :hook (vlf-view-mode . disable-linum-mode)
+  :hook (vlf-view-mode . disable-line-numbers)
   :init (require 'vlf-setup))
 
 (defun pdf-view-page-number ()
@@ -341,7 +341,7 @@
 ;; requires pdf-tools-install
 (use-package pdf-tools
   :hook ((pdf-view-mode . (lambda () (cua-mode 0)))
-         (pdf-view-mode . disable-linum-mode))
+         (pdf-view-mode . disable-line-numbers))
   :mode ("\\.pdf\\'" . pdf-view-mode)
  :config
  (setq-default pdf-view-display-size 'fit-page
