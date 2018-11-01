@@ -58,6 +58,7 @@
               initial-major-mode 'org-mode
               auto-window-vscroll nil
               comint-prompt-read-only t
+              vc-follow-symlinks t
               font-use-system-font t)
 
 ;; These are not usable with use-package
@@ -230,6 +231,7 @@
    ("C-x b" . helm-mini)
    ("C-z" .  helm-select-action)
    ("M-y" . helm-show-kill-ring)
+   ("<f6>" . helm-imenu)
    :map helm-map
    ("<tab>" . helm-execute-persistent-action))
   :config
@@ -610,6 +612,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          C++          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ccls vs cquery: Overall ccls seems better.
+;; ccls vs rtags : It looks like rtags has couple more features, but I had some problems setting it up before
+
 (use-package cc-mode
   :ensure nil
   :mode ("\\.h\\'" . c++-mode)
@@ -640,7 +645,7 @@
 ;;   :after rtags
 ;;   :init (cmake-ide-setup))
 
-;; requires rtags-install
+;; ;; requires rtags-install
 ;; (use-package rtags
 ;;   :hook (c++-mode . rtags-start-process-unless-running)
 ;;   :config
@@ -654,22 +659,38 @@
 ;;   :config (add-to-list 'company-backends 'company-rtags))
 
 
+(defun +ccls/enable ()
+  (condition-case nil
+      (lsp-ccls-enable)
+    (user-error nil)))
+
+(use-package ccls
+  :commands lsp-ccls-enable
+  :hook (c++-mode . +ccls/enable)
+  :config (setq-default ccls-executable "/home/eksi/.local/programs/ccls/build/ccls"))
+
+(use-package lsp)
+(use-package company-lsp
+  :after company
+  :config (push 'company-lsp company-backends))
+
+(use-package lsp-imenu
+  :after lsp
+  :hook (lsp-after-open-hook . lsp-enable-imenu))
+
+
+(use-package xref
+  :config (setq-default xref-show-xrefs-function 'helm-xref-show-xrefs))
+
 (use-package company-c-headers
   :after company
   :init (add-to-list 'company-backends 'company-c-headers))
 
-;; requires irony-install-server
-(use-package irony
-  :diminish irony-mode
-  :hook ((irony-mode . irony-cdb-autosetup-compile-options)
-         (c++-mode . irony-mode))
-  :config
-  (with-eval-after-load 'company
-    (add-to-list 'company-backends 'company-irony)))
+;; (use-package flycheck-clang-analyzer
+;;   :after flycheck
+;;   :config (flycheck-clang-analyzer-setup))
 
-(use-package flycheck-clang-analyzer
-  :after flycheck
-  :config (flycheck-clang-analyzer-setup))
+(use-package rmsbolt :config (setq-default rmsbolt-automatic-recompile nil))
 
 ;; (use-package semantic
 ;;   :hook ((python-mode . semantic-mode)
@@ -774,3 +795,63 @@
 ;; Java: Megahanda, Eclim, Subword Mode
 ;; Ruby: inf-ruby, enh-ruby,
 ;; Scala: ensime
+
+
+
+;; ;; CCLS Helpers
+;; ;; direct callers
+;; (lsp-find-custom "$ccls/call")
+;; ;; callers up to 2 levels
+;; (lsp-find-custom "$ccls/call" '(:levels 2))
+;; ;; direct callees
+;; (lsp-find-custom "$ccls/call" '(:callee t))
+
+;; (lsp-find-custom "$ccls/vars")
+;; ; Use lsp-goto-implementation or lsp-ui-peek-find-implementation (textDocument/implementation) for derived types/functions
+;; ; $ccls/inheritance is more general
+
+;; ;; Alternatively, use lsp-ui-peek interface
+;; (lsp-ui-peek-find-custom "$ccls/call")
+;; (lsp-ui-peek-find-custom "$ccls/call" '(:callee t))
+
+;; (defun ccls/callee () (interactive) (lsp-ui-peek-find-custom "$ccls/call" '(:callee t)))
+;; (defun ccls/caller () (interactive) (lsp-ui-peek-find-custom "$ccls/call"))
+;; (defun ccls/vars (kind) (lsp-ui-peek-find-custom "$ccls/vars" `(:kind ,kind)))
+;; (defun ccls/base (levels) (lsp-ui-peek-find-custom "$ccls/inheritance" `(:levels ,levels)))
+;; (defun ccls/derived (levels) (lsp-ui-peek-find-custom "$ccls/inheritance" `(:levels ,levels :derived t)))
+;; (defun ccls/member (kind) (interactive) (lsp-ui-peek-find-custom "$ccls/member" `(:kind ,kind)))
+
+;; ;; References w/ Role::Role
+;; (defun ccls/references-read () (interactive)
+;;   (lsp-ui-peek-find-custom "textDocument/references"
+;;     (plist-put (lsp--text-document-position-params) :role 8)))
+
+;; ;; References w/ Role::Write
+;; (defun ccls/references-write ()
+;;   (interactive)
+;;   (lsp-ui-peek-find-custom "textDocument/references"
+;;    (plist-put (lsp--text-document-position-params) :role 16)))
+
+;; ;; References w/ Role::Dynamic bit (macro expansions)
+;; (defun ccls/references-macro () (interactive)
+;;   (lsp-ui-peek-find-custom "textDocument/references"
+;;    (plist-put (lsp--text-document-position-params) :role 64)))
+
+;; ;; References w/o Role::Call bit (e.g. where functions are taken addresses)
+;; (defun ccls/references-not-call () (interactive)
+;;   (lsp-ui-peek-find-custom "textDocument/references"
+;;    (plist-put (lsp--text-document-position-params) :excludeRole 32)))
+
+;; ;; ccls/vars ccls/base ccls/derived ccls/members have a parameter while others are interactive.
+;; ;; (ccls/base 1) direct bases
+;; ;; (ccls/derived 1) direct derived
+;; ;; (ccls/member 2) => 2 (Type) => nested classes / types in a namespace
+;; ;; (ccls/member 3) => 3 (Func) => member functions / functions in a namespace
+;; ;; (ccls/member 0) => member variables / variables in a namespace
+;; ;; (ccls/vars 1) => field
+;; ;; (ccls/vars 2) => local variable
+;; ;; (ccls/vars 3) => field or local variable. 3 = 1 | 2
+;; ;; (ccls/vars 4) => parameter
+
+;; ;; References whose filenames are under this project
+;; (lsp-ui-peek-find-references nil (list :folders (vector (projectile-project-root))))
