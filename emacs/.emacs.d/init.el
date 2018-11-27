@@ -59,6 +59,7 @@
               auto-window-vscroll nil
               comint-prompt-read-only t
               vc-follow-symlinks t
+              scroll-preserve-screen-position t
               font-use-system-font t)
 
 ;; These are not usable with use-package
