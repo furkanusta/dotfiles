@@ -15,7 +15,7 @@ if [ "$TERM" = dumb ] && [ "$INSIDE_EMACS" ]; then
 fi
 
 export PATH="$PATH:$HOME/.npm-packages/bin/:$HOME/.cargo/bin/"
-
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/lib:/usr/local/lib64/"
 export ALTERNATE_EDITOR=""
 export EDITOR='emacsclient -nw'
 
