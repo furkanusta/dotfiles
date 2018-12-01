@@ -7,6 +7,8 @@
    [default default default italic underline success warning error])
  '(beacon-color "#dc322f")
  '(beacon-mode t)
+ '(bmkp-last-as-first-bookmark-file "~/.emacs.d/bookmarks")
+ '(c-noise-macro-names (quote ("constexpr")))
  '(cua-global-mark-cursor-color "#2aa198")
  '(cua-normal-cursor-color "#657b83")
  '(cua-overwrite-cursor-color "#b58900")
@@ -53,7 +55,7 @@
  '(org-babel-load-languages (quote ((emacs-lisp . t) (C . t))))
  '(package-selected-packages
    (quote
-    (helm-xref rmsbolt ccls elpy company-jedi helm-rg treemacs doom-themes spacemacs-theme color-theme-sanityinc-solarized elfeed company-web company-lsp lsp-ui magit-todos company-quickhelp ace-jump-buffer helm-bm persp-mode eyebrowse bm fzf interleave benchmark-init org-noter orgit org-ref graphviz-dot-mode flycheck-pycheckers darkokai-theme srefactor pydoc company-anaconda auto-virtualenvwrapper virtualenvwrapper scala-mode docker-tramp dockerfile-mode docker-compose-mode helm-flycheck helm-ag helm-tramp helm-projectile helm-swoop spaceline-all-the-icons all-the-icons init-programming-languages init-others init-helm uniquify init-defaults init-bindings c++-mode shell-mode fci persp hs-minor-mode helm-semantic diff-hl-dired-mode diff-hl-mode writegood dired fill-column-indicator persp-projectile perspective restart-emacs writegood-mode projectile ibuffer-vc company-c-headers use-package focus cmake-font-lock ace-window buffer-move diff-hl company-irony-c-headers flycheck-irony pydoc-info terminal-here pdf-tools color-theme-buffer-local magit markdown-mode+ web-mode gist helm-gitignore gitignore-mode tuareg dylan-mode fsharp-mode guile-scheme helm-flyspell ensime vlf modern-cpp-font-lock anaconda-mode peep-dired diminish org-journal company-irony company irony yaml-mode sr-speedbar org-cliplink org-download visual-fill-column writeroom-mode org-bullets immortal-scratch f3 powerline swiper swiper-helm highlight-symbol visual-regexp-steroids ag drag-stuff hideshow-org indent-guide evil-nerd-commenter undo-tree helm-c-yasnippet flycheck yasnippet monokai-theme)))
+    (elfeed helm-xref rmsbolt ccls elpy company-jedi helm-rg treemacs doom-themes spacemacs-theme color-theme-sanityinc-solarized company-web company-lsp lsp-ui magit-todos company-quickhelp ace-jump-buffer helm-bm persp-mode eyebrowse bm fzf interleave benchmark-init org-noter orgit org-ref graphviz-dot-mode flycheck-pycheckers darkokai-theme srefactor pydoc company-anaconda auto-virtualenvwrapper virtualenvwrapper scala-mode docker-tramp dockerfile-mode docker-compose-mode helm-flycheck helm-ag helm-tramp helm-projectile helm-swoop spaceline-all-the-icons all-the-icons init-programming-languages init-others init-helm uniquify init-defaults init-bindings c++-mode shell-mode fci persp hs-minor-mode helm-semantic diff-hl-dired-mode diff-hl-mode writegood dired fill-column-indicator persp-projectile perspective restart-emacs writegood-mode projectile ibuffer-vc company-c-headers use-package focus cmake-font-lock ace-window buffer-move diff-hl company-irony-c-headers flycheck-irony pydoc-info terminal-here pdf-tools color-theme-buffer-local magit markdown-mode+ web-mode gist helm-gitignore gitignore-mode tuareg dylan-mode fsharp-mode guile-scheme helm-flyspell ensime vlf modern-cpp-font-lock anaconda-mode peep-dired diminish org-journal company-irony company irony yaml-mode sr-speedbar org-cliplink org-download visual-fill-column writeroom-mode org-bullets immortal-scratch f3 powerline swiper swiper-helm highlight-symbol visual-regexp-steroids ag drag-stuff hideshow-org indent-guide evil-nerd-commenter undo-tree helm-c-yasnippet flycheck yasnippet monokai-theme)))
  '(pdf-view-midnight-colors (quote ("#b2b2b2" . "#292b2e")))
  '(python-shell-exec-path nil)
  '(python-shell-interpreter "python3")
@@ -79,4 +81,4 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(ensime-implicit-highlight ((t nil))))

@@ -59,6 +59,7 @@
               auto-window-vscroll nil
               comint-prompt-read-only t
               vc-follow-symlinks t
+              scroll-preserve-screen-position t
               font-use-system-font t)
 
 ;; These are not usable with use-package
@@ -73,11 +74,11 @@
 
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
-;; These are built-in packages and having ensure results in lots of warnings
-(use-package desktop
-  :ensure nil
-  :init (desktop-save-mode 1)
-  :config (add-to-list 'desktop-modes-not-to-save 'dired-mode))
+;; ;; These are built-in packages and having ensure results in lots of warnings
+;; (use-package desktop
+;;   :ensure nil
+;;   :init (desktop-save-mode 1)
+;;   :config (add-to-list 'desktop-modes-not-to-save 'dired-mode))
 
 (use-package dired
   :ensure nil
@@ -309,7 +310,6 @@
   (setq-default elfeed-feeds
                 '("http://research.swtch.com/feeds/posts/default"
                   "http://bitbashing.io/feed.xml"
-                  "http://lemire.me/blog/feed/"
                   "http://preshing.com/feed"
                   "http://danluu.com/atom.xml"
                   "http://tenderlovemaking.com/atom.xml"
@@ -331,7 +331,6 @@
   :after dired
   :hook (vlf-view-mode . disable-line-numbers)
   :init (require 'vlf-setup)
-  :config
   (add-to-list 'vlf-forbidden-modes-list 'pdf-view-mode))
 
 (defun pdf-view-page-number ()
@@ -340,16 +339,52 @@
            (number-to-string (pdf-view-current-page))
            (number-to-string (pdf-cache-number-of-pages))))
 
+
+;; workaround for pdf-tools not reopening to last-viewed page of the pdf:
+;; https://github.com/politza/pdf-tools/issues/18#issuecomment-269515117
+(use-package bookmark+
+  :load-path "elisp/bookmark-plus/"
+  :config
+  (setq-default bookmarks-pdf "~/.emacs.d/bookmarks-pdf"))
+
+(defun brds/pdf-set-last-viewed-bookmark ()
+  (interactive)
+  (when (eq major-mode 'pdf-view-mode)
+	(bmkp-switch-bookmark-file-create bookmarks-pdf t)
+	(bookmark-set (brds/pdf-generate-bookmark-name))
+	(bmkp-switch-bookmark-file-create bookmark-default-file t)))
+
+(defun brds/pdf-jump-last-viewed-bookmark ()
+  (bmkp-switch-bookmark-file-create bookmarks-pdf t)
+  (bookmark-set "PDF-LAST-VIEWED: fake") ; this is new
+  (when (brds/pdf-has-last-viewed-bookmark)
+	(bookmark-jump (brds/pdf-generate-bookmark-name)))
+  (bmkp-switch-bookmark-file-create bookmark-default-file t))
+
+(defun brds/pdf-has-last-viewed-bookmark ()
+  (assoc (brds/pdf-generate-bookmark-name) bmkp-latest-bookmark-alist))
+
+(defun brds/pdf-generate-bookmark-name ()
+  (concat "PDF-LAST-VIEWED: " (buffer-file-name)))
+
+(defun brds/pdf-set-all-last-viewed-bookmarks ()
+  (dolist (buf (buffer-list))
+	(with-current-buffer buf
+	  (brds/pdf-set-last-viewed-bookmark))))
+
 ;; requires pdf-tools-install
 (use-package pdf-tools
   :hook ((pdf-view-mode . (lambda () (cua-mode 0)))
-         (pdf-view-mode . disable-line-numbers))
+         (pdf-view-mode . disable-line-numbers)
+         (pdf-view-mode . brds/pdf-jump-last-viewed-bookmark)
+         (kill-buffer-hook . brds/pdf-set-last-viewed-bookmark))
   :mode ("\\.pdf\\'" . pdf-view-mode)
- :config
- (setq-default pdf-view-display-size 'fit-page
-               pdf-annot-activate-created-annotations t
-               pdf-view-resize-factor 1.1)
- :bind (:map pdf-view-mode-map ("t" . pdf-view-page-number)))
+  :config
+  (unless noninteractive (add-hook 'kill-emacs-hook #'brds/pdf-set-all-last-viewed-bookmarks))`
+  (setq-default pdf-view-display-size 'fit-page
+                pdf-annot-activate-created-annotations t
+                pdf-view-resize-factor 1.1)
+  :bind (:map pdf-view-mode-map ("t" . pdf-view-page-number)))
 
 (use-package undo-tree
   :diminish undo-tree-mode
@@ -385,10 +420,6 @@
 ;; (use-package helm-company
 ;;   :after company
 ;;   :bind ("<C-tab>" . (function helm-company)))
-
-(use-package company-flx
-  :after company
-  :init (company-flx-mode +1))
 
 (use-package company-quickhelp :init (company-quickhelp-mode t))
 
@@ -621,6 +652,7 @@
   :config
   (c-set-offset 'substatement-open 0)
   (c-set-offset 'innamespace 0)
+  (custom-set-variables '(c-noise-macro-names '("constexpr")))
   (setq-default c-default-style "stroustrup"
                 c-basic-offset 4
                 c-indent-level 4
@@ -640,6 +672,10 @@
 (use-package modern-cpp-font-lock
   :diminish modern-c++-font-lock-mode
   :hook (c++-mode . modern-c++-font-lock-mode))
+
+(use-package cmake-mode)
+
+(use-package cmake-font-lock :hook (cmake-mode . cmake-font-lock-activate))
 
 ;; (use-package cmake-ide
 ;;   :after rtags
@@ -666,10 +702,15 @@
 
 (use-package ccls
   :commands lsp-ccls-enable
-  :hook (c++-mode . +ccls/enable)
+  ;; :hook (c++-mode . +ccls/enable)
   :config (setq-default ccls-executable "/home/eksi/.local/programs/ccls/build/ccls"))
 
-(use-package lsp)
+(use-package lsp-mode
+  :init
+  (setq-default lsp-auto-execute-action nil
+                lsp-before-save-edits nil
+                lsp-enable-on-type-formatting nil))
+
 (use-package company-lsp
   :after company
   :config (push 'company-lsp company-backends))
@@ -723,12 +764,16 @@
 ;;          Scala          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package scala-mode)
+
+
 (use-package ensime
   :config
-  (setq-default ensime-eldoc-hints t
+  (setq-default ensime-eldoc-hints 'all
                 ensime-graphical-tooltips t
                 ensime-tooltip-hints t
-                ensime-startup-notification nil))
+                ensime-startup-notification nil
+                ensime-sem-high-enabled-p nil))
+
 (use-package sbt-mode)
 
 
