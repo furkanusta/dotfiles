@@ -1,0 +1,15 @@
+[Unit]
+Description=Jenkins
+After=network.target
+Requires=network.target
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/sysconfig/jenkins
+ExecStart=/usr/bin/java ${JENKINS_JAVA_OPTIONS} -jar /usr/lib/jenkins/jenkins.war --httpPort=8888 --httpListenAddress=127.0.0.1 --prefix=/jenkins
+Restart=always
+User=jenkins
+RestartSec=20
+
+[Install]
+WantedBy=multi-user.target
