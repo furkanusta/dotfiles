@@ -795,16 +795,16 @@
 (use-package virtualenvwrapper :init (venv-initialize-interactive-shells))
 (use-package auto-virtualenvwrapper :after virtualenvwrapper)
 
-(use-package anaconda-mode)
+;; (use-package anaconda-mode)
 
-(use-package company-anaconda
-  :after company
-  :init (add-to-list 'company-backends 'company-anaconda))
+;; (use-package company-anaconda
+;;   :after company
+;;   :init (add-to-list 'company-backends 'company-anaconda))
 
 (use-package python
-  :hook ((python-mode . auto-virtualenvwrapper-activate)
-         (python-mode . anaconda-mode)
-         (python-mode . anaconda-eldoc-mode)))
+  :hook ((python-mode . auto-virtualenvwrapper-activate)))
+         ;; (python-mode . anaconda-mode)
+         ;; (python-mode . anaconda-eldoc-mode)))
 
 ;; (use-package flycheck-pycheckers
 ;;   :after flycheck
