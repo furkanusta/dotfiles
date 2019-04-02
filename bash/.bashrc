@@ -14,7 +14,6 @@ if [ "$TERM" = dumb ] && [ "$INSIDE_EMACS" ]; then
     alias ls='TERM=dumb-emacs-ansi COLORTERM=1 ls --color=auto'
 fi
 
-export PATH="$PATH:$HOME/.npm-packages/bin/:$HOME/.cargo/bin/"
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/lib:/usr/local/lib64/"
 export ALTERNATE_EDITOR=""
 export EDITOR='emacsclient -nw'
@@ -25,15 +24,13 @@ alias gem-install="gem install --user"
 export HISTFILESIZE=
 export HISTSIZE=
 
+alias ec="emacsclient -t"
 alias mp3-dl="youtube-dl --extract-audio --audio-format=mp3"
 alias clang++="clang++ -std=c++17 -stdlib=libc++"
 alias trash=trash-put
 export FZF_DEFAULT_COMMAND='fd --type f'
 export FZF_DEFAULT_OPTS="--preview 'head {}'"
 
-alias share="gotty tmux new -A"
-
-alias bc="bc -l -q ~/Documents/functions.bc"
 
 fzf() {
   local out file key
@@ -45,5 +42,3 @@ fzf() {
   fi
   echo "$file";
 }
-
-# keycode 108 = Return

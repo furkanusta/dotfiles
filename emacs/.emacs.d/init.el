@@ -267,6 +267,8 @@
                 bibtex-completion-library-path "~/Documents/Nextcloud//Papers/"
                 bibtex-completion-notes-path "~/Documents/Nextcloud/org/helm-bibtex-notes"))
 
+(use-package helm-tramp)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Visual          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -308,24 +310,27 @@
 (use-package elfeed
   :config
   (setq-default elfeed-feeds
-                '("http://research.swtch.com/feeds/posts/default"
-                  "http://bitbashing.io/feed.xml"
-                  "http://preshing.com/feed"
-                  "http://danluu.com/atom.xml"
-                  "http://tenderlovemaking.com/atom.xml"
-                  "http://feeds.feedburner.com/codinghorror/"
-                  "http://www.snarky.ca/feed"
-                  "http://blog.regehr.org/feed"
-                  "https://www.reddit.com/r/selfhosted/top/.rss?t=month"
-                  "https://www.reddit.com/r/ruby/top/.rss?t=month"
-                  "https://www.reddit.com/r/python/top/.rss?t=month"
-                  "https://www.reddit.com/r/java/top/.rss?t=month"
-                  "https://www.reddit.com/r/perl/top/.rss?t=month"
-                  "https://www.reddit.com/r/commandline/top/.rss?t=month"
-                  "http://planet.emacsen.org/atom.xml"
-                  "http://planet.gnome.org/rss20.xml"
-                  "http://arne-mertz.de/feed/"
-                  "http://xkcd.com/rss.xml")))
+                '(("http://research.swtch.com/feeds/posts/default" other)
+                  ("http://bitbashing.io/feed.xml" other)
+                  ("http://preshing.com/feed" other)
+                  ("http://danluu.com/atom.xml" other)
+                  ("http://tenderlovemaking.com/atom.xml" other)
+                  ("http://feeds.feedburner.com/codinghorror/" other)
+                  ("http://www.snarky.ca/feed" other)
+                  ("http://blog.regehr.org/feed" cpp)
+                  ("https://blog.acolyer.org/feed/" other)
+                  ("https://www.reddit.com/r/selfhosted/top/.rss?t=month" selfhosted)
+                  ;; ("https://www.reddit.com/r/ruby/top/.rss?t=month" ruby)
+                  ("https://www.reddit.com/r/python/top/.rss?t=month" python)
+                  ;; ("https://www.reddit.com/r/java/top/.rss?t=month" java)
+                  ;; ("https://www.reddit.com/r/perl/top/.rss?t=month" perl)
+                  ("https://randomascii.wordpress.com/" other)
+                  ("https://danluu.com/atom.xml" other)
+                  ("https://www.reddit.com/r/commandline/top/.rss?t=month" commandline)
+                  ("http://planet.emacsen.org/atom.xml" emacs)
+                  ("http://planet.gnome.org/rss20.xml" gnome)
+                  ("http://arne-mertz.de/feed/" cpp)
+                  ("http://xkcd.com/rss.xml" xkcd))))
 
 (use-package vlf
   :after dired
@@ -426,8 +431,9 @@
 (use-package helm-ag
   :init (custom-set-variables '(helm-follow-mode-persistent t))
   :bind
-  ("C-c a p" . helm-do-ag-project-root)
-  ("C-c a g" .  helm-do-ag))
+  ("C-c h p" . helm-do-ag-project-root)
+  ("C-c h s" .  helm-do-ag)
+  ("C-c h S" . helm-ag))
 
 ;; Has quite ugly arguments line at the beginning and does not support edit mode
 ;; (use-package helm-rg
@@ -449,7 +455,7 @@
 
 (use-package helm-flycheck
   :after flycheck
-  :bind (:map flycheck-mode-map ("C-c h" . helm-flycheck)))
+  :bind (:map flycheck-mode-map ("C-c h f" . helm-flycheck)))
 
 (use-package evil-nerd-commenter :bind ("M-;" . evilnc-comment-or-uncomment-lines))
 
@@ -569,7 +575,7 @@
                 org-edit-src-content-indentation 0
                 org-fontify-quote-and-verse-blocks t
                 org-cycle-separator-lines 0
-                org-src-preserve-indentation t
+                org-src-preserve-indentation nil
                 org-imenu-depth 4)
   (org-babel-do-load-languages
    'org-babel-load-languages
@@ -595,15 +601,15 @@
       (if (and b e (< (point) e)) (setq rlt nil)))
     (setq ad-return-value rlt)))
 
-;; (use-package org-journal
-;;   :config
-;;   (setq-default org-journal-dir (concat org-directory "/journal/")
-;;                 org-journal-carryover-items nil)
-;;   :bind ("C-c i j" . org-journal-new-entry))
+(use-package org-journal
+  :config
+  (setq-default org-journal-dir (concat org-directory "/journal/")
+                org-journal-carryover-items nil)
+  :bind ("C-c i j" . org-journal-new-entry))
 
-;; (use-package org-agenda
-;;   :bind ("C-c a l" . org-agenda-list)
-;;   :config (setq-default org-agenda-files (list org-directory)))
+(use-package org-agenda
+  :bind ("C-c a" . org-agenda)
+  :config (setq-default org-agenda-files (list org-directory)))
 
 ;; (defun my/org-ref-open-pdf-at-point ()
 ;;   "Open the pdf for bibtex key under point if it exists."
@@ -634,6 +640,10 @@
   :bind
   (:map org-mode-map
         ("C-c i l" . org-cliplink)))
+
+(use-package org-doing
+  :config
+  (setq-default org-doing-file (concat org-directory "/Doing.org")))
 
 (use-package interleave
   :config
@@ -799,11 +809,11 @@
          (python-mode . anaconda-mode)
          (python-mode . anaconda-eldoc-mode)))
 
-(use-package flycheck-pycheckers
-  :after flycheck
-  :hook (flycheck-mode . flycheck-pycheckers-setup)
-  :config (setq-default flycheck-pycheckers-checkers '(flake8 pyflakes)
-                        flycheck-pycheckers-max-line-length 100))
+;; (use-package flycheck-pycheckers
+;;   :after flycheck
+;;   :hook (flycheck-mode . flycheck-pycheckers-setup)
+;;   :config (setq-default flycheck-pycheckers-checkers '(flake8 pyflakes)
+;;                         flycheck-pycheckers-max-line-length 100))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
