@@ -276,6 +276,7 @@
 (use-package all-the-icons)
 
 (use-package spaceline-config
+  :ensure spaceline
   :commands spaceline-helm-mode
   :init (with-eval-after-load 'helm (spaceline-helm-mode t)))
 
@@ -298,6 +299,7 @@
   (display-line-numbers-mode -1))
 
 (use-package image-mode
+  :ensure nil
   :hook (image-mode . disable-line-numbers))
 
 (use-package image+
@@ -345,12 +347,12 @@
            (number-to-string (pdf-cache-number-of-pages))))
 
 
-;; workaround for pdf-tools not reopening to last-viewed page of the pdf:
-;; https://github.com/politza/pdf-tools/issues/18#issuecomment-269515117
-(use-package bookmark+
-  :load-path "elisp/bookmark-plus/"
-  :config
-  (setq-default bookmarks-pdf "~/.emacs.d/bookmarks-pdf"))
+;; ;; workaround for pdf-tools not reopening to last-viewed page of the pdf:
+;; ;; https://github.com/politza/pdf-tools/issues/18#issuecomment-269515117
+;; (use-package bookmark+
+;;   :load-path "elisp/bookmark-plus/"
+;;   :config
+;;   (setq-default bookmarks-pdf "~/.emacs.d/bookmarks-pdf"))
 
 (defun brds/pdf-set-last-viewed-bookmark ()
   (interactive)
@@ -724,11 +726,6 @@
 (use-package company-lsp
   :after company
   :config (push 'company-lsp company-backends))
-
-(use-package lsp-imenu
-  :after lsp
-  :hook (lsp-after-open-hook . lsp-enable-imenu))
-
 
 (use-package xref
   :config (setq-default xref-show-xrefs-function 'helm-xref-show-xrefs))
