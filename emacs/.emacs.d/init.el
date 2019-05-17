@@ -11,7 +11,7 @@
   (package-refresh-contents)
   (package-install 'use-package))
 (require 'use-package)
-
+(setq-default use-package-always-defer t)
 (setq custom-file "~/.emacs.d/elisp/custom.el")
 (load custom-file)
 
@@ -288,8 +288,7 @@
 
 (use-package diminish)
 
-(use-package monokai-theme)
-;; (use-package doom-themes :init (load-theme doom-molokai))
+(use-package monokai-theme :demand t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Tools & Utils          ;;
@@ -354,40 +353,40 @@
 ;;   :config
 ;;   (setq-default bookmarks-pdf "~/.emacs.d/bookmarks-pdf"))
 
-(defun brds/pdf-set-last-viewed-bookmark ()
-  (interactive)
-  (when (eq major-mode 'pdf-view-mode)
-	(bmkp-switch-bookmark-file-create bookmarks-pdf t)
-	(bookmark-set (brds/pdf-generate-bookmark-name))
-	(bmkp-switch-bookmark-file-create bookmark-default-file t)))
+;; (defun brds/pdf-set-last-viewed-bookmark ()
+;;   (interactive)
+;;   (when (eq major-mode 'pdf-view-mode)
+;; 	(bmkp-switch-bookmark-file-create bookmarks-pdf t)
+;; 	(bookmark-set (brds/pdf-generate-bookmark-name))
+;; 	(bmkp-switch-bookmark-file-create bookmark-default-file t)))
 
-(defun brds/pdf-jump-last-viewed-bookmark ()
-  (bmkp-switch-bookmark-file-create bookmarks-pdf t)
-  (bookmark-set "PDF-LAST-VIEWED: fake") ; this is new
-  (when (brds/pdf-has-last-viewed-bookmark)
-	(bookmark-jump (brds/pdf-generate-bookmark-name)))
-  (bmkp-switch-bookmark-file-create bookmark-default-file t))
+;; (defun brds/pdf-jump-last-viewed-bookmark ()
+;;   (bmkp-switch-bookmark-file-create bookmarks-pdf t)
+;;   (bookmark-set "PDF-LAST-VIEWED: fake") ; this is new
+;;   (when (brds/pdf-has-last-viewed-bookmark)
+;; 	(bookmark-jump (brds/pdf-generate-bookmark-name)))
+;;   (bmkp-switch-bookmark-file-create bookmark-default-file t))
 
-(defun brds/pdf-has-last-viewed-bookmark ()
-  (assoc (brds/pdf-generate-bookmark-name) bmkp-latest-bookmark-alist))
+;; (defun brds/pdf-has-last-viewed-bookmark ()
+;;   (assoc (brds/pdf-generate-bookmark-name) bmkp-latest-bookmark-alist))
 
-(defun brds/pdf-generate-bookmark-name ()
-  (concat "PDF-LAST-VIEWED: " (buffer-file-name)))
+;; (defun brds/pdf-generate-bookmark-name ()
+;;   (concat "PDF-LAST-VIEWED: " (buffer-file-name)))
 
-(defun brds/pdf-set-all-last-viewed-bookmarks ()
-  (dolist (buf (buffer-list))
-	(with-current-buffer buf
-	  (brds/pdf-set-last-viewed-bookmark))))
+;; (defun brds/pdf-set-all-last-viewed-bookmarks ()
+;;   (dolist (buf (buffer-list))
+;; 	(with-current-buffer buf
+;; 	  (brds/pdf-set-last-viewed-bookmark))))
 
 ;; requires pdf-tools-install
 (use-package pdf-tools
   :hook ((pdf-view-mode . (lambda () (cua-mode 0)))
-         (pdf-view-mode . disable-line-numbers)
-         (pdf-view-mode . brds/pdf-jump-last-viewed-bookmark)
-         (kill-buffer-hook . brds/pdf-set-last-viewed-bookmark))
+         (pdf-view-mode . disable-line-numbers))
+         ;; (pdf-view-mode . brds/pdf-jump-last-viewed-bookmark)
+         ;; (kill-buffer . brds/pdf-set-last-viewed-bookmark))
   :mode ("\\.pdf\\'" . pdf-view-mode)
   :config
-  (unless noninteractive (add-hook 'kill-emacs-hook #'brds/pdf-set-all-last-viewed-bookmarks))`
+  ;; (unless noninteractive (add-hook 'kill-emacs-hook #'brds/pdf-set-all-last-viewed-bookmarks))`
   (setq-default pdf-view-display-size 'fit-page
                 pdf-annot-activate-created-annotations t
                 pdf-view-resize-factor 1.1)
@@ -643,9 +642,9 @@
   (:map org-mode-map
         ("C-c i l" . org-cliplink)))
 
-(use-package org-doing
-  :config
-  (setq-default org-doing-file (concat org-directory "/Doing.org")))
+;; (use-package org-doing
+;;   :config
+;;   (setq-default org-doing-file (concat org-directory "/Doing.org")))
 
 (use-package interleave
   :config
@@ -738,7 +737,7 @@
 ;;   :after flycheck
 ;;   :config (flycheck-clang-analyzer-setup))
 
-(use-package rmsbolt :config (setq-default rmsbolt-automatic-recompile nil))
+;; (use-package rmsbolt :config (setq-default rmsbolt-automatic-recompile nil))
 
 ;; (use-package semantic
 ;;   :hook ((python-mode . semantic-mode)
@@ -767,21 +766,21 @@
   (with-eval-after-load 'flycheck (flycheck-add-mode 'perl-perlcritic 'perl)))
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;          Scala          ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(use-package scala-mode)
+;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ;;          Scala          ;;
+;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; (use-package scala-mode)
 
 
-(use-package ensime
-  :config
-  (setq-default ensime-eldoc-hints 'all
-                ensime-graphical-tooltips t
-                ensime-tooltip-hints t
-                ensime-startup-notification nil
-                ensime-sem-high-enabled-p nil))
+;; (use-package ensime
+;;   :config
+;;   (setq-default ensime-eldoc-hints 'all
+;;                 ensime-graphical-tooltips t
+;;                 ensime-tooltip-hints t
+;;                 ensime-startup-notification nil
+;;                 ensime-sem-high-enabled-p nil))
 
-(use-package sbt-mode)
+;; (use-package sbt-mode)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
