@@ -11,7 +11,16 @@ export HISTCONTROL=ignoredups:erasedups
 export HISTSIZE=100000                   # big big history
 export HISTFILESIZE=100000               # big big history
 shopt -s histappend
+export HISTTIMEFORMAT='%F %T '
+
 #export PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}history -a; history -c; history -r"
+
+alias ls="ls --color=auto"
+
+set -o noclobber
+bind "set completion-ignore-case on"
+shopt -s cmdhist
+
 
 if [ "$TERM" = dumb ] && [ "$INSIDE_EMACS" ]; then
     alias ls='TERM=dumb-emacs-ansi COLORTERM=1 ls --color=auto'
