@@ -1,6 +1,5 @@
 ;; Initialization
 (setq gc-cons-threshold 64000000)
-(add-hook 'after-init-hook #'(lambda () (setq gc-cons-threshold 800000)))
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
@@ -228,10 +227,11 @@
   :bind
   (("C-x C-f" . helm-find-files)
    ("M-x" . helm-M-x)
-   ("C-c C-o" . helm-occur)
+   ("C-s" . helm-occur)
    ("C-x b" . helm-mini)
    ("C-z" .  helm-select-action)
    ("M-y" . helm-show-kill-ring)
+   ("C-c s" . isearch-forward)
    ("<f6>" . helm-imenu)
    :map helm-map
    ("<tab>" . helm-execute-persistent-action))
@@ -241,25 +241,30 @@
         helm-scroll-amount 8)
   (setq-default helm-ff-search-library-in-sexp t
                 helm-ff-file-name-history-use-recentf t
+                helm-ff-allow-non-existing-file-at-point t
+                helm-ff-auto-update-initial-value t
+                helm-ff-guess-ffap-filenames t
+                helm-ff-guess-ffap-urls nil
                 helm-semantic-fuzzy-match t
                 helm-M-x-fuzzy-match t
                 helm-imenu-fuzzy-match t
+                helm-substitute-in-filename-stay-on-remote t
                 helm-boring-buffer-regexp-list (list (rx "*magit-") (rx "*helm") (rx "*flycheck"))))
 
-(use-package helm-swoop
-  :config
-  (setq-default helm-swoop-move-to-line-cycle t
-                helm-swoop-use-line-number-face t
-                helm-swoop-split-direction 'split-window-vertically
-                helm-swoop-split-with-multiple-windows t
-                helm-swoop-move-to-line-cycle t)
-  :bind
-  (("C-s" . helm-swoop-without-pre-input)
-   ("C-c C-SPC" . helm-swoop-back-to-last-point)
-   ("C-c s" . isearch-forward)
-   :map helm-swoop-map
-   ("C-r" . helm-previous-line)
-   ("C-s" . helm-next-line)))
+;; (use-package helm-swoop
+;;   :config
+;;   (setq-default helm-swoop-move-to-line-cycle t
+;;                 helm-swoop-use-line-number-face t
+;;                 helm-swoop-split-direction 'split-window-vertically
+;;                 helm-swoop-split-with-multiple-windows t
+;;                 helm-swoop-move-to-line-cycle t)
+;;   :bind
+;;   (("C-s" . helm-swoop-without-pre-input)
+;;    ("C-c C-SPC" . helm-swoop-back-to-last-point)
+;;    ("C-c s" . isearch-forward)
+;;    :map helm-swoop-map
+;;    ("C-r" . helm-previous-line)
+;;    ("C-s" . helm-next-line)))
 
 (use-package helm-bibtex
   :config
@@ -297,6 +302,9 @@
 (defun disable-line-numbers ()
   (display-line-numbers-mode -1))
 
+(defun toggle-line-numbers ()
+  (display-line-numbers-mode (or (not display-line-numbers-mode) 0)))
+
 (use-package image-mode
   :ensure nil
   :hook (image-mode . disable-line-numbers))
@@ -321,16 +329,29 @@
                   ("http://blog.regehr.org/feed" cpp)
                   ("https://blog.acolyer.org/feed/" other)
                   ("https://www.reddit.com/r/selfhosted/top/.rss?t=month" selfhosted)
-                  ;; ("https://www.reddit.com/r/ruby/top/.rss?t=month" ruby)
+                  ("https://www.reddit.com/r/ruby/top/.rss?t=month" ruby)
                   ("https://www.reddit.com/r/python/top/.rss?t=month" python)
-                  ;; ("https://www.reddit.com/r/java/top/.rss?t=month" java)
-                  ;; ("https://www.reddit.com/r/perl/top/.rss?t=month" perl)
+                  ("https://www.reddit.com/r/java/top/.rss?t=month" java)
+                  ("https://www.reddit.com/r/perl/top/.rss?t=month" perl)
                   ("https://randomascii.wordpress.com/" other)
-                  ("https://danluu.com/atom.xml" other)
                   ("https://www.reddit.com/r/commandline/top/.rss?t=month" commandline)
                   ("http://planet.emacsen.org/atom.xml" emacs)
                   ("http://planet.gnome.org/rss20.xml" gnome)
                   ("http://arne-mertz.de/feed/" cpp)
+                  ("http://zipcpu.com/" fpga)
+                  ("https://code-cartoons.com/feed" other)
+                  ("https://eli.thegreenplace.net/feeds/all.atom.xml" cpp)
+                  ("https://www.evanjones.ca/index.rss" other)
+                  ("https://jvns.ca/atom.xml" other)
+                  ("https://aphyr.com/posts.atom" other)
+                  ("https://brooker.co.za/blog/rss.xml" other)
+                  ("https://rachelbythebay.com/w/atom.xml" other)
+                  ("https://mrale.ph/feed.xml" other)
+                  ("https://medium.com/feed/@steve.yegge" other)
+                  ("https://research.swtch.com/" other)
+                  ;; ("https://www.reddit.com/r/gwern/.rss" other)
+                  ("http://city-journal.org/rss" other)
+                  ("https://writing.kemitchell.com/feed.xml" other)
                   ("http://xkcd.com/rss.xml" xkcd))))
 
 (use-package vlf
@@ -420,7 +441,8 @@
   :diminish company-mode
   :commands company-complete
   :hook (after-init . global-company-mode)
-  :bind ("<C-tab>" . (function company-complete)))
+  :bind ("<C-tab>" . (function company-complete))
+  :config (setq-default company-idle-delay nil))
 
 ;; ;; Doesn't work with company-quickhelp but can provide fuzzy matching where company-flx cannot
 ;; (use-package helm-company
@@ -448,6 +470,8 @@
 (use-package magit-todos :init (magit-todos-mode))
 
 (use-package diff-hl :config (setq-default global-diff-hl-mode t))
+
+(use-package hl-todo :config (global-hl-todo-mode))
 
 (use-package flycheck
   :init (global-flycheck-mode)
@@ -525,6 +549,29 @@
         ("C-c C-w l" . eyebrowse-switch-to-window-config)
         ("C-c C-w <right>" . eyebrowse-next-window-config)))
 
+(use-package smart-hungry-delete
+  :bind (("<backspace>" . smart-hungry-delete-backward-char)
+		 ("C-d" . smart-hungry-delete-forward-char))
+  :config (smart-hungry-delete-add-default-hooks))
+
+(use-package goto-chg :bind ("C-c g ;" . goto-last-change))
+
+(use-package dired-single
+  :bind
+  (:map dired-mode-map
+        ("<return>" . dired-single-buffer)
+        ("C-<" . dired-single-up-directory)))
+
+(use-package pdf-view-restore
+  :after pdf-tools
+  :config
+  (add-hook 'pdf-view-mode-hook 'pdf-view-restore-mode)
+  (setq-default pdf-view-restore-filename "~/.emacs.d/.pdf-view-restore"))
+
+
+(use-package writeroom-mode
+  :init (setq-default writeroom-width 150)
+  :hook (writeroom-mode . toggle-line-numbers))
 
 ;; (use-package treemacs
 ;;   :hook (treemacs-mode . disable-line-numbers)
@@ -570,6 +617,7 @@
   :config
   (setq-default org-src-fontify-natively t
                 org-directory "~/Documents/Nextcloud/org"
+                org-catch-invisible-edits 'show-and-error
                 org-yank-adjusted-subtrees t
                 org-hide-emphasis-markers t
                 org-src-tab-acts-natively t
@@ -636,6 +684,11 @@
 ;;                   "bibtex %b"
 ;;                   "pdflatex -interaction nonstopmode -output-directory %o %f"
 ;;                   "pdflatex -interaction nonstopmode -output-directory %o %f")))
+
+(use-package ox)
+
+(use-package ox-hugo
+  :after ox)
 
 (use-package org-cliplink
   :bind
@@ -706,25 +759,29 @@
 ;;   :config (add-to-list 'company-backends 'company-rtags))
 
 
-(defun +ccls/enable ()
-  (condition-case nil
-      (lsp-ccls-enable)
-    (user-error nil)))
-
 (use-package ccls
-  :commands lsp-ccls-enable
-  ;; :hook (c++-mode . +ccls/enable)
+  :hook ((c++-mode) . (lambda () (require 'ccls) (lsp)))
   :config (setq-default ccls-executable "/home/eksi/.local/programs/ccls/build/ccls"))
 
 (use-package lsp-mode
   :init
   (setq-default lsp-auto-execute-action nil
                 lsp-before-save-edits nil
+                lsp-auto-guess-root t
+                lsp-prefer-flymake :none
+                lsp-enable-indentation nil
+                ;; lsp-enable-snippet
                 lsp-enable-on-type-formatting nil))
+
+(use-package lsp-ui
+  :init
+  (setq-default lsp-ui-flycheck-enable t))
 
 (use-package company-lsp
   :after company
   :config (push 'company-lsp company-backends))
+
+(use-package helm-lsp)
 
 (use-package xref
   :config (setq-default xref-show-xrefs-function 'helm-xref-show-xrefs))
@@ -841,68 +898,3 @@
 ;; (use-package docker-compose-mode :mode ("docker-compose\\.yml\\'" "-compose.yml\\'"))
 
 ;; (use-package docker-tramp)
-
-
-;; Java: Megahanda, Eclim, Subword Mode
-;; Ruby: inf-ruby, enh-ruby,
-;; Scala: ensime
-
-
-
-;; ;; CCLS Helpers
-;; ;; direct callers
-;; (lsp-find-custom "$ccls/call")
-;; ;; callers up to 2 levels
-;; (lsp-find-custom "$ccls/call" '(:levels 2))
-;; ;; direct callees
-;; (lsp-find-custom "$ccls/call" '(:callee t))
-
-;; (lsp-find-custom "$ccls/vars")
-;; ; Use lsp-goto-implementation or lsp-ui-peek-find-implementation (textDocument/implementation) for derived types/functions
-;; ; $ccls/inheritance is more general
-
-;; ;; Alternatively, use lsp-ui-peek interface
-;; (lsp-ui-peek-find-custom "$ccls/call")
-;; (lsp-ui-peek-find-custom "$ccls/call" '(:callee t))
-
-;; (defun ccls/callee () (interactive) (lsp-ui-peek-find-custom "$ccls/call" '(:callee t)))
-;; (defun ccls/caller () (interactive) (lsp-ui-peek-find-custom "$ccls/call"))
-;; (defun ccls/vars (kind) (lsp-ui-peek-find-custom "$ccls/vars" `(:kind ,kind)))
-;; (defun ccls/base (levels) (lsp-ui-peek-find-custom "$ccls/inheritance" `(:levels ,levels)))
-;; (defun ccls/derived (levels) (lsp-ui-peek-find-custom "$ccls/inheritance" `(:levels ,levels :derived t)))
-;; (defun ccls/member (kind) (interactive) (lsp-ui-peek-find-custom "$ccls/member" `(:kind ,kind)))
-
-;; ;; References w/ Role::Role
-;; (defun ccls/references-read () (interactive)
-;;   (lsp-ui-peek-find-custom "textDocument/references"
-;;     (plist-put (lsp--text-document-position-params) :role 8)))
-
-;; ;; References w/ Role::Write
-;; (defun ccls/references-write ()
-;;   (interactive)
-;;   (lsp-ui-peek-find-custom "textDocument/references"
-;;    (plist-put (lsp--text-document-position-params) :role 16)))
-
-;; ;; References w/ Role::Dynamic bit (macro expansions)
-;; (defun ccls/references-macro () (interactive)
-;;   (lsp-ui-peek-find-custom "textDocument/references"
-;;    (plist-put (lsp--text-document-position-params) :role 64)))
-
-;; ;; References w/o Role::Call bit (e.g. where functions are taken addresses)
-;; (defun ccls/references-not-call () (interactive)
-;;   (lsp-ui-peek-find-custom "textDocument/references"
-;;    (plist-put (lsp--text-document-position-params) :excludeRole 32)))
-
-;; ;; ccls/vars ccls/base ccls/derived ccls/members have a parameter while others are interactive.
-;; ;; (ccls/base 1) direct bases
-;; ;; (ccls/derived 1) direct derived
-;; ;; (ccls/member 2) => 2 (Type) => nested classes / types in a namespace
-;; ;; (ccls/member 3) => 3 (Func) => member functions / functions in a namespace
-;; ;; (ccls/member 0) => member variables / variables in a namespace
-;; ;; (ccls/vars 1) => field
-;; ;; (ccls/vars 2) => local variable
-;; ;; (ccls/vars 3) => field or local variable. 3 = 1 | 2
-;; ;; (ccls/vars 4) => parameter
-
-;; ;; References whose filenames are under this project
-;; (lsp-ui-peek-find-references nil (list :folders (vector (projectile-project-root))))
