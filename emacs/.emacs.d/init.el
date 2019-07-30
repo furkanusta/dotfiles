@@ -887,6 +887,8 @@
 (use-package shell
   :bind (:map shell-mode-map ("<tab>" . completion-at-point)))
 
+(add-to-list 'auto-mode-alist '("\\.v\\'" . fundamental-mode))
+
 ;; Broken
 ;; (use-package readline-complete)
 
