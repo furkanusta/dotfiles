@@ -79,6 +79,19 @@
 ;;   :init (desktop-save-mode 1)
 ;;   :config (add-to-list 'desktop-modes-not-to-save 'dired-mode))
 
+(defun mydired-sort ()
+  "Sort dired listings with directories first."
+  (save-excursion
+    (let (buffer-read-only)
+      (forward-line 2) ;; beyond dir. header
+      (sort-regexp-fields t "^.*$" "[ ]*." (point) (point-max)))
+    (set-buffer-modified-p nil)))
+
+(defadvice dired-readin
+    (after dired-after-updating-hook first () activate)
+  "Sort dired listings with directories first before adding marks."
+  (mydired-sort))
+
 (use-package dired
   :ensure nil
   :init (setq-default dired-dwim-target t))
@@ -656,9 +669,9 @@
                 org-journal-carryover-items nil)
   :bind ("C-c i j" . org-journal-new-entry))
 
-(use-package org-agenda
-  :bind ("C-c a" . org-agenda)
-  :config (setq-default org-agenda-files (list org-directory)))
+;; (use-package org-agenda
+;;   :bind ("C-c a" . org-agenda)
+;;   :config (setq-default org-agenda-files (list org-directory)))
 
 ;; (defun my/org-ref-open-pdf-at-point ()
 ;;   "Open the pdf for bibtex key under point if it exists."
@@ -685,10 +698,10 @@
 ;;                   "pdflatex -interaction nonstopmode -output-directory %o %f"
 ;;                   "pdflatex -interaction nonstopmode -output-directory %o %f")))
 
-(use-package ox)
+;; (use-package ox)
 
-(use-package ox-hugo
-  :after ox)
+;; (use-package ox-hugo
+;;   :after ox)
 
 (use-package org-cliplink
   :bind
@@ -900,3 +913,6 @@
 ;; (use-package docker-compose-mode :mode ("docker-compose\\.yml\\'" "-compose.yml\\'"))
 
 ;; (use-package docker-tramp)
+
+;; (define-key helm-map (kbd "<right>") 'helm-next-source)
+;; (define-key helm-map (kbd "<left>") 'helm-previous-source)
