@@ -234,7 +234,9 @@
    ("C-c s" . isearch-forward)
    ("<f6>" . helm-imenu)
    :map helm-map
-   ("<tab>" . helm-execute-persistent-action))
+   ("<tab>" . helm-execute-persistent-action)
+   ("<left>" . helm-previous-source)
+   ("<right>" . helm-next-source))
   :config
   (setq helm-split-window-inside-p t
         helm-move-to-line-cycle-in-source t
@@ -328,13 +330,9 @@
                   ("http://www.snarky.ca/feed" other)
                   ("http://blog.regehr.org/feed" cpp)
                   ("https://blog.acolyer.org/feed/" other)
-                  ("https://www.reddit.com/r/selfhosted/top/.rss?t=month" selfhosted)
-                  ("https://www.reddit.com/r/ruby/top/.rss?t=month" ruby)
                   ("https://www.reddit.com/r/python/top/.rss?t=month" python)
                   ("https://www.reddit.com/r/java/top/.rss?t=month" java)
-                  ("https://www.reddit.com/r/perl/top/.rss?t=month" perl)
                   ("https://randomascii.wordpress.com/" other)
-                  ("https://www.reddit.com/r/commandline/top/.rss?t=month" commandline)
                   ("http://planet.emacsen.org/atom.xml" emacs)
                   ("http://planet.gnome.org/rss20.xml" gnome)
                   ("http://arne-mertz.de/feed/" cpp)
@@ -349,7 +347,9 @@
                   ("https://mrale.ph/feed.xml" other)
                   ("https://medium.com/feed/@steve.yegge" other)
                   ("https://research.swtch.com/" other)
-                  ;; ("https://www.reddit.com/r/gwern/.rss" other)
+                  ("https://medium.theuxblog.com/feed" ux)
+                  ("https://feeds.feedburner.com/uxmovement" ux)
+                  ("http://aras-p.info/atom.xml" other)
                   ("http://city-journal.org/rss" other)
                   ("https://writing.kemitchell.com/feed.xml" other)
                   ("http://xkcd.com/rss.xml" xkcd))))
@@ -770,12 +770,12 @@
                 lsp-auto-guess-root t
                 lsp-prefer-flymake :none
                 lsp-enable-indentation nil
-                ;; lsp-enable-snippet
+                ;; lsp-enable-snippet nil
                 lsp-enable-on-type-formatting nil))
 
-(use-package lsp-ui
-  :init
-  (setq-default lsp-ui-flycheck-enable t))
+;; (use-package lsp-ui
+;;   :init
+;;   (setq-default lsp-ui-flycheck-enable t))
 
 (use-package company-lsp
   :after company
