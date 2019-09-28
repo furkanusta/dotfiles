@@ -245,6 +245,7 @@
    ("C-z" .  helm-select-action)
    ("M-y" . helm-show-kill-ring)
    ("C-c s" . isearch-forward)
+   ("C-c C-r" . helm-resume)
    ("<f6>" . helm-imenu)
    :map helm-map
    ("<tab>" . helm-execute-persistent-action)
@@ -265,21 +266,6 @@
                 helm-imenu-fuzzy-match t
                 helm-substitute-in-filename-stay-on-remote t
                 helm-boring-buffer-regexp-list (list (rx "*magit-") (rx "*helm") (rx "*flycheck"))))
-
-;; (use-package helm-swoop
-;;   :config
-;;   (setq-default helm-swoop-move-to-line-cycle t
-;;                 helm-swoop-use-line-number-face t
-;;                 helm-swoop-split-direction 'split-window-vertically
-;;                 helm-swoop-split-with-multiple-windows t
-;;                 helm-swoop-move-to-line-cycle t)
-;;   :bind
-;;   (("C-s" . helm-swoop-without-pre-input)
-;;    ("C-c C-SPC" . helm-swoop-back-to-last-point)
-;;    ("C-c s" . isearch-forward)
-;;    :map helm-swoop-map
-;;    ("C-r" . helm-previous-line)
-;;    ("C-s" . helm-next-line)))
 
 (use-package helm-bibtex
   :config
@@ -465,17 +451,11 @@
 (use-package company-quickhelp :init (company-quickhelp-mode t))
 
 (use-package helm-ag
-  :init (custom-set-variables '(helm-follow-mode-persistent t))
+  ;; :init (custom-set-variables '(helm-follow-mode-persistent t))
   :bind
   ("C-c h p" . helm-do-ag-project-root)
   ("C-c h s" .  helm-do-ag)
   ("C-c h S" . helm-ag))
-
-;; Has quite ugly arguments line at the beginning and does not support edit mode
-;; (use-package helm-rg
-;;   :init (custom-set-variables '(helm-follow-mode-persistent t))
-;;   :bind
-;;   ("C-c r g" .  helm-rg))
 
 (use-package magit
   :bind ("C-c g s" . magit-status))
@@ -914,5 +894,5 @@
 
 ;; (use-package docker-tramp)
 
-;; (define-key helm-map (kbd "<right>") 'helm-next-source)
-;; (define-key helm-map (kbd "<left>") 'helm-previous-source)
+(define-key helm-map (kbd "<right>") 'helm-next-source)
+(define-key helm-map (kbd "<left>") 'helm-previous-source)
