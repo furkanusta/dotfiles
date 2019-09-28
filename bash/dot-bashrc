@@ -39,7 +39,7 @@ alias clang++="clang++ -std=c++17 -stdlib=libc++"
 #alias trash=trash-put
 export FZF_DEFAULT_COMMAND='fd --type f'
 export FZF_DEFAULT_OPTS="--preview 'head {}'"
-
+alias flatpak="flatpak --user"
 
 fzf() {
   local out file key
@@ -51,3 +51,10 @@ fzf() {
   fi
   echo "$file";
 }
+
+export PATH="/home/eksi/.local/perl/bin${PATH:+:${PATH}}";
+export PATH="$PATH:$HOME/.local/bin:$HOME/bin";
+export PERL5LIB="/home/eksi/.local/perl/lib/perl5";
+export PERL_LOCAL_LIB_ROOT="/home/eksi/.local/perl";
+export PERL_MB_OPT="--install_base \"/home/eksi/.local/perl\"";
+export PERL_MM_OPT="INSTALL_BASE=/home/eksi/.local/perl";
