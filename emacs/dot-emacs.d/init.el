@@ -11,6 +11,7 @@
   (package-install 'use-package))
 (require 'use-package)
 (setq-default use-package-always-defer t)
+; (setq-default use-package-always-ensure t)
 (setq custom-file "~/.emacs.d/elisp/custom.el")
 (load custom-file)
 
@@ -59,6 +60,7 @@
               comint-prompt-read-only t
               vc-follow-symlinks t
               scroll-preserve-screen-position t
+              frame-resize-pixelwise t
               font-use-system-font t)
 
 ;; These are not usable with use-package
