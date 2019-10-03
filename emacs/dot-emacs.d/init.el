@@ -108,9 +108,9 @@
   :diminish hs-minor-mode
   :hook (prog-mode . hs-minor-mode)
   :bind
-  ("C-c <" . hs-toggle-hiding)
-  ("C-c >" . hs-hide-all)
-  ("C-c ." . hs-show-all))
+  ("C-c C-," . hs-toggle-hiding)
+  ("C-c C-." . hs-hide-all)
+  ("C-c C->" . hs-show-all))
 
 (use-package recentf
   :ensure nil
@@ -376,12 +376,12 @@
            (number-to-string (pdf-cache-number-of-pages))))
 
 
-;; ;; workaround for pdf-tools not reopening to last-viewed page of the pdf:
-;; ;; https://github.com/politza/pdf-tools/issues/18#issuecomment-269515117
-;; (use-package bookmark+
-;;   :load-path "elisp/bookmark-plus/"
-;;   :config
-;;   (setq-default bookmarks-pdf "~/.emacs.d/bookmarks-pdf"))
+;; workaround for pdf-tools not reopening to last-viewed page of the pdf:
+;; https://github.com/politza/pdf-tools/issues/18#issuecomment-269515117
+(use-package bookmark+
+  :load-path "elisp/bookmark-plus/"
+  :config
+  (setq-default bookmarks-pdf "~/.emacs.d/bookmarks-pdf"))
 
 ;; (defun brds/pdf-set-last-viewed-bookmark ()
 ;;   (interactive)
@@ -495,23 +495,9 @@
   :init (require 'visual-regexp-steroids)
   :bind ("C-r" . vr/replace))
 
-;; (use-package quickrun
-;;   :bind
-;;   ("C-c e e" . quickrun-region)
-;;   ("C-c e q" . quickrun-replace-region))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Navigation          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(use-package ace-window
-  :bind ("C-c o" . ace-window))
-
-;; (use-package beacon
-;;   :init (beacon-mode 1)
-;;   :config (setq-default
-;;            beacon-blink-when-window-changes nil
-;;            beacon-blink-when-buffer-changes nil))
 
 (use-package bm
   :init (setq-default
@@ -574,43 +560,8 @@
 
 (use-package writeroom-mode
   :init (setq-default writeroom-width 150)
+  :bind ("C-c w r" . writeroom-mode)
   :hook (writeroom-mode . toggle-line-numbers))
-
-;; (use-package treemacs
-;;   :hook (treemacs-mode . disable-line-numbers)
-;; ;;   :config
-;; ;;   (setq-default treemacs-collapse-dirs              3
-;; ;;                 treemacs-deferred-git-apply-delay   0.5
-;; ;;                 treemacs-display-in-side-window     t
-;; ;;                 treemacs-file-event-delay           5000
-;; ;;                 treemacs-file-follow-delay          0.2
-;; ;;                 treemacs-follow-after-init          t
-;; ;;                 treemacs-follow-recenter-distance   0.1
-;; ;;                 treemacs-goto-tag-strategy          'refetch-index
-;; ;;                 treemacs-indentation                2
-;; ;;                 treemacs-indentation-string         " "
-;; ;;                 treemacs-is-never-other-window      nil
-;; ;;                 treemacs-max-git-entries            5000
-;; ;;                 treemacs-no-png-images              nil
-;; ;;                 treemacs-project-follow-cleanup     nil
-;; ;;                 treemacs-persist-file               (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
-;; ;;                 treemacs-recenter-after-file-follow nil
-;; ;;                 treemacs-recenter-after-tag-follow  nil
-;; ;;                 treemacs-show-cursor                nil
-;; ;;                 treemacs-show-hidden-files          t
-;; ;;                 treemacs-silent-filewatch           nil
-;; ;;                 treemacs-silent-refresh             nil
-;; ;;                 treemacs-sorting                    'alphabetic-desc
-;; ;;                 treemacs-space-between-root-nodes   t
-;; ;;                 treemacs-tag-follow-cleanup         t
-;; ;;                 treemacs-tag-follow-delay           1.5
-;; ;;                 treemacs-width                      35)
-;; ;;   (treemacs-follow-mode t)
-;; ;;   (treemacs-filewatch-mode t)
-;; ;;   (treemacs-fringe-indicator-mode t)
-;;   :bind
-;;   ("M-0"       . treemacs-select-window)
-;;   ("C-x t t"   . treemacs))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -659,48 +610,45 @@
                 org-journal-carryover-items nil)
   :bind ("C-c i j" . org-journal-new-entry))
 
-;; (use-package org-agenda
-;;   :bind ("C-c a" . org-agenda)
-;;   :config (setq-default org-agenda-files (list org-directory)))
+(use-package org-agenda
+  :bind ("C-c a" . org-agenda)
+  :config (setq-default org-agenda-files (list org-directory)))
 
-;; (defun my/org-ref-open-pdf-at-point ()
-;;   "Open the pdf for bibtex key under point if it exists."
-;;   (interactive)
-;;   (let* ((key (thing-at-point 'filename t))
-;;          (pdf-file (funcall org-ref-get-pdf-filename-function key)))
-;;     (if (file-exists-p pdf-file)
-;;         (find-file pdf-file)
-;;       (message "No PDF found for %s" key))))
+(defun my/org-ref-open-pdf-at-point ()
+  "Open the pdf for bibtex key under point if it exists."
+  (interactive)
+  (let* ((key (thing-at-point 'filename t))
+         (pdf-file (funcall org-ref-get-pdf-filename-function key)))
+    (if (file-exists-p pdf-file)
+        (find-file pdf-file)
+      (message "No PDF found for %s" key))))
 
-;; (use-package org-ref
-;;   :config
-;;   (setq-default reftex-default-bibliography (list (concat org-directory "/Bibliography.bib"))
-;;                 org-ref-bibliography-notes (concat org-directory "/Readings.org")
-;;                 org-ref-default-bibliography (list (concat org-directory "/Bibliography.bib"))
-;;                 org-ref-pdf-directory "~/Documents/Nextcloud/Papers/"
-;;                 org-ref-open-pdf-function 'my/org-ref-open-pdf-at-point))
+(use-package org-ref
+  :config
+  (setq-default reftex-default-bibliography (list (concat org-directory "/Bibliography.bib"))
+                org-ref-bibliography-notes (concat org-directory "/Readings.org")
+                org-ref-default-bibliography (list (concat org-directory "/Bibliography.bib"))
+                org-ref-pdf-directory "~/Documents/Nextcloud/Papers/"
+                org-ref-open-pdf-function 'my/org-ref-open-pdf-at-point))
 
-;; (use-package ox-latex
-;;   :config
-;;   (setq-default org-latex-pdf-process
-;;                 '("pdflatex -interaction nonstopmode -output-directory %o %f"
-;;                   "bibtex %b"
-;;                   "pdflatex -interaction nonstopmode -output-directory %o %f"
-;;                   "pdflatex -interaction nonstopmode -output-directory %o %f")))
+(use-package ox-latex
+  :config
+  (setq-default org-latex-pdf-process
+                '("pdflatex -interaction nonstopmode -output-directory %o %f"
+                  "bibtex %b"
+                  "pdflatex -interaction nonstopmode -output-directory %o %f"
+                  "pdflatex -interaction nonstopmode -output-directory %o %f")))
 
-;; (use-package ox)
+(use-package ox)
 
-;; (use-package ox-hugo
-;;   :after ox)
+(use-package ox-hugo
+  :after ox)
 
 (use-package org-cliplink
   :bind
   (:map org-mode-map
         ("C-c i l" . org-cliplink)))
 
-;; (use-package org-doing
-;;   :config
-;;   (setq-default org-doing-file (concat org-directory "/Doing.org")))
 
 (use-package interleave
   :config
@@ -744,28 +692,6 @@
 
 (use-package cmake-font-lock :hook (cmake-mode . cmake-font-lock-activate))
 
-;; (use-package cmake-ide
-;;   :after rtags
-;;   :init (cmake-ide-setup))
-
-;; ;; requires rtags-install
-;; (use-package rtags
-;;   :hook (c++-mode . rtags-start-process-unless-running)
-;;   :config
-;;   (setq-default rtags-autostart-diagnostics t
-;;                 rtags-completions-enabled t
-;;                 rtags-use-helm t
-;;                 rtags-display-result-backend 'helm))
-
-;; (use-package company-rtags
-;;   :after company
-;;   :config (add-to-list 'company-backends 'company-rtags))
-
-
-(use-package ccls
-  :hook ((c++-mode) . (lambda () (require 'ccls) (lsp)))
-  :config (setq-default ccls-executable "/home/eksi/.local/programs/ccls/build/ccls"))
-
 (use-package lsp-mode
   :init
   (setq-default lsp-auto-execute-action nil
@@ -773,12 +699,8 @@
                 lsp-auto-guess-root t
                 lsp-prefer-flymake :none
                 lsp-enable-indentation nil
-                ;; lsp-enable-snippet nil
+                lsp-enable-snippet nil
                 lsp-enable-on-type-formatting nil))
-
-;; (use-package lsp-ui
-;;   :init
-;;   (setq-default lsp-ui-flycheck-enable t))
 
 (use-package company-lsp
   :after company
@@ -796,19 +718,6 @@
 ;; (use-package flycheck-clang-analyzer
 ;;   :after flycheck
 ;;   :config (flycheck-clang-analyzer-setup))
-
-;; (use-package rmsbolt :config (setq-default rmsbolt-automatic-recompile nil))
-
-;; (use-package semantic
-;;   :hook ((python-mode . semantic-mode)
-;;          (c++-mode . semantic-mode)))
-
-;; (use-package srefactor
-;;   :after semantic
-;;   :config (setq-default srefactor-ui-menu-show-help nil)
-;;   :bind
-;;   (:map c++-mode-map
-;;         ("C-c r s" . srefactor-refactor-at-point)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -903,6 +812,3 @@
 ;; (use-package docker-compose-mode :mode ("docker-compose\\.yml\\'" "-compose.yml\\'"))
 
 ;; (use-package docker-tramp)
-
-(define-key helm-map (kbd "<right>") 'helm-next-source)
-(define-key helm-map (kbd "<left>") 'helm-previous-source)
