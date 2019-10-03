@@ -353,6 +353,14 @@
                   ("http://aras-p.info/atom.xml" other)
                   ("http://city-journal.org/rss" other)
                   ("https://writing.kemitchell.com/feed.xml" other)
+                  ("https://www.youtube.com/feeds/videos.xml?channel_id=UC2eEGT06FrWFU6VBnPOR9lg" youtube)
+                  ("https://www.youtube.com/feeds/videos.xml?channel_id=UCO-_F5ZEUhy0oKrSa69DLMw" youtube)
+                  ("https://www.youtube.com/feeds/videos.xml?channel_id=UC-xTvXTm-lrLWYk308-Km3A" youtube)
+                  ("https://www.youtube.com/feeds/videos.xml?channel_id=UC7dF9qfBMXrSlaaFFDvV_Yg" youtube)
+                  ("https://www.youtube.com/feeds/videos.xml?channel_id=UCK6XWOay4sher8keh2x1jLA" youtube)
+                  ("https://www.youtube.com/feeds/videos.xml?channel_id=UCU1Fhn0o5S0_mdcgwCPuLDg" youtube)
+                  ("https://www.youtube.com/feeds/videos.xml?channel_id=UCsvn_Po0SmunchJYOWpOxMg" youtube)
+                  ("https://www.youtube.com/feeds/videos.xml?channel_id=UClJ7gpJ9MRXDnbA8N_5NSKQ" youtube)
                   ("http://xkcd.com/rss.xml" xkcd))))
 
 (use-package vlf
@@ -544,10 +552,10 @@
         ("C-c C-w l" . eyebrowse-switch-to-window-config)
         ("C-c C-w <right>" . eyebrowse-next-window-config)))
 
-(use-package smart-hungry-delete
-  :bind (("<backspace>" . smart-hungry-delete-backward-char)
-		 ("C-d" . smart-hungry-delete-forward-char))
-  :config (smart-hungry-delete-add-default-hooks))
+(use-package hungry-delete
+  :load-path "elisp/hungry-delete/"
+  :commands global-hungry-delete-mode
+  :init (global-hungry-delete-mode))
 
 (use-package goto-chg :bind ("C-c g ;" . goto-last-change))
 

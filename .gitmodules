@@ -1,3 +1,6 @@
 [submodule "emacs/.emacs.d/elisp/bookmark-plus"]
 	path = emacs/.emacs.d/elisp/bookmark-plus
 	url = https://github.com/emacsmirror/bookmark-plus
+[submodule "hungry-delete"]
+	path = emacs/dot-emacs.d/elisp/hungry-delete
+	url = https://github.com/nflath/hungry-delete
