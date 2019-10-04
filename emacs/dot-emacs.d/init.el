@@ -383,44 +383,22 @@
   :config
   (setq-default bookmarks-pdf "~/.emacs.d/bookmarks-pdf"))
 
-;; (defun brds/pdf-set-last-viewed-bookmark ()
-;;   (interactive)
-;;   (when (eq major-mode 'pdf-view-mode)
-;; 	(bmkp-switch-bookmark-file-create bookmarks-pdf t)
-;; 	(bookmark-set (brds/pdf-generate-bookmark-name))
-;; 	(bmkp-switch-bookmark-file-create bookmark-default-file t)))
-
-;; (defun brds/pdf-jump-last-viewed-bookmark ()
-;;   (bmkp-switch-bookmark-file-create bookmarks-pdf t)
-;;   (bookmark-set "PDF-LAST-VIEWED: fake") ; this is new
-;;   (when (brds/pdf-has-last-viewed-bookmark)
-;; 	(bookmark-jump (brds/pdf-generate-bookmark-name)))
-;;   (bmkp-switch-bookmark-file-create bookmark-default-file t))
-
-;; (defun brds/pdf-has-last-viewed-bookmark ()
-;;   (assoc (brds/pdf-generate-bookmark-name) bmkp-latest-bookmark-alist))
-
-;; (defun brds/pdf-generate-bookmark-name ()
-;;   (concat "PDF-LAST-VIEWED: " (buffer-file-name)))
-
-;; (defun brds/pdf-set-all-last-viewed-bookmarks ()
-;;   (dolist (buf (buffer-list))
-;; 	(with-current-buffer buf
-;; 	  (brds/pdf-set-last-viewed-bookmark))))
-
 ;; requires pdf-tools-install
 (use-package pdf-tools
   :hook ((pdf-view-mode . (lambda () (cua-mode 0)))
          (pdf-view-mode . disable-line-numbers))
-         ;; (pdf-view-mode . brds/pdf-jump-last-viewed-bookmark)
-         ;; (kill-buffer . brds/pdf-set-last-viewed-bookmark))
   :mode ("\\.pdf\\'" . pdf-view-mode)
   :config
-  ;; (unless noninteractive (add-hook 'kill-emacs-hook #'brds/pdf-set-all-last-viewed-bookmarks))`
   (setq-default pdf-view-display-size 'fit-page
                 pdf-annot-activate-created-annotations t
                 pdf-view-resize-factor 1.1)
   :bind (:map pdf-view-mode-map ("t" . pdf-view-page-number)))
+
+(use-package pdf-view-restore
+  :after pdf-tools
+  :config
+  (add-hook 'pdf-view-mode-hook 'pdf-view-restore-mode)
+  (setq-default pdf-view-restore-filename "~/.emacs.d/.pdf-view-restore"))
 
 (use-package undo-tree
   :diminish undo-tree-mode
@@ -440,6 +418,11 @@
   :bind ("M-i" . yas-expand)
   (:map yas-minor-mode-map ("<tab>" . nil)))
 
+
+(use-package pocket-reader
+  :bind
+  (:map elfeed-search-mode-map
+        ("P" . pocket-reader-add-link)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Programming Tools          ;;
@@ -550,13 +533,6 @@
   (:map dired-mode-map
         ("<return>" . dired-single-buffer)
         ("C-<" . dired-single-up-directory)))
-
-(use-package pdf-view-restore
-  :after pdf-tools
-  :config
-  (add-hook 'pdf-view-mode-hook 'pdf-view-restore-mode)
-  (setq-default pdf-view-restore-filename "~/.emacs.d/.pdf-view-restore"))
-
 
 (use-package writeroom-mode
   :init (setq-default writeroom-width 150)
