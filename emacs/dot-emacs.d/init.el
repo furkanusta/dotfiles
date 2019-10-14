@@ -283,16 +283,13 @@
 
 (use-package all-the-icons)
 
-(use-package spaceline-config
-  :ensure spaceline
-  :commands spaceline-helm-mode
-  :init (with-eval-after-load 'helm (spaceline-helm-mode t)))
+(use-package display-time
+  :config
+  (setq-default display-time-default-load-average nil))
 
-(use-package spaceline-all-the-icons
-  :commands spaceline-toggle-all-the-icons-time-off
-  :after spaceline
-  :init (spaceline-all-the-icons-theme)
-  :config (spaceline-toggle-all-the-icons-time-off))
+(use-package column-number)
+
+(use-package doom-modeline)
 
 (use-package diminish)
 
@@ -331,6 +328,8 @@
                   ("http://www.snarky.ca/feed" other)
                   ("http://blog.regehr.org/feed" cpp)
                   ("https://blog.acolyer.org/feed/" other)
+                  ("https://www.reddit.com/r/cpp/top/.rss?t=week" cpp)
+                  ("https://www.reddit.com/r/programmin/top/.rss?t=month" prog)
                   ("https://www.reddit.com/r/python/top/.rss?t=month" python)
                   ("https://www.reddit.com/r/java/top/.rss?t=month" java)
                   ("https://randomascii.wordpress.com/" other)
@@ -370,6 +369,7 @@
                   ("https://www.youtube.com/feeds/videos.xml?channel_id=UCv2_41bSAa5Y_8BacJUZfjQ" youtube cpp)
                   ("https://www.youtube.com/feeds/videos.xml?channel_id=UCMlGfpWw-RUdWX_JbLCukXg" youtube cpp)
                   ("https://www.youtube.com/feeds/videos.xml?channel_id=UC5e__RG9K3cHrPotPABnrwg" youtube cpp)
+                  ("https://hnrss.org/frontpage" hn)
                   ("http://xkcd.com/rss.xml" xkcd))))
 
 (use-package vlf
