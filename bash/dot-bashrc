@@ -24,7 +24,10 @@ shopt -s cmdhist
 
 if [ "$TERM" = dumb ] && [ "$INSIDE_EMACS" ]; then
     alias ls='TERM=dumb-emacs-ansi COLORTERM=1 ls --color=auto'
+else
+    alias ls=exa
 fi
+alias cat=bat
 
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/lib:/usr/local/lib64/"
 export ALTERNATE_EDITOR=""
