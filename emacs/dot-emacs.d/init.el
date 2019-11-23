@@ -16,6 +16,7 @@
 (load custom-file)
 
 (add-to-list 'load-path (concat user-emacs-directory "elisp/"))
+(add-to-list 'load-path "/usr/share/emacs/site-lisp/")
 ;; Init Done
 
 
@@ -61,7 +62,9 @@
               vc-follow-symlinks t
               scroll-preserve-screen-position t
               frame-resize-pixelwise t
-              font-use-system-font t)
+              font-use-system-font t
+              display-time-default-load-average nil
+              display-time-24hr-format t)
 
 ;; These are not usable with use-package
 (menu-bar-mode -1)
@@ -271,9 +274,9 @@
 
 (use-package helm-bibtex
   :config
-  (setq-default bibtex-completion-bibliography "~/Documents/Nextcloud/org/Bibliography.bib"
-                bibtex-completion-library-path "~/Documents/Nextcloud//Papers/"
-                bibtex-completion-notes-path "~/Documents/Nextcloud/org/helm-bibtex-notes"))
+  (setq-default bibtex-completion-bibliography "~/Documents/Nextcloud/Notes/Library.bib"
+                bibtex-completion-library-path "~/Documents/Nextcloud/Papers/"
+                bibtex-completion-notes-path "~/Documents/Nextcloud/Notes/helm-bibtex-notes"))
 
 (use-package helm-tramp)
 
@@ -284,12 +287,14 @@
 (use-package all-the-icons)
 
 (use-package display-time
-  :config
-  (setq-default display-time-default-load-average nil))
+  :init
+  (display-time-mode))
 
 (use-package column-number)
 
-(use-package doom-modeline)
+(use-package doom-modeline
+  :init
+  (doom-modeline-mode))
 
 (use-package diminish)
 
@@ -369,7 +374,6 @@
                   ("https://www.youtube.com/feeds/videos.xml?channel_id=UCv2_41bSAa5Y_8BacJUZfjQ" youtube cpp)
                   ("https://www.youtube.com/feeds/videos.xml?channel_id=UCMlGfpWw-RUdWX_JbLCukXg" youtube cpp)
                   ("https://www.youtube.com/feeds/videos.xml?channel_id=UC5e__RG9K3cHrPotPABnrwg" youtube cpp)
-                  ("https://hnrss.org/frontpage" hn)
                   ("http://xkcd.com/rss.xml" xkcd))))
 
 (use-package vlf
@@ -395,11 +399,12 @@
 ;; requires pdf-tools-install
 (use-package pdf-tools
   :hook ((pdf-view-mode . (lambda () (cua-mode 0)))
-         (pdf-view-mode . disable-line-numbers))
+         (pdf-view-mode . disable-line-numbers)
+         (pdf-view-mode . pdf-view-midnight-minor-mode))
   :mode ("\\.pdf\\'" . pdf-view-mode)
   :config
   (setq-default pdf-view-display-size 'fit-page
-                pdf-annot-activate-created-annotations t
+                pdf-annot-activate-created-annotations nil
                 pdf-view-resize-factor 1.1)
   :bind (:map pdf-view-mode-map ("t" . pdf-view-page-number)))
 
@@ -483,6 +488,8 @@
   :init (projectile-mode 1)
   :config (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
 
+(use-package helm-projectile)
+
 (use-package visual-regexp-steroids
   :init (require 'visual-regexp-steroids)
   :bind ("C-r" . vr/replace))
@@ -555,7 +562,7 @@
 (use-package org
   :config
   (setq-default org-src-fontify-natively t
-                org-directory "~/Documents/Nextcloud/org"
+                org-directory "~/Documents/Nextcloud/Notes"
                 org-catch-invisible-edits 'show-and-error
                 org-yank-adjusted-subtrees t
                 org-hide-emphasis-markers t
@@ -610,11 +617,11 @@
 
 (use-package org-ref
   :config
-  (setq-default reftex-default-bibliography (list (concat org-directory "/Bibliography.bib"))
-                org-ref-bibliography-notes (concat org-directory "/Readings.org")
-                org-ref-default-bibliography (list (concat org-directory "/Bibliography.bib"))
-                org-ref-pdf-directory "~/Documents/Nextcloud/Papers/"
-                org-ref-open-pdf-function 'my/org-ref-open-pdf-at-point))
+  (setq reftex-default-bibliography (list (concat org-directory "/Library.bib"))
+        org-ref-bibliography-notes (concat org-directory "/Readings.org")
+        org-ref-default-bibliography (list (concat org-directory "/Library.bib"))
+        org-ref-pdf-directory "~/Documents/Nextcloud/Papers/"
+        org-ref-open-pdf-function 'my/org-ref-open-pdf-at-point))
 
 (use-package ox-latex
   :config
@@ -639,6 +646,8 @@
   :config
   (setq-default interleave-org-notes-dir-list '("~/Documents/Nextcloud/Papers/")))
 
+(use-package biblio
+  )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          C++          ;;
