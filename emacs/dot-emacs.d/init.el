@@ -62,9 +62,10 @@
               vc-follow-symlinks t
               scroll-preserve-screen-position t
               frame-resize-pixelwise t
-              font-use-system-font t
               display-time-default-load-average nil
-              display-time-24hr-format t)
+              display-time-24hr-format t
+              undo-limit 1280000
+              font-use-system-font t)
 
 ;; These are not usable with use-package
 (menu-bar-mode -1)
@@ -84,22 +85,11 @@
 ;;   :init (desktop-save-mode 1)
 ;;   :config (add-to-list 'desktop-modes-not-to-save 'dired-mode))
 
-(defun mydired-sort ()
-  "Sort dired listings with directories first."
-  (save-excursion
-    (let (buffer-read-only)
-      (forward-line 2) ;; beyond dir. header
-      (sort-regexp-fields t "^.*$" "[ ]*." (point) (point-max)))
-    (set-buffer-modified-p nil)))
-
-(defadvice dired-readin
-    (after dired-after-updating-hook first () activate)
-  "Sort dired listings with directories first before adding marks."
-  (mydired-sort))
-
 (use-package dired
   :ensure nil
-  :init (setq-default dired-dwim-target t))
+  :config (setq-default
+           dired-listing-switches "-vaBhl  --group-directories-first"
+           dired-dwim-target t))
 
 (use-package delsel
   :ensure nil
