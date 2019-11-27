@@ -276,15 +276,11 @@
 
 (use-package all-the-icons)
 
-(use-package display-time
-  :init
-  (display-time-mode))
+(use-package display-time :init (display-time-mode))
 
-(use-package column-number)
+(use-package column-number :init (column-number-mode))
 
-(use-package doom-modeline
-  :init
-  (doom-modeline-mode))
+(use-package doom-modeline :init (doom-modeline-mode))
 
 (use-package diminish)
 
@@ -636,8 +632,13 @@
   :config
   (setq-default interleave-org-notes-dir-list '("~/Documents/Nextcloud/Papers/")))
 
-(use-package biblio
-  )
+(use-package biblio)
+
+(use-package bibtex
+  :init
+  (setq-default bibtex-maintain-sorted-entries t
+                bibtex-align-at-equal-sign t
+                ))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          C++          ;;
