@@ -1,0 +1,97 @@
+https-strict: behind-the-scene false
+matrix-off: about-scheme true
+matrix-off: behind-the-scene true
+matrix-off: bimcell.com.tr true
+matrix-off: chrome-extension-scheme true
+matrix-off: chrome-scheme true
+matrix-off: moz-extension-scheme true
+matrix-off: opera-scheme true
+matrix-off: vivaldi-scheme true
+matrix-off: wyciwyg-scheme true
+noscript-spoof: * true
+referrer-spoof: * true
+referrer-spoof: behind-the-scene false
+* * * block
+* * cookie block
+* * css allow
+* * image allow
+* 1st-party * allow
+* 1st-party frame allow
+* connect.facebook.net * block
+* facebook.com * block
+* facebook.net * block
+* mendeley.com * allow
+adventofcode.com 1st-party cookie allow
+algolia.com * * allow
+anilist.co * * allow
+anilist.co 1st-party cookie allow
+arxiv.org * frame inherit
+arxiv.org mendeley.com cookie allow
+biletix.com 1st-party cookie allow
+bilkent.edu.tr bilkent.edu.tr cookie allow
+bitbucket.org * * allow
+bitbucket.org 1st-party cookie allow
+bitbucket.org atlassian.com cookie allow
+dota2.com * * allow
+dropbox.com * * allow
+dropbox.com * cookie inherit
+dropbox.com 1st-party cookie allow
+eksisozluk.com criteo.net * block
+eksisozluk.com ekstat.com * allow
+eksisozluk.com gelirartisi.com * block
+eksisozluk.com nativespot.com * block
+elsevier.com * * allow
+elsevier.com 1st-party cookie allow
+elsevier.com elsevier-ae.com cookie allow
+getpocket.com 1st-party cookie allow
+getpocket.com typekit.net * allow
+github.com * * allow
+github.com 1st-party cookie allow
+gitlab.com * * allow
+gitlab.com 1st-party cookie allow
+godbolt.org 1st-party cookie allow
+godbolt.org godbolt.org cookie allow
+godbolt.org raw.githubusercontent.com * allow
+google.com * * allow
+google.com 1st-party cookie allow
+hepsiburada.com * * allow
+hepsiburada.com 1st-party cookie allow
+ieee.org * * allow
+ieee.org 1st-party cookie allow
+imdb.com * * allow
+imdb.com 1st-party cookie allow
+kde.org kde.org cookie allow
+linkedin.com 1st-party cookie allow
+linkedin.com licdn.com * allow
+mangadex.org 1st-party cookie allow
+melpa.org * * allow
+mendeley.com * * allow
+mendeley.com * cookie allow
+mendeley.com 1st-party cookie allow
+opensubtitles.org * * allow
+org mendeley.com cookie allow
+rarbgenter.org * * allow
+rarbgenter.org 1st-party cookie allow
+reddit.com * * allow
+reddit.com * frame allow
+reddit.com 1st-party cookie allow
+semanticscholar.org * * allow
+shueisha.co.jp * * allow
+shueisha.co.jp 1st-party cookie allow
+steampowered.com * * allow
+steampowered.com 1st-party cookie allow
+trendyol.com * * allow
+trendyol.com 1st-party cookie allow
+twitch.tv * * allow
+unilica.com 1st-party cookie allow
+whatsapp.com * cookie inherit
+yemeksepeti.com * * allow
+yemeksepeti.com 1st-party cookie allow
+yemeksepeti.com googletagmanager.com * inherit
+yemeksepeti.com www.googletagmanager.com * inherit
+youtube.com * * allow
+youtube.com * frame inherit
+youtube.com 1st-party cookie allow
+zamunda.ch 1st-party cookie allow
+zamunda.net 1st-party cookie allow
+zotero.org 1st-party cookie allow
