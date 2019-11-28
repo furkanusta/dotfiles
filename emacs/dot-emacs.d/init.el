@@ -284,7 +284,7 @@
 
 (use-package diminish)
 
-(use-package monokai-theme :demand t)
+(use-package darkokai-theme :demand t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Tools & Utils          ;;
