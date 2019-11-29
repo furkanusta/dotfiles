@@ -17,6 +17,7 @@
 
 (add-to-list 'load-path (concat user-emacs-directory "elisp/"))
 (add-to-list 'load-path "/usr/share/emacs/site-lisp/")
+(add-to-list 'custom-theme-load-path (concat user-emacs-directory "elisp/"))
 ;; Init Done
 
 
@@ -287,10 +288,8 @@
 (use-package diminish)
 
 (use-package my-darkokai-theme
-  :load-path "elisp/my-darkokai/"
-  :init
-  (add-to-list 'custom-theme-load-path "elisp/my-darkokai")
-  (load-theme 'my-darkokai t))
+  :init (load-theme 'my-darkokai t)
+  :config (setq-default my-darkokai-mode-line-padding 1))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Tools & Utils          ;;
@@ -383,10 +382,10 @@
 
 ;; workaround for pdf-tools not reopening to last-viewed page of the pdf:
 ;; https://github.com/politza/pdf-tools/issues/18#issuecomment-269515117
-(use-package bookmark+
-  :load-path "elisp/bookmark-plus/"
-  :config
-  (setq-default bookmarks-pdf "~/.emacs.d/bookmarks-pdf"))
+;; (use-package bookmark+
+;;   :load-path "elisp/bookmark-plus/"
+;;   :config
+;;   (setq-default bookmarks-pdf "~/.emacs.d/bookmarks-pdf"))
 
 ;; requires pdf-tools-install
 (use-package pdf-tools
@@ -530,7 +529,6 @@
         ("C-c C-w <right>" . eyebrowse-next-window-config)))
 
 (use-package hungry-delete
-  :load-path "elisp/hungry-delete/"
   :commands global-hungry-delete-mode
   :init (global-hungry-delete-mode))
 
