@@ -29,6 +29,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (setq-default user-full-name "Furkan Usta"
               user-mail-address "furkanusta17@gmail.com"
+              user-bibliography "~/Documents/Nextcloud/Papers/Library.bib"
               save-interprogram-paste-before-kill t
               emacs-load-start-time (current-time)
               ad-redefinition-action 'accept
@@ -264,8 +265,9 @@
 
 (use-package helm-bibtex
   :config
-  (setq-default bibtex-completion-bibliography "~/Documents/Nextcloud/Notes/Library.bib"
+  (setq-default bibtex-completion-bibliography user-bibliography
                 bibtex-completion-library-path "~/Documents/Nextcloud/Papers/"
+                bibtex-completion-display-formats '((t . "${=has-pdf=:1}     ${author:50}   | ${year:4} |   ${title:150}"))
                 bibtex-completion-notes-path "~/Documents/Nextcloud/Notes/helm-bibtex-notes"))
 
 (use-package helm-tramp)
@@ -284,7 +286,11 @@
 
 (use-package diminish)
 
-(use-package darkokai-theme :demand t)
+(use-package my-darkokai-theme
+  :load-path "elisp/my-darkokai/"
+  :init
+  (add-to-list 'custom-theme-load-path "elisp/my-darkokai")
+  (load-theme 'my-darkokai t))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Tools & Utils          ;;
@@ -592,22 +598,23 @@
   :bind ("C-c a" . org-agenda)
   :config (setq-default org-agenda-files (list org-directory)))
 
-(defun my/org-ref-open-pdf-at-point ()
-  "Open the pdf for bibtex key under point if it exists."
-  (interactive)
-  (let* ((key (thing-at-point 'filename t))
-         (pdf-file (funcall org-ref-get-pdf-filename-function key)))
-    (if (file-exists-p pdf-file)
-        (find-file pdf-file)
-      (message "No PDF found for %s" key))))
+;; (defun my/org-ref-open-pdf-at-point ()
+;;   "Open the pdf for bibtex key under point if it exists."
+;;   (interactive)
+;;   (let* ((key (thing-at-point 'filename t))
+;;          (pdf-file (funcall org-ref-get-pdf-filename-function key)))
+;;     (if (file-exists-p pdf-file)
+;;         (find-file pdf-file)
+;;       (message "No PDF found for %s" key))))
 
 (use-package org-ref
   :config
-  (setq reftex-default-bibliography (list (concat org-directory "/Library.bib"))
-        org-ref-bibliography-notes (concat org-directory "/Readings.org")
-        org-ref-default-bibliography (list (concat org-directory "/Library.bib"))
-        org-ref-pdf-directory "~/Documents/Nextcloud/Papers/"
-        org-ref-open-pdf-function 'my/org-ref-open-pdf-at-point))
+  (setq-default reftex-default-bibliography (list user-bibliography)
+                org-ref-bibliography-notes (concat org-directory "/Readings.org")
+                org-ref-default-bibliography (list user-bibliography)
+                org-ref-pdf-directory "~/Documents/Nextcloud/Papers/"
+                ;; org-ref-open-pdf-function 'my/org-ref-open-pdf-at-point)
+                ))
 
 (use-package ox-latex
   :config
@@ -627,18 +634,17 @@
   (:map org-mode-map
         ("C-c i l" . org-cliplink)))
 
-
-(use-package interleave
-  :config
-  (setq-default interleave-org-notes-dir-list '("~/Documents/Nextcloud/Papers/")))
+;; (use-package interleave
+;;   :config
+;;   ;; (setq-default interleave-org-notes-dir-list '("~/Documents/Nextcloud/Papers/"))
+;;   (setq-default interleave-disable-narrowing t))
 
 (use-package biblio)
 
 (use-package bibtex
   :init
   (setq-default bibtex-maintain-sorted-entries t
-                bibtex-align-at-equal-sign t
-                ))
+                bibtex-align-at-equal-sign t))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          C++          ;;

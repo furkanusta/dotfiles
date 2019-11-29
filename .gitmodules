@@ -4,3 +4,6 @@
 [submodule "hungry-delete"]
 	path = emacs/dot-emacs.d/elisp/hungry-delete
 	url = https://github.com/nflath/hungry-delete
+[submodule "emacs/dot-emacs.d/elisp/my-darkokai"]
+	path = emacs/dot-emacs.d/elisp/my-darkokai
+	url = https://github.com/sjrmanning/darkokai
