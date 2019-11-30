@@ -289,7 +289,7 @@
 
 (use-package my-darkokai-theme
   :init (load-theme 'my-darkokai t)
-  :config (setq-default my-darkokai-mode-line-padding 1))
+  :config (setq my-darkokai-mode-line-padding 4))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Tools & Utils          ;;
