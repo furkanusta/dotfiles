@@ -254,7 +254,7 @@
         helm-scroll-amount 8)
   (setq-default helm-ff-search-library-in-sexp t
                 helm-ff-file-name-history-use-recentf t
-                helm-ff-allow-non-existing-file-at-point t
+                helm-ff-allow-non-existing-file-at-point nil
                 helm-ff-auto-update-initial-value t
                 helm-ff-guess-ffap-filenames t
                 helm-ff-guess-ffap-urls nil
@@ -642,7 +642,8 @@
 (use-package bibtex
   :init
   (setq-default bibtex-maintain-sorted-entries t
-                bibtex-align-at-equal-sign t))
+                bibtex-align-at-equal-sign t
+                bibtex-comma-after-last-field t))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          C++          ;;
