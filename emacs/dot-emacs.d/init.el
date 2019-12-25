@@ -93,6 +93,32 @@
            dired-listing-switches "-vaBhl  --group-directories-first"
            dired-dwim-target t))
 
+(use-package diredfl
+  :init (diredfl-global-mode)
+  :config (setq-default diredfl-read-priv nil
+                        diredfl-write-priv nil
+                        diredfl-execute-priv nil))
+
+(use-package treemacs
+  :init
+  (with-eval-after-load 'winum
+    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
+  :config
+  (treemacs-filewatch-mode nil)
+  :bind
+  (:map global-map
+        ("M-0"       . treemacs-select-window)
+        ("C-x t t"   . treemacs)
+        ("C-x t B"   . treemacs-bookmark))
+
+(use-package treemacs-projectile :after treemacs projectile)
+
+(use-package treemacs-icons-dired
+  :after treemacs dired
+  :config (treemacs-icons-dired-mode))
+
+(use-package treemacs-magit :after treemacs magit)
+
 (use-package delsel
   :ensure nil
   :init (delete-selection-mode 1))
@@ -545,11 +571,11 @@
 
 (use-package goto-chg :bind ("C-c g ;" . goto-last-change))
 
-(use-package dired-single
-  :bind
-  (:map dired-mode-map
-        ("<return>" . dired-single-buffer)
-        ("C-<" . dired-single-up-directory)))
+;; (use-package dired-single
+;;   :bind
+;;   (:map dired-mode-map
+;;         ("<return>" . dired-single-buffer)
+;;         ("C-<" . dired-single-up-directory)))
 
 (use-package writeroom-mode
   :init (setq-default writeroom-width 150)
