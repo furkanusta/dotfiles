@@ -683,6 +683,7 @@
 (use-package cmake-font-lock :hook (cmake-mode . cmake-font-lock-activate))
 
 (use-package lsp-mode
+  :hook (scala-mode . lsp)
   :init
   (setq-default lsp-auto-execute-action nil
                 lsp-before-save-edits nil
@@ -728,18 +729,18 @@
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ;;          Scala          ;;
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; (use-package scala-mode)
+(use-package scala-mode
+  :interpreter ("scala" . scala-mode))
 
-
-;; (use-package ensime
-;;   :config
-;;   (setq-default ensime-eldoc-hints 'all
-;;                 ensime-graphical-tooltips t
-;;                 ensime-tooltip-hints t
-;;                 ensime-startup-notification nil
-;;                 ensime-sem-high-enabled-p nil))
-
-;; (use-package sbt-mode)
+(use-package sbt-mode
+  :commands sbt-start sbt-command
+  :config
+  (setq-default sbt:program-options '("-Dsbt.supershell=false" "-mem" "16384"))
+  ;; WORKAROUND: allows using SPACE when in the minibuffer
+  (substitute-key-definition
+   'minibuffer-complete-word
+   'self-insert-command
+   minibuffer-local-completion-map))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
