@@ -221,6 +221,17 @@
 (global-set-key [remap fill-paragraph] #'endless/fill-or-unfill)
 (define-key prog-mode-map (kbd "<tab>") 'indent-for-tab-command)
 
+(use-package dashboard
+  :ensure t
+  :init (dashboard-setup-startup-hook)
+  :config (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*"))
+                dashboard-center-content t
+                dashboard-startup-banner 'logo
+                dashboard-items '((recents  . 5)
+                                  (bookmarks . 5)
+                                  (projects . 5)
+                                  (agenda . 5))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Helm          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
