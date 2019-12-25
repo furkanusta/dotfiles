@@ -310,11 +310,17 @@
 
 (use-package helm-tramp)
 
+(use-package helm-fd)
+
+(use-package fzf)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Visual          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (use-package all-the-icons)
+
+(use-package all-the-icons-dired :init (add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
 
 (use-package display-time :init (display-time-mode))
 
@@ -497,7 +503,7 @@
 
 (use-package magit-todos :init (magit-todos-mode))
 
-(use-package diff-hl :config (setq-default global-diff-hl-mode t))
+(use-package diff-hl :init (global-diff-hl-mode))
 
 (use-package hl-todo :config (global-hl-todo-mode))
 
@@ -517,6 +523,14 @@
   :config (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
 
 (use-package helm-projectile)
+
+(use-package ibuffer-projectile)
+
+(add-hook 'ibuffer-hook
+    (lambda ()
+      (ibuffer-projectile-set-filter-groups)
+      (unless (eq ibuffer-sorting-mode 'alphabetic)
+        (ibuffer-do-sort-by-alphabetic))))
 
 (use-package visual-regexp-steroids
   :init (require 'visual-regexp-steroids)
