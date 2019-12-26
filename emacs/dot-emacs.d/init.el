@@ -109,7 +109,7 @@
   (:map global-map
         ("M-0"       . treemacs-select-window)
         ("C-x t t"   . treemacs)
-        ("C-x t B"   . treemacs-bookmark))
+        ("C-x t B"   . treemacs-bookmark)))
 
 (use-package treemacs-projectile :after treemacs projectile)
 
@@ -612,7 +612,9 @@
                 org-fontify-quote-and-verse-blocks t
                 org-cycle-separator-lines 0
                 org-src-preserve-indentation nil
-                org-imenu-depth 4)
+                org-imenu-depth 4
+                org-todo-keywords '((sequence "TODO" "IN-PROGRESS" "|" "DONE")
+                                    (sequence "PAUSED" "SCHEDULED" "|"  "CANCELLED")))
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((python . t)
@@ -645,7 +647,8 @@
 
 (use-package org-agenda
   :bind ("C-c a" . org-agenda)
-  :config (setq-default org-agenda-files (list org-directory)))
+  :config (setq-default org-agenda-files (list org-directory)
+                        org-agenda-show-future-repeats nil))
 
 ;; (defun my/org-ref-open-pdf-at-point ()
 ;;   "Open the pdf for bibtex key under point if it exists."
