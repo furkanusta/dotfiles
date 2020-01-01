@@ -459,6 +459,7 @@
   ("C-_" . undo-tree-undo))
 
 (use-package immortal-scratch :init (immortal-scratch-mode t))
+(use-package persistent-scratch :init (persistent-scratch-setup-default))
 
 (use-package yasnippet
   :diminish yas-minor-mode
