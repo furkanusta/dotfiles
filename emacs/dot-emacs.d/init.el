@@ -35,6 +35,9 @@
               emacs-load-start-time (current-time)
               ad-redefinition-action 'accept
               ;; backup-inhibited t
+              vc-make-backup-files t
+              version-control t
+              delete-old-versions t
               calendar-week-start-day 1
               delete-by-moving-to-trash t
               confirm-nonexistent-file-or-buffer nil
@@ -81,11 +84,11 @@
 
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
-;; ;; These are built-in packages and having ensure results in lots of warnings
-;; (use-package desktop
-;;   :ensure nil
-;;   :init (desktop-save-mode 1)
-;;   :config (add-to-list 'desktop-modes-not-to-save 'dired-mode))
+;; These are built-in packages and having ensure results in lots of warnings
+(use-package desktop
+  :ensure nil
+  :init (desktop-save-mode 1)
+  :config (add-to-list 'desktop-modes-not-to-save 'dired-mode))
 
 (use-package dired
   :ensure nil
@@ -98,26 +101,6 @@
   :config (setq-default diredfl-read-priv nil
                         diredfl-write-priv nil
                         diredfl-execute-priv nil))
-
-(use-package treemacs
-  :init
-  (with-eval-after-load 'winum
-    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
-  :config
-  (treemacs-filewatch-mode nil)
-  :bind
-  (:map global-map
-        ("M-0"       . treemacs-select-window)
-        ("C-x t t"   . treemacs)
-        ("C-x t B"   . treemacs-bookmark)))
-
-(use-package treemacs-projectile :after treemacs projectile)
-
-(use-package treemacs-icons-dired
-  :after treemacs dired
-  :config (treemacs-icons-dired-mode))
-
-(use-package treemacs-magit :after treemacs magit)
 
 (use-package delsel
   :ensure nil
@@ -150,12 +133,6 @@
                 uniquify-separator " • "
                 uniquify-after-kill-buffer-p t
                 uniquify-ignore-buffers-re "^\\*"))
-
-(use-package windmove
-  :bind (("C-c <left>" . windmove-left)
-         ("C-c <right>" . windmove-right)
-         ("C-c <up>" . windmove-up)
-         ("C-c <down>" . windmove-down)))
 
 (use-package which-func :init (which-function-mode t))
 
@@ -258,61 +235,54 @@
                                   (projects . 5)
                                   (agenda . 5))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;          Helm          ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Helm packages for other modules will be near their corresponding modules, not in here
-
-(use-package helm
-  :diminish helm-mode
-  :commands helm-autoresize-mode
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Ivy
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(use-package ivy
   :init
-  (require 'helm-config)
-  (helm-mode 1)
-  (helm-autoresize-mode 1)
-  (global-unset-key (kbd "C-x c"))
+  (ivy-mode 1)
+  (counsel-mode 1)
+  :config
+  (setq-default ivy-use-virtual-buffers t
+                enable-recursive-minibuffers t
+                search-default-mode #'char-fold-to-regexp
+                ivy-count-format "(%d/%d) "
+                ivy-wrap t
+                ivy-height 20
+                ivy-extra-directories '()
+                counsel-find-file-at-point t
+                )
   :bind
-  (("C-x C-f" . helm-find-files)
-   ("M-x" . helm-M-x)
-   ("C-s" . helm-occur)
-   ("C-x b" . helm-mini)
-   ("C-z" .  helm-select-action)
-   ("M-y" . helm-show-kill-ring)
-   ("C-c s" . isearch-forward)
-   ("C-c C-r" . helm-resume)
-   ("<f6>" . helm-imenu)
-   :map helm-map
-   ("<tab>" . helm-execute-persistent-action)
-   ("<left>" . helm-previous-source)
-   ("<right>" . helm-next-source))
-  :config
-  (setq helm-split-window-inside-p t
-        helm-move-to-line-cycle-in-source t
-        helm-scroll-amount 8)
-  (setq-default helm-ff-search-library-in-sexp t
-                helm-ff-file-name-history-use-recentf t
-                helm-ff-allow-non-existing-file-at-point nil
-                helm-ff-auto-update-initial-value t
-                helm-ff-guess-ffap-filenames t
-                helm-ff-guess-ffap-urls nil
-                helm-semantic-fuzzy-match t
-                helm-M-x-fuzzy-match t
-                helm-imenu-fuzzy-match t
-                helm-substitute-in-filename-stay-on-remote t
-                helm-boring-buffer-regexp-list (list (rx "*magit-") (rx "*helm") (rx "*flycheck"))))
+  (("C-s" . swiper-thing-at-point)
+   ("C-c C-r" . ivy-resume)
+   ("C-x b" . ivy-switch-buffer)
+   ("C-M-j" . ivy-immediate-done)
+;; (setq projectile-completion-system 'ivy)
+;; (global-set-key (kbd "C-c n") 'counsel-fzf)
+   ;; (global-set-key (kbd "C-c v") 'ivy-push-view)
+   ;; (global-set-key (kbd "C-c V") 'ivy-pop-view)
+   ("C-c C-f" . counsel-fzf)
+   ("C-c C-s" . counsel-rg)))
 
-(use-package helm-bibtex
-  :config
-  (setq-default bibtex-completion-bibliography user-bibliography
-                bibtex-completion-library-path "~/Documents/Nextcloud/Papers/"
-                bibtex-completion-display-formats '((t . "${=has-pdf=:1}     ${author:50}   | ${year:4} |   ${title:150}"))
-                bibtex-completion-notes-path "~/Documents/Nextcloud/Notes/helm-bibtex-notes"))
+(use-package lsp-ivy)
 
-(use-package helm-tramp)
+(use-package counsel-projectile
+  :init (counsel-projectile-mode 1))
 
-(use-package helm-fd)
+(use-package amx :bind (("M-x" . amx)))
 
-(use-package fzf)
+(use-package ivy-rich
+  :init (ivy-rich-mode 1)
+  :config (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line))
+
+(use-package historian
+  :init (historian-mode 1))
+(use-package ivy-historian
+  :after ivy
+  :init (ivy-historian-mode 1))
+
+;; (use-package all-the-icons-ivy
+;;   :init (add-hook 'after-init-hook 'all-the-icons-ivy-setup))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Visual          ;;
@@ -368,9 +338,11 @@
                   ("http://blog.regehr.org/feed" cpp)
                   ("https://blog.acolyer.org/feed/" other)
                   ("https://www.reddit.com/r/cpp/top/.rss?t=week" cpp)
-                  ("https://www.reddit.com/r/programmin/top/.rss?t=month" prog)
+                  ("https://www.reddit.com/r/programming/top/.rss?t=week" prog)
+                  ("https://www.reddit.com/r/emacs/top/.rss?t=week" prog)
+                  ("https://www.reddit.com/r/linux/top/.rss?t=week" prog)
                   ("https://www.reddit.com/r/python/top/.rss?t=month" python)
-                  ("https://www.reddit.com/r/java/top/.rss?t=month" java)
+                  ("https://www.reddit.com/r/philosophy/top/.rss?t=month" soc)
                   ("https://randomascii.wordpress.com/" other)
                   ("http://planet.emacsen.org/atom.xml" emacs)
                   ("http://planet.gnome.org/rss20.xml" gnome)
@@ -399,8 +371,6 @@
                   ("https://www.youtube.com/feeds/videos.xml?channel_id=UCU1Fhn0o5S0_mdcgwCPuLDg" youtube)
                   ("https://www.youtube.com/feeds/videos.xml?channel_id=UCsvn_Po0SmunchJYOWpOxMg" youtube)
                   ("https://www.youtube.com/feeds/videos.xml?channel_id=UClJ7gpJ9MRXDnbA8N_5NSKQ" youtube)
-                  ("https://www.youtube.com/feeds/videos.xml?channel_id=UCaYhcUwRBNscFNUKTjgPFiA" youtube prog)
-                  ("https://www.youtube.com/feeds/videos.xml?channel_id=UC5DNdmeE-_lS6VhCVydkVvQ" youtube prog)
                   ("https://www.youtube.com/feeds/videos.xml?channel_id=UChti8oyWC3oW91LpfZ2bmSQ" youtube cpp)
                   ("https://www.youtube.com/feeds/videos.xml?channel_id=UCAczr0j6ZuiVaiGFZ4qxApw" youtube cpp)
                   ("https://www.youtube.com/feeds/videos.xml?channel_id=UCJpMLydEYA08vusDkq3FmjQ" youtube cpp)
@@ -422,13 +392,6 @@
            (number-to-string (pdf-view-current-page))
            (number-to-string (pdf-cache-number-of-pages))))
 
-
-;; workaround for pdf-tools not reopening to last-viewed page of the pdf:
-;; https://github.com/politza/pdf-tools/issues/18#issuecomment-269515117
-;; (use-package bookmark+
-;;   :load-path "elisp/bookmark-plus/"
-;;   :config
-;;   (setq-default bookmarks-pdf "~/.emacs.d/bookmarks-pdf"))
 
 ;; requires pdf-tools-install
 (use-package pdf-tools
@@ -467,12 +430,6 @@
   :bind ("M-i" . yas-expand)
   (:map yas-minor-mode-map ("<tab>" . nil)))
 
-
-(use-package pocket-reader
-  :bind
-  (:map elfeed-search-mode-map
-        ("P" . pocket-reader-add-link)))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Programming Tools          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -485,19 +442,7 @@
   :bind ("<C-tab>" . (function company-complete))
   :config (setq-default company-idle-delay nil))
 
-;; ;; Doesn't work with company-quickhelp but can provide fuzzy matching where company-flx cannot
-;; (use-package helm-company
-;;   :after company
-;;   :bind ("<C-tab>" . (function helm-company)))
-
 (use-package company-quickhelp :init (company-quickhelp-mode t))
-
-(use-package helm-ag
-  ;; :init (custom-set-variables '(helm-follow-mode-persistent t))
-  :bind
-  ("C-c h p" . helm-do-ag-project-root)
-  ("C-c h s" .  helm-do-ag)
-  ("C-c h S" . helm-ag))
 
 (use-package magit
   :bind ("C-c g s" . magit-status))
@@ -513,25 +458,7 @@
   :config
   (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc verilog-verilator)))
 
-(use-package helm-flycheck
-  :after flycheck
-  :bind (:map flycheck-mode-map ("C-c h f" . helm-flycheck)))
-
 (use-package evil-nerd-commenter :bind ("M-;" . evilnc-comment-or-uncomment-lines))
-
-(use-package projectile
-  :init (projectile-mode 1)
-  :config (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
-
-(use-package helm-projectile)
-
-(use-package ibuffer-projectile)
-
-(add-hook 'ibuffer-hook
-    (lambda ()
-      (ibuffer-projectile-set-filter-groups)
-      (unless (eq ibuffer-sorting-mode 'alphabetic)
-        (ibuffer-do-sort-by-alphabetic))))
 
 (use-package visual-regexp-steroids
   :init (require 'visual-regexp-steroids)
@@ -540,22 +467,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Navigation          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(use-package bm
-  :init (setq-default
-         bm-restore-repository-on-load t
-         bm-repository-file "~/.emacs.d/bm-repository"
-         bm-buffer-persistence t)
-  :hook (find-file-hooks . bm-buffer-restore)
-  :config (setq-default bm-cycle-all-buffers t)
-  :bind
-  ("C-c b b" . bm-toggle)
-  ("C-c b n" . bm-next)
-  ("C-c b p" . bm-previous))
-
-(use-package helm-bm
-  :bind
-  ("C-c b h" . helm-bm))
 
 (use-package buffer-move
   :bind
@@ -585,12 +496,6 @@
   :init (global-hungry-delete-mode))
 
 (use-package goto-chg :bind ("C-c g ;" . goto-last-change))
-
-;; (use-package dired-single
-;;   :bind
-;;   (:map dired-mode-map
-;;         ("<return>" . dired-single-buffer)
-;;         ("C-<" . dired-single-up-directory)))
 
 (use-package writeroom-mode
   :init (setq-default writeroom-width 150)
@@ -627,78 +532,10 @@
   (org-mode . auto-fill-mode)
   :bind (:map org-mode-map ("C-c C-." . org-time-stamp-inactive)))
 
-(defadvice org-mode-flyspell-verify (after org-mode-flyspell-verify-hack activate)
-  (let* ((rlt ad-return-value)
-         (begin-regexp "^[ \t]*#\\+begin_\\(src\\|html\\|latex\\|example\\|quote\\)")
-         (end-regexp "^[ \t]*#\\+end_\\(src\\|html\\|latex\\|example\\|quote\\)")
-         (case-fold-search t)
-         b e)
-    (when ad-return-value
-      (save-excursion
-        (setq b (re-search-backward begin-regexp nil t))
-        (if b (setq e (re-search-forward end-regexp nil t))))
-      (if (and b e (< (point) e)) (setq rlt nil)))
-    (setq ad-return-value rlt)))
-
-(use-package org-journal
-  :config
-  (setq-default org-journal-dir (concat org-directory "/journal/")
-                org-journal-carryover-items nil)
-  :bind ("C-c i j" . org-journal-new-entry))
-
-(use-package org-agenda
-  :bind ("C-c a" . org-agenda)
-  :config (setq-default org-agenda-files (list org-directory)
-                        org-agenda-show-future-repeats nil))
-
-;; (defun my/org-ref-open-pdf-at-point ()
-;;   "Open the pdf for bibtex key under point if it exists."
-;;   (interactive)
-;;   (let* ((key (thing-at-point 'filename t))
-;;          (pdf-file (funcall org-ref-get-pdf-filename-function key)))
-;;     (if (file-exists-p pdf-file)
-;;         (find-file pdf-file)
-;;       (message "No PDF found for %s" key))))
-
-(use-package org-ref
-  :config
-  (setq-default reftex-default-bibliography (list user-bibliography)
-                org-ref-bibliography-notes (concat org-directory "/Readings.org")
-                org-ref-default-bibliography (list user-bibliography)
-                org-ref-pdf-directory "~/Documents/Nextcloud/Papers/"
-                ;; org-ref-open-pdf-function 'my/org-ref-open-pdf-at-point)
-                ))
-
-(use-package ox-latex
-  :config
-  (setq-default org-latex-pdf-process
-                '("pdflatex -interaction nonstopmode -output-directory %o %f"
-                  "bibtex %b"
-                  "pdflatex -interaction nonstopmode -output-directory %o %f"
-                  "pdflatex -interaction nonstopmode -output-directory %o %f")))
-
-(use-package ox)
-
-(use-package ox-hugo
-  :after ox)
-
 (use-package org-cliplink
   :bind
   (:map org-mode-map
         ("C-c i l" . org-cliplink)))
-
-;; (use-package interleave
-;;   :config
-;;   ;; (setq-default interleave-org-notes-dir-list '("~/Documents/Nextcloud/Papers/"))
-;;   (setq-default interleave-disable-narrowing t))
-
-(use-package biblio)
-
-(use-package bibtex
-  :init
-  (setq-default bibtex-maintain-sorted-entries t
-                bibtex-align-at-equal-sign t
-                bibtex-comma-after-last-field t))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          C++          ;;
@@ -748,13 +585,6 @@
                 lsp-enable-snippet nil
                 lsp-enable-on-type-formatting nil))
 
-(use-package lsp-ui
-  :config
-  (setq-default lsp-ui-doc-enable nil
-                lsp-ui-doc-use-webkit nil
-                lsp-ui-doc-delay 0.5
-                lsp-ui-doc-include-signature t))
-
 (use-package lsp-origami
   :init
   (add-hook 'origami-mode-hook #'lsp-origami-mode))
@@ -763,19 +593,12 @@
   :after company
   :config (push 'company-lsp company-backends))
 
-(use-package helm-lsp)
-
 (use-package xref
   :config (setq-default xref-show-xrefs-function 'helm-xref-show-xrefs))
 
 (use-package company-c-headers
   :after company
   :init (add-to-list 'company-backends 'company-c-headers))
-
-;; (use-package flycheck-clang-analyzer
-;;   :after flycheck
-;;   :config (flycheck-clang-analyzer-setup))
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Perl          ;;
@@ -808,36 +631,6 @@
    'self-insert-command
    minibuffer-local-completion-map))
 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;          Python          ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Although elpy provide refactoring, goto-defitnition didn't work and it messes with defaults
-;;   (even though sane defaults weren't selected).
-;; jedi is also fine but I am continouing with anaconda simply because I used it before and
-;;   since I am not working on huge projects I didn't encounter any performacne issues
-
-(use-package virtualenvwrapper :init (venv-initialize-interactive-shells))
-(use-package auto-virtualenvwrapper :after virtualenvwrapper)
-
-;; (use-package anaconda-mode)
-
-;; (use-package company-anaconda
-;;   :after company
-;;   :init (add-to-list 'company-backends 'company-anaconda))
-
-(use-package python
-  :hook ((python-mode . auto-virtualenvwrapper-activate)))
-         ;; (python-mode . anaconda-mode)
-         ;; (python-mode . anaconda-eldoc-mode)))
-
-;; (use-package flycheck-pycheckers
-;;   :after flycheck
-;;   :hook (flycheck-mode . flycheck-pycheckers-setup)
-;;   :config (setq-default flycheck-pycheckers-checkers '(flake8 pyflakes)
-;;                         flycheck-pycheckers-max-line-length 100))
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;            Shell          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -857,37 +650,3 @@
   :bind (:map shell-mode-map ("<tab>" . completion-at-point)))
 
 (add-to-list 'auto-mode-alist '("\\.v\\'" . fundamental-mode))
-
-;; Broken
-;; (use-package readline-complete)
-
-;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; ;;          Docker          ;;
-;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; (use-package dockerfile-mode :mode ("Dockerfile\\'" "\\.docker"))
-
-;; (use-package docker-compose-mode :mode ("docker-compose\\.yml\\'" "-compose.yml\\'"))
-
-;; (use-package docker-tramp)
-
-
-(defun ndk/checkbox-list-complete ()
-  (save-excursion
-    (org-back-to-heading t)
-    (let ((beg (point)) end)
-      (end-of-line)
-      (setq end (point))
-      (goto-char beg)
-      (if (re-search-forward "\\[\\([0-9]*%\\)\\]\\|\\[\\([0-9]*\\)/\\([0-9]*\\)\\]" end t)
-            (if (match-end 1)
-                (if (equal (match-string 1) "100%")
-                    ;; all done - do the state change
-                    (org-todo 'done)
-                  (org-todo 'todo))
-              (if (and (> (match-end 2) (match-beginning 2))
-                       (equal (match-string 2) (match-string 3)))
-                  (org-todo 'done)
-                (org-todo 'todo)))))))
-
-         (require 'org-list)
-(add-to-list 'org-checkbox-statistics-hook (function ndk/checkbox-list-complete))
