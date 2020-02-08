@@ -11,7 +11,7 @@
   (package-install 'use-package))
 (require 'use-package)
 (setq-default use-package-always-defer t)
-; (setq-default use-package-always-ensure t)
+;; (setq-default use-package-always-ensure t)
 (setq custom-file "~/.emacs.d/elisp/custom.el")
 (load custom-file)
 
@@ -253,6 +253,7 @@
                 enable-recursive-minibuffers t
                 search-default-mode #'char-fold-to-regexp
                 ivy-count-format "(%d/%d) "
+                ivy-auto-shrink-minibuffer t
                 ivy-wrap t
                 ivy-height 20
                 ivy-extra-directories '())
@@ -832,19 +833,16 @@
         ("C-x t B"   . treemacs-bookmark)
         ("C-x t C-t" . treemacs-find-file)))
 
-(use-package treemacs-projectile :after treemacs projectile)
-
 (use-package treemacs-icons-dired
   :after treemacs dired
   :config (treemacs-icons-dired-mode))
 
 (use-package treemacs-magit :after treemacs magit)
 
-(use-package lsp-treemacs
-  :init (lsp-treemacs-sync-mode 1)
-  :config
-  (setq lsp-metals-treeview-show-when-views-received t)
-  (lsp-metals-treeview-enable t))
+(use-package lsp-treemacs :init (lsp-treemacs-sync-mode 1))
+  ;; :config
+  ;; (setq lsp-metals-treeview-show-when-views-received t)
+  ;; (lsp-metals-treeview-enable t)
 
 
 ;; (use-package treemacs-persp
@@ -855,3 +853,24 @@
 (use-package docker-compose-mode :mode ("docker-compose\\.yml\\'" "-compose.yml\\'"))
 (use-package docker-tramp)
 (use-package docker)
+
+(use-package flycheck-clang-analyzer
+  :after flycheck
+  :config (flycheck-clang-analyzer-setup))
+
+(use-package goto-chg
+  :bind
+  ("C-." . goto-last-change)
+  ("C->" . goto-last-change-reverse))
+
+(use-package isearch
+  :bind ("C-c s" . isearch-forward))
+
+(use-package projectile
+  :init (projectile-mode 1)
+  :bind (:map projectile-mode-map ("C-c p" . projectile-command-map)))
+
+(use-package counsel-projectile :after counsel projectile
+  :init (counsel-projectile-mode 1))
+
+(use-package treemacs-projectile :after treemacs projectile)
