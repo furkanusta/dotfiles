@@ -72,14 +72,6 @@
               undo-limit 1280000
               font-use-system-font t)
 
-;; These are not usable with use-package
-(menu-bar-mode -1)
-(tool-bar-mode -1)
-(scroll-bar-mode -1)
-(global-hl-line-mode)
-(global-display-line-numbers-mode t)
-(blink-cursor-mode 0)
-(show-paren-mode 1)
 (fset 'yes-or-no-p 'y-or-n-p)
 
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
@@ -90,10 +82,20 @@
   :init (desktop-save-mode 1)
   :config (add-to-list 'desktop-modes-not-to-save 'dired-mode))
 
+(use-package menu-bar :demand t :init (menu-bar-mode -1))
+(use-package tool-bar :demand t :init (tool-bar-mode -1))
+(use-package scroll-bar :demand t :init (scroll-bar-mode -1))
+(use-package frame :demand t :init (blink-cursor-mode 0))
+
+(use-package paren :demand t :init (show-paren-mode 1))
+(use-package display-line-numbers :demand t :init (global-display-line-numbers-mode))
+
 (use-package dired
   :ensure nil
   :config (setq-default
            dired-listing-switches "-vaBhl  --group-directories-first"
+           dired-auto-revert-buffer t
+           dired-create-destination-dirs 'ask
            dired-dwim-target t))
 
 (use-package diredfl
@@ -111,15 +113,16 @@
 (use-package hideshow
   :diminish hs-minor-mode
   :hook (prog-mode . hs-minor-mode)
+  :config (setq-default hs-isearch-open nil)
   :bind
-  ("C-c C-," . hs-toggle-hiding)
+  ("C-c ." . hs-toggle-hiding)
   ("C-c C-." . hs-hide-all)
   ("C-c C->" . hs-show-all))
 
-(use-package recentf
-  :ensure nil
-  :init (recentf-mode t)
-  :config (setq-default recent-save-file "~/.emacs.d/recentf"))
+;; (use-package recentf
+;;   :ensure nil
+;;   :init (recentf-mode t)
+;;   :config (setq-default recent-save-file "~/.emacs.d/recentf"))
 
 (use-package saveplace
   :ensure nil
@@ -233,15 +236,18 @@
                 dashboard-items '((recents  . 5)
                                   (bookmarks . 5)
                                   (projects . 5)
-                                  (agenda . 5))))
+                                  (agenda . 5))
+                dashboard-banner-logo-title "Emacs"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Ivy
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; (use-package isearch :demand t
+;;   :bind (("C-c s" . isearch-forward)))
+
+;; C-c C-o during search to save the results in a occur-buffer
 (use-package ivy
-  :init
-  (ivy-mode 1)
-  (counsel-mode 1)
+  :init (ivy-mode 1)
   :config
   (setq-default ivy-use-virtual-buffers t
                 enable-recursive-minibuffers t
@@ -249,31 +255,46 @@
                 ivy-count-format "(%d/%d) "
                 ivy-wrap t
                 ivy-height 20
-                ivy-extra-directories '()
-                counsel-find-file-at-point t
-                )
+                ivy-extra-directories '())
   :bind
   (("C-s" . swiper-thing-at-point)
    ("C-c C-r" . ivy-resume)
    ("C-x b" . ivy-switch-buffer)
-   ("C-M-j" . ivy-immediate-done)
-;; (setq projectile-completion-system 'ivy)
-;; (global-set-key (kbd "C-c n") 'counsel-fzf)
-   ;; (global-set-key (kbd "C-c v") 'ivy-push-view)
-   ;; (global-set-key (kbd "C-c V") 'ivy-pop-view)
-   ("C-c C-f" . counsel-fzf)
-   ("C-c C-s" . counsel-rg)))
+   ("C-M-j" . ivy-immediate-done)))
 
-(use-package lsp-ivy)
+(use-package all-the-icons-ivy
+  :init (add-hook 'after-init-hook 'all-the-icons-ivy-setup))
 
-(use-package counsel-projectile
-  :init (counsel-projectile-mode 1))
+(use-package ivy-bibtex
+  :config
+  (setq-default bibtex-completion-bibliography user-bibliography
+                bibtex-completion-library-path "~/Documents/Nextcloud/Papers/"
+                bibtex-completion-display-formats '((t . "${=has-pdf=:1}     ${author:50}   | ${year:4} |   ${title:150}"))
+                bibtex-completion-notes-path "~/Documents/Nextcloud/Notes/helm-bibtex-notes")
+                ;; bibtex-completion-find-additional-pdfs t
+                ;; bibtex-completion-format-citation-functions
+                ;; '((org-mode      . bibtex-completion-format-citation-org-title-link-to-PDF)
+                ;;   (latex-mode    . bibtex-completion-format-citation-cite)
+                ;;   (markdown-mode . bibtex-completion-format-citation-pandoc-citeproc)
+                ;;   (default       . bibtex-completion-format-citation-default))
+  (setq ivy-re-builders-alist
+        '((ivy-bibtex . ivy--regex-ignore-order)
+          (t . ivy--regex-plus))))
+
+(use-package ivy-xref
+  :init
+  (setq xref-show-definitions-function #'ivy-xref-show-defs
+        xref-show-xrefs-function #'ivy-xref-show-xrefs))
+
+(use-package counsel
+  :init (counsel-mode 1)
+  :consig (setq-default counsel-find-file-at-point t)
+  :bind (("C-c C-f" . counsel-fzf)
+         ("C-c C-s" . counsel-rg)))
+
+(use-package counsel-tramp)
 
 (use-package amx :bind (("M-x" . amx)))
-
-(use-package ivy-rich
-  :init (ivy-rich-mode 1)
-  :config (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line))
 
 (use-package historian
   :init (historian-mode 1))
@@ -281,8 +302,6 @@
   :after ivy
   :init (ivy-historian-mode 1))
 
-;; (use-package all-the-icons-ivy
-;;   :init (add-hook 'after-init-hook 'all-the-icons-ivy-setup))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Visual          ;;
@@ -366,7 +385,6 @@
                   ("https://www.youtube.com/feeds/videos.xml?channel_id=UC2eEGT06FrWFU6VBnPOR9lg" youtube)
                   ("https://www.youtube.com/feeds/videos.xml?channel_id=UCO-_F5ZEUhy0oKrSa69DLMw" youtube)
                   ("https://www.youtube.com/feeds/videos.xml?channel_id=UC-xTvXTm-lrLWYk308-Km3A" youtube)
-                  ("https://www.youtube.com/feeds/videos.xml?channel_id=UC7dF9qfBMXrSlaaFFDvV_Yg" youtube)
                   ("https://www.youtube.com/feeds/videos.xml?channel_id=UCK6XWOay4sher8keh2x1jLA" youtube)
                   ("https://www.youtube.com/feeds/videos.xml?channel_id=UCU1Fhn0o5S0_mdcgwCPuLDg" youtube)
                   ("https://www.youtube.com/feeds/videos.xml?channel_id=UCsvn_Po0SmunchJYOWpOxMg" youtube)
@@ -458,6 +476,10 @@
   :config
   (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc verilog-verilator)))
 
+(use-package flycheck-pos-tip
+  :after flycheck
+  :init (flycheck-pos-tip-mode))
+
 (use-package evil-nerd-commenter :bind ("M-;" . evilnc-comment-or-uncomment-lines))
 
 (use-package visual-regexp-steroids
@@ -537,6 +559,7 @@
   (:map org-mode-map
         ("C-c i l" . org-cliplink)))
 
+(use-package biblio)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          C++          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -574,20 +597,164 @@
 
 (use-package cmake-font-lock :hook (cmake-mode . cmake-font-lock-activate))
 
+(use-package meson-mode :hook (meson-mode . company-mode))
+
 (use-package lsp-mode
+  :init (setq lsp-keymap-prefix "C-c C-l")
   :hook (scala-mode . lsp)
-  :init
+  :config
   (setq-default lsp-auto-execute-action nil
                 lsp-before-save-edits nil
-                lsp-auto-guess-root t
-                lsp-prefer-flymake :none
+                ;; lsp-auto-guess-root t
+                lsp-enable-snippet t
+                lsp-enable-xref t
+                lsp-enable-imenu t
+                lsp-prefer-flymake :nil
                 lsp-enable-indentation nil
-                lsp-enable-snippet nil
+                ;; lsp-auto-configure t
                 lsp-enable-on-type-formatting nil))
 
-(use-package lsp-origami
-  :init
-  (add-hook 'origami-mode-hook #'lsp-origami-mode))
+(use-package lsp-ui
+  :config
+  (setq-default lsp-ui-flycheck-enable t
+                lsp-ui-imenu-enable t
+                ;; lsp-ui-peek-enable t
+                lsp-ui-sideline-enable t
+                lsp-ui-doc-position 'top))
+
+(use-package company-box
+  :hook (company-mode . company-box-mode)
+  :config
+  (setq-default company-box-backends-colors nil
+              company-box-show-single-candidate t
+              company-box-max-candidates 50
+              company-box-doc-delay 0.5
+              company-box-icons-unknown 'fa_question_circle
+              company-box-icons-elisp
+              '((fa_tag :face font-lock-function-name-face) ;; Function
+                (fa_cog :face font-lock-variable-name-face) ;; Variable
+                (fa_cube :face font-lock-constant-face) ;; Feature
+                (md_color_lens :face font-lock-doc-face)) ;; Face
+              company-box-icons-yasnippet 'fa_bookmark
+              company-box-icons-lsp
+              '((1 . fa_text_height) ;; Text
+                (2 . (fa_tags :face font-lock-function-name-face)) ;; Method
+                (3 . (fa_tag :face font-lock-function-name-face)) ;; Function
+                (4 . (fa_tag :face font-lock-function-name-face)) ;; Constructor
+                (5 . (fa_cog :foreground "#FF9800")) ;; Field
+                (6 . (fa_cog :foreground "#FF9800")) ;; Variable
+                (7 . (fa_cube :foreground "#7C4DFF")) ;; Class
+                (8 . (fa_cube :foreground "#7C4DFF")) ;; Interface
+                (9 . (fa_cube :foreground "#7C4DFF")) ;; Module
+                (10 . (fa_cog :foreground "#FF9800")) ;; Property
+                (11 . md_settings_system_daydream) ;; Unit
+                (12 . (fa_cog :foreground "#FF9800")) ;; Value
+                (13 . (md_storage :face font-lock-type-face)) ;; Enum
+                (14 . (md_closed_caption :foreground "#009688")) ;; Keyword
+                (15 . md_closed_caption) ;; Snippet
+                (16 . (md_color_lens :face font-lock-doc-face)) ;; Color
+                (17 . fa_file_text_o) ;; File
+                (18 . md_refresh) ;; Reference
+                (19 . fa_folder_open) ;; Folder
+                (20 . (md_closed_caption :foreground "#009688")) ;; EnumMember
+                (21 . (fa_square :face font-lock-constant-face)) ;; Constant
+                (22 . (fa_cube :face font-lock-type-face)) ;; Struct
+                (23 . fa_calendar) ;; Event
+                (24 . fa_square_o) ;; Operator
+                (25 . fa_arrows)))) ;; TypeParameter
+
+;; (with-no-warnings
+;;   ;; Highlight `company-common'
+;;   (defun my-company-box--make-line (candidate)
+;;     (-let* (((candidate annotation len-c len-a backend) candidate)
+;;             (color (company-box--get-color backend))
+;;             ((c-color a-color i-color s-color) (company-box--resolve-colors color))
+;;             (icon-string (and company-box--with-icons-p (company-box--add-icon candidate)))
+;;             (candidate-string (concat (propertize (or company-common "") 'face 'company-tooltip-common)
+;;                                       (substring (propertize candidate 'face 'company-box-candidate)
+;;                                                  (length company-common) nil)))
+;;             (align-string (when annotation
+;;                             (concat " " (and company-tooltip-align-annotations
+;;                                              (propertize " " 'display `(space :align-to (- right-fringe ,(or len-a 0) 1)))))))
+;;             (space company-box--space)
+;;             (icon-p company-box-enable-icon)
+;;             (annotation-string (and annotation (propertize annotation 'face 'company-box-annotation)))
+;;             (line (concat (unless (or (and (= space 2) icon-p) (= space 0))
+;;                             (propertize " " 'display `(space :width ,(if (or (= space 1) (not icon-p)) 1 0.75))))
+;;                           (company-box--apply-color icon-string i-color)
+;;                           (company-box--apply-color candidate-string c-color)
+;;                           align-string
+;;                           (company-box--apply-color annotation-string a-color)))
+;;             (len (length line)))
+;;       (add-text-properties 0 len (list 'company-box--len (+ len-c len-a)
+;;                                        'company-box--color s-color)
+;;                            line)
+;;       line))
+;;   (advice-add #'company-box--make-line :override #'my-company-box--make-line)
+;;   ;; Prettify icons
+;;   (defun my-company-box-icons--elisp (candidate)
+;;     (when (derived-mode-p 'emacs-lisp-mode)
+;;       (let ((sym (intern candidate)))
+;;         (cond ((fboundp sym) 'Function)
+;;               ((featurep sym) 'Module)
+;;               ((facep sym) 'Color)
+;;               ((boundp sym) 'Variable)
+;;               ((symbolp sym) 'Text)
+;;               (t . nil)))))
+;;   (advice-add #'company-box-icons--elisp :override #'my-company-box-icons--elisp))
+;; (when (and (display-graphic-p)
+;;            (require 'all-the-icons nil t))
+;;   (declare-function all-the-icons-faicon 'all-the-icons)
+;;   (declare-function all-the-icons-material 'all-the-icons)
+;;   (declare-function all-the-icons-octicon 'all-the-icons)
+;;   (setq company-box-icons-all-the-icons
+;;         `((Unknown . ,(all-the-icons-material "find_in_page" :height 0.85 :v-adjust -0.2))
+;;           (Text . ,(all-the-icons-faicon "text-width" :height 0.8 :v-adjust -0.05))
+;;           (Method . ,(all-the-icons-faicon "cube" :height 0.8 :v-adjust -0.05 :face 'all-the-icons-purple))
+;;           (Function . ,(all-the-icons-faicon "cube" :height 0.8 :v-adjust -0.05 :face 'all-the-icons-purple))
+;;           (Constructor . ,(all-the-icons-faicon "cube" :height 0.8 :v-adjust -0.05 :face 'all-the-icons-purple))
+;;           (Field . ,(all-the-icons-octicon "tag" :height 0.8 :v-adjust 0 :face 'all-the-icons-lblue))
+;;           (Variable . ,(all-the-icons-octicon "tag" :height 0.8 :v-adjust 0 :face 'all-the-icons-lblue))
+;;           (Class . ,(all-the-icons-material "settings_input_component" :height 0.85 :v-adjust -0.2 :face 'all-the-icons-orange))
+;;           (Interface . ,(all-the-icons-material "share" :height 0.85 :v-adjust -0.2 :face 'all-the-icons-lblue))
+;;           (Module . ,(all-the-icons-material "view_module" :height 0.85 :v-adjust -0.2 :face 'all-the-icons-lblue))
+;;           (Property . ,(all-the-icons-faicon "wrench" :height 0.8 :v-adjust -0.05))
+;;           (Unit . ,(all-the-icons-material "settings_system_daydream" :height 0.85 :v-adjust -0.2))
+;;           (Value . ,(all-the-icons-material "format_align_right" :height 0.85 :v-adjust -0.2 :face 'all-the-icons-lblue))
+;;           (Enum . ,(all-the-icons-material "storage" :height 0.85 :v-adjust -0.2 :face 'all-the-icons-orange))
+;;           (Keyword . ,(all-the-icons-material "filter_center_focus" :height 0.85 :v-adjust -0.2))
+;;           (Snippet . ,(all-the-icons-material "format_align_center" :height 0.85 :v-adjust -0.2))
+;;           (Color . ,(all-the-icons-material "palette" :height 0.85 :v-adjust -0.2))
+;;           (File . ,(all-the-icons-faicon "file-o" :height 0.85 :v-adjust -0.05))
+;;           (Reference . ,(all-the-icons-material "collections_bookmark" :height 0.85 :v-adjust -0.2))
+;;           (Folder . ,(all-the-icons-faicon "folder-open" :height 0.85 :v-adjust -0.05))
+;;           (EnumMember . ,(all-the-icons-material "format_align_right" :height 0.85 :v-adjust -0.2 :face 'all-the-icons-lblue))
+;;           (Constant . ,(all-the-icons-faicon "square-o" :height 0.85 :v-adjust -0.1))
+;;           (Struct . ,(all-the-icons-material "settings_input_component" :height 0.85 :v-adjust -0.2 :face 'all-the-icons-orange))
+;;           (Event . ,(all-the-icons-octicon "zap" :height 0.8 :v-adjust 0 :face 'all-the-icons-orange))
+;;           (Operator . ,(all-the-icons-material "control_point" :height 0.85 :v-adjust -0.2))
+;;           (TypeParameter . ,(all-the-icons-faicon "arrows" :height 0.8 :v-adjust -0.05))
+;;           (Template . ,(all-the-icons-material "format_align_left" :height 0.85 :v-adjust -0.2)))
+;;         company-box-icons-alist 'company-box-icons-all-the-icons))
+;; Popup documentation for completion candidates
+;; (when (and (not emacs/>=26p) (display-graphic-p))
+;;   (use-package company-quickhelp
+;;     :defines company-quickhelp-delay
+;;     :bind (:map company-active-map
+;;                 ([remap company-show-doc-buffer] . company-quickhelp-manual-begin))
+;;     :hook (global-company-mode . company-quickhelp-mode)
+;;     :init (setq company-quickhelp-delay 0.5))))
+;; )
+
+;; (use-package dap
+;;   :init
+;;   (dap-mode 1)
+;;   (dap-ui-mode 1)
+;;   (dap-tooltip-mode 1)
+;;   (tooltip-mode 1)
+;;   (require 'dap-lldb))
+
+(use-package lsp-ivy)
 
 (use-package company-lsp
   :after company
@@ -650,3 +817,41 @@
   :bind (:map shell-mode-map ("<tab>" . completion-at-point)))
 
 (add-to-list 'auto-mode-alist '("\\.v\\'" . fundamental-mode))
+
+
+(use-package treemacs
+  :init
+  (treemacs-follow-mode t)
+  (treemacs-filewatch-mode t)
+  (treemacs-fringe-indicator-mode t)
+  :config (setq-default treemacs-position                      'right
+                        treemacs-width                         50)
+  :bind
+  (:map global-map
+        ("C-x t t"   . treemacs)
+        ("C-x t B"   . treemacs-bookmark)
+        ("C-x t C-t" . treemacs-find-file)))
+
+(use-package treemacs-projectile :after treemacs projectile)
+
+(use-package treemacs-icons-dired
+  :after treemacs dired
+  :config (treemacs-icons-dired-mode))
+
+(use-package treemacs-magit :after treemacs magit)
+
+(use-package lsp-treemacs
+  :init (lsp-treemacs-sync-mode 1)
+  :config
+  (setq lsp-metals-treeview-show-when-views-received t)
+  (lsp-metals-treeview-enable t))
+
+
+;; (use-package treemacs-persp
+;;   :after treemacs persp-mode
+;;   :config (treemacs-set-scope-type 'Perspectives))
+
+(use-package dockerfile-mode :mode ("Dockerfile\\'" "\\.docker"))
+(use-package docker-compose-mode :mode ("docker-compose\\.yml\\'" "-compose.yml\\'"))
+(use-package docker-tramp)
+(use-package docker)
