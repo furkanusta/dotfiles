@@ -289,7 +289,7 @@
 
 (use-package counsel
   :init (counsel-mode 1)
-  :consig (setq-default counsel-find-file-at-point t)
+  :config (setq-default counsel-find-file-at-point t)
   :bind (("C-c C-f" . counsel-fzf)
          ("C-c C-s" . counsel-rg)))
 
@@ -825,8 +825,9 @@
   (treemacs-follow-mode t)
   (treemacs-filewatch-mode t)
   (treemacs-fringe-indicator-mode t)
-  :config (setq-default treemacs-position                      'right
-                        treemacs-width                         50)
+  (treemacs-resize-icons 20)
+  :config (setq-default treemacs-position 'right
+                        treemacs-width 50)
   :bind
   (:map global-map
         ("C-x t t"   . treemacs)
@@ -839,10 +840,12 @@
 
 (use-package treemacs-magit :after treemacs magit)
 
-(use-package lsp-treemacs :init (lsp-treemacs-sync-mode 1))
-  ;; :config
-  ;; (setq lsp-metals-treeview-show-when-views-received t)
-  ;; (lsp-metals-treeview-enable t)
+(use-package lsp-treemacs
+  :init
+  (lsp-treemacs-sync-mode 1)
+  (lsp-metals-treeview-enable t)
+  :config
+  (setq lsp-metals-treeview-show-when-views-received nil))
 
 
 ;; (use-package treemacs-persp
@@ -874,3 +877,7 @@
   :init (counsel-projectile-mode 1))
 
 (use-package treemacs-projectile :after treemacs projectile)
+
+(use-package treemacs-persp
+  :after treemacs eyebrowse
+  :config (treemacs-set-scope-type 'Perspectives))
