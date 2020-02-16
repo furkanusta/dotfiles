@@ -295,7 +295,10 @@
 
 (use-package counsel-tramp)
 
-(use-package amx :bind (("M-x" . amx)))
+
+(use-package ivy-prescient
+  :init (ivy-prescient-mode 1))
+
 
 (use-package historian
   :init (historian-mode 1))
@@ -881,3 +884,12 @@
 (use-package treemacs-persp
   :after treemacs eyebrowse
   :config (treemacs-set-scope-type 'Perspectives))
+
+(use-package scrath
+  :bind
+  ("C-c C-s" . scratch))
+
+(use-package link-hint
+  :bind
+  ("C-c l o" . link-hint-open-link)
+  ("C-c l c" . link-hint-copy-link))
