@@ -291,11 +291,38 @@
   :init (counsel-mode 1)
   :config (setq-default counsel-find-file-at-point t)
   :bind (("C-c C-f" . counsel-fzf)
-         ("C-c C-s" . counsel-rg)))
+         ("C-c C-s" . counsel-rg)
+         ("M-y" . counsel-yank-pop)
+         :map ivy-minibuffer-map ("M-y" . ivy-next-line)))
 
 (use-package counsel-tramp)
 
-(use-package amx :bind (("M-x" . amx)))
+
+(use-package ivy-prescient
+  :commands ivy-prescient-re-builder
+  :custom-face (ivy-minibuffer-match-face-1 ((t (:inherit font-lock-doc-face :foreground nil))))
+  :init (ivy-prescient-mode 1)
+  (defun ivy-prescient-non-fuzzy (str)
+    "Generate an Ivy-formatted non-fuzzy regexp list for the given STR. This is for use in `ivy-re-builders-alist'."
+    (let ((prescient-filter-method '(literal regexp)))
+      (ivy-prescient-re-builder str)))
+  :config
+  (setq-default ivy-prescient-retain-classic-highlighting t
+                ivy-re-builders-alist
+                '((counsel-rg . ivy-prescient-non-fuzzy)
+                  (counsel-imenu . ivy-prescient-non-fuzzy)
+                  (counsel-yank-pop . ivy-prescient-non-fuzzy)
+                  (swiper . ivy-prescient-non-fuzzy)
+                  (swiper-isearch . ivy-prescient-non-fuzzy)
+                  (swiper-all . ivy-prescient-non-fuzzy)
+                  (lsp-ivy-workspace-symbol . ivy-prescient-non-fuzzy)
+                  (lsp-ivy-global-workspace-symbol . ivy-prescient-non-fuzzy)
+                  (t . ivy-prescient-re-builder))
+                ivy-prescient-sort-commands
+                '(:not swiper swiper-isearch ivy-switch-buffer
+                       counsel-grep counsel-git-grep counsel-ag counsel-imenu
+                       counsel-yank-pop counsel-recentf counsel-buffer-or-recentf)))
+
 
 (use-package historian
   :init (historian-mode 1))
@@ -882,6 +909,7 @@
   :after treemacs eyebrowse
   :config (treemacs-set-scope-type 'Perspectives))
 
+
 (use-package all-the-icons-ibuffer
   :init (all-the-icons-ibuffer-mode 1))
 
@@ -902,3 +930,12 @@
                         (mode 16 16 :left :elide)
                         " "
                         project-relative-file))))
+
+(use-package scrath
+  :bind
+  ("C-c C-s" . scratch))
+
+(use-package link-hint
+  :bind
+  ("C-c l o" . link-hint-open-link)
+  ("C-c l c" . link-hint-copy-link))
