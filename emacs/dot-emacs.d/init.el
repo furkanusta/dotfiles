@@ -881,3 +881,24 @@
 (use-package treemacs-persp
   :after treemacs eyebrowse
   :config (treemacs-set-scope-type 'Perspectives))
+
+(use-package all-the-icons-ibuffer
+  :init (all-the-icons-ibuffer-mode 1))
+
+(use-package ibuffer-projectile
+  :init
+  (add-hook 'ibuffer-hook
+            (lambda ()
+              (ibuffer-projectile-set-filter-groups)
+              (unless (eq ibuffer-sorting-mode 'alphabetic)
+                (ibuffer-do-sort-by-alphabetic))))
+  :config
+  (setq-default ibuffer-formats
+                '((mark modified read-only " "
+                        (name 18 18 :left :elide)
+                        " "
+                        (size 9 -1 :right)
+                        " "
+                        (mode 16 16 :left :elide)
+                        " "
+                        project-relative-file))))
