@@ -20,10 +20,19 @@
 (add-to-list 'custom-theme-load-path (concat user-emacs-directory "elisp/"))
 ;; Init Done
 
-
 ;; Debug
 ;; (require 'benchmark-init)
 ;; (add-hook 'after-init-hook 'benchmark-init/deactivate)
+
+(use-package no-littering
+  :after recentf
+  :commands no-littering-expand-var-file-name
+  :config
+  (setq-default no-littering-etc-directory (expand-file-name "config/" user-emacs-directory)
+                no-littering-var-directory (expand-file-name "data/" user-emacs-directory)
+                auto-save-file-name-transforms `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
+  (add-to-list 'recentf-exclude no-littering-var-directory)
+  (add-to-list 'recentf-exclude no-littering-etc-directory))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Defaults & Built-ins          ;;
@@ -45,9 +54,6 @@
               tab-stop-list (number-sequence 4 200 4)
               indent-tabs-mode nil
               backup-directory-alist `(("." . "~/.emacs.d/.gen"))
-              auto-save-file-name-transforms `((".*" "~/.emacs.d/.gen/" t))
-              ediff-window-setup-function 'ediff-setup-windows-plain
-              ediff-split-window-function 'split-window-horizontally
               gdb-many-windows t
               use-file-dialog nil
               use-dialog-box nil
@@ -76,6 +82,9 @@
 
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
+(use-package ediff
+  :config (setq-default ediff-window-setup-function 'ediff-setup-windows-plain
+              ediff-split-window-function 'split-window-horizontally))
 ;; These are built-in packages and having ensure results in lots of warnings
 (use-package desktop
   :ensure nil
@@ -263,8 +272,8 @@
    ("C-x b" . ivy-switch-buffer)
    ("C-M-j" . ivy-immediate-done)))
 
-(use-package all-the-icons-ivy
-  :init (add-hook 'after-init-hook 'all-the-icons-ivy-setup))
+;; (use-package all-the-icons-ivy
+;;   :init (add-hook 'after-init-hook 'all-the-icons-ivy-setup))
 
 (use-package ivy-bibtex
   :config
@@ -848,9 +857,10 @@
 
 
 (use-package treemacs
+  :commands treemacs-resize-icons treemacs-fringe-indicator-mode
   :init
-  (treemacs-follow-mode t)
-  (treemacs-filewatch-mode t)
+  ;; (treemacs-follow-mode t)
+  ;; (treemacs-filewatch-mode t)
   (treemacs-fringe-indicator-mode t)
   (treemacs-resize-icons 20)
   :config (setq-default treemacs-position 'right
@@ -939,3 +949,5 @@
   :bind
   ("C-c l o" . link-hint-open-link)
   ("C-c l c" . link-hint-copy-link))
+
+(use-package fountain-mode)
