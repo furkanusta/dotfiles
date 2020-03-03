@@ -600,6 +600,17 @@
   (:map org-mode-map
         ("C-c i l" . org-cliplink)))
 
+(use-package org-capture
+  :config
+  (setq-default  org-capture-file (concat org-directory "/Capture.org")
+                 org-default-notes-file org-capture-file)
+  (setq-default org-capture-templates
+                '(("t" "TODO" entry (file+headline org-capture-file "Tasks")
+                   "* TODO %?\n  %a\n  %i\n")
+                  ("j" "Journal" entry (file+headline org-capture-file "Journal")
+                   "* %U\n  %a\n  %i")))
+  :bind ("C-c c" . org-capture))
+
 (use-package biblio)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          C++          ;;
