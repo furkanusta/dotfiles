@@ -301,11 +301,9 @@
   :config (setq-default counsel-find-file-at-point t)
   :bind (("C-c C-f" . counsel-fzf)
          ("C-c C-s" . counsel-rg)
+         ("C-x d" . counsel-dired)
          ("M-y" . counsel-yank-pop)
          :map ivy-minibuffer-map ("M-y" . ivy-next-line)))
-
-(use-package counsel-tramp)
-
 
 (use-package ivy-prescient
   :commands ivy-prescient-re-builder
@@ -462,9 +460,8 @@
 
 (use-package pdf-view-restore
   :after pdf-tools
-  :config
-  (add-hook 'pdf-view-mode-hook 'pdf-view-restore-mode)
-  (setq-default pdf-view-restore-filename "~/.emacs.d/.pdf-view-restore"))
+  :hook (pdf-view-mode . pdf-view-restore-mode)
+  :config (setq-default pdf-view-restore-filename "~/.emacs.d/.gen/.pdf-view-restore"))
 
 (use-package undo-tree
   :diminish undo-tree-mode
@@ -590,6 +587,10 @@
   (org-mode . turn-on-flyspell)
   (org-mode . auto-fill-mode)
   :bind (:map org-mode-map ("C-c C-." . org-time-stamp-inactive)))
+
+(use-package org-tempo
+  :after org
+  :init (add-to-list 'org-modules 'org-tempo))
 
 (use-package org-cliplink
   :bind
@@ -891,8 +892,10 @@
 
 (use-package dockerfile-mode :mode ("Dockerfile\\'" "\\.docker"))
 (use-package docker-compose-mode :mode ("docker-compose\\.yml\\'" "-compose.yml\\'"))
-(use-package docker-tramp)
-(use-package docker)
+;; (use-package docker-tramp
+;;   :config (setq-default docker-tramp-docker-executable "/usr/bin/podman"))
+;; (use-package counsel-tramp)
+;; (use-package docker)
 
 (use-package flycheck-clang-analyzer
   :after flycheck
