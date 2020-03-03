@@ -475,6 +475,8 @@
 
 (use-package immortal-scratch :init (immortal-scratch-mode t))
 (use-package persistent-scratch :init (persistent-scratch-setup-default))
+(use-package scratch :bind ("M-s M-s" . scratch))
+
 
 (use-package yasnippet
   :diminish yas-minor-mode
@@ -943,10 +945,6 @@
                         (mode 16 16 :left :elide)
                         " "
                         project-relative-file))))
-
-(use-package scrath
-  :bind
-  ("C-c C-s" . scratch))
 
 (use-package link-hint
   :bind
