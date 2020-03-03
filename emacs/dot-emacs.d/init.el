@@ -642,7 +642,7 @@
 
 (use-package lsp-mode
   :init (setq lsp-keymap-prefix "C-c C-l")
-  :hook (scala-mode . lsp)
+  ;; :hook (scala-mode . lsp)
   :config
   (setq-default lsp-auto-execute-action nil
                 lsp-before-save-edits nil
