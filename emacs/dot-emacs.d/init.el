@@ -608,8 +608,14 @@
                 '(("t" "TODO" entry (file+headline org-capture-file "Tasks")
                    "* TODO %?\n  %a\n  %i\n")
                   ("j" "Journal" entry (file+headline org-capture-file "Journal")
-                   "* %U\n  %a\n  %i")))
+                   "* %U\n  %a\n  %i")
+                  ("p" "Protocol" entry (file+headline org-capture-file "Inbox")
+                   "* %?\n  [[%:link][%:description]]\n  %U\n #+BEGIN_QUOTE\n%i\n#+END_QUOTE\n\n\n")
+	              ("L" "Protocol Link" entry (file+headline org-capture-file "Inbox")
+                   "* %?\n  [[%:link][%:description]]\n  %U")))
   :bind ("C-c c" . org-capture))
+
+(use-package org-protocol)
 
 (use-package biblio)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -964,3 +970,5 @@
   ("C-c l c" . link-hint-copy-link))
 
 (use-package fountain-mode)
+
+(use-package verilog-mode :mode ("\\.v\\'" . verilog-mode))
