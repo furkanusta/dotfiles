@@ -248,95 +248,193 @@
                                   (agenda . 5))
                 dashboard-banner-logo-title "Emacs"))
 
+(use-package isearch :demand t
+  :bind (("C-c s" . isearch-forward)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Ivy
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; (use-package isearch :demand t
-;;   :bind (("C-c s" . isearch-forward)))
 
 ;; C-c C-o during search to save the results in a occur-buffer
-(use-package ivy
-  :init (ivy-mode 1)
-  :config
-  (setq-default ivy-use-virtual-buffers t
-                enable-recursive-minibuffers t
-                search-default-mode #'char-fold-to-regexp
-                ivy-count-format "(%d/%d) "
-                ivy-auto-shrink-minibuffer t
-                ivy-wrap t
-                ivy-height 20
-                ivy-extra-directories '())
+;; (use-package ivy
+;;   :init (ivy-mode 1)
+;;   :config
+;;   (setq-default ivy-use-virtual-buffers t
+;;                 enable-recursive-minibuffers t
+;;                 search-default-mode #'char-fold-to-regexp
+;;                 ivy-count-format "(%d/%d) "
+;;                 ivy-auto-shrink-minibuffer t
+;;                 ivy-wrap t
+;;                 ivy-height 20
+;;                 ivy-extra-directories '())
+;;   :bind
+;;   (("C-s" . swiper-thing-at-point)
+;;    ("C-c C-r" . ivy-resume)
+;;    ("C-x b" . ivy-switch-buffer)
+;;    ("C-M-j" . ivy-immediate-done)))
+
+;; ;; (use-package all-the-icons-ivy
+;; ;;   :init (add-hook 'after-init-hook 'all-the-icons-ivy-setup))
+
+;; (use-package ivy-bibtex
+;;   :config
+;;   (setq-default bibtex-completion-bibliography user-bibliography
+;;                 bibtex-completion-library-path "~/Documents/Nextcloud/Papers/"
+;;                 bibtex-completion-display-formats '((t . "${=has-pdf=:1}     ${author:50}   | ${year:4} |   ${title:150}"))
+;;                 bibtex-completion-notes-path "~/Documents/Nextcloud/Notes/helm-bibtex-notes")
+;;                 ;; bibtex-completion-find-additional-pdfs t
+;;                 ;; bibtex-completion-format-citation-functions
+;;                 ;; '((org-mode      . bibtex-completion-format-citation-org-title-link-to-PDF)
+;;                 ;;   (latex-mode    . bibtex-completion-format-citation-cite)
+;;                 ;;   (markdown-mode . bibtex-completion-format-citation-pandoc-citeproc)
+;;                 ;;   (default       . bibtex-completion-format-citation-default))
+;;   (setq ivy-re-builders-alist
+;;         '((ivy-bibtex . ivy--regex-ignore-order)
+;;           (t . ivy--regex-plus))))
+
+;; (use-package ivy-xref
+;;   :init
+;;   (setq xref-show-definitions-function #'ivy-xref-show-defs
+;;         xref-show-xrefs-function #'ivy-xref-show-xrefs))
+
+;; (use-package counsel
+;;   :init (counsel-mode 1)
+;;   :config (setq-default counsel-find-file-at-point t)
+;;   :bind (("C-c C-f" . counsel-fzf)
+;;          ("C-c C-s" . counsel-rg)
+;;          ("C-x d" . counsel-dired)
+;;          ("M-y" . counsel-yank-pop)
+;;          :map ivy-minibuffer-map ("M-y" . ivy-next-line)))
+
+;; (use-package ivy-prescient
+;;   :commands ivy-prescient-re-builder
+;;   :custom-face (ivy-minibuffer-match-face-1 ((t (:inherit font-lock-doc-face :foreground nil))))
+;;   :init (ivy-prescient-mode 1)
+;;   (defun ivy-prescient-non-fuzzy (str)
+;;     "Generate an Ivy-formatted non-fuzzy regexp list for the given STR. This is for use in `ivy-re-builders-alist'."
+;;     (let ((prescient-filter-method '(literal regexp)))
+;;       (ivy-prescient-re-builder str)))
+;;   :config
+;;   (setq-default ivy-prescient-retain-classic-highlighting t
+;;                 ivy-re-builders-alist
+;;                 '((counsel-rg . ivy-prescient-non-fuzzy)
+;;                   (counsel-imenu . ivy-prescient-non-fuzzy)
+;;                   (counsel-yank-pop . ivy-prescient-non-fuzzy)
+;;                   (swiper . ivy-prescient-non-fuzzy)
+;;                   (swiper-isearch . ivy-prescient-non-fuzzy)
+;;                   (swiper-all . ivy-prescient-non-fuzzy)
+;;                   (lsp-ivy-workspace-symbol . ivy-prescient-non-fuzzy)
+;;                   (lsp-ivy-global-workspace-symbol . ivy-prescient-non-fuzzy)
+;;                   (t . ivy-prescient-re-builder))
+;;                 ivy-prescient-sort-commands
+;;                 '(:not swiper swiper-isearch ivy-switch-buffer
+;;                        counsel-grep counsel-git-grep counsel-ag counsel-imenu
+;;                        counsel-yank-pop counsel-recentf counsel-buffer-or-recentf)))
+
+
+;; (use-package historian
+;;   :init (historian-mode 1))
+;; (use-package ivy-historian
+;;   :after ivy
+;;   :init (ivy-historian-mode 1))
+
+;; (use-package lsp-ivy)
+
+;; (use-package counsel-projectile :after counsel projectile
+;;   :init (counsel-projectile-mode 1))
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;           HELM           ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;          Helm          ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Helm packages for other modules will be near their corresponding modules, not in here
+
+(use-package helm
+  :diminish helm-mode
+  :commands helm-autoresize-mode
+  :init
+  (require 'helm-config)
+  (helm-mode 1)
+  (helm-autoresize-mode 1)
+  (global-unset-key (kbd "C-x c"))
   :bind
-  (("C-s" . swiper-thing-at-point)
-   ("C-c C-r" . ivy-resume)
-   ("C-x b" . ivy-switch-buffer)
-   ("C-M-j" . ivy-immediate-done)))
+  (("M-x" . helm-M-x)
+   ;; ("C-s" . helm-occur)
+   ("C-x b" . helm-mini)
+   ("C-z" .  helm-select-action)
+   ("M-y" . helm-show-kill-ring)
+   ("C-c s" . isearch-forward)
+   ("C-c C-r" . helm-resume)
+   ("<f6>" . helm-imenu)
+   :map helm-map
+   ("<tab>" . helm-execute-persistent-action)
+   ("<left>" . helm-previous-source)
+   ("<right>" . helm-next-source))
+  :config
+  (setq helm-split-window-inside-p t
+        helm-move-to-line-cycle-in-source t
+        helm-scroll-amount 8)
+  (setq-default helm-ff-search-library-in-sexp t
+                helm-ff-file-name-history-use-recentf t
+                helm-ff-allow-non-existing-file-at-point nil
+                helm-ff-auto-update-initial-value t
+                helm-ff-guess-ffap-filenames t
+                helm-ff-guess-ffap-urls nil
+                helm-semantic-fuzzy-match t
+                helm-M-x-fuzzy-match t
+                helm-imenu-fuzzy-match t
+                helm-substitute-in-filename-stay-on-remote t
+                helm-boring-buffer-regexp-list (list (rx "*magit-") (rx "*helm") (rx "*flycheck"))))
 
-;; (use-package all-the-icons-ivy
-;;   :init (add-hook 'after-init-hook 'all-the-icons-ivy-setup))
+(use-package hlem-files
+  :bind ("C-x C-f" . helm-find-files)
+  :config
+  (setq-default helm-ff-skip-boring-files t))
 
-(use-package ivy-bibtex
+(use-package helm-bibtex
   :config
   (setq-default bibtex-completion-bibliography user-bibliography
                 bibtex-completion-library-path "~/Documents/Nextcloud/Papers/"
                 bibtex-completion-display-formats '((t . "${=has-pdf=:1}     ${author:50}   | ${year:4} |   ${title:150}"))
-                bibtex-completion-notes-path "~/Documents/Nextcloud/Notes/helm-bibtex-notes")
-                ;; bibtex-completion-find-additional-pdfs t
-                ;; bibtex-completion-format-citation-functions
-                ;; '((org-mode      . bibtex-completion-format-citation-org-title-link-to-PDF)
-                ;;   (latex-mode    . bibtex-completion-format-citation-cite)
-                ;;   (markdown-mode . bibtex-completion-format-citation-pandoc-citeproc)
-                ;;   (default       . bibtex-completion-format-citation-default))
-  (setq ivy-re-builders-alist
-        '((ivy-bibtex . ivy--regex-ignore-order)
-          (t . ivy--regex-plus))))
+                bibtex-completion-notes-path "~/Documents/Nextcloud/Notes/helm-bibtex-notes"))
 
-(use-package ivy-xref
-  :init
-  (setq xref-show-definitions-function #'ivy-xref-show-defs
-        xref-show-xrefs-function #'ivy-xref-show-xrefs))
+(use-package helm-tramp)
 
-(use-package counsel
-  :init (counsel-mode 1)
-  :config (setq-default counsel-find-file-at-point t)
-  :bind (("C-c C-f" . counsel-fzf)
-         ("C-c C-s" . counsel-rg)
-         ("C-x d" . counsel-dired)
-         ("M-y" . counsel-yank-pop)
-         :map ivy-minibuffer-map ("M-y" . ivy-next-line)))
+(use-package helm-fd
+  :bind ("C-c h f" . helm-fd))
 
-(use-package ivy-prescient
-  :commands ivy-prescient-re-builder
-  :custom-face (ivy-minibuffer-match-face-1 ((t (:inherit font-lock-doc-face :foreground nil))))
-  :init (ivy-prescient-mode 1)
-  (defun ivy-prescient-non-fuzzy (str)
-    "Generate an Ivy-formatted non-fuzzy regexp list for the given STR. This is for use in `ivy-re-builders-alist'."
-    (let ((prescient-filter-method '(literal regexp)))
-      (ivy-prescient-re-builder str)))
-  :config
-  (setq-default ivy-prescient-retain-classic-highlighting t
-                ivy-re-builders-alist
-                '((counsel-rg . ivy-prescient-non-fuzzy)
-                  (counsel-imenu . ivy-prescient-non-fuzzy)
-                  (counsel-yank-pop . ivy-prescient-non-fuzzy)
-                  (swiper . ivy-prescient-non-fuzzy)
-                  (swiper-isearch . ivy-prescient-non-fuzzy)
-                  (swiper-all . ivy-prescient-non-fuzzy)
-                  (lsp-ivy-workspace-symbol . ivy-prescient-non-fuzzy)
-                  (lsp-ivy-global-workspace-symbol . ivy-prescient-non-fuzzy)
-                  (t . ivy-prescient-re-builder))
-                ivy-prescient-sort-commands
-                '(:not swiper swiper-isearch ivy-switch-buffer
-                       counsel-grep counsel-git-grep counsel-ag counsel-imenu
-                       counsel-yank-pop counsel-recentf counsel-buffer-or-recentf)))
+(use-package fd-dired
+  :bind ("C-c h d" . fd-dired))
 
+(use-package helm-swoop
+  :bind
+  ("C-s" . helm-swoop)
+  ("C-c h h" . helm-swoop-back-to-last-point)
+  :config (setq-default helm-swoop-split-with-multiple-windows nil
+                        helm-swoop-move-to-line-cycle t
+                        helm-swoop-use-fuzzy-match t
+                        helm-swoop-speed-or-color t))
 
-(use-package historian
-  :init (historian-mode 1))
-(use-package ivy-historian
-  :after ivy
-  :init (ivy-historian-mode 1))
+(use-package helm-rg
+  :bind ("C-c C-s" .  helm-rg))
 
+(use-package deadgrep
+  :bind ("C-c h s" . deadgrep))
+
+(use-package helm-flycheck
+  :after flycheck
+  :bind (:map flycheck-mode-map ("C-c h f" . helm-flycheck)))
+
+(use-package helm-lsp)
+
+(use-package xref
+  :config (setq-default xref-show-xrefs-function 'helm-xref-show-xrefs))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Visual          ;;
@@ -397,6 +495,7 @@
                   ("https://www.reddit.com/r/linux/top/.rss?t=week" prog)
                   ("https://www.reddit.com/r/python/top/.rss?t=month" python)
                   ("https://www.reddit.com/r/philosophy/top/.rss?t=month" soc)
+                  ("https://www.reddit.com/r/askhistorians/top/.rss?t=month" soc)
                   ("https://randomascii.wordpress.com/" other)
                   ("http://planet.emacsen.org/atom.xml" emacs)
                   ("http://planet.gnome.org/rss20.xml" gnome)
@@ -593,7 +692,9 @@
 
 (use-package org-tempo
   :after org
-  :init (add-to-list 'org-modules 'org-tempo))
+  :init
+  (add-to-list 'org-modules 'org-tempo)
+  (require 'org-tempo))
 
 (use-package org-cliplink
   :bind
@@ -616,6 +717,23 @@
   :bind ("C-c c" . org-capture))
 
 (use-package org-protocol)
+
+;; (use-package org-roam
+;;   :after org
+;;   :hook  (after-init . org-roam-mode)
+;;   ;; :straight (:host github :repo "jethrokuan/org-roam")
+;;   :custom (org-roam-directory org-directory)
+;;   :bind
+;;   (:map org-roam-mode-map
+;;         (("C-c n l" . org-roam)
+;;          ("C-c n f" . org-roam-find-file)
+;;          ("C-c n g" . org-roam-show-graph))
+;;         :map org-mode-map
+;;         (("C-c n i" . org-roam-insert))))
+
+(use-package deft
+  :config
+  (setq-default deft-directory org-directory))
 
 (use-package biblio)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -812,8 +930,6 @@
 ;;   (tooltip-mode 1)
 ;;   (require 'dap-lldb))
 
-(use-package lsp-ivy)
-
 (use-package company-lsp
   :after company
   :config (push 'company-lsp company-backends))
@@ -932,9 +1048,6 @@
 (use-package projectile
   :init (projectile-mode 1)
   :bind (:map projectile-mode-map ("C-c p" . projectile-command-map)))
-
-(use-package counsel-projectile :after counsel projectile
-  :init (counsel-projectile-mode 1))
 
 (use-package treemacs-projectile :after treemacs projectile)
 
