@@ -1,0 +1,1 @@
+Dotfiles for the programs I use. Mostly managed by GNU Stow, but sometimes manually
