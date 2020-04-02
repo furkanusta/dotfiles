@@ -1045,9 +1045,25 @@
 (use-package isearch
   :bind ("C-c s" . isearch-forward))
 
+(defun my-open-readme ()
+  (let* ((project-name (projectile-project-name))
+         (project-root (projectile-project-root))
+         (project-files (directory-files project-root nil nil t))
+         (readme-files (seq-filter (lambda (file) (string-prefix-p "readme" file t)) project-files)))
+    (if readme-files
+        (let ((readme-file (car readme-files)))
+          (find-file (expand-file-name readme-file project-root)))
+      (find-file (expand-file-name "README.org" project-root)))))
+
 (use-package projectile
   :init (projectile-mode 1)
+  :config (setq-default projectile-enable-caching t
+                        projectile-switch-project-action 'my-open-readme
+                        projectile-completion-system 'helm)
   :bind (:map projectile-mode-map ("C-c p" . projectile-command-map)))
+
+(use-package helm-projectile
+  :init (helm-projectile-on))
 
 (use-package treemacs-projectile :after treemacs projectile)
 
