@@ -418,7 +418,7 @@
   ("C-c h h" . helm-swoop-back-to-last-point)
   :config (setq-default helm-swoop-split-with-multiple-windows nil
                         helm-swoop-move-to-line-cycle t
-                        helm-swoop-use-fuzzy-match t
+                        helm-swoop-use-fuzzy-match nil
                         helm-swoop-speed-or-color t))
 
 (use-package helm-rg
@@ -798,46 +798,46 @@
                 lsp-ui-sideline-enable t
                 lsp-ui-doc-position 'top))
 
-(use-package company-box
-  :hook (company-mode . company-box-mode)
-  :config
-  (setq-default company-box-backends-colors nil
-              company-box-show-single-candidate t
-              company-box-max-candidates 50
-              company-box-doc-delay 0.5
-              company-box-icons-unknown 'fa_question_circle
-              company-box-icons-elisp
-              '((fa_tag :face font-lock-function-name-face) ;; Function
-                (fa_cog :face font-lock-variable-name-face) ;; Variable
-                (fa_cube :face font-lock-constant-face) ;; Feature
-                (md_color_lens :face font-lock-doc-face)) ;; Face
-              company-box-icons-yasnippet 'fa_bookmark
-              company-box-icons-lsp
-              '((1 . fa_text_height) ;; Text
-                (2 . (fa_tags :face font-lock-function-name-face)) ;; Method
-                (3 . (fa_tag :face font-lock-function-name-face)) ;; Function
-                (4 . (fa_tag :face font-lock-function-name-face)) ;; Constructor
-                (5 . (fa_cog :foreground "#FF9800")) ;; Field
-                (6 . (fa_cog :foreground "#FF9800")) ;; Variable
-                (7 . (fa_cube :foreground "#7C4DFF")) ;; Class
-                (8 . (fa_cube :foreground "#7C4DFF")) ;; Interface
-                (9 . (fa_cube :foreground "#7C4DFF")) ;; Module
-                (10 . (fa_cog :foreground "#FF9800")) ;; Property
-                (11 . md_settings_system_daydream) ;; Unit
-                (12 . (fa_cog :foreground "#FF9800")) ;; Value
-                (13 . (md_storage :face font-lock-type-face)) ;; Enum
-                (14 . (md_closed_caption :foreground "#009688")) ;; Keyword
-                (15 . md_closed_caption) ;; Snippet
-                (16 . (md_color_lens :face font-lock-doc-face)) ;; Color
-                (17 . fa_file_text_o) ;; File
-                (18 . md_refresh) ;; Reference
-                (19 . fa_folder_open) ;; Folder
-                (20 . (md_closed_caption :foreground "#009688")) ;; EnumMember
-                (21 . (fa_square :face font-lock-constant-face)) ;; Constant
-                (22 . (fa_cube :face font-lock-type-face)) ;; Struct
-                (23 . fa_calendar) ;; Event
-                (24 . fa_square_o) ;; Operator
-                (25 . fa_arrows)))) ;; TypeParameter
+;; (use-package company-box
+;;   :hook (company-mode . company-box-mode)
+;;   :config
+;;   (setq-default company-box-backends-colors nil
+;;               company-box-show-single-candidate t
+;;               company-box-max-candidates 50
+;;               company-box-doc-delay 0.5
+;;               company-box-icons-unknown 'fa_question_circle
+;;               company-box-icons-elisp
+;;               '((fa_tag :face font-lock-function-name-face) ;; Function
+;;                 (fa_cog :face font-lock-variable-name-face) ;; Variable
+;;                 (fa_cube :face font-lock-constant-face) ;; Feature
+;;                 (md_color_lens :face font-lock-doc-face)) ;; Face
+;;               company-box-icons-yasnippet 'fa_bookmark
+;;               company-box-icons-lsp
+;;               '((1 . fa_text_height) ;; Text
+;;                 (2 . (fa_tags :face font-lock-function-name-face)) ;; Method
+;;                 (3 . (fa_tag :face font-lock-function-name-face)) ;; Function
+;;                 (4 . (fa_tag :face font-lock-function-name-face)) ;; Constructor
+;;                 (5 . (fa_cog :foreground "#FF9800")) ;; Field
+;;                 (6 . (fa_cog :foreground "#FF9800")) ;; Variable
+;;                 (7 . (fa_cube :foreground "#7C4DFF")) ;; Class
+;;                 (8 . (fa_cube :foreground "#7C4DFF")) ;; Interface
+;;                 (9 . (fa_cube :foreground "#7C4DFF")) ;; Module
+;;                 (10 . (fa_cog :foreground "#FF9800")) ;; Property
+;;                 (11 . md_settings_system_daydream) ;; Unit
+;;                 (12 . (fa_cog :foreground "#FF9800")) ;; Value
+;;                 (13 . (md_storage :face font-lock-type-face)) ;; Enum
+;;                 (14 . (md_closed_caption :foreground "#009688")) ;; Keyword
+;;                 (15 . md_closed_caption) ;; Snippet
+;;                 (16 . (md_color_lens :face font-lock-doc-face)) ;; Color
+;;                 (17 . fa_file_text_o) ;; File
+;;                 (18 . md_refresh) ;; Reference
+;;                 (19 . fa_folder_open) ;; Folder
+;;                 (20 . (md_closed_caption :foreground "#009688")) ;; EnumMember
+;;                 (21 . (fa_square :face font-lock-constant-face)) ;; Constant
+;;                 (22 . (fa_cube :face font-lock-type-face)) ;; Struct
+;;                 (23 . fa_calendar) ;; Event
+;;                 (24 . fa_square_o) ;; Operator
+;;                 (25 . fa_arrows)))) ;; TypeParameter
 
 ;; (with-no-warnings
 ;;   ;; Highlight `company-common'
