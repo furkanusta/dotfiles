@@ -62,3 +62,5 @@ export LC_ALL="en_US.UTF-8"
 
 export XDG_DATA_DIRS="$XDG_DATA_DIRS:/var/lib/flatpak/exports/share"
 export XDG_DATA_DIRS="$XDG_DATA_DIRS:/home/eksi/.local/share/flatpak/exports/share"
+
+export PERL5LIB=
