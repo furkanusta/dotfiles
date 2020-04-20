@@ -99,13 +99,26 @@
 (use-package paren :demand t :init (show-paren-mode 1))
 (use-package display-line-numbers :demand t :init (global-display-line-numbers-mode))
 
+
+;;; file opening procedures
+(defun dired-open-xdg ()
+  "Try to run `xdg-open' to open the file under point."
+  (interactive)
+  (if (executable-find "xdg-open")
+      (let ((file (ignore-errors (dired-get-file-for-visit)))
+            (process-connection-type nil))
+        (start-process "" nil "xdg-open" (file-truename file)))
+    nil))
+
 (use-package dired
   :ensure nil
   :config (setq-default
            dired-listing-switches "-vaBhl  --group-directories-first"
            dired-auto-revert-buffer t
            dired-create-destination-dirs 'ask
-           dired-dwim-target t))
+           dired-dwim-target t)
+  :bind (:map dired-mode-map
+              ("E" . dired-open-xdg)))
 
 (use-package diredfl
   :init (diredfl-global-mode)
@@ -236,17 +249,29 @@
 (global-set-key [remap fill-paragraph] #'endless/fill-or-unfill)
 (define-key prog-mode-map (kbd "<tab>") 'indent-for-tab-command)
 
+
+(defun dashboard-insert-scratch (list-size)
+  (dashboard-insert-section
+   "Scratch:"
+   '("*scratch*")
+   list-size
+   "s"
+   `(lambda (&rest ignore) (switch-to-buffer "*scratch*"))))
+
 (use-package dashboard
   :ensure t
   :init (dashboard-setup-startup-hook)
-  :config (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*"))
-                dashboard-center-content t
-                dashboard-startup-banner 'logo
-                dashboard-items '((recents  . 5)
-                                  (bookmarks . 5)
-                                  (projects . 5)
-                                  (agenda . 5))
-                dashboard-banner-logo-title "Emacs"))
+  :config
+  (add-to-list 'dashboard-item-generators  '(scratch . dashboard-insert-scratch))
+  (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*"))
+        dashboard-center-content t
+        dashboard-startup-banner 'logo
+        dashboard-items '((scratch . 1)
+                          (recents  . 5)
+                          (bookmarks . 5)
+                          (projects . 5)
+                          (agenda . 5))
+        dashboard-banner-logo-title "Emacs"))
 
 (use-package isearch :demand t
   :bind (("C-c s" . isearch-forward)))
@@ -1100,4 +1125,13 @@
 
 (use-package fountain-mode)
 
-(use-package verilog-mode :mode ("\\.v\\'" . verilog-mode))
+(use-package nov
+  :mode ("\\.epub\\'" . nov-mode)
+  :config (setq-default nov-text-width 100))
+
+(use-package verilog-mode
+  :mode
+  ("\\.v\\'" . verilog-mode)
+  ("\\.sv\\'" . verilog-mode)
+  :config
+  (setq-default verilog-auto-newline nil))
