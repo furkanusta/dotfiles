@@ -705,19 +705,23 @@
                 org-fontify-quote-and-verse-blocks t
                 org-cycle-separator-lines 0
                 org-src-preserve-indentation nil
+                org-log-done t
                 org-imenu-depth 4
                 org-todo-keywords '((sequence "TODO" "IN-PROGRESS" "|" "DONE")
                                     (sequence "PAUSED" "SCHEDULED" "|"  "CANCELLED")))
+  :hook
+  (org-mode . turn-on-flyspell)
+  (org-mode . auto-fill-mode)
+  :bind (:map org-mode-map ("C-c C-." . org-time-stamp-inactive)))
+
+(use-package org-babel
+  :init
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((python . t)
      ;; (http . t)
      (shell . t)
-     (emacs-lisp . t)))
-  :hook
-  (org-mode . turn-on-flyspell)
-  (org-mode . auto-fill-mode)
-  :bind (:map org-mode-map ("C-c C-." . org-time-stamp-inactive)))
+     (emacs-lisp . t))))
 
 (use-package org-tempo
   :after org
@@ -747,22 +751,9 @@
 
 (use-package org-protocol)
 
-;; (use-package org-roam
-;;   :after org
-;;   :hook  (after-init . org-roam-mode)
-;;   ;; :straight (:host github :repo "jethrokuan/org-roam")
-;;   :custom (org-roam-directory org-directory)
-;;   :bind
-;;   (:map org-roam-mode-map
-;;         (("C-c n l" . org-roam)
-;;          ("C-c n f" . org-roam-find-file)
-;;          ("C-c n g" . org-roam-show-graph))
-;;         :map org-mode-map
-;;         (("C-c n i" . org-roam-insert))))
-
-(use-package deft
-  :config
-  (setq-default deft-directory org-directory))
+(use-package org-agenda
+  :config (setq-default org-agenda-files (list org-directory))
+  :bind ("C-c a" . org-agenda))
 
 (use-package biblio)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -817,6 +808,8 @@
                 lsp-prefer-flymake :nil
                 lsp-enable-indentation nil
                 ;; lsp-auto-configure t
+                ;; lsp-idle-delay 0.500
+                read-process-output-max (* 2 1024 1024)
                 lsp-enable-on-type-formatting nil))
 
 (use-package lsp-ui
@@ -874,6 +867,11 @@
 
 
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ;;           Go            ;;
+;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(use-package go-mode)
+
+;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ;;          Scala          ;;
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package scala-mode
@@ -917,6 +915,7 @@
   ;; (treemacs-filewatch-mode t)
   (treemacs-fringe-indicator-mode t)
   (treemacs-resize-icons 20)
+  (add-to-list 'treemacs-pre-file-insert-predicates #'treemacs-is-file-git-ignored?)
   :config (setq-default treemacs-position 'right
                         treemacs-width 50)
   :bind
@@ -938,10 +937,9 @@
   :config
   (setq lsp-metals-treeview-show-when-views-received nil))
 
-
-;; (use-package treemacs-persp
-;;   :after treemacs persp-mode
-;;   :config (treemacs-set-scope-type 'Perspectives))
+(use-package treemacs-persp
+  :after treemacs persp-mode
+  :config (treemacs-set-scope-type 'Perspectives))
 
 (use-package dockerfile-mode :mode ("Dockerfile\\'" "\\.docker"))
 (use-package docker-compose-mode :mode ("docker-compose\\.yml\\'" "-compose.yml\\'"))
