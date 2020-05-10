@@ -238,6 +238,10 @@
 (global-set-key (kbd "M-w") 'xah-copy-line-or-region) ; copy
 (global-set-key (kbd "RET") 'newline-and-indent)
 (global-set-key [remap fill-paragraph] #'endless/fill-or-unfill)
+(global-unset-key (kbd "<left>") )
+(global-unset-key (kbd "<right>") )
+(global-unset-key (kbd "<up>") )
+(global-unset-key (kbd "<down>") )
 (define-key prog-mode-map (kbd "<tab>") 'indent-for-tab-command)
 
 
@@ -440,6 +444,9 @@
 (use-package helm-rg
   :bind ("C-c C-s" .  helm-rg))
 
+(use-package helm-bookmarks
+  :bind ("C-c h b" . helm-bookmarks))
+
 (use-package deadgrep
   :bind ("C-c h s" . deadgrep))
 
@@ -468,9 +475,9 @@
 
 (use-package diminish)
 
-(use-package my-darkokai-theme
-  :init (load-theme 'my-darkokai t)
-  :config (setq my-darkokai-mode-line-padding 4))
+;; (use-package my-darkokai-theme
+;;   :init (load-theme 'my-darkokai t)
+;;   :config (setq my-darkokai-mode-line-padding 4))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Tools & Utils          ;;
@@ -547,6 +554,8 @@
                   ("https://www.youtube.com/feeds/videos.xml?channel_id=UCv2_41bSAa5Y_8BacJUZfjQ" youtube cpp)
                   ("https://www.youtube.com/feeds/videos.xml?channel_id=UCMlGfpWw-RUdWX_JbLCukXg" youtube cpp)
                   ("https://www.youtube.com/feeds/videos.xml?channel_id=UC5e__RG9K3cHrPotPABnrwg" youtube cpp)
+                  ("https://what-if.xkcd.com/feed.atom" xkcd)
+                  ("https://www.economist.com/the-world-this-week/rss.xml" economist)
                   ("http://xkcd.com/rss.xml" xkcd))))
 
 (use-package vlf
@@ -631,6 +640,10 @@
 (use-package flycheck-pos-tip
   :after flycheck
   :init (flycheck-pos-tip-mode))
+
+(use-package flycheck-package
+  :after flycheck
+  :init (flycheck-package-setup))
 
 (use-package evil-nerd-commenter :bind ("M-;" . evilnc-comment-or-uncomment-lines))
 
