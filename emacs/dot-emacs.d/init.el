@@ -27,7 +27,7 @@
 (use-package no-littering
   :after recentf
   :commands no-littering-expand-var-file-name
-  :config
+  :init
   (setq-default no-littering-etc-directory (expand-file-name "config/" user-emacs-directory)
                 no-littering-var-directory (expand-file-name "data/" user-emacs-directory)
                 auto-save-file-name-transforms `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
@@ -131,15 +131,6 @@
   :init (delete-selection-mode 1))
 
 (use-package flyspell)
-
-(use-package hideshow
-  :diminish hs-minor-mode
-  :hook (prog-mode . hs-minor-mode)
-  :config (setq-default hs-isearch-open nil)
-  :bind
-  ("C-c ." . hs-toggle-hiding)
-  ("C-c C-." . hs-hide-all)
-  ("C-c C->" . hs-show-all))
 
 ;; (use-package recentf
 ;;   :ensure nil
@@ -823,141 +814,29 @@
                 lsp-ui-sideline-enable t
                 lsp-ui-doc-position 'top))
 
-;; (use-package company-box
-;;   :hook (company-mode . company-box-mode)
-;;   :config
-;;   (setq-default company-box-backends-colors nil
-;;               company-box-show-single-candidate t
-;;               company-box-max-candidates 50
-;;               company-box-doc-delay 0.5
-;;               company-box-icons-unknown 'fa_question_circle
-;;               company-box-icons-elisp
-;;               '((fa_tag :face font-lock-function-name-face) ;; Function
-;;                 (fa_cog :face font-lock-variable-name-face) ;; Variable
-;;                 (fa_cube :face font-lock-constant-face) ;; Feature
-;;                 (md_color_lens :face font-lock-doc-face)) ;; Face
-;;               company-box-icons-yasnippet 'fa_bookmark
-;;               company-box-icons-lsp
-;;               '((1 . fa_text_height) ;; Text
-;;                 (2 . (fa_tags :face font-lock-function-name-face)) ;; Method
-;;                 (3 . (fa_tag :face font-lock-function-name-face)) ;; Function
-;;                 (4 . (fa_tag :face font-lock-function-name-face)) ;; Constructor
-;;                 (5 . (fa_cog :foreground "#FF9800")) ;; Field
-;;                 (6 . (fa_cog :foreground "#FF9800")) ;; Variable
-;;                 (7 . (fa_cube :foreground "#7C4DFF")) ;; Class
-;;                 (8 . (fa_cube :foreground "#7C4DFF")) ;; Interface
-;;                 (9 . (fa_cube :foreground "#7C4DFF")) ;; Module
-;;                 (10 . (fa_cog :foreground "#FF9800")) ;; Property
-;;                 (11 . md_settings_system_daydream) ;; Unit
-;;                 (12 . (fa_cog :foreground "#FF9800")) ;; Value
-;;                 (13 . (md_storage :face font-lock-type-face)) ;; Enum
-;;                 (14 . (md_closed_caption :foreground "#009688")) ;; Keyword
-;;                 (15 . md_closed_caption) ;; Snippet
-;;                 (16 . (md_color_lens :face font-lock-doc-face)) ;; Color
-;;                 (17 . fa_file_text_o) ;; File
-;;                 (18 . md_refresh) ;; Reference
-;;                 (19 . fa_folder_open) ;; Folder
-;;                 (20 . (md_closed_caption :foreground "#009688")) ;; EnumMember
-;;                 (21 . (fa_square :face font-lock-constant-face)) ;; Constant
-;;                 (22 . (fa_cube :face font-lock-type-face)) ;; Struct
-;;                 (23 . fa_calendar) ;; Event
-;;                 (24 . fa_square_o) ;; Operator
-;;                 (25 . fa_arrows)))) ;; TypeParameter
+(use-package dap
+  :init
+  ;; (tooltip-mode 1)
+  (dap-mode 1)
+  (dap-ui-mode 1)
+  (dap-tooltip-mode 1))
 
-;; (with-no-warnings
-;;   ;; Highlight `company-common'
-;;   (defun my-company-box--make-line (candidate)
-;;     (-let* (((candidate annotation len-c len-a backend) candidate)
-;;             (color (company-box--get-color backend))
-;;             ((c-color a-color i-color s-color) (company-box--resolve-colors color))
-;;             (icon-string (and company-box--with-icons-p (company-box--add-icon candidate)))
-;;             (candidate-string (concat (propertize (or company-common "") 'face 'company-tooltip-common)
-;;                                       (substring (propertize candidate 'face 'company-box-candidate)
-;;                                                  (length company-common) nil)))
-;;             (align-string (when annotation
-;;                             (concat " " (and company-tooltip-align-annotations
-;;                                              (propertize " " 'display `(space :align-to (- right-fringe ,(or len-a 0) 1)))))))
-;;             (space company-box--space)
-;;             (icon-p company-box-enable-icon)
-;;             (annotation-string (and annotation (propertize annotation 'face 'company-box-annotation)))
-;;             (line (concat (unless (or (and (= space 2) icon-p) (= space 0))
-;;                             (propertize " " 'display `(space :width ,(if (or (= space 1) (not icon-p)) 1 0.75))))
-;;                           (company-box--apply-color icon-string i-color)
-;;                           (company-box--apply-color candidate-string c-color)
-;;                           align-string
-;;                           (company-box--apply-color annotation-string a-color)))
-;;             (len (length line)))
-;;       (add-text-properties 0 len (list 'company-box--len (+ len-c len-a)
-;;                                        'company-box--color s-color)
-;;                            line)
-;;       line))
-;;   (advice-add #'company-box--make-line :override #'my-company-box--make-line)
-;;   ;; Prettify icons
-;;   (defun my-company-box-icons--elisp (candidate)
-;;     (when (derived-mode-p 'emacs-lisp-mode)
-;;       (let ((sym (intern candidate)))
-;;         (cond ((fboundp sym) 'Function)
-;;               ((featurep sym) 'Module)
-;;               ((facep sym) 'Color)
-;;               ((boundp sym) 'Variable)
-;;               ((symbolp sym) 'Text)
-;;               (t . nil)))))
-;;   (advice-add #'company-box-icons--elisp :override #'my-company-box-icons--elisp))
-;; (when (and (display-graphic-p)
-;;            (require 'all-the-icons nil t))
-;;   (declare-function all-the-icons-faicon 'all-the-icons)
-;;   (declare-function all-the-icons-material 'all-the-icons)
-;;   (declare-function all-the-icons-octicon 'all-the-icons)
-;;   (setq company-box-icons-all-the-icons
-;;         `((Unknown . ,(all-the-icons-material "find_in_page" :height 0.85 :v-adjust -0.2))
-;;           (Text . ,(all-the-icons-faicon "text-width" :height 0.8 :v-adjust -0.05))
-;;           (Method . ,(all-the-icons-faicon "cube" :height 0.8 :v-adjust -0.05 :face 'all-the-icons-purple))
-;;           (Function . ,(all-the-icons-faicon "cube" :height 0.8 :v-adjust -0.05 :face 'all-the-icons-purple))
-;;           (Constructor . ,(all-the-icons-faicon "cube" :height 0.8 :v-adjust -0.05 :face 'all-the-icons-purple))
-;;           (Field . ,(all-the-icons-octicon "tag" :height 0.8 :v-adjust 0 :face 'all-the-icons-lblue))
-;;           (Variable . ,(all-the-icons-octicon "tag" :height 0.8 :v-adjust 0 :face 'all-the-icons-lblue))
-;;           (Class . ,(all-the-icons-material "settings_input_component" :height 0.85 :v-adjust -0.2 :face 'all-the-icons-orange))
-;;           (Interface . ,(all-the-icons-material "share" :height 0.85 :v-adjust -0.2 :face 'all-the-icons-lblue))
-;;           (Module . ,(all-the-icons-material "view_module" :height 0.85 :v-adjust -0.2 :face 'all-the-icons-lblue))
-;;           (Property . ,(all-the-icons-faicon "wrench" :height 0.8 :v-adjust -0.05))
-;;           (Unit . ,(all-the-icons-material "settings_system_daydream" :height 0.85 :v-adjust -0.2))
-;;           (Value . ,(all-the-icons-material "format_align_right" :height 0.85 :v-adjust -0.2 :face 'all-the-icons-lblue))
-;;           (Enum . ,(all-the-icons-material "storage" :height 0.85 :v-adjust -0.2 :face 'all-the-icons-orange))
-;;           (Keyword . ,(all-the-icons-material "filter_center_focus" :height 0.85 :v-adjust -0.2))
-;;           (Snippet . ,(all-the-icons-material "format_align_center" :height 0.85 :v-adjust -0.2))
-;;           (Color . ,(all-the-icons-material "palette" :height 0.85 :v-adjust -0.2))
-;;           (File . ,(all-the-icons-faicon "file-o" :height 0.85 :v-adjust -0.05))
-;;           (Reference . ,(all-the-icons-material "collections_bookmark" :height 0.85 :v-adjust -0.2))
-;;           (Folder . ,(all-the-icons-faicon "folder-open" :height 0.85 :v-adjust -0.05))
-;;           (EnumMember . ,(all-the-icons-material "format_align_right" :height 0.85 :v-adjust -0.2 :face 'all-the-icons-lblue))
-;;           (Constant . ,(all-the-icons-faicon "square-o" :height 0.85 :v-adjust -0.1))
-;;           (Struct . ,(all-the-icons-material "settings_input_component" :height 0.85 :v-adjust -0.2 :face 'all-the-icons-orange))
-;;           (Event . ,(all-the-icons-octicon "zap" :height 0.8 :v-adjust 0 :face 'all-the-icons-orange))
-;;           (Operator . ,(all-the-icons-material "control_point" :height 0.85 :v-adjust -0.2))
-;;           (TypeParameter . ,(all-the-icons-faicon "arrows" :height 0.8 :v-adjust -0.05))
-;;           (Template . ,(all-the-icons-material "format_align_left" :height 0.85 :v-adjust -0.2)))
-;;         company-box-icons-alist 'company-box-icons-all-the-icons))
-;; Popup documentation for completion candidates
-;; (when (and (not emacs/>=26p) (display-graphic-p))
-;;   (use-package company-quickhelp
-;;     :defines company-quickhelp-delay
-;;     :bind (:map company-active-map
-;;                 ([remap company-show-doc-buffer] . company-quickhelp-manual-begin))
-;;     :hook (global-company-mode . company-quickhelp-mode)
-;;     :init (setq company-quickhelp-delay 0.5))))
-;; )
-
-;; (use-package dap
-;;   :init
-;;   (dap-mode 1)
-;;   (dap-ui-mode 1)
-;;   (dap-tooltip-mode 1)
-;;   (tooltip-mode 1)
-;;   (require 'dap-lldb))
+(use-package dap-lldb)
 
 (use-package company-lsp
   :after company
   :config (push 'company-lsp company-backends))
+
+(use-package origami
+  :hook (prog-mode . origami-mode)
+  :bind
+  ("C-c ," . origami-toggle-node)
+  ("C-c C-." . origami-close-all-nodes)
+  ("C-c C->" . origami-open-all-nodes))
+
+(use-package lsp-origami
+  :init
+  (add-hook 'origami-mode-hook #'lsp-origami-mode))
 
 (use-package xref
   :config (setq-default xref-show-xrefs-function 'helm-xref-show-xrefs))
