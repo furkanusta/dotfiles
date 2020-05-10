@@ -226,7 +226,7 @@
 (global-set-key (kbd "M-n") 'scroll-up-in-place)
 (global-set-key (kbd "M-p") 'scroll-down-in-place)
 (global-set-key (kbd "<f7>") 'eww)
-(global-set-key (kbd "<f8>") 'shell)
+;; (global-set-key (kbd "<f8>") 'shell)
 (global-set-key (kbd "C-M-;") 'my-align-comments)
 (global-set-key (kbd "C-c C-k") 'kill-other-buffers)
 (global-set-key (kbd "C-c d") 'duplicate-line-or-region)
@@ -1014,3 +1014,41 @@
   ("\\.sv\\'" . verilog-mode)
   :config
   (setq-default verilog-auto-newline nil))
+
+(use-package bm
+  :init
+  (setq bm-restore-repository-on-load t)
+  :config
+  ;; Allow cross-buffer 'next'
+  (setq-default bm-cycle-all-buffers t
+                bm-repository-file (concat no-littering-var-directory "bm-repository")
+                bm-buffer-persistence t)
+  (add-hook 'after-init-hook 'bm-repository-load)
+  (add-hook 'kill-buffer-hook #'bm-buffer-save)
+  (add-hook 'kill-emacs-hook #'(lambda nil
+                                 (bm-buffer-save-all)
+                                 (bm-repository-save)))
+  (add-hook 'after-save-hook #'bm-buffer-save)
+  (add-hook 'find-file-hooks   #'bm-buffer-restore)
+  (add-hook 'after-revert-hook #'bm-buffer-restore)
+  (add-hook 'vc-before-checkin-hook #'bm-buffer-save)
+  :bind (("<f2>" . bm-next)
+         ("S-<f2>" . bm-previous)
+         ("C-<f2>" . bm-toggle)
+         ("<left-fringe> <mouse-1>" . bm-toggle-mouse)
+         ( "<left-fringe> <mouse-4>" . bm-previous-mouse)
+         ( "<left-fringe> <mouse-5>" . bm-next-mouse)))
+
+(use-package vterm)
+
+(use-package vterm-toggle
+  :after vterm
+  :init
+  (add-to-list 'display-buffer-alist
+             '((lambda(bufname _) (with-current-buffer bufname (equal major-mode 'vterm-mode)))
+                (display-buffer-reuse-window display-buffer-in-side-window)
+                (side . right)
+                (dedicated . t)
+                (reusable-frames . visible)))
+  :config (setq-default vterm-toggle-fullscreen-p nil)
+  :bind (("<f8>" . vterm-toggle)))
