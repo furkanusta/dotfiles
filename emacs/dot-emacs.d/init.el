@@ -226,7 +226,7 @@
 (global-set-key (kbd "M-n") 'scroll-up-in-place)
 (global-set-key (kbd "M-p") 'scroll-down-in-place)
 (global-set-key (kbd "<f7>") 'eww)
-;; (global-set-key (kbd "<f8>") 'shell)
+(global-set-key (kbd "<f8>") 'shell)
 (global-set-key (kbd "C-M-;") 'my-align-comments)
 (global-set-key (kbd "C-c C-k") 'kill-other-buffers)
 (global-set-key (kbd "C-c d") 'duplicate-line-or-region)
@@ -238,10 +238,6 @@
 (global-set-key (kbd "M-w") 'xah-copy-line-or-region) ; copy
 (global-set-key (kbd "RET") 'newline-and-indent)
 (global-set-key [remap fill-paragraph] #'endless/fill-or-unfill)
-(global-unset-key (kbd "<left>") )
-(global-unset-key (kbd "<right>") )
-(global-unset-key (kbd "<up>") )
-(global-unset-key (kbd "<down>") )
 (define-key prog-mode-map (kbd "<tab>") 'indent-for-tab-command)
 
 
@@ -360,6 +356,8 @@
 (use-package xref
   :config (setq-default xref-show-xrefs-function 'helm-xref-show-xrefs))
 
+(use-package helm-xref)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Visual          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -456,7 +454,8 @@
                   ("https://www.youtube.com/feeds/videos.xml?channel_id=UCMlGfpWw-RUdWX_JbLCukXg" youtube cpp)
                   ("https://www.youtube.com/feeds/videos.xml?channel_id=UC5e__RG9K3cHrPotPABnrwg" youtube cpp)
                   ("https://what-if.xkcd.com/feed.atom" xkcd)
-                  ("https://www.economist.com/the-world-this-week/rss.xml" economist)
+                  ("https://esoteric.codes/rss" other)
+                  ("http://irreal.org/blog/?feed=rss2" other)
                   ("http://xkcd.com/rss.xml" xkcd))))
 
 (use-package vlf
@@ -698,7 +697,7 @@
 
 (use-package lsp-mode
   :init (setq lsp-keymap-prefix "C-c C-l")
-  ;; :hook (scala-mode . lsp)
+  :hook (c++-mode . lsp)
   :config
   (setq-default lsp-auto-execute-action nil
                 lsp-before-save-edits nil
@@ -744,9 +743,6 @@
 (use-package lsp-origami
   :init
   (add-hook 'origami-mode-hook #'lsp-origami-mode))
-
-(use-package xref
-  :config (setq-default xref-show-xrefs-function 'helm-xref-show-xrefs))
 
 (use-package company-c-headers
   :after company
@@ -950,16 +946,16 @@
          ( "<left-fringe> <mouse-4>" . bm-previous-mouse)
          ( "<left-fringe> <mouse-5>" . bm-next-mouse)))
 
-(use-package vterm)
+;; (use-package vterm)
 
-(use-package vterm-toggle
-  :after vterm
-  :init
-  (add-to-list 'display-buffer-alist
-             '((lambda(bufname _) (with-current-buffer bufname (equal major-mode 'vterm-mode)))
-                (display-buffer-reuse-window display-buffer-in-side-window)
-                (side . right)
-                (dedicated . t)
-                (reusable-frames . visible)))
-  :config (setq-default vterm-toggle-fullscreen-p nil)
-  :bind (("<f8>" . vterm-toggle)))
+;; (use-package vterm-toggle
+;;   :after vterm
+;;   :init
+;;   (add-to-list 'display-buffer-alist
+;;              '((lambda(bufname _) (with-current-buffer bufname (equal major-mode 'vterm-mode)))
+;;                 (display-buffer-reuse-window display-buffer-in-side-window)
+;;                 (side . right)
+;;                 (dedicated . t)
+;;                 (reusable-frames . visible)))
+;;   :config (setq-default vterm-toggle-fullscreen-p nil)
+;;   :bind ("<f8>" . vterm-toggle))
