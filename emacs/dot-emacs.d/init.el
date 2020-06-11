@@ -271,105 +271,6 @@
 (use-package isearch :demand t
   :bind (("C-c s" . isearch-forward)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Ivy
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; C-c C-o during search to save the results in a occur-buffer
-;; (use-package ivy
-;;   :init (ivy-mode 1)
-;;   :config
-;;   (setq-default ivy-use-virtual-buffers t
-;;                 enable-recursive-minibuffers t
-;;                 search-default-mode #'char-fold-to-regexp
-;;                 ivy-count-format "(%d/%d) "
-;;                 ivy-auto-shrink-minibuffer t
-;;                 ivy-wrap t
-;;                 ivy-height 20
-;;                 ivy-extra-directories '())
-;;   :bind
-;;   (("C-s" . swiper-thing-at-point)
-;;    ("C-c C-r" . ivy-resume)
-;;    ("C-x b" . ivy-switch-buffer)
-;;    ("C-M-j" . ivy-immediate-done)))
-
-;; ;; (use-package all-the-icons-ivy
-;; ;;   :init (add-hook 'after-init-hook 'all-the-icons-ivy-setup))
-
-;; (use-package ivy-bibtex
-;;   :config
-;;   (setq-default bibtex-completion-bibliography user-bibliography
-;;                 bibtex-completion-library-path "~/Documents/Nextcloud/Papers/"
-;;                 bibtex-completion-display-formats '((t . "${=has-pdf=:1}     ${author:50}   | ${year:4} |   ${title:150}"))
-;;                 bibtex-completion-notes-path "~/Documents/Nextcloud/Notes/helm-bibtex-notes")
-;;                 ;; bibtex-completion-find-additional-pdfs t
-;;                 ;; bibtex-completion-format-citation-functions
-;;                 ;; '((org-mode      . bibtex-completion-format-citation-org-title-link-to-PDF)
-;;                 ;;   (latex-mode    . bibtex-completion-format-citation-cite)
-;;                 ;;   (markdown-mode . bibtex-completion-format-citation-pandoc-citeproc)
-;;                 ;;   (default       . bibtex-completion-format-citation-default))
-;;   (setq ivy-re-builders-alist
-;;         '((ivy-bibtex . ivy--regex-ignore-order)
-;;           (t . ivy--regex-plus))))
-
-;; (use-package ivy-xref
-;;   :init
-;;   (setq xref-show-definitions-function #'ivy-xref-show-defs
-;;         xref-show-xrefs-function #'ivy-xref-show-xrefs))
-
-;; (use-package counsel
-;;   :init (counsel-mode 1)
-;;   :config (setq-default counsel-find-file-at-point t)
-;;   :bind (("C-c C-f" . counsel-fzf)
-;;          ("C-c C-s" . counsel-rg)
-;;          ("C-x d" . counsel-dired)
-;;          ("M-y" . counsel-yank-pop)
-;;          :map ivy-minibuffer-map ("M-y" . ivy-next-line)))
-
-;; (use-package ivy-prescient
-;;   :commands ivy-prescient-re-builder
-;;   :custom-face (ivy-minibuffer-match-face-1 ((t (:inherit font-lock-doc-face :foreground nil))))
-;;   :init (ivy-prescient-mode 1)
-;;   (defun ivy-prescient-non-fuzzy (str)
-;;     "Generate an Ivy-formatted non-fuzzy regexp list for the given STR. This is for use in `ivy-re-builders-alist'."
-;;     (let ((prescient-filter-method '(literal regexp)))
-;;       (ivy-prescient-re-builder str)))
-;;   :config
-;;   (setq-default ivy-prescient-retain-classic-highlighting t
-;;                 ivy-re-builders-alist
-;;                 '((counsel-rg . ivy-prescient-non-fuzzy)
-;;                   (counsel-imenu . ivy-prescient-non-fuzzy)
-;;                   (counsel-yank-pop . ivy-prescient-non-fuzzy)
-;;                   (swiper . ivy-prescient-non-fuzzy)
-;;                   (swiper-isearch . ivy-prescient-non-fuzzy)
-;;                   (swiper-all . ivy-prescient-non-fuzzy)
-;;                   (lsp-ivy-workspace-symbol . ivy-prescient-non-fuzzy)
-;;                   (lsp-ivy-global-workspace-symbol . ivy-prescient-non-fuzzy)
-;;                   (t . ivy-prescient-re-builder))
-;;                 ivy-prescient-sort-commands
-;;                 '(:not swiper swiper-isearch ivy-switch-buffer
-;;                        counsel-grep counsel-git-grep counsel-ag counsel-imenu
-;;                        counsel-yank-pop counsel-recentf counsel-buffer-or-recentf)))
-
-
-;; (use-package historian
-;;   :init (historian-mode 1))
-;; (use-package ivy-historian
-;;   :after ivy
-;;   :init (ivy-historian-mode 1))
-
-;; (use-package lsp-ivy)
-
-;; (use-package counsel-projectile :after counsel projectile
-;;   :init (counsel-projectile-mode 1))
-
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;           HELM           ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Helm          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -943,10 +844,9 @@
 
 (use-package dockerfile-mode :mode ("Dockerfile\\'" "\\.docker"))
 (use-package docker-compose-mode :mode ("docker-compose\\.yml\\'" "-compose.yml\\'"))
-;; (use-package docker-tramp
-;;   :config (setq-default docker-tramp-docker-executable "/usr/bin/podman"))
-;; (use-package counsel-tramp)
-;; (use-package docker)
+(use-package docker-tramp
+  :config (setq-default docker-tramp-docker-executable "/usr/bin/podman"))
+(use-package docker)
 
 (use-package flycheck-clang-analyzer
   :after flycheck
