@@ -37,9 +37,13 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Defaults & Built-ins          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defvar user-data-location (getenv "EMACS_STORAGE_LOCATION"))
+(unless user-data-location
+  (setq user-data-location "~/Documents/Nextcloud"))
+
 (setq-default user-full-name "Furkan Usta"
               user-mail-address "furkanusta17@gmail.com"
-              user-bibliography "~/Documents/Nextcloud/Papers/Library.bib"
+              user-bibliography (concat user-data-location "/Papers/Library.bib")
               save-interprogram-paste-before-kill t
               emacs-load-start-time (current-time)
               ad-redefinition-action 'accept
@@ -317,9 +321,9 @@
 (use-package helm-bibtex
   :config
   (setq-default bibtex-completion-bibliography user-bibliography
-                bibtex-completion-library-path "~/Documents/Nextcloud/Papers/"
+                bibtex-completion-library-path (concat user-data-directory "/Papers/")
                 bibtex-completion-display-formats '((t . "${=has-pdf=:1}     ${author:50}   | ${year:4} |   ${title:150}"))
-                bibtex-completion-notes-path "~/Documents/Nextcloud/Notes/helm-bibtex-notes"))
+                bibtex-completion-notes-path (concat user-data-directory "/Notes/helm-bibtex-notes")))
 
 (use-package helm-tramp)
 
@@ -596,7 +600,7 @@
 (use-package org
   :config
   (setq-default org-src-fontify-natively t
-                org-directory "~/Documents/Nextcloud/Notes"
+                org-directory (concat user-data-directory "/Notes")
                 org-catch-invisible-edits 'show-and-error
                 org-yank-adjusted-subtrees t
                 org-hide-emphasis-markers t
