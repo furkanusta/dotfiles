@@ -37,13 +37,13 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Defaults & Built-ins          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defvar user-data-location (getenv "EMACS_STORAGE_LOCATION"))
-(unless user-data-location
-  (setq user-data-location "~/Documents/Nextcloud"))
+(defvar user-data-directory (getenv "EMACS_STORAGE_LOCATION"))
+(unless user-data-directory
+  (setq user-data-directory "~/Documents/Nextcloud"))
 
 (setq-default user-full-name "Furkan Usta"
               user-mail-address "furkanusta17@gmail.com"
-              user-bibliography (concat user-data-location "/Papers/Library.bib")
+              user-bibliography (concat user-data-directory "/Papers/Library.bib")
               save-interprogram-paste-before-kill t
               emacs-load-start-time (current-time)
               ad-redefinition-action 'accept
@@ -545,10 +545,6 @@
   :after flycheck
   :init (flycheck-pos-tip-mode))
 
-(use-package flycheck-package
-  :after flycheck
-  :init (flycheck-package-setup))
-
 (use-package evil-nerd-commenter :bind ("M-;" . evilnc-comment-or-uncomment-lines))
 
 (use-package visual-regexp-steroids
@@ -701,7 +697,6 @@
 
 (use-package lsp-mode
   :init (setq lsp-keymap-prefix "C-c C-l")
-  :hook (c++-mode . lsp)
   :config
   (setq-default lsp-auto-execute-action nil
                 lsp-before-save-edits nil
@@ -831,12 +826,7 @@
 
 (use-package treemacs-magit :after treemacs magit)
 
-(use-package lsp-treemacs
-  :init
-  (lsp-treemacs-sync-mode 1)
-  (lsp-metals-treeview-enable t)
-  :config
-  (setq lsp-metals-treeview-show-when-views-received nil))
+(use-package lsp-treemacs :init (lsp-treemacs-sync-mode 1))
 
 (use-package treemacs-persp
   :after treemacs persp-mode
