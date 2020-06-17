@@ -136,6 +136,13 @@
 
 (use-package flyspell)
 
+(use-package flyspell-correct
+  :after flyspell
+  :bind (:map flyspell-mode-map ("C-;" . flyspell-correct-wrapper)))
+
+(use-package flyspell-correct-helm
+  :after flyspell-correct)
+
 ;; (use-package recentf
 ;;   :ensure nil
 ;;   :init (recentf-mode t)
@@ -403,6 +410,16 @@
          ("C--" . imagex-sticky-zoom-out)
          ("C-0" . imagex-sticky-restore-original)))
 
+
+(defun +rss/delete-pane ()
+  "Delete the *elfeed-entry* split pane."
+  (interactive)
+  (let* ((buf (get-buffer "*elfeed-entry*"))
+         (window (get-buffer-window buf)))
+    (delete-window window)
+    (when (buffer-live-p buf)
+      (kill-buffer buf))))
+
 (use-package elfeed
   :config
   (setq-default elfeed-feeds
@@ -460,7 +477,10 @@
                   ("https://what-if.xkcd.com/feed.atom" xkcd)
                   ("https://esoteric.codes/rss" other)
                   ("http://irreal.org/blog/?feed=rss2" other)
-                  ("http://xkcd.com/rss.xml" xkcd))))
+                  ("http://xkcd.com/rss.xml" xkcd)))
+  (setq-default elfeed-show-entry-switch #'pop-to-buffer
+                elfeed-show-entry-delete #'+rss/delete-pane
+                ))
 
 (use-package vlf
   :after dired
@@ -701,7 +721,7 @@
 
 (use-package lsp-mode
   :init (setq lsp-keymap-prefix "C-c C-l")
-  :hook (c++-mode . lsp)
+  ;; :hook (c++-mode . lsp)
   :config
   (setq-default lsp-auto-execute-action nil
                 lsp-before-save-edits nil
@@ -709,8 +729,13 @@
                 lsp-enable-snippet t
                 lsp-enable-xref t
                 lsp-enable-imenu t
-                lsp-prefer-flymake :nil
+                lsp-prefer-flymake nil
                 lsp-enable-indentation nil
+                lsp-prefer-capf t
+                lsp-enable-file-watchers nil
+                lsp-enable-text-document-color nil
+                lsp-enable-semantic-highlighting nil
+                lsp-enable-on-type-formatting nil
                 ;; lsp-auto-configure t
                 ;; lsp-idle-delay 0.500
                 read-process-output-max (* 2 1024 1024)
