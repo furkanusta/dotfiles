@@ -95,10 +95,10 @@
   :init (desktop-save-mode 1)
   :config (add-to-list 'desktop-modes-not-to-save 'dired-mode))
 
-(use-package menu-bar :demand t :init (menu-bar-mode -1))
-(use-package tool-bar :demand t :init (tool-bar-mode -1))
-(use-package scroll-bar :demand t :init (scroll-bar-mode -1))
-(use-package frame :demand t :init (blink-cursor-mode 0))
+(use-package menu-bar :ensure nil :demand t :init (menu-bar-mode -1))
+(use-package tool-bar :ensure nil :demand t :init (tool-bar-mode -1))
+(use-package scroll-bar :ensure nil :demand t :init (scroll-bar-mode -1))
+(use-package frame :ensure nil :demand t :init (blink-cursor-mode 0))
 
 (use-package paren :demand t :init (show-paren-mode 1))
 (use-package display-line-numbers :demand t :init (global-display-line-numbers-mode))
@@ -275,7 +275,7 @@
                           (agenda . 5))
         dashboard-banner-logo-title "Emacs"))
 
-(use-package isearch :demand t
+(use-package isearch :ensure nil :demand t
   :bind (("C-c s" . isearch-forward)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -320,7 +320,8 @@
                 helm-substitute-in-filename-stay-on-remote t
                 helm-boring-buffer-regexp-list (list (rx "*magit-") (rx "*helm") (rx "*flycheck"))))
 
-(use-package hlem-files
+(use-package helm-files
+  :ensure nil
   :bind ("C-x C-f" . helm-find-files)
   :config
   (setq-default helm-ff-skip-boring-files t))
@@ -353,6 +354,7 @@
   :bind ("C-c C-s" .  helm-rg))
 
 (use-package helm-bookmarks
+  :ensure nil
   :bind ("C-c h b" . helm-bookmarks))
 
 (use-package deadgrep
@@ -377,9 +379,9 @@
 
 (use-package all-the-icons-dired :init (add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
 
-(use-package display-time :init (display-time-mode))
+(use-package display-time :ensure nil :init (display-time-mode))
 
-(use-package column-number :init (column-number-mode))
+(use-package column-number :ensure nil :init (column-number-mode))
 
 (use-package doom-modeline :init (doom-modeline-mode))
 
@@ -634,7 +636,7 @@
   (org-mode . auto-fill-mode)
   :bind (:map org-mode-map ("C-c C-." . org-time-stamp-inactive)))
 
-(use-package org-babel
+(use-package org-babel :ensure nil
   :init
   (org-babel-do-load-languages
    'org-babel-load-languages
@@ -643,18 +645,18 @@
      (shell . t)
      (emacs-lisp . t))))
 
-(use-package org-tempo
-  :after org
-  :init
-  (add-to-list 'org-modules 'org-tempo)
-  (require 'org-tempo))
+;; (use-package org-tempo :ensure nil
+;;   :after org
+;;   :init
+;;   (add-to-list 'org-modules 'org-tempo)
+;;   (require 'org-tempo))
 
 (use-package org-cliplink
   :bind
   (:map org-mode-map
         ("C-c i l" . org-cliplink)))
 
-(use-package org-capture
+(use-package org-capture :ensure nil
   :config
   (setq-default  org-capture-file (concat org-directory "/Capture.org")
                  org-default-notes-file org-capture-file)
@@ -669,9 +671,9 @@
                    "* %?\n  [[%:link][%:description]]\n  %U")))
   :bind ("C-c c" . org-capture))
 
-(use-package org-protocol)
+(use-package org-protocol :ensure nil)
 
-(use-package org-agenda
+(use-package org-agenda :ensure nil
   :config (setq-default org-agenda-files (list org-directory))
   :bind ("C-c a" . org-agenda))
 
@@ -752,7 +754,7 @@
   (dap-ui-mode 1)
   (dap-tooltip-mode 1))
 
-(use-package dap-lldb)
+;; (use-package dap-lldb)
 
 (use-package company-lsp
   :after company
@@ -860,8 +862,7 @@
 
 (use-package dockerfile-mode :mode ("Dockerfile\\'" "\\.docker"))
 (use-package docker-compose-mode :mode ("docker-compose\\.yml\\'" "-compose.yml\\'"))
-(use-package docker-tramp
-  :config (setq-default docker-tramp-docker-executable "/usr/bin/podman"))
+
 (use-package docker)
 
 (use-package flycheck-clang-analyzer
