@@ -434,13 +434,13 @@
                   ("http://www.snarky.ca/feed" other)
                   ("http://blog.regehr.org/feed" cpp)
                   ("https://blog.acolyer.org/feed/" other)
-                  ("https://www.reddit.com/r/cpp/top/.rss?t=week" cpp)
-                  ("https://www.reddit.com/r/programming/top/.rss?t=week" prog)
-                  ("https://www.reddit.com/r/emacs/top/.rss?t=week" prog)
-                  ("https://www.reddit.com/r/linux/top/.rss?t=week" prog)
-                  ("https://www.reddit.com/r/python/top/.rss?t=month" python)
-                  ("https://www.reddit.com/r/philosophy/top/.rss?t=month" soc)
-                  ("https://www.reddit.com/r/askhistorians/top/.rss?t=month" soc)
+                  ("https://www.reddit.com/r/cpp/top/.rss?t=week" cpp reddit)
+                  ("https://www.reddit.com/r/programming/top/.rss?t=week" prog reddit)
+                  ("https://www.reddit.com/r/emacs/top/.rss?t=week" prog reddit)
+                  ("https://www.reddit.com/r/linux/top/.rss?t=week" prog reddit)
+                  ("https://www.reddit.com/r/python/top/.rss?t=month" python reddit)
+                  ("https://www.reddit.com/r/philosophy/top/.rss?t=month" soc reddit)
+                  ("https://www.reddit.com/r/askhistorians/top/.rss?t=month" soc reddit)
                   ("https://randomascii.wordpress.com/" other)
                   ("http://planet.emacsen.org/atom.xml" emacs)
                   ("http://planet.gnome.org/rss20.xml" gnome)
@@ -460,29 +460,12 @@
                   ("https://feeds.feedburner.com/uxmovement" ux)
                   ("http://aras-p.info/atom.xml" other)
                   ("http://city-journal.org/rss" other)
-                  ("https://writing.kemitchell.com/feed.xml" other)
-                  ("https://www.youtube.com/feeds/videos.xml?channel_id=UC2eEGT06FrWFU6VBnPOR9lg" youtube girlfriendreviews)
-                  ("https://www.youtube.com/feeds/videos.xml?channel_id=UCO-_F5ZEUhy0oKrSa69DLMw" youtube 140journos)
-                  ("https://www.youtube.com/feeds/videos.xml?channel_id=UC-xTvXTm-lrLWYk308-Km3A" youtube flutv)
-                  ("https://www.youtube.com/feeds/videos.xml?channel_id=UCK6XWOay4sher8keh2x1jLA" youtube kamusal)
-                  ("https://www.youtube.com/feeds/videos.xml?channel_id=UCU1Fhn0o5S0_mdcgwCPuLDg" youtube kurcala)
-                  ("https://www.youtube.com/feeds/videos.xml?channel_id=UCsvn_Po0SmunchJYOWpOxMg" youtube dunkey)
-                  ("https://www.youtube.com/feeds/videos.xml?channel_id=UClJ7gpJ9MRXDnbA8N_5NSKQ" youtube mesut)
-                  ("https://www.youtube.com/feeds/videos.xml?channel_id=UCCpTaib_e5C6Q95qwazq8OA" youtube rock)
-                  ("https://www.youtube.com/feeds/videos.xml?channel_id=UChti8oyWC3oW91LpfZ2bmSQ" youtube cpp)
-                  ("https://www.youtube.com/feeds/videos.xml?channel_id=UCAczr0j6ZuiVaiGFZ4qxApw" youtube cpp)
-                  ("https://www.youtube.com/feeds/videos.xml?channel_id=UCJpMLydEYA08vusDkq3FmjQ" youtube cpp)
-                  ("https://www.youtube.com/feeds/videos.xml?channel_id=UCQ4JGczdlU3ofHWf3NuCX8g" youtube cpp)
-                  ("https://www.youtube.com/feeds/videos.xml?channel_id=UCv2_41bSAa5Y_8BacJUZfjQ" youtube cpp)
-                  ("https://www.youtube.com/feeds/videos.xml?channel_id=UCMlGfpWw-RUdWX_JbLCukXg" youtube cpp)
-                  ("https://www.youtube.com/feeds/videos.xml?channel_id=UC5e__RG9K3cHrPotPABnrwg" youtube cpp)
                   ("https://what-if.xkcd.com/feed.atom" xkcd)
                   ("https://esoteric.codes/rss" other)
                   ("http://irreal.org/blog/?feed=rss2" other)
                   ("http://xkcd.com/rss.xml" xkcd)))
   (setq-default elfeed-show-entry-switch #'pop-to-buffer
-                elfeed-show-entry-delete #'+rss/delete-pane
-                ))
+                elfeed-show-entry-delete #'+rss/delete-pane))
 
 (use-package vlf
   :after dired
@@ -831,7 +814,6 @@
 
 (add-to-list 'auto-mode-alist '("\\.v\\'" . fundamental-mode))
 
-
 (use-package treemacs
   :commands treemacs-resize-icons treemacs-fringe-indicator-mode
   :init
@@ -936,12 +918,12 @@
   :mode ("\\.epub\\'" . nov-mode)
   :config (setq-default nov-text-width 100))
 
-(use-package verilog-mode
-  :mode
-  ("\\.v\\'" . verilog-mode)
-  ("\\.sv\\'" . verilog-mode)
-  :config
-  (setq-default verilog-auto-newline nil))
+;; (use-package verilog-mode
+;;   ;; :mode
+;;   ;; ("\\.v\\'" . verilog-mode)
+;;   ;; ("\\.sv\\'" . verilog-mode)
+;;   :config
+;;   (setq-default verilog-auto-newline nil))
 
 (use-package bm
   :init
