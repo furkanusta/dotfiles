@@ -357,6 +357,11 @@
   :ensure nil
   :bind ("C-c h b" . helm-bookmarks))
 
+(use-package ace-jump-helm-line
+  :after helm
+  :bind (:map helm-map
+              ("C-'" . ace-jump-helm-line)))
+
 (use-package deadgrep
   :bind ("C-c h s" . deadgrep))
 
@@ -370,6 +375,12 @@
   :config (setq-default xref-show-xrefs-function 'helm-xref-show-xrefs))
 
 (use-package helm-xref)
+
+(use-package avy
+  :bind
+  ("M-g c" . avy-goto-char-2)
+  ("C-c C-j" . avy-resume)
+  ("M-g g" . avy-goto-line))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Visual          ;;
@@ -461,9 +472,18 @@
                   ("http://aras-p.info/atom.xml" other)
                   ("http://city-journal.org/rss" other)
                   ("https://what-if.xkcd.com/feed.atom" xkcd)
+                  ("http://xkcd.com/rss.xml" xkcd)
                   ("https://esoteric.codes/rss" other)
                   ("http://irreal.org/blog/?feed=rss2" other)
-                  ("http://xkcd.com/rss.xml" xkcd)))
+                  ("http://export.arxiv.org/api/query?search_query=cat:cs.DS&start=0&max_results=100&sortBy=submittedDate&sortOrder=descending" arxiv.DS paper)
+                  ("http://export.arxiv.org/api/query?search_query=cat:cs.DC&start=0&max_results=100&sortBy=submittedDate&sortOrder=descending" arxiv.DC paper)
+                  ("http://export.arxiv.org/api/query?search_query=cat:cs.AR&start=0&max_results=100&sortBy=submittedDate&sortOrder=descending" arxiv.AR paper)
+                  ("http://export.arxiv.org/api/query?search_query=cat:cs.GR&start=0&max_results=100&sortBy=submittedDate&sortOrder=descending" arxiv.GR paper)
+                  ("http://export.arxiv.org/api/query?search_query=cat:cs.PF&start=0&max_results=100&sortBy=submittedDate&sortOrder=descending" arxiv.PF paper)
+                  ("http://export.arxiv.org/api/query?search_query=cat:cs.PL&start=0&max_results=100&sortBy=submittedDate&sortOrder=descending" arxiv.PL paper)
+                  ("http://export.arxiv.org/api/query?search_query=cat:cs.SE&start=0&max_results=100&sortBy=submittedDate&sortOrder=descending" arxiv.SE paper)
+                  ("https://csdl-api.computer.org/api/rss/periodicals/mags/cg/rss.xml" IEEE.CG paper)
+                  ("https://csdl-api.computer.org/api/rss/periodicals/letters/ca/rss.xml" IEEE.CA paper)))
   (setq-default elfeed-show-entry-switch #'pop-to-buffer
                 elfeed-show-entry-delete #'+rss/delete-pane))
 
@@ -527,10 +547,24 @@
   :diminish company-mode
   :commands company-complete
   :hook (after-init . global-company-mode)
-  :bind ("<C-tab>" . (function company-complete))
   :config (setq-default company-idle-delay nil))
 
+(use-package helm-company
+  :after helm company
+  :bind ("<C-tab>" . (function helm-company)))
+
+(use-package company-statistics
+  :after company
+  :hook (after-init . company-statistics-mode))
+
 (use-package company-quickhelp :init (company-quickhelp-mode t))
+
+(use-package company-lsp
+  :after company lsp
+  :config (push 'company-lsp company-backends)
+  :init (setq-default
+         company-lsp-enable-recompletion t
+         company-lsp-enable-snippet t))
 
 (use-package magit
   :bind ("C-c g s" . magit-status))
@@ -610,6 +644,9 @@
                 org-fontify-quote-and-verse-blocks t
                 org-cycle-separator-lines 0
                 org-src-preserve-indentation nil
+                org-indent-indentation-per-level 1
+                org-adapt-indentation nil
+                org-hide-leading-stars t
                 org-log-done t
                 org-imenu-depth 4
                 org-todo-keywords '((sequence "TODO" "IN-PROGRESS" "|" "DONE")
@@ -738,10 +775,6 @@
   (dap-tooltip-mode 1))
 
 ;; (use-package dap-lldb)
-
-(use-package company-lsp
-  :after company
-  :config (push 'company-lsp company-backends))
 
 (use-package origami
   :hook (prog-mode . origami-mode)
