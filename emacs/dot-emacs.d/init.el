@@ -87,21 +87,23 @@
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 (use-package ediff
-  :config (setq-default ediff-window-setup-function 'ediff-setup-windows-plain
-              ediff-split-window-function 'split-window-horizontally))
+  :init (setq-default ediff-window-setup-function 'ediff-setup-windows-plain
+                      ediff-split-window-function 'split-window-horizontally))
+
 ;; These are built-in packages and having ensure results in lots of warnings
 (use-package desktop
   :ensure nil
-  :init (desktop-save-mode 1)
-  :config (add-to-list 'desktop-modes-not-to-save 'dired-mode))
+  :config
+  (desktop-save-mode 1)
+  (add-to-list 'desktop-modes-not-to-save 'dired-mode))
 
-(use-package menu-bar :ensure nil :demand t :init (menu-bar-mode -1))
-(use-package tool-bar :ensure nil :demand t :init (tool-bar-mode -1))
-(use-package scroll-bar :ensure nil :demand t :init (scroll-bar-mode -1))
-(use-package frame :ensure nil :demand t :init (blink-cursor-mode 0))
+(use-package menu-bar :ensure nil :demand t :config (menu-bar-mode -1))
+(use-package tool-bar :ensure nil :demand t :config (tool-bar-mode -1))
+(use-package scroll-bar :ensure nil :demand t :config (scroll-bar-mode -1))
+(use-package frame :ensure nil :demand t :config (blink-cursor-mode 0))
 
-(use-package paren :demand t :init (show-paren-mode 1))
-(use-package display-line-numbers :demand t :init (global-display-line-numbers-mode))
+(use-package paren :demand t :config (show-paren-mode 1))
+(use-package display-line-numbers :demand t :config (global-display-line-numbers-mode))
 
 
 ;;; file opening procedures
@@ -116,19 +118,18 @@
 
 (use-package dired
   :ensure nil
-  :config (setq-default
-           dired-listing-switches "-vaBhl  --group-directories-first"
-           dired-auto-revert-buffer t
-           dired-create-destination-dirs 'ask
-           dired-dwim-target t)
+  :init (setq-default dired-listing-switches "-vaBhl  --group-directories-first"
+                      dired-auto-revert-buffer t
+                      dired-create-destination-dirs 'ask
+                      dired-dwim-target t)
   :bind (:map dired-mode-map
               ("E" . dired-open-xdg)))
 
 (use-package diredfl
-  :init (diredfl-global-mode)
-  :config (setq-default diredfl-read-priv nil
-                        diredfl-write-priv nil
-                        diredfl-execute-priv nil))
+  :config (diredfl-global-mode)
+  :init (setq-default diredfl-read-priv nil
+                      diredfl-write-priv nil
+                      diredfl-execute-priv nil))
 
 (use-package delsel
   :ensure nil
@@ -150,18 +151,18 @@
 
 (use-package saveplace
   :ensure nil
-  :init (save-place-mode 1)
-  :config (setq-default server-visit-hook (quote (save-place-find-file-hook))))
+  :config
+  (save-place-mode 1)
+  (setq-default server-visit-hook (quote (save-place-find-file-hook))))
 
 (use-package uniquify
   :ensure nil
-  :config
-  (setq-default uniquify-buffer-name-style 'reverse
-                uniquify-separator " • "
-                uniquify-after-kill-buffer-p t
-                uniquify-ignore-buffers-re "^\\*"))
+  :init (setq-default uniquify-buffer-name-style 'reverse
+                      uniquify-separator " • "
+                      uniquify-after-kill-buffer-p t
+                      uniquify-ignore-buffers-re "^\\*"))
 
-(use-package which-func :init (which-function-mode t))
+(use-package which-func :config (which-function-mode t))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Functions and keybindings    ;;
@@ -251,7 +252,6 @@
 (global-set-key [remap fill-paragraph] #'endless/fill-or-unfill)
 (define-key prog-mode-map (kbd "<tab>") 'indent-for-tab-command)
 
-
 (defun dashboard-insert-scratch (list-size)
   (dashboard-insert-section
    "Scratch:"
@@ -262,8 +262,8 @@
 
 (use-package dashboard
   :ensure t
-  :init (dashboard-setup-startup-hook)
-  :config
+  :init
+  (dashboard-setup-startup-hook)
   (add-to-list 'dashboard-item-generators  '(scratch . dashboard-insert-scratch))
   (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*"))
         dashboard-center-content t
@@ -275,8 +275,7 @@
                           (agenda . 5))
         dashboard-banner-logo-title "Emacs"))
 
-(use-package isearch :ensure nil :demand t
-  :bind (("C-c s" . isearch-forward)))
+(use-package isearch :ensure nil :demand t :bind (("C-c s" . isearch-forward)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Helm          ;;
@@ -286,7 +285,7 @@
 (use-package helm
   :diminish helm-mode
   :commands helm-autoresize-mode
-  :init
+  :config
   (require 'helm-config)
   (helm-mode 1)
   (helm-autoresize-mode 1)
@@ -304,10 +303,7 @@
    ("<tab>" . helm-execute-persistent-action)
    ("<left>" . helm-previous-source)
    ("<right>" . helm-next-source))
-  :config
-  (setq helm-split-window-inside-p t
-        helm-move-to-line-cycle-in-source t
-        helm-scroll-amount 8)
+  :init
   (setq-default helm-ff-search-library-in-sexp t
                 helm-ff-file-name-history-use-recentf t
                 helm-ff-allow-non-existing-file-at-point nil
@@ -318,16 +314,19 @@
                 helm-M-x-fuzzy-match t
                 helm-imenu-fuzzy-match t
                 helm-substitute-in-filename-stay-on-remote t
-                helm-boring-buffer-regexp-list (list (rx "*magit-") (rx "*helm") (rx "*flycheck"))))
+                helm-boring-buffer-regexp-list (list (rx "*magit-") (rx "*helm") (rx "*flycheck"))
+                helm-split-window-inside-p t
+                helm-move-to-line-cycle-in-source t
+                helm-scroll-amount 8))
 
 (use-package helm-files
   :ensure nil
   :bind ("C-x C-f" . helm-find-files)
-  :config
+  :init
   (setq-default helm-ff-skip-boring-files t))
 
 (use-package helm-bibtex
-  :config
+  :init
   (setq-default bibtex-completion-bibliography user-bibliography
                 bibtex-completion-library-path (concat user-data-directory "/Papers/")
                 bibtex-completion-display-formats '((t . "${=has-pdf=:1}     ${author:50}   | ${year:4} |   ${title:150}"))
@@ -345,10 +344,10 @@
   :bind
   ("C-s" . helm-swoop)
   ("C-c h h" . helm-swoop-back-to-last-point)
-  :config (setq-default helm-swoop-split-with-multiple-windows nil
-                        helm-swoop-move-to-line-cycle t
-                        helm-swoop-use-fuzzy-match nil
-                        helm-swoop-speed-or-color t))
+  :init (setq-default helm-swoop-split-with-multiple-windows nil
+                      helm-swoop-move-to-line-cycle t
+                      helm-swoop-use-fuzzy-match nil
+                      helm-swoop-speed-or-color t))
 
 (use-package helm-rg
   :bind ("C-c C-s" .  helm-rg))
@@ -372,7 +371,7 @@
 (use-package helm-lsp)
 
 (use-package xref
-  :config (setq-default xref-show-xrefs-function 'helm-xref-show-xrefs))
+  :init (setq-default xref-show-xrefs-function 'helm-xref-show-xrefs))
 
 (use-package helm-xref)
 
@@ -390,17 +389,17 @@
 
 (use-package all-the-icons-dired :init (add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
 
-(use-package display-time :ensure nil :init (display-time-mode))
+(use-package display-time :ensure nil :config (display-time-mode))
 
-(use-package column-number :ensure nil :init (column-number-mode))
+(use-package column-number :ensure nil :config (column-number-mode))
 
-(use-package doom-modeline :init (doom-modeline-mode))
+(use-package doom-modeline :config (doom-modeline-mode))
 
 (use-package diminish)
 
 (use-package my-darkokai-theme
   :init (load-theme 'my-darkokai t)
-  :config (setq my-darkokai-mode-line-padding 4))
+  :init (setq-default my-darkokai-mode-line-padding 4))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Tools & Utils          ;;
@@ -434,7 +433,7 @@
       (kill-buffer buf))))
 
 (use-package elfeed
-  :config
+  :init
   (setq-default elfeed-feeds
                 '(("http://research.swtch.com/feeds/posts/default" other)
                   ("http://bitbashing.io/feed.xml" other)
@@ -445,13 +444,6 @@
                   ("http://www.snarky.ca/feed" other)
                   ("http://blog.regehr.org/feed" cpp)
                   ("https://blog.acolyer.org/feed/" other)
-                  ("https://www.reddit.com/r/cpp/top/.rss?t=week" cpp reddit)
-                  ("https://www.reddit.com/r/programming/top/.rss?t=week" prog reddit)
-                  ("https://www.reddit.com/r/emacs/top/.rss?t=week" prog reddit)
-                  ("https://www.reddit.com/r/linux/top/.rss?t=week" prog reddit)
-                  ("https://www.reddit.com/r/python/top/.rss?t=month" python reddit)
-                  ("https://www.reddit.com/r/philosophy/top/.rss?t=month" soc reddit)
-                  ("https://www.reddit.com/r/askhistorians/top/.rss?t=month" soc reddit)
                   ("https://randomascii.wordpress.com/" other)
                   ("http://planet.emacsen.org/atom.xml" emacs)
                   ("http://planet.gnome.org/rss20.xml" gnome)
@@ -467,8 +459,6 @@
                   ("https://mrale.ph/feed.xml" other)
                   ("https://medium.com/feed/@steve.yegge" other)
                   ("https://research.swtch.com/" other)
-                  ("https://medium.theuxblog.com/feed" ux)
-                  ("https://feeds.feedburner.com/uxmovement" ux)
                   ("http://aras-p.info/atom.xml" other)
                   ("http://city-journal.org/rss" other)
                   ("https://what-if.xkcd.com/feed.atom" xkcd)
@@ -476,15 +466,10 @@
                   ("https://esoteric.codes/rss" other)
                   ("http://irreal.org/blog/?feed=rss2" other)
                   ("http://export.arxiv.org/api/query?search_query=cat:cs.DS&start=0&max_results=100&sortBy=submittedDate&sortOrder=descending" arxiv.DS paper)
-                  ("http://export.arxiv.org/api/query?search_query=cat:cs.DC&start=0&max_results=100&sortBy=submittedDate&sortOrder=descending" arxiv.DC paper)
-                  ("http://export.arxiv.org/api/query?search_query=cat:cs.AR&start=0&max_results=100&sortBy=submittedDate&sortOrder=descending" arxiv.AR paper)
-                  ("http://export.arxiv.org/api/query?search_query=cat:cs.GR&start=0&max_results=100&sortBy=submittedDate&sortOrder=descending" arxiv.GR paper)
                   ("http://export.arxiv.org/api/query?search_query=cat:cs.PF&start=0&max_results=100&sortBy=submittedDate&sortOrder=descending" arxiv.PF paper)
-                  ("http://export.arxiv.org/api/query?search_query=cat:cs.PL&start=0&max_results=100&sortBy=submittedDate&sortOrder=descending" arxiv.PL paper)
-                  ("http://export.arxiv.org/api/query?search_query=cat:cs.SE&start=0&max_results=100&sortBy=submittedDate&sortOrder=descending" arxiv.SE paper)
                   ("https://csdl-api.computer.org/api/rss/periodicals/mags/cg/rss.xml" IEEE.CG paper)
-                  ("https://csdl-api.computer.org/api/rss/periodicals/letters/ca/rss.xml" IEEE.CA paper)))
-  (setq-default elfeed-show-entry-switch #'pop-to-buffer
+                  ("https://csdl-api.computer.org/api/rss/periodicals/letters/ca/rss.xml" IEEE.CA paper))
+                elfeed-show-entry-switch #'pop-to-buffer
                 elfeed-show-entry-delete #'+rss/delete-pane))
 
 (use-package vlf
@@ -506,7 +491,7 @@
          (pdf-view-mode . disable-line-numbers)
          (pdf-view-mode . pdf-view-midnight-minor-mode))
   :mode ("\\.pdf\\'" . pdf-view-mode)
-  :config
+  :init
   (setq-default pdf-view-display-size 'fit-page
                 pdf-annot-activate-created-annotations nil
                 pdf-view-resize-factor 1.1)
@@ -515,20 +500,19 @@
 (use-package pdf-view-restore
   :after pdf-tools
   :hook (pdf-view-mode . pdf-view-restore-mode)
-  :config (setq-default pdf-view-restore-filename "~/.emacs.d/.gen/.pdf-view-restore"))
+  :init (setq-default pdf-view-restore-filename "~/.emacs.d/.gen/.pdf-view-restore"))
 
 (use-package undo-tree
   :diminish undo-tree-mode
-  :config
-  (global-undo-tree-mode 1)
-  (setq-default undo-tree-visualizer-timestamps t
-                undo-tree-visualizer-diff t)
+  :config (global-undo-tree-mode 1)
+  :init (setq-default undo-tree-visualizer-timestamps t
+                      undo-tree-visualizer-diff t)
   :bind
   ("C-+" . undo-tree-redo)
   ("C-_" . undo-tree-undo))
 
-(use-package immortal-scratch :init (immortal-scratch-mode t))
-(use-package persistent-scratch :init (persistent-scratch-setup-default))
+(use-package immortal-scratch :config (immortal-scratch-mode t))
+(use-package persistent-scratch :config (persistent-scratch-setup-default))
 (use-package scratch :bind ("M-s M-s" . scratch))
 
 
@@ -547,7 +531,7 @@
   :diminish company-mode
   :commands company-complete
   :hook (after-init . global-company-mode)
-  :config (setq-default company-idle-delay nil))
+  :init (setq-default company-idle-delay nil))
 
 (use-package helm-company
   :after helm company
@@ -557,32 +541,29 @@
   :after company
   :hook (after-init . company-statistics-mode))
 
-(use-package company-quickhelp :init (company-quickhelp-mode t))
+(use-package company-quickhelp :config (company-quickhelp-mode t))
 
 (use-package company-lsp
   :after company lsp
   :config (push 'company-lsp company-backends)
-  :init (setq-default
-         company-lsp-enable-recompletion t
-         company-lsp-enable-snippet t))
+  :config (setq-default company-lsp-enable-recompletion t
+                        company-lsp-enable-snippet t))
 
-(use-package magit
-  :bind ("C-c g s" . magit-status))
+(use-package magit :bind ("C-c g s" . magit-status))
 
-(use-package magit-todos :init (magit-todos-mode))
+(use-package magit-todos :config (magit-todos-mode))
 
-(use-package diff-hl :init (global-diff-hl-mode))
+(use-package diff-hl :config (global-diff-hl-mode))
 
 (use-package hl-todo :config (global-hl-todo-mode))
 
 (use-package flycheck
-  :init (global-flycheck-mode)
-  :config
-  (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc verilog-verilator)))
+  :config (global-flycheck-mode)
+  :init (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc verilog-verilator)))
 
 (use-package flycheck-pos-tip
   :after flycheck
-  :init (flycheck-pos-tip-mode))
+  :config (flycheck-pos-tip-mode))
 
 (use-package evil-nerd-commenter :bind ("M-;" . evilnc-comment-or-uncomment-lines))
 
@@ -624,7 +605,7 @@
 (use-package goto-chg :bind ("C-c g ;" . goto-last-change))
 
 (use-package writeroom-mode
-  :init (setq-default writeroom-width 150)
+  :config (setq-default writeroom-width 150)
   :bind ("C-c w r" . writeroom-mode)
   :hook (writeroom-mode . toggle-line-numbers))
 
@@ -633,7 +614,7 @@
 ;;          Org Mode          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package org
-  :config
+  :init
   (setq-default org-src-fontify-natively t
                 org-directory (concat user-data-directory "/Notes")
                 org-catch-invisible-edits 'show-and-error
@@ -657,7 +638,7 @@
   :bind (:map org-mode-map ("C-c C-." . org-time-stamp-inactive)))
 
 (use-package org-babel :ensure nil
-  :init
+  :config
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((python . t)
@@ -665,22 +646,13 @@
      (shell . t)
      (emacs-lisp . t))))
 
-;; (use-package org-tempo :ensure nil
-;;   :after org
-;;   :init
-;;   (add-to-list 'org-modules 'org-tempo)
-;;   (require 'org-tempo))
-
-(use-package org-cliplink
-  :bind
-  (:map org-mode-map
-        ("C-c i l" . org-cliplink)))
+(use-package org-cliplink :bind (:map org-mode-map ("C-c i l" . org-cliplink)))
 
 (use-package org-capture :ensure nil
-  :config
+  :init
   (setq-default  org-capture-file (concat org-directory "/Capture.org")
-                 org-default-notes-file org-capture-file)
-  (setq-default org-capture-templates
+                 org-default-notes-file org-capture-file
+                 org-capture-templates
                 '(("t" "TODO" entry (file+headline org-capture-file "Tasks")
                    "* TODO %?\n  %a\n  %i\n")
                   ("j" "Journal" entry (file+headline org-capture-file "Journal")
@@ -694,7 +666,7 @@
 (use-package org-protocol :ensure nil)
 
 (use-package org-agenda :ensure nil
-  :config (setq-default org-agenda-files (list org-directory))
+  :init (setq-default org-agenda-files (list org-directory))
   :bind ("C-c a" . org-agenda))
 
 (use-package biblio)
@@ -707,7 +679,7 @@
 (use-package cc-mode
   :ensure nil
   :mode ("\\.h\\'" . c++-mode)
-  :config
+  :init
   (c-set-offset 'substatement-open 0)
   (c-set-offset 'innamespace 0)
   (custom-set-variables '(c-noise-macro-names '("constexpr")))
@@ -738,11 +710,10 @@
 (use-package meson-mode :hook (meson-mode . company-mode))
 
 (use-package lsp-mode
-  :init (setq lsp-keymap-prefix "C-c C-l")
-  ;; :hook (c++-mode . lsp)
-  :config
+  :init
   (setq-default lsp-auto-execute-action nil
                 lsp-before-save-edits nil
+                lsp-keymap-prefix "C-c C-l"
                 ;; lsp-auto-guess-root t
                 lsp-enable-snippet t
                 lsp-enable-xref t
@@ -759,16 +730,16 @@
                 read-process-output-max (* 2 1024 1024)
                 lsp-enable-on-type-formatting nil))
 
-(use-package lsp-ui
-  :config
-  (setq-default lsp-ui-flycheck-enable t
-                lsp-ui-imenu-enable t
-                ;; lsp-ui-peek-enable t
-                lsp-ui-sideline-enable t
-                lsp-ui-doc-position 'top))
+;; (use-package lsp-ui
+;;   :init
+;;   (setq-default lsp-ui-flycheck-enable t
+;;                 lsp-ui-imenu-enable t
+;;                 ;; lsp-ui-peek-enable t
+;;                 lsp-ui-sideline-enable t
+;;                 lsp-ui-doc-position 'top))
 
 (use-package dap
-  :init
+  :config
   ;; (tooltip-mode 1)
   (dap-mode 1)
   (dap-ui-mode 1)
@@ -784,8 +755,7 @@
   ("C-c C->" . origami-open-all-nodes))
 
 (use-package lsp-origami
-  :init
-  (add-hook 'origami-mode-hook #'lsp-origami-mode))
+  :init (add-hook 'origami-mode-hook #'lsp-origami-mode))
 
 (use-package company-c-headers
   :after company
@@ -796,8 +766,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package cperl-mode
   :ensure nil
-  :init (defalias 'perl-mode 'cperl-mode)
-  :config
+  :init
+  (defalias 'perl-mode 'cperl-mode)
   (setq-default cperl-indent-level 4
                 cperl-close-paren-offset -4
                 cperl-continued-statement-offset 4
@@ -819,7 +789,7 @@
 
 (use-package sbt-mode
   :commands sbt-start sbt-command
-  :config
+  :init
   (setq-default sbt:program-options '("-Dsbt.supershell=false" "-mem" "16384"))
   ;; WORKAROUND: allows using SPACE when in the minibuffer
   (substitute-key-definition
@@ -838,7 +808,7 @@
 (use-package ansi-color
   :commands ansi-color-apply-on-region
   :hook (compilation-filter . colorize-compilation-buffer)
-  :config
+  :init
   (add-to-list 'comint-output-filter-functions 'ansi-color-process-output)
   (autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t))
 
@@ -849,14 +819,15 @@
 
 (use-package treemacs
   :commands treemacs-resize-icons treemacs-fringe-indicator-mode
-  :init
+  :config
   ;; (treemacs-follow-mode t)
   ;; (treemacs-filewatch-mode t)
   (treemacs-fringe-indicator-mode t)
+  :init
+  (setq-default treemacs-position 'right
+                treemacs-width 50)
   (treemacs-resize-icons 20)
   (add-to-list 'treemacs-pre-file-insert-predicates #'treemacs-is-file-git-ignored?)
-  :config (setq-default treemacs-position 'right
-                        treemacs-width 50)
   :bind
   (:map global-map
         ("C-x t t"   . treemacs)
@@ -869,7 +840,7 @@
 
 (use-package treemacs-magit :after treemacs magit)
 
-(use-package lsp-treemacs :init (lsp-treemacs-sync-mode 1))
+(use-package lsp-treemacs :config (lsp-treemacs-sync-mode 1))
 
 (use-package treemacs-persp
   :after treemacs persp-mode
@@ -889,7 +860,6 @@
   ("C-." . goto-last-change)
   ("C->" . goto-last-change-reverse))
 
-
 (defun my-open-readme ()
   (let* ((project-name (projectile-project-name))
          (project-root (projectile-project-root))
@@ -901,8 +871,8 @@
       (find-file (expand-file-name "README.org" project-root)))))
 
 (use-package projectile
-  :init (projectile-mode 1)
-  :config (setq-default projectile-enable-caching t
+  :config (projectile-mode 1)
+  :init (setq-default projectile-enable-caching t
                         projectile-switch-project-action 'my-open-readme
                         projectile-completion-system 'helm)
   :bind (:map projectile-mode-map ("C-c p" . projectile-command-map)))
@@ -914,11 +884,11 @@
 
 (use-package treemacs-persp
   :after treemacs eyebrowse
-  :config (treemacs-set-scope-type 'Perspectives))
+  :init (treemacs-set-scope-type 'Perspectives))
 
 
 (use-package all-the-icons-ibuffer
-  :init (all-the-icons-ibuffer-mode 1))
+  :config (all-the-icons-ibuffer-mode 1))
 
 (use-package ibuffer-projectile
   :init
@@ -927,7 +897,6 @@
               (ibuffer-projectile-set-filter-groups)
               (unless (eq ibuffer-sorting-mode 'alphabetic)
                 (ibuffer-do-sort-by-alphabetic))))
-  :config
   (setq-default ibuffer-formats
                 '((mark modified read-only " "
                         (name 18 18 :left :elide)
@@ -947,7 +916,7 @@
 
 (use-package nov
   :mode ("\\.epub\\'" . nov-mode)
-  :config (setq-default nov-text-width 100))
+  :init (setq-default nov-text-width 100))
 
 ;; (use-package verilog-mode
 ;;   ;; :mode
@@ -958,12 +927,11 @@
 
 (use-package bm
   :init
-  (setq bm-restore-repository-on-load t)
-  :config
-  ;; Allow cross-buffer 'next'
   (setq-default bm-cycle-all-buffers t
+                bm-restore-repository-on-load t
                 bm-repository-file (concat no-littering-var-directory "bm-repository")
                 bm-buffer-persistence t)
+  :config
   (add-hook 'after-init-hook 'bm-repository-load)
   (add-hook 'kill-buffer-hook #'bm-buffer-save)
   (add-hook 'kill-emacs-hook #'(lambda nil
