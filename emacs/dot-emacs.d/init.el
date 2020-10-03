@@ -39,7 +39,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defvar user-data-directory (getenv "EMACS_STORAGE_LOCATION"))
 (unless user-data-directory
-  (setq user-data-directory "~/Documents/Nextcloud"))
+  (setq user-data-directory "~/Nextcloud"))
 
 (setq-default user-full-name "Furkan Usta"
               user-mail-address "furkanusta17@gmail.com"
@@ -132,7 +132,7 @@
 
 (use-package delsel
   :ensure nil
-  :init (delete-selection-mode 1))
+  :config (delete-selection-mode 1))
 
 (use-package flyspell)
 
@@ -398,9 +398,9 @@
 
 (use-package diminish)
 
-;; (use-package my-darkokai-theme
-;;   :init (load-theme 'my-darkokai t)
-;;   :config (setq my-darkokai-mode-line-padding 4))
+(use-package my-darkokai-theme
+  :init (load-theme 'my-darkokai t)
+  :config (setq my-darkokai-mode-line-padding 4))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Tools & Utils          ;;
@@ -645,7 +645,7 @@
                 org-cycle-separator-lines 0
                 org-src-preserve-indentation nil
                 org-indent-indentation-per-level 1
-                org-adapt-indentation nil
+                org-adapt-indentation t
                 org-hide-leading-stars t
                 org-log-done t
                 org-imenu-depth 4
@@ -889,8 +889,6 @@
   ("C-." . goto-last-change)
   ("C->" . goto-last-change-reverse))
 
-(use-package isearch
-  :bind ("C-c s" . isearch-forward))
 
 (defun my-open-readme ()
   (let* ((project-name (projectile-project-name))
@@ -983,15 +981,3 @@
          ( "<left-fringe> <mouse-5>" . bm-next-mouse)))
 
 ;; (use-package vterm)
-
-;; (use-package vterm-toggle
-;;   :after vterm
-;;   :init
-;;   (add-to-list 'display-buffer-alist
-;;              '((lambda(bufname _) (with-current-buffer bufname (equal major-mode 'vterm-mode)))
-;;                 (display-buffer-reuse-window display-buffer-in-side-window)
-;;                 (side . right)
-;;                 (dedicated . t)
-;;                 (reusable-frames . visible)))
-;;   :config (setq-default vterm-toggle-fullscreen-p nil)
-;;   :bind ("<f8>" . vterm-toggle))
