@@ -10,11 +10,12 @@
   (package-refresh-contents)
   (package-install 'use-package))
 (require 'use-package)
+
 (setq-default use-package-always-defer t)
 ;; (setq-default use-package-always-ensure t)
+
 (setq custom-file "~/.emacs.d/elisp/custom.el")
 (load custom-file)
-
 (add-to-list 'load-path (concat user-emacs-directory "elisp/"))
 (add-to-list 'load-path "/usr/share/emacs/site-lisp/")
 (add-to-list 'custom-theme-load-path (concat user-emacs-directory "elisp/"))
@@ -131,9 +132,7 @@
                       diredfl-write-priv nil
                       diredfl-execute-priv nil))
 
-(use-package delsel
-  :ensure nil
-  :config (delete-selection-mode 1))
+(use-package delsel :ensure nil :demand t :init (delete-selection-mode 1))
 
 (use-package flyspell)
 
@@ -387,7 +386,7 @@
 
 (use-package all-the-icons)
 
-(use-package all-the-icons-dired :init (add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
+(use-package all-the-icons-dired :hook dired-mode)
 
 (use-package display-time :ensure nil :config (display-time-mode))
 
@@ -754,8 +753,7 @@
   ("C-c C-." . origami-close-all-nodes)
   ("C-c C->" . origami-open-all-nodes))
 
-(use-package lsp-origami
-  :init (add-hook 'origami-mode-hook #'lsp-origami-mode))
+(use-package lsp-origami :hook origami-mode)
 
 (use-package company-c-headers
   :after company
@@ -890,23 +888,6 @@
 (use-package all-the-icons-ibuffer
   :config (all-the-icons-ibuffer-mode 1))
 
-(use-package ibuffer-projectile
-  :init
-  (add-hook 'ibuffer-hook
-            (lambda ()
-              (ibuffer-projectile-set-filter-groups)
-              (unless (eq ibuffer-sorting-mode 'alphabetic)
-                (ibuffer-do-sort-by-alphabetic))))
-  (setq-default ibuffer-formats
-                '((mark modified read-only " "
-                        (name 18 18 :left :elide)
-                        " "
-                        (size 9 -1 :right)
-                        " "
-                        (mode 16 16 :left :elide)
-                        " "
-                        project-relative-file))))
-
 (use-package link-hint
   :bind
   ("C-c l o" . link-hint-open-link)
@@ -925,22 +906,24 @@
 ;;   :config
 ;;   (setq-default verilog-auto-newline nil))
 
+(defun bm-save-all ()
+  (progn (bm-buffer-save-all)
+         (bm-repository-save)))
+
 (use-package bm
   :init
   (setq-default bm-cycle-all-buffers t
                 bm-restore-repository-on-load t
                 bm-repository-file (concat no-littering-var-directory "bm-repository")
                 bm-buffer-persistence t)
-  :config
-  (add-hook 'after-init-hook 'bm-repository-load)
-  (add-hook 'kill-buffer-hook #'bm-buffer-save)
-  (add-hook 'kill-emacs-hook #'(lambda nil
-                                 (bm-buffer-save-all)
-                                 (bm-repository-save)))
-  (add-hook 'after-save-hook #'bm-buffer-save)
-  (add-hook 'find-file-hooks   #'bm-buffer-restore)
-  (add-hook 'after-revert-hook #'bm-buffer-restore)
-  (add-hook 'vc-before-checkin-hook #'bm-buffer-save)
+  :hook
+  ((after-init . bm-repository-load)
+   (after-save . bm-buffer-save)
+   (vc-before-checkin . bm-buffer-save)
+   (find-file . bm-buffer-restore)
+   (after-revert . bm-buffer-restore)
+   (kill-buffer . bm-buffer-save)
+   (kill-emacs . bm-save-all))
   :bind (("<f2>" . bm-next)
          ("S-<f2>" . bm-previous)
          ("C-<f2>" . bm-toggle)
