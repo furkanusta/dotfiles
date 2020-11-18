@@ -2,7 +2,7 @@
 Categories=Utility;Development;TextEditor;
 Comment[en_US]=View and edit files
 Comment=View and edit files
-Exec=/home/eksi/.local/bin/emacsclient -c %F
+Exec=emacsclient -c %F
 GenericName[en_US]=Text Editor
 GenericName=Text Editor
 Icon=emacs

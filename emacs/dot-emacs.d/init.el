@@ -386,19 +386,17 @@
 
 (use-package all-the-icons)
 
-(use-package all-the-icons-dired :hook dired-mode)
+(use-package all-the-icons-dired :after all-the-icons :hook (dired-mode . all-the-icons-dired-mode))
 
-(use-package display-time :ensure nil :config (display-time-mode))
+(use-package display-time :ensure nil :init (display-time-mode))
 
 (use-package column-number :ensure nil :config (column-number-mode))
 
-(use-package doom-modeline :config (doom-modeline-mode))
+(use-package doom-modeline :init (doom-modeline-mode))
 
 (use-package diminish)
 
-(use-package my-darkokai-theme
-  :init (load-theme 'my-darkokai t)
-  :init (setq-default my-darkokai-mode-line-padding 4))
+(use-package darkokai-theme :init (load-theme 'darkokai t))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Tools & Utils          ;;
@@ -737,12 +735,12 @@
 ;;                 lsp-ui-sideline-enable t
 ;;                 lsp-ui-doc-position 'top))
 
-(use-package dap
-  :config
-  ;; (tooltip-mode 1)
-  (dap-mode 1)
-  (dap-ui-mode 1)
-  (dap-tooltip-mode 1))
+;; (use-package dap
+;;   :config
+;;   ;; (tooltip-mode 1)
+;;   (dap-mode 1)
+;;   (dap-ui-mode 1)
+;;   (dap-tooltip-mode 1))
 
 ;; (use-package dap-lldb)
 
@@ -753,7 +751,7 @@
   ("C-c C-." . origami-close-all-nodes)
   ("C-c C->" . origami-open-all-nodes))
 
-(use-package lsp-origami :hook origami-mode)
+;; (use-package lsp-origami :hook origami-mode)
 
 (use-package company-c-headers
   :after company
@@ -847,7 +845,7 @@
 (use-package dockerfile-mode :mode ("Dockerfile\\'" "\\.docker"))
 (use-package docker-compose-mode :mode ("docker-compose\\.yml\\'" "-compose.yml\\'"))
 
-(use-package docker)
+;; (use-package docker)
 
 (use-package flycheck-clang-analyzer
   :after flycheck
