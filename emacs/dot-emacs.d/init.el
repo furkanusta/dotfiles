@@ -87,6 +87,10 @@
 
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
+(if (eq initial-window-system 'x)
+    (toggle-frame-maximized)
+  (toggle-frame-fullscreen))
+
 (use-package ediff
   :init (setq-default ediff-window-setup-function 'ediff-setup-windows-plain
                       ediff-split-window-function 'split-window-horizontally))
@@ -461,11 +465,7 @@
                   ("https://what-if.xkcd.com/feed.atom" xkcd)
                   ("http://xkcd.com/rss.xml" xkcd)
                   ("https://esoteric.codes/rss" other)
-                  ("http://irreal.org/blog/?feed=rss2" other)
-                  ("http://export.arxiv.org/api/query?search_query=cat:cs.DS&start=0&max_results=100&sortBy=submittedDate&sortOrder=descending" arxiv.DS paper)
-                  ("http://export.arxiv.org/api/query?search_query=cat:cs.PF&start=0&max_results=100&sortBy=submittedDate&sortOrder=descending" arxiv.PF paper)
-                  ("https://csdl-api.computer.org/api/rss/periodicals/mags/cg/rss.xml" IEEE.CG paper)
-                  ("https://csdl-api.computer.org/api/rss/periodicals/letters/ca/rss.xml" IEEE.CA paper))
+                  ("http://irreal.org/blog/?feed=rss2" other))
                 elfeed-show-entry-switch #'pop-to-buffer
                 elfeed-show-entry-delete #'+rss/delete-pane))
 
