@@ -110,6 +110,7 @@
 (use-package paren :demand t :config (show-paren-mode 1))
 (use-package display-line-numbers :demand t :config (global-display-line-numbers-mode))
 
+(use-package hl-line :config (global-hl-line-mode t))
 
 ;;; file opening procedures
 (defun dired-open-xdg ()
@@ -602,7 +603,8 @@
 (use-package goto-chg :bind ("C-c g ;" . goto-last-change))
 
 (use-package writeroom-mode
-  :config (setq-default writeroom-width 150)
+  :config (setq-default writeroom-width 150
+                        writeroom-mode-line nil)
   :bind ("C-c w r" . writeroom-mode)
   :hook (writeroom-mode . toggle-line-numbers))
 
@@ -612,27 +614,32 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package org
   :init
-  (setq-default org-src-fontify-natively t
-                org-directory (concat user-data-directory "/Notes")
+  (setq-default org-adapt-indentation t
                 org-catch-invisible-edits 'show-and-error
-                org-yank-adjusted-subtrees t
-                org-hide-emphasis-markers t
-                org-src-tab-acts-natively t
+                org-cycle-separator-lines 0
+                org-directory (concat user-data-directory "/Notes")
                 org-edit-src-content-indentation 0
                 org-fontify-quote-and-verse-blocks t
-                org-cycle-separator-lines 0
-                org-src-preserve-indentation nil
-                org-indent-indentation-per-level 1
-                org-adapt-indentation t
+                org-fontify-done-headline t
+                org-fontify-whole-heading-line t
+                org-hide-emphasis-markers t
                 org-hide-leading-stars t
-                org-log-done t
                 org-imenu-depth 4
+                org-indent-indentation-per-level 1
+                org-log-done t
+                org-pretty-entities t
+                org-src-fontify-natively t
+                org-src-preserve-indentation nil
+                org-src-tab-acts-natively t
+                org-yank-adjusted-subtrees t
                 org-todo-keywords '((sequence "TODO" "IN-PROGRESS" "|" "DONE")
                                     (sequence "PAUSED" "SCHEDULED" "|"  "CANCELLED")))
   :hook
   (org-mode . turn-on-flyspell)
   (org-mode . auto-fill-mode)
   :bind (:map org-mode-map ("C-c C-." . org-time-stamp-inactive)))
+
+
 
 (use-package org-babel :ensure nil
   :config
@@ -666,7 +673,10 @@
   :init (setq-default org-agenda-files (list org-directory))
   :bind ("C-c a" . org-agenda))
 
+(use-package org-tempo :after org)
+
 (use-package biblio)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          C++          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -816,8 +826,8 @@
 (use-package treemacs
   :commands treemacs-resize-icons treemacs-fringe-indicator-mode
   :config
-  ;; (treemacs-follow-mode t)
-  ;; (treemacs-filewatch-mode t)
+  (treemacs-follow-mode t)
+  (treemacs-filewatch-mode t)
   (treemacs-fringe-indicator-mode t)
   :init
   (setq-default treemacs-position 'right
@@ -897,12 +907,17 @@
   :mode ("\\.epub\\'" . nov-mode)
   :init (setq-default nov-text-width 100))
 
-;; (use-package verilog-mode
-;;   ;; :mode
-;;   ;; ("\\.v\\'" . verilog-mode)
-;;   ;; ("\\.sv\\'" . verilog-mode)
-;;   :config
-;;   (setq-default verilog-auto-newline nil))
+(use-package verilog-mode
+  :mode
+  ("\\.v\\'" . verilog-mode)
+  ("\\.sv\\'" . verilog-mode)
+  :config (setq-default verilog-auto-newline nil
+                        verilog-tab-always-indent nil
+                        verilog-auto-indent-on-newline nil
+                        verilog-indent-level 2
+                        verilog-indent-level-behavioral 2
+                        verilog-indent-level-declaration 2
+                        verilog-indent-level-module 2))
 
 (defun bm-save-all ()
   (progn (bm-buffer-save-all)
@@ -928,5 +943,18 @@
          ("<left-fringe> <mouse-1>" . bm-toggle-mouse)
          ( "<left-fringe> <mouse-4>" . bm-previous-mouse)
          ( "<left-fringe> <mouse-5>" . bm-next-mouse)))
+
+(use-package beacon
+  :init (beacon-mode 1)
+  :config (setq-default beacon-blink-when-point-moves-vertically 20
+                        beacon-blink-when-buffer-changes nil
+                        beacon-blink-when-window-changes nil))
+
+(use-package neotree
+  :after projectile
+  :hook (projectile-after-switch-project . neotree-projectile-action)
+  :config (setq-default neo-smart-open t
+                        neo-vc-integration nil)
+  :bind ("C-x t n" . neotree-toggle))
 
 ;; (use-package vterm)
