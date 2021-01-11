@@ -341,9 +341,6 @@
 (use-package helm-fd
   :bind ("C-c h f" . helm-fd))
 
-(use-package fd-dired
-  :bind ("C-c h d" . fd-dired))
-
 (use-package helm-swoop
   :bind
   ("C-s" . helm-swoop)
@@ -883,8 +880,7 @@
                         projectile-completion-system 'helm)
   :bind (:map projectile-mode-map ("C-c p" . projectile-command-map)))
 
-(use-package helm-projectile
-  :init (helm-projectile-on))
+(use-package helm-projectile :after helm projectile :init (helm-projectile-on))
 
 (use-package treemacs-projectile :after treemacs projectile)
 
@@ -958,3 +954,114 @@
   :bind ("C-x t n" . neotree-toggle))
 
 ;; (use-package vterm)
+
+;; (use-package selectrum
+;;   :init (selectrum-mode +1))
+
+;; (require 'selectrum-prescient)
+;; (selectrum-prescient-mode +1)
+;; (prescient-persist-mode +1)
+
+
+;; (use-package embark
+;;   :bind ("C-S-a" . embark-act)               ; pick some comfortable binding
+;;   :config
+;;   (defun current-candidate+category ()
+;;     (when selectrum-active-p
+;;       (cons (selectrum--get-meta 'category)
+;;             (selectrum-get-current-candidate))))
+;;   (add-hook 'embark-target-finders #'current-candidate+category)
+;;   (defun current-candidates+category ()
+;;     (when selectrum-active-p
+;;       (cons (selectrum--get-meta 'category)
+;;             (selectrum-get-current-candidates
+;;              ;; Pass relative file names for dired.
+;;              minibuffer-completing-file-name))))
+;;   (add-hook 'embark-candidate-collectors #'current-candidates+category)
+;;   (add-hook 'embark-setup-hook 'selectrum-set-selected-candidate))
+
+;; (use-package marginalia
+;;   :after embark
+;;   :bind ((:map minibuffer-local-map ("C-M-a" . marginalia-cycle))
+;;          (:map embark-general-map ("A" . marginalia-cycle)))
+;;   :init
+;;   (marginalia-mode)
+;;   (advice-add #'marginalia-cycle :after
+;;               (lambda () (when (bound-and-true-p selectrum-mode) (selectrum-exhibit))))
+;;   ;; (setq marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil))
+;; )
+
+;; (use-package orderless
+;;   :init (icomplete-mode) ; optional but recommended!
+;;   :custom (completion-styles '(orderless)))
+
+;; (setq selectrum-refine-candidates-function #'orderless-filter)
+;; (setq selectrum-highlight-candidates-function #'orderless-highlight-matches)
+
+
+;; (use-package consult
+;;   ;; Replace bindings. Lazily loaded due by `use-package'.
+;;   :bind (("C-x M-:" . consult-complex-command)
+;;          ("C-c h" . consult-history)
+;;          ("C-c m" . consult-mode-command)
+;;          ("C-x b" . consult-buffer)
+;;          ("C-x 4 b" . consult-buffer-other-window)
+;;          ("C-x 5 b" . consult-buffer-other-frame)
+;;          ("C-x r x" . consult-register)
+;;          ("C-x r b" . consult-bookmark)
+;;          ("M-g g" . consult-goto-line)
+;;          ("M-g M-g" . consult-goto-line)
+;;          ("M-g o" . consult-outline)       ;; "M-s o" is a good alternative.
+;;          ("M-g l" . consult-line)          ;; "M-s l" is a good alternative.
+;;          ("M-g m" . consult-mark)          ;; I recommend to bind Consult navigation
+;;          ("M-g k" . consult-global-mark)   ;; commands under the "M-g" prefix.
+;;          ("M-g r" . consult-git-grep)      ;; or consult-grep, consult-ripgrep
+;;          ("M-g f" . consult-find)          ;; or consult-locate, my-fdfind
+;;          ("M-g i" . consult-project-imenu) ;; or consult-imenu
+;;          ("M-g e" . consult-error)
+;;          ("M-s m" . consult-multi-occur)
+;;          ("M-y" . consult-yank-pop)
+;;          ("<help> a" . consult-apropos))
+
+;;   ;; The :init configuration is always executed (Not lazy!)
+;;   :init
+
+;;   ;; Custom command wrappers. It is generally encouraged to write your own
+;;   ;; commands based on the Consult commands. Some commands have arguments which
+;;   ;; allow tweaking. Furthermore global configuration variables can be set
+;;   ;; locally in a let-binding.
+;;   (defun my-fdfind (&optional dir)
+;;     (interactive "P")
+;;     (let ((consult-find-command '("fdfind" "--color=never" "--full-path")))
+;;       (consult-find dir)))
+
+;;   ;; Replace `multi-occur' with `consult-multi-occur', which is a drop-in replacement.
+;;   (fset 'multi-occur #'consult-multi-occur)
+
+;;   ;; Configure other variables and modes in the :config section, after lazily loading the package
+;;   :config
+
+;;   ;; Configure preview. Note that the preview-key can also be configured on a
+;;   ;; per-command basis via `consult-config'.
+;;   ;; The default value is 'any, such that any key triggers the preview.
+;;   ;; (setq consult-preview-key (kbd "M-p"))
+
+;;   ;; Optionally configure narrowing key.
+;;   ;; Both < and C-+ work reasonably well.
+;;   (setq consult-narrow-key "<") ;; (kbd "C-+")
+;;   ;; Optionally make narrowing help available in the minibuffer.
+;;   ;; Probably not needed if you are using which-key.
+;;   ;; (define-key consult-narrow-map (vconcat consult-narrow-key "?") #'consult-narrow-help)
+
+;;   ;; Optional configure a view library to be used by `consult-buffer'.
+;;   ;; The view library must provide two functions, one to open the view by name,
+;;   ;; and one function which must return a list of views as strings.
+;;   ;; Example: https://github.com/minad/bookmark-view/
+;;   ;; (setq consult-view-open-function #'bookmark-jump
+;;   ;;       consult-view-list-function #'bookmark-view-names)
+
+;;   (autoload 'projectile-project-root "projectile")
+;;   (setq consult-project-root-function #'projectile-project-root))
+
+;; (use-package consult-selectrum :after selectrum)
+;; (use-package consult-flycheck :bind (:map flycheck-command-map ("!" . consult-flycheck)))
