@@ -899,9 +899,25 @@
 
 (use-package fountain-mode)
 
+(use-package shrface
+  :after nov
+  :demand t
+  :hook (nov-mode . shrface-mode)
+  :config
+  (shrface-basic)
+  (shrface-trial)
+  (setq shrface-href-versatile t
+        nov-shr-rendering-functions (append nov-shr-rendering-functions shr-external-rendering-functions))
+  :bind
+  (:map nov-mode-map
+        ("<tab>" . shrface-outline-cycle)
+        ("S-<tab>" . shrface-outline-cycle-buffer)
+        ("C-j" . shrface-next-headline)
+        ("C-k" . shrface-previous-headline)))
+
 (use-package nov
   :mode ("\\.epub\\'" . nov-mode)
-  :init (setq-default nov-text-width 100))
+  :init (setq nov-text-width 100))
 
 (use-package verilog-mode
   :mode
