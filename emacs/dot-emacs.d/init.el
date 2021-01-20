@@ -463,7 +463,12 @@
                   ("https://what-if.xkcd.com/feed.atom" xkcd)
                   ("http://xkcd.com/rss.xml" xkcd)
                   ("https://esoteric.codes/rss" other)
-                  ("http://irreal.org/blog/?feed=rss2" other))
+                  ("http://irreal.org/blog/?feed=rss2" other)
+                  ("https://www.youtube.com/feeds/videos.xml?channel_id=UC-xTvXTm-lrLWYk308-Km3A" youtube)
+                  ("https://www.youtube.com/feeds/videos.xml?channel_id=UCsvn_Po0SmunchJYOWpOxMg" youtube)
+                  ("https://www.youtube.com/feeds/videos.xml?channel_id=UCCpTaib_e5C6Q95qwazq8OA" youtube)
+                  ("https://www.youtube.com/feeds/videos.xml?channel_id=UCO-_F5ZEUhy0oKrSa69DLMw" youtube)
+                  ("https://www.youtube.com/feeds/videos.xml?channel_id=UC2eEGT06FrWFU6VBnPOR9lg" youtube))
                 elfeed-show-entry-switch #'pop-to-buffer
                 elfeed-show-entry-delete #'+rss/delete-pane))
 
@@ -910,6 +915,17 @@
         nov-shr-rendering-functions (append nov-shr-rendering-functions shr-external-rendering-functions))
   :bind
   (:map nov-mode-map
+        ("<tab>" . shrface-outline-cycle)
+        ("S-<tab>" . shrface-outline-cycle-buffer)
+        ("C-j" . shrface-next-headline)
+        ("C-k" . shrface-previous-headline)))
+
+(use-package eww
+  :defer t
+  :hook (eww-after-render . shrface-mode)
+  :config (require 'shrface)
+  :bind
+  (:map eww-mode-map
         ("<tab>" . shrface-outline-cycle)
         ("S-<tab>" . shrface-outline-cycle-buffer)
         ("C-j" . shrface-next-headline)
