@@ -155,9 +155,8 @@
 
 (use-package saveplace
   :ensure nil
-  :config
-  (save-place-mode 1)
-  (setq-default server-visit-hook (quote (save-place-find-file-hook))))
+  :config (save-place-mode 1)
+  :init (setq-default server-visit-hook (quote (save-place-find-file-hook))))
 
 (use-package uniquify
   :ensure nil
@@ -544,9 +543,10 @@
 
 (use-package company-lsp
   :after company lsp
-  :config (push 'company-lsp company-backends)
-  :config (setq-default company-lsp-enable-recompletion t
-                        company-lsp-enable-snippet t))
+  :init
+  (push 'company-lsp company-backends)
+  (setq-default company-lsp-enable-recompletion t
+                company-lsp-enable-snippet t))
 
 (use-package magit :bind ("C-c g s" . magit-status))
 
@@ -590,7 +590,7 @@
 
 (use-package eyebrowse
   :init (eyebrowse-mode t)
-  :config (setq-default eyebrowse-wrap-around t)
+  :init (setq-default eyebrowse-wrap-around t)
   :bind
   (:map eyebrowse-mode-map
         ("C-c C-w <left>" . eyebrowse-prev-window-config)
@@ -640,9 +640,11 @@
   (org-mode . auto-fill-mode)
   :bind (:map org-mode-map ("C-c C-." . org-time-stamp-inactive)))
 
-(use-package org-alert :init (org-alert-enable))
+(use-package org-alert
+  :commands org-alert-enable
+  :config (org-alert-enable))
 
-(use-package org-fragtog :hook (org-mode . fragtog-mode)
+(use-package org-fragtog :hook (org-mode . org-fragtog-mode))
 
 (use-package org-babel :ensure nil
   :config
@@ -800,11 +802,14 @@
   :commands sbt-start sbt-command
   :init
   (setq-default sbt:program-options '("-Dsbt.supershell=false" "-mem" "16384"))
-  ;; WORKAROUND: allows using SPACE when in the minibuffer
   (substitute-key-definition
    'minibuffer-complete-word
    'self-insert-command
    minibuffer-local-completion-map))
+
+(use-package lsp-metals
+  :hook  (scala-mode . lsp)
+  :init (setq lsp-metals-treeview-show-when-views-received nil))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;            Shell          ;;
@@ -909,11 +914,12 @@
   :after nov
   :demand t
   :hook (nov-mode . shrface-mode)
+  :init
+  (setq shrface-href-versatile t
+        nov-shr-rendering-functions (append nov-shr-rendering-functions shr-external-rendering-functions))
   :config
   (shrface-basic)
   (shrface-trial)
-  (setq shrface-href-versatile t
-        nov-shr-rendering-functions (append nov-shr-rendering-functions shr-external-rendering-functions))
   :bind
   (:map nov-mode-map
         ("<tab>" . shrface-outline-cycle)
@@ -940,13 +946,13 @@
   :mode
   ("\\.v\\'" . verilog-mode)
   ("\\.sv\\'" . verilog-mode)
-  :config (setq-default verilog-auto-newline nil
-                        verilog-tab-always-indent nil
-                        verilog-auto-indent-on-newline nil
-                        verilog-indent-level 2
-                        verilog-indent-level-behavioral 2
-                        verilog-indent-level-declaration 2
-                        verilog-indent-level-module 2))
+  :init (setq-default verilog-auto-newline nil
+                      verilog-tab-always-indent nil
+                      verilog-auto-indent-on-newline nil
+                      verilog-indent-level 2
+                      verilog-indent-level-behavioral 2
+                      verilog-indent-level-declaration 2
+                      verilog-indent-level-module 2))
 
 (defun bm-save-all ()
   (progn (bm-buffer-save-all)
@@ -975,17 +981,21 @@
 
 (use-package beacon
   :init (beacon-mode 1)
-  :config (setq-default beacon-blink-when-point-moves-vertically 20
-                        beacon-blink-when-buffer-changes nil
-                        beacon-blink-when-window-changes nil))
+  :init (setq-default beacon-blink-when-point-moves-vertically 20
+                      beacon-blink-when-buffer-changes nil
+                      beacon-blink-when-window-changes nil))
 
 (use-package neotree
   :after projectile
   :hook (projectile-after-switch-project . neotree-projectile-action)
-  :config (setq-default neo-smart-open t
-                        neo-vc-integration nil)
+  :init (setq-default neo-smart-open t
+                      neo-vc-integration nil)
   :bind ("C-x t n" . neotree-toggle))
 
 ;; (use-package vterm)
 
 (use-package binder)
+
+(use-package tree-sitter
+  :init (global-tree-sitter-mode)
+  :hook (tree-sitter-after-on . tree-sitter-hl-mode))
