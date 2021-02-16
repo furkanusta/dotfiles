@@ -156,7 +156,7 @@
 (use-package saveplace
   :ensure nil
   :config (save-place-mode 1)
-  :init (setq-default server-visit-hook (quote (save-place-find-file-hook))))
+  :hook (server-visit . save-place-find-file-hook))
 
 (use-package uniquify
   :ensure nil
@@ -801,7 +801,7 @@
 (use-package sbt-mode
   :commands sbt-start sbt-command
   :init
-  (setq-default sbt:program-options '("-Dsbt.supershell=false" "-mem" "16384"))
+  (setq-default sbt:program-options '("-Dsbt.supershell=false"))
   (substitute-key-definition
    'minibuffer-complete-word
    'self-insert-command
@@ -999,3 +999,9 @@
 (use-package tree-sitter
   :init (global-tree-sitter-mode)
   :hook (tree-sitter-after-on . tree-sitter-hl-mode))
+
+
+(use-package graphviz-dot-mode
+  :config (setq-default graphviz-dot-indent-width 4))
+
+(use-package company-graphviz-dot)

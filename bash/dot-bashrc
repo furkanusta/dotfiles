@@ -53,28 +53,16 @@ fzf() {
 
 export PATH="/home/eksi/.local/perl/bin${PATH:+:${PATH}}";
 export PATH="$PATH:$HOME/.local/bin:$HOME/bin";
-export PERL5LIB="/home/eksi/.local/perl/lib/perl5";
-export PERL_LOCAL_LIB_ROOT="/home/eksi/.local/perl";
-export PERL_MB_OPT="--install_base \"/home/eksi/.local/perl\"";
-export PERL_MM_OPT="INSTALL_BASE=/home/eksi/.local/perl";
+# export PERL5LIB="/home/eksi/.local/perl/lib/perl5";
+# export PERL_LOCAL_LIB_ROOT="/home/eksi/.local/perl";
+# export PERL_MB_OPT="--install_base \"/home/eksi/.local/perl\"";
+# export PERL_MM_OPT="INSTALL_BASE=/home/eksi/.local/perl";
+# export PERL5LIB=
 
 export LC_ALL="en_US.UTF-8"
 
 export XDG_DATA_DIRS="$XDG_DATA_DIRS:/var/lib/flatpak/exports/share"
 export XDG_DATA_DIRS="$XDG_DATA_DIRS:/home/eksi/.local/share/flatpak/exports/share"
 
-export PERL5LIB=
 
 alias whatsapp="ffmpeg -c:v libx264  -threads 4 -profile:v baseline -level 3.0 -pix_fmt yuv420p"
-
-
-# kdesrc-build ##################################################
-## Add kdesrc-build to PATH
-export PATH="$HOME/kde/src/kdesrc-build:$PATH"
-
-## Run projects built with kdesrc-build
-function kdesrc-run
-{
-  source "$HOME/kde/build/$1/prefix.sh" && "$HOME/kde/usr/bin/$@"
-}
-#################################################################
