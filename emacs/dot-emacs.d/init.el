@@ -42,6 +42,11 @@
 (unless user-data-directory
   (setq user-data-directory "~/Nextcloud"))
 
+(use-package emacs :ensure nil
+  :init
+  (display-time-mode)
+  (column-number-mode))
+
 (setq-default user-full-name "Furkan Usta"
               user-mail-address "furkanusta17@gmail.com"
               user-bibliography (concat user-data-directory "/Papers/Library.bib")
@@ -148,10 +153,10 @@
 (use-package flyspell-correct-helm
   :after flyspell-correct)
 
-;; (use-package recentf
-;;   :ensure nil
-;;   :init (recentf-mode t)
-;;   :config (setq-default recent-save-file "~/.emacs.d/recentf"))
+(use-package recentf
+  :ensure nil
+  :init (recentf-mode t)
+  :config (setq-default recent-save-file "~/.emacs.d/recentf"))
 
 (use-package saveplace
   :ensure nil
@@ -388,10 +393,6 @@
 (use-package all-the-icons)
 
 (use-package all-the-icons-dired :after all-the-icons :hook (dired-mode . all-the-icons-dired-mode))
-
-(use-package display-time :ensure nil :init (display-time-mode))
-
-(use-package column-number :ensure nil :config (column-number-mode))
 
 (use-package doom-modeline :init (doom-modeline-mode))
 
@@ -685,9 +686,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          C++          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; ccls vs cquery: Overall ccls seems better.
-;; ccls vs rtags : It looks like rtags has couple more features, but I had some problems setting it up before
-
 (use-package cc-mode
   :ensure nil
   :mode ("\\.h\\'" . c++-mode)
@@ -707,7 +705,6 @@
                 flycheck-gcc-language-standard "c++1z"
                 flycheck-cppcheck-standards "c++1z"
                 flycheck-clang-standard-library "libc++")
-                ;; flycheck-disabled-checkers '(c/c++-clang))
     (flycheck-add-mode 'c/c++-cppcheck 'c/c++-gcc)
     (flycheck-add-mode 'c/c++-cppcheck 'c/c++-clang)))
 
@@ -796,7 +793,8 @@
 ;; ;;          Scala          ;;
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package scala-mode
-  :interpreter ("scala" . scala-mode))
+  :interpreter ("scala" . scala-mode)
+  :mode ("\\.sc\\'" . scala-mode))
 
 (use-package sbt-mode
   :commands sbt-start sbt-command
@@ -893,8 +891,6 @@
 
 (use-package helm-projectile :after helm projectile :init (helm-projectile-on))
 
-(use-package treemacs-projectile :after treemacs projectile)
-
 (use-package treemacs-persp
   :after treemacs eyebrowse
   :init (treemacs-set-scope-type 'Perspectives))
@@ -949,10 +945,14 @@
   :init (setq-default verilog-auto-newline nil
                       verilog-tab-always-indent nil
                       verilog-auto-indent-on-newline nil
-                      verilog-indent-level 2
-                      verilog-indent-level-behavioral 2
-                      verilog-indent-level-declaration 2
-                      verilog-indent-level-module 2))
+                      verilog-case-indent 4
+                      verilog-cexp-indent 4
+                      verilog-indent-begin-after-if nil
+                      verilog-indent-level 4
+                      verilog-indent-level-behavioral 4
+                      verilog-indent-level-directive 4
+                      verilog-indent-level-declaration 4
+                      verilog-indent-level-module 4))
 
 (defun bm-save-all ()
   (progn (bm-buffer-save-all)
@@ -1000,8 +1000,29 @@
   :init (global-tree-sitter-mode)
   :hook (tree-sitter-after-on . tree-sitter-hl-mode))
 
-
 (use-package graphviz-dot-mode
   :config (setq-default graphviz-dot-indent-width 4))
 
 (use-package company-graphviz-dot)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;
+;;         LISP        ::
+;;;;;;;;;;;;;;;;;;;;;;;;;
+(use-package sly)
+
+(use-package helm-sly
+  :after helm-company
+  :config (sly-mrepl . company-mode)
+  :bind
+  (:map sly-mrepl-mode-map ("<tab>" . helm-company)))
+
+(use-package smartparens
+  :init (require 'smartparens-config))
+
+;;
+(use-package calfw)
+(use-package calfw-org :after calfw
+  :init (setq-default cfw:org-overwrite-default-keybinding t)
+  :bind
+  ("C-c C-f" . cfw:open-org-calendar)
+  (:map cfw:calendar-mode-map ("<return>" . cfw:org-open-agenda-day)))
