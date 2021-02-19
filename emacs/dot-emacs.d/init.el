@@ -41,6 +41,8 @@
 (defvar user-data-directory (getenv "EMACS_STORAGE_LOCATION"))
 (unless user-data-directory
   (setq user-data-directory "~/Nextcloud"))
+(setq user-notes-directory (concat user-data-directory "/Notes"))
+(setq user-papers-directory (concat user-data-directory "/Papers"))
 
 (use-package emacs :ensure nil
   :init
@@ -337,8 +339,9 @@
   :init
   (setq-default bibtex-completion-bibliography user-bibliography
                 bibtex-completion-library-path (concat user-data-directory "/Papers/")
-                bibtex-completion-display-formats '((t . "${=has-pdf=:1}     ${author:50}   | ${year:4} |   ${title:150}"))
-                bibtex-completion-notes-path (concat user-data-directory "/Notes/helm-bibtex-notes")))
+                bibtex-completion-find-additional-pdfs t
+                ;; bibtex-completion-display-formats '((t . "${=has-pdf=:1}     ${author:50}   | ${year:4} |   ${title:150}"))
+                bibtex-completion-notes-path (concat user-notes-directory "/Papers.org")))
 
 (use-package helm-tramp)
 
@@ -619,7 +622,7 @@
   (setq-default org-adapt-indentation t
                 org-catch-invisible-edits 'show-and-error
                 org-cycle-separator-lines 0
-                org-directory (concat user-data-directory "/Notes")
+                org-directory user-notes-directory
                 org-edit-src-content-indentation 0
                 org-fontify-quote-and-verse-blocks t
                 org-fontify-done-headline t
@@ -693,7 +696,25 @@
 
 (use-package org-tempo :after org)
 
+(use-package org-ref
+  :init (setq-default org-ref-bibliography-notes (concat org-directory "/Papers.org")
+                      org-ref-default-bibliography (list user-bibliography)
+                      org-ref-pdf-directory (concat user-data-directory "/Papers/")
+                      org-ref-show-broken-links t))
+
 (use-package biblio)
+
+(use-package org-noter
+  :init
+  (setq-default org-noter-notes-search-path (list org-directory)
+                org-noter-default-notes-file-names (list "Papers.org")
+                org-noter-auto-save-last-location t
+                org-noter-insert-note-no-questions t))
+
+(use-package ebib
+  :custom
+  (ebib-preload-bib-files (list user-bibliography))
+  (ebib-bib-search-dirs (list user-papers-directory)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          C++          ;;
