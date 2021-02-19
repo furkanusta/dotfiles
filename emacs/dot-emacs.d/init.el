@@ -613,6 +613,14 @@
   :bind ("C-c w r" . writeroom-mode)
   :hook (writeroom-mode . toggle-line-numbers))
 
+(use-package focus
+  :bind ("C-c C-f" . focus-mode) ;; Might be unnecessary
+  (:map focus-mode-map
+        ("C-c C-n" . focus-next-thing)
+        ("C-c C-p" . focus-prev-thing)))
+
+(use-package expand-region
+  :bind ("C-}" . er/expand-region))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Org Mode          ;;
