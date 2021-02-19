@@ -66,3 +66,9 @@ export XDG_DATA_DIRS="$XDG_DATA_DIRS:/home/eksi/.local/share/flatpak/exports/sha
 
 
 alias whatsapp="ffmpeg -c:v libx264  -threads 4 -profile:v baseline -level 3.0 -pix_fmt yuv420p"
+
+if [[ "$INSIDE_EMACS" = 'vterm' ]] \
+    && [[ -n ${EMACS_VTERM_PATH} ]] \
+    && [[ -f ${EMACS_VTERM_PATH}/etc/emacs-vterm-bash.sh ]]; then
+	source ${EMACS_VTERM_PATH}/etc/emacs-vterm-bash.sh
+fi
