@@ -676,8 +676,20 @@
 (use-package org-protocol :ensure nil)
 
 (use-package org-agenda :ensure nil
-  :init (setq-default org-agenda-files (list org-directory))
+  :init (setq-default org-agenda-files (list org-directory)
+                      org-agenda-include-diary t)
   :bind ("C-c a" . org-agenda))
+
+(use-package org-refile :ensure nil
+  :init (setq-default org-refile-use-outline-path t
+                      org-refile-targets (quote ((nil :maxlevel . 9)
+                                                 (org-agenda-files :maxlevel . 9)))
+                      org-refile-allow-creating-parent-nodes (quote confirm)))
+
+(use-package org-clock :ensure nil
+  :init (setq-default org-clock-out-remove-zero-time-clocks t
+                      org-clock-report-include-clocking-task t
+                      org-clock-out-when-done t))
 
 (use-package org-tempo :after org)
 
