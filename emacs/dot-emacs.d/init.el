@@ -94,9 +94,7 @@
 
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
-(if (eq initial-window-system 'x)
-    (toggle-frame-maximized)
-  (toggle-frame-fullscreen))
+(toggle-frame-maximized)
 
 (use-package ediff
   :init (setq-default ediff-window-setup-function 'ediff-setup-windows-plain
@@ -248,7 +246,6 @@
 (global-set-key (kbd "M-n") 'scroll-up-in-place)
 (global-set-key (kbd "M-p") 'scroll-down-in-place)
 (global-set-key (kbd "<f7>") 'eww)
-(global-set-key (kbd "<f8>") 'shell)
 (global-set-key (kbd "C-M-;") 'my-align-comments)
 (global-set-key (kbd "C-c C-k") 'kill-other-buffers)
 (global-set-key (kbd "C-c d") 'duplicate-line-or-region)
@@ -474,6 +471,8 @@
                   ("https://www.youtube.com/feeds/videos.xml?channel_id=UC2eEGT06FrWFU6VBnPOR9lg" youtube))
                 elfeed-show-entry-switch #'pop-to-buffer
                 elfeed-show-entry-delete #'+rss/delete-pane))
+
+(use-package pocket-reader)
 
 (use-package vlf
   :after dired
@@ -718,6 +717,9 @@
                 org-noter-default-notes-file-names (list "Papers.org")
                 org-noter-auto-save-last-location t
                 org-noter-insert-note-no-questions t))
+
+(use-package org-books
+  :init (setq org-books-file (concat user-notes-directory "/Books.org")))
 
 (use-package ebib
   :custom
@@ -1038,7 +1040,8 @@
 (use-package multi-vterm :load-path "elisp/" :demand t
   :bind
   ("<f8>" . multi-vterm-dedicated-open)
-  ("C-<f8>" . multi-vterm))
+  ("C-<f8>" . multi-vterm-dedicated-toggle)
+  ("M-<f8>" . multi-vterm))
 
 (use-package binder)
 
@@ -1072,3 +1075,17 @@
   :bind
   ("C-c C-f" . cfw:open-org-calendar)
   (:map cfw:calendar-mode-map ("<return>" . cfw:org-open-agenda-day)))
+
+
+(defun exec-find (command) (locate-file command exec-path exec-suffixes 1))
+
+;; (use-package reformatter)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;
+;;        Python       ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(use-package blacken
+  :init (setq-default blacken-line-length 100)
+  :hook (python-mode . blacken-mode))
