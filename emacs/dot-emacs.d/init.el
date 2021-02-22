@@ -1105,6 +1105,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (use-package tex
+  :mode ("\\.tex\\'" . latex-mode)
   :init (setq-default TeX-master nil
                       TeX-parse-self t
                       TeX-auto-save t
@@ -1122,7 +1123,18 @@
 
 
 (use-package reftex
-  :hook (LaTeX-mode . turn-on-reftex))
+  :hook (LaTeX-mode . turn-on-reftex)
+  :config (setq reftex-plug-into-AUCTeX t))
+
+(use-package cdlatex
+  :hook (LaTeX-mode . cdlatex-mode))
+
+(use-package company-auctex
+  :init (company-auctex-init))
+
+(use-package auctex-latexmk
+  :init (auctex-latexmk-setup)
+  (setq auctex-latexmk-inherit-TeX-PDF-mode t))
 
 ;; (use-package magic-latex-buffer
 ;;   :hook (LaTeX-mode . magic-latex-buffer))
