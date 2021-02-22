@@ -14,6 +14,9 @@
 (setq-default use-package-always-defer t)
 ;; (setq-default use-package-always-ensure t)
 
+(require 'server)
+(unless (server-running-p) (server-start))
+
 (setq custom-file "~/.emacs.d/elisp/custom.el")
 (load custom-file)
 (add-to-list 'load-path (concat user-emacs-directory "elisp/"))
@@ -491,6 +494,7 @@
 (use-package pdf-tools
   :hook ((pdf-view-mode . (lambda () (cua-mode 0)))
          (pdf-view-mode . disable-line-numbers)
+         (pdf-view-mode . pdf-sync-minor-mode)
          (pdf-view-mode . pdf-view-midnight-minor-mode))
   :mode ("\\.pdf\\'" . pdf-view-mode)
   :init
@@ -721,10 +725,16 @@
 (use-package org-books
   :init (setq org-books-file (concat user-notes-directory "/Books.org")))
 
+;; https://alhassy.github.io/org-special-block-extras/
+(use-package org-special-block-extras)
+
 (use-package ebib
-  :custom
-  (ebib-preload-bib-files (list user-bibliography))
-  (ebib-bib-search-dirs (list user-papers-directory)))
+  :init
+  (setq-default ebib-preload-bib-files (list user-bibliography)
+                ebib-bibtex-dialect 'biblatex
+                ebib-default-directory 'first-bib-dir
+                ebib-index-window-size 20
+                ebib-bib-search-dirs (list user-papers-directory)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          C++          ;;
@@ -1089,3 +1099,30 @@
 (use-package blacken
   :init (setq-default blacken-line-length 100)
   :hook (python-mode . blacken-mode))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;
+;;        LaTeX        ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(use-package tex
+  :init (setq-default TeX-master nil
+                      TeX-parse-self t
+                      TeX-auto-save t
+                      ;; TeX-electric-sub-and-superscript t
+                      TeX-parse-self t
+                      TeX-auto-save t
+                      LaTeX-electric-left-right-brace t
+                      TeX-view-program-selection '((output-pdf "PDF Tools"))
+                      TeX-source-correlate-start-server t
+                      TeX-source-correlate-method 'synctex
+                      TeX-electric-math (cons "\\(" "\\)"))
+  (add-hook 'TeX-after-compilation-finished-functions #'TeX-revert-document-buffer)
+  :hook ((LaTeX-mode . TeX-source-correlate-mode)
+         (LaTeX-mode . TeX-PDF-mode)))
+
+
+(use-package reftex
+  :hook (LaTeX-mode . turn-on-reftex))
+
+;; (use-package magic-latex-buffer
+;;   :hook (LaTeX-mode . magic-latex-buffer))
