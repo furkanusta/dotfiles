@@ -705,7 +705,7 @@
                       org-clock-report-include-clocking-task t
                       org-clock-out-when-done t))
 
-(use-package org-tempo :after org)
+(use-package org-tempo :defer nil :after org)
 
 (use-package org-ref
   :init (setq-default org-ref-bibliography-notes (concat org-directory "/Papers.org")
@@ -1076,7 +1076,7 @@
   (:map sly-mrepl-mode-map ("<tab>" . helm-company)))
 
 (use-package smartparens
-  :init (require 'smartparens-config))
+  :config (require 'smartparens-config))
 
 ;;
 (use-package calfw)
