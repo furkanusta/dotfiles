@@ -89,6 +89,7 @@
               scroll-preserve-screen-position t
               frame-resize-pixelwise t
               display-time-default-load-average nil
+              display-time-load-average-threshold 1.0
               display-time-24hr-format t
               undo-limit 1280000
               font-use-system-font t)
@@ -397,7 +398,9 @@
 
 (use-package all-the-icons-dired :after all-the-icons :hook (dired-mode . all-the-icons-dired-mode))
 
-(use-package doom-modeline :init (doom-modeline-mode))
+(use-package doom-modeline
+  :init (doom-modeline-mode)
+  :config (setq-default doom-modeline-buffer-encoding nil))
 
 (use-package diminish)
 
@@ -1130,9 +1133,11 @@
   :hook (LaTeX-mode . cdlatex-mode))
 
 (use-package company-auctex
+  :commands company-auctex-init
   :init (company-auctex-init))
 
 (use-package auctex-latexmk
+  :commands auctex-latexmk-setup
   :init (auctex-latexmk-setup)
   (setq auctex-latexmk-inherit-TeX-PDF-mode t))
 
