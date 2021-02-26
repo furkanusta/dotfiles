@@ -716,6 +716,9 @@
                       org-ref-pdf-directory (concat user-data-directory "/Papers/")
                       org-ref-show-broken-links t))
 
+(use-package bibtex
+  :init (setq-default bibtex-align-at-equal-sign t))
+
 (use-package biblio)
 
 (use-package org-noter

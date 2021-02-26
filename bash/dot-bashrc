@@ -18,7 +18,7 @@ export HISTTIMEFORMAT='%F %T '
 alias ls="ls --color=auto"
 
 set -o noclobber
-bind "set completion-ignore-case on"
+set completion-ignore-case on
 shopt -s cmdhist
 
 
