@@ -44,56 +44,59 @@
 (defvar user-data-directory (getenv "EMACS_STORAGE_LOCATION"))
 (unless user-data-directory
   (setq user-data-directory "~/Nextcloud"))
-(setq user-notes-directory (concat user-data-directory "/Notes"))
-(setq user-papers-directory (concat user-data-directory "/Papers"))
 
 (use-package emacs :ensure nil
   :init
-  (display-time-mode)
-  (column-number-mode))
+  (setq-default user-full-name "Furkan Usta"
+                user-mail-address "furkanusta17@gmail.com"
+                user-papers-directory (concat user-data-directory "/Papers")
+                user-notes-directory (concat user-data-directory "/Notes")
+                user-bibliography (concat user-data-directory "/Papers/Library.bib")
+                save-interprogram-paste-before-kill t
+                emacs-load-start-time (current-time)
+                ad-redefinition-action 'accept
+                ;; backup-inhibited t
+                vc-make-backup-files t
+                version-control t
+                delete-old-versions t
+                calendar-week-start-day 1
+                delete-by-moving-to-trash t
+                confirm-nonexistent-file-or-buffer nil
+                tab-width 4
+                tab-stop-list (number-sequence 4 200 4)
+                indent-tabs-mode nil
+                backup-directory-alist `(("." . "~/.emacs.d/.gen"))
+                gdb-many-windows t
+                use-file-dialog nil
+                use-dialog-box nil
+                inhibit-startup-screen t
+                inhibit-startup-echo-area-message t
+                inhibit-startup-screen t
+                cursor-type 'bar
+                ring-bell-function 'ignore
+                scroll-step 1
+                sentence-end-double-space -1
+                fill-column 100
+                scroll-step 1
+                scroll-conservatively 10000
+                initial-major-mode 'org-mode
+                auto-window-vscroll nil
+                comint-prompt-read-only t
+                vc-follow-symlinks t
+                scroll-preserve-screen-position t
+                frame-resize-pixelwise t
+                undo-limit 1280000
+                large-file-warning-threshold (* 1024 1024 1024) ;; 1GB
+                font-use-system-font t))
 
-(setq-default user-full-name "Furkan Usta"
-              user-mail-address "furkanusta17@gmail.com"
-              user-bibliography (concat user-data-directory "/Papers/Library.bib")
-              save-interprogram-paste-before-kill t
-              emacs-load-start-time (current-time)
-              ad-redefinition-action 'accept
-              ;; backup-inhibited t
-              vc-make-backup-files t
-              version-control t
-              delete-old-versions t
-              calendar-week-start-day 1
-              delete-by-moving-to-trash t
-              confirm-nonexistent-file-or-buffer nil
-              tab-width 4
-              tab-stop-list (number-sequence 4 200 4)
-              indent-tabs-mode nil
-              backup-directory-alist `(("." . "~/.emacs.d/.gen"))
-              gdb-many-windows t
-              use-file-dialog nil
-              use-dialog-box nil
-              inhibit-startup-screen t
-              inhibit-startup-echo-area-message t
-              inhibit-startup-screen t
-              cursor-type 'bar
-              ring-bell-function 'ignore
-              scroll-step 1
-              sentence-end-double-space -1
-              fill-column 100
-              scroll-step 1
-              scroll-conservatively 10000
-              initial-major-mode 'org-mode
-              auto-window-vscroll nil
-              comint-prompt-read-only t
-              vc-follow-symlinks t
-              scroll-preserve-screen-position t
-              frame-resize-pixelwise t
-              display-time-default-load-average nil
-              display-time-load-average-threshold 1.0
-              display-time-24hr-format t
-              undo-limit 1280000
-              dired-clean-up-buffers-too nil
-              font-use-system-font t)
+(use-package column-number-mode :ensure nil)
+
+(use-package display-time :ensure nil
+  :init
+  (setq-default display-time-default-load-average nil
+                display-time-load-average-threshold 100.0
+                display-time-24hr-format t)
+  (display-time-mode))
 
 (fset 'yes-or-no-p 'y-or-n-p)
 
@@ -485,7 +488,8 @@
   :after dired
   :hook (vlf-view-mode . disable-line-numbers)
   :init (require 'vlf-setup)
-  (add-to-list 'vlf-forbidden-modes-list 'pdf-view-mode))
+  (add-to-list 'vlf-forbidden-modes-list 'pdf-view-mode)
+  (add-to-list 'vlf-forbidden-modes-list 'nov-mode))
 
 (defun pdf-view-page-number ()
   (interactive)
@@ -700,7 +704,9 @@
 
 (use-package org-agenda :ensure nil
   :init (setq-default org-agenda-files (list org-directory)
-                      org-agenda-include-diary t)
+                      org-agenda-include-diary t
+                      org-agenda-span 10
+                      org-agenda-start-day "-2d")
   :bind ("C-c a" . org-agenda))
 
 (use-package org-refile :ensure nil
