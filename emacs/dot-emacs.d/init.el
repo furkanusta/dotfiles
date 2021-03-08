@@ -498,6 +498,8 @@
   :hook ((pdf-view-mode . (lambda () (cua-mode 0)))
          (pdf-view-mode . disable-line-numbers)
          (pdf-view-mode . pdf-sync-minor-mode)
+         (pdf-view-mode . pdf-links-minor-mode)
+         (pdf-view-mode . pdf-history-minor-mode)
          (pdf-view-mode . pdf-view-midnight-minor-mode))
   :mode ("\\.pdf\\'" . pdf-view-mode)
   :init
@@ -729,7 +731,8 @@
                 org-noter-insert-note-no-questions t))
 
 (use-package org-books
-  :init (setq org-books-file (concat user-notes-directory "/Books.org")))
+  :init (setq org-books-file (concat user-notes-directory "/Books.org")
+              org-books-file-depth 0))
 
 ;; https://alhassy.github.io/org-special-block-extras/
 (use-package org-special-block-extras)
@@ -950,11 +953,6 @@
 
 (use-package helm-projectile :after helm projectile :init (helm-projectile-on))
 
-(use-package treemacs-persp
-  :after treemacs eyebrowse
-  :init (treemacs-set-scope-type 'Perspectives))
-
-
 (use-package all-the-icons-ibuffer
   :config (all-the-icons-ibuffer-mode 1))
 
@@ -1046,7 +1044,7 @@
 
 (use-package neotree
   :after projectile
-  :hook (projectile-after-switch-project . neotree-projectile-action)
+  ;; :hook (projectile-after-switch-project . neotree-projectile-action)
   :init (setq-default neo-smart-open t
                       neo-vc-integration nil)
   :bind ("C-x t n" . neotree-toggle))
