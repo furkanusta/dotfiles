@@ -92,6 +92,7 @@
               display-time-load-average-threshold 1.0
               display-time-24hr-format t
               undo-limit 1280000
+              dired-clean-up-buffers-too nil
               font-use-system-font t)
 
 (fset 'yes-or-no-p 'y-or-n-p)
