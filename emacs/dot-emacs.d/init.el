@@ -560,7 +560,10 @@
   (setq-default company-lsp-enable-recompletion t
                 company-lsp-enable-snippet t))
 
-(use-package magit :bind ("C-c g s" . magit-status))
+(use-package magit
+  :init (magit-wip-mode 1)
+  :config (setq-default magit-wip-merge-branch t)
+  :bind ("C-c g s" . magit-status))
 
 (use-package magit-todos :config (magit-todos-mode))
 
