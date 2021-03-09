@@ -1059,9 +1059,12 @@
                       neo-vc-integration nil)
   :bind ("C-x t n" . neotree-toggle))
 
-(use-package vterm)
+(use-package vterm
+  :bind (:map vterm-mode-map ("C-c C-c" . vterm-copy-mode)))
 
-(use-package multi-vterm :load-path "elisp/" :demand t
+(use-package multi-vterm
+  :load-path "elisp/"
+  :demand t
   :bind
   ("<f8>" . multi-vterm-dedicated-open)
   ("C-<f8>" . multi-vterm-dedicated-toggle)
