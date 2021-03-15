@@ -897,7 +897,9 @@
   (autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t))
 
 (use-package shell
-  :bind (:map shell-mode-map ("<tab>" . completion-at-point)))
+  :bind
+  ("<f8>" . shell)
+  (:map shell-mode-map ("<tab>" . completion-at-point)))
 
 (add-to-list 'auto-mode-alist '("\\.v\\'" . fundamental-mode))
 
@@ -1062,13 +1064,13 @@
 (use-package vterm
   :bind (:map vterm-mode-map ("C-c C-c" . vterm-copy-mode)))
 
-(use-package multi-vterm
-  :load-path "elisp/"
-  :demand t
-  :bind
-  ("<f8>" . multi-vterm-dedicated-open)
-  ("C-<f8>" . multi-vterm-dedicated-toggle)
-  ("M-<f8>" . multi-vterm))
+;; (use-package multi-vterm
+;;   :load-path "elisp/"
+;;   :demand t
+;;   :bind
+;;   ("<f8>" . multi-vterm-dedicated-open)
+;;   ("C-<f8>" . multi-vterm-dedicated-toggle)
+;;   ("M-<f8>" . multi-vterm))
 
 (use-package binder)
 
