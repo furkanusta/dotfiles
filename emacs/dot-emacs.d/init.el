@@ -550,7 +550,7 @@
 
 (use-package helm-company
   :after helm company
-  :bind ("<C-tab>" . (function helm-company)))
+  :bind ("C-<tab>" . helm-company))
 
 (use-package company-statistics
   :after company
@@ -839,7 +839,7 @@
 
 (use-package company-c-headers
   :after company
-  :init (add-to-list 'company-backends 'company-c-headers))
+  :init (push 'company-c-headers company-backends))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Perl          ;;
@@ -896,12 +896,7 @@
   (add-to-list 'comint-output-filter-functions 'ansi-color-process-output)
   (autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t))
 
-(use-package shell
-  :bind
-  ("<f8>" . shell)
-  (:map shell-mode-map ("<tab>" . completion-at-point)))
-
-(add-to-list 'auto-mode-alist '("\\.v\\'" . fundamental-mode))
+(use-package shell :bind ("<f8>" . shell))
 
 (use-package treemacs
   :commands treemacs-resize-icons treemacs-fringe-indicator-mode
@@ -1159,3 +1154,34 @@
 
 ;; (use-package magic-latex-buffer
 ;;   :hook (LaTeX-mode . magic-latex-buffer))
+
+(use-package native-complete
+  :after shell
+  :init (native-complete-setup-bash))
+
+(use-package company-native-complete
+  :after company native-complete
+  :init (push 'company-native-complete company-backends))
+
+(use-package popper
+  :ensure t
+  :bind (("C-\\"   . popper-toggle-latest)
+         ("M-\\"   . popper-cycle)
+         ("C-M-\\"   . popper-toggle-type))
+  :init
+  (setq popper-reference-buffers '("\\*Messages\\*" "Output\\*$" help-mode compilation-mode)
+        popper-display-function #'popper-select-popup-at-bottom)
+  (popper-mode +1))
+
+(use-package flx)
+
+(use-package helm-flx
+  :after helm flx
+  :init
+  (setq-default helm-flx-for-helm-find-files t
+                helm-flx-for-helm-locate t)
+  (helm-flx-mode +1))
+
+(use-package company-flx
+  :after company flx
+  :init (company-flx-mode +1))
