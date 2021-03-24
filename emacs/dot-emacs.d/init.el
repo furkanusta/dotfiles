@@ -578,7 +578,14 @@
 
 (use-package flycheck
   :config (global-flycheck-mode)
-  :init (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc verilog-verilator)))
+  :init
+  (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc verilog-verilator)
+                flycheck-clang-language-standard "c++20"
+                flycheck-gcc-language-standard "c++20"
+                flycheck-cppcheck-standards "c++20")
+  ;; flycheck-clang-standard-library "libc++")
+  (flycheck-add-mode 'c/c++-cppcheck 'c/c++-gcc)
+  (flycheck-add-mode 'c/c++-cppcheck 'c/c++-clang))
 
 (use-package flycheck-pos-tip
   :after flycheck
@@ -758,7 +765,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          C++          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(use-package cc-mode
+(use-package c++-mode
   :ensure nil
   :mode ("\\.h\\'" . c++-mode)
   :init
@@ -771,14 +778,7 @@
                 access-label 0
                 tab-stop-list '(4 8 12 16 20 24 28 32 36 40 44 48 52 56 60)
                 tab-width 4
-                indent-tabs-mode nil)
-  (with-eval-after-load 'flycheck
-    (setq-default flycheck-clang-language-standard "c++1z"
-                flycheck-gcc-language-standard "c++1z"
-                flycheck-cppcheck-standards "c++1z"
-                flycheck-clang-standard-library "libc++")
-    (flycheck-add-mode 'c/c++-cppcheck 'c/c++-gcc)
-    (flycheck-add-mode 'c/c++-cppcheck 'c/c++-clang)))
+                indent-tabs-mode nil))
 
 (use-package modern-cpp-font-lock
   :diminish modern-c++-font-lock-mode
