@@ -1,74 +1,46 @@
 # .bashrc
-
 # Source global definitions
 if [ -f /etc/bashrc ]; then
 	. /etc/bashrc
 fi
 
-# System wide functions and aliases
-# Environment stuff goes in /etc/profile
-export HISTCONTROL=ignoreboth:erasedups
-export HISTSIZE=100000                   # big big history
-export HISTFILESIZE=100000               # big big history
 shopt -s histappend
-export HISTTIMEFORMAT='%F %T '
-
-#export PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}history -a; history -c; history -r"
-
-alias ls="ls --color=auto"
-
 set -o noclobber
 shopt -s cmdhist
 
-
-alias ls=exa
-alias cat=bat
+export HISTCONTROL=ignoreboth:erasedups
+export HISTSIZE=100000                   # big big history
+export HISTFILESIZE=100000               # big big history
+export HISTTIMEFORMAT='%F %T '
 
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/lib:/usr/local/lib64/"
 export ALTERNATE_EDITOR=""
 export EDITOR='emacsclient -nw'
-
-alias pip3-install="pip3 install --user"
-alias gem-install="gem install --user"
-
-alias ec="emacsclient -t"
-alias mp3-dl="youtube-dl --extract-audio --audio-format=mp3"
-alias clang++="clang++ -std=c++17 -stdlib=libc++"
-#alias trash=trash-put
-export FZF_DEFAULT_COMMAND='fd --type f'
-export FZF_DEFAULT_OPTS="--preview 'head {}'"
-alias flatpak="flatpak --user"
-
-fzf() {
-  local out file key
-  IFS=$'\n' out=$(fzf-tmux --query="$1" --exit-0 --expect=ctrl-e)
-  key=$(head -1 <<< "$out")
-  file=$(head -2 <<< "$out" | tail -1)
-  if [ -n "$file" ]; then
-    [ "$key" = ctrl-e ] && emacsclient -nw "$file"
-  fi
-  echo "$file";
-}
-
 export PERL_LOCAL_LIB_ROOT="$HOME/.local/perl";
 export PATH="$PATH:$HOME/.local/bin:$HOME/bin:$PERL_LOCAL_LIB_ROOT/bin";
 export PERL5LIB="$PERL_LOCAL_LIB_ROOT/lib/perl5";
 export PERL_MB_OPT="--install_base '$PERL_LOCAL_LIB_ROOT'";
 export PERL_MM_OPT="INSTALL_BASE='$PERL_LOCAL_LIB_ROOT'";
-
 export LC_ALL="en_US.UTF-8"
 export XDG_DATA_DIRS="$XDG_DATA_DIRS:/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share"
+export CARGO_HOME="$HOME/.cargo"
+export PATH="$PATH:$CARGO_HOME/bin"
 
+alias ls=exa
+alias cat=bat
+alias pip3-install="pip3 install --user"
+alias gem-install="gem install --user"
+alias ec="emacsclient -t"
+alias mp3-dl="youtube-dl --extract-audio --audio-format=mp3"
+alias clang++="clang++ -std=c++17 -stdlib=libc++"
+alias flatpak="flatpak --user"
 alias whatsapp="ffmpeg -c:v libx264  -threads 4 -profile:v baseline -level 3.0 -pix_fmt yuv420p"
+
+source ~/.config/fzf/completion.bash
+source ~/.config/fzf/key-bindings.bash
 
 if [[ "$INSIDE_EMACS" = 'vterm' ]] \
     && [[ -n ${EMACS_VTERM_PATH} ]] \
     && [[ -f ${EMACS_VTERM_PATH}/etc/emacs-vterm-bash.sh ]]; then
 	source ${EMACS_VTERM_PATH}/etc/emacs-vterm-bash.sh
 fi
-
-export CARGO_HOME="$HOME/.cargo"
-export PATH="$PATH:$CARGO_HOME/bin"
-
-source ~/.config/fzf/completion.bash
-source ~/.config/fzf/key-bindings.bash

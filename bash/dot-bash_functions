@@ -1,0 +1,20 @@
+_ff() {
+    local out file fzf_cmd fzf_opts rc
+    fzf_cmd=$2
+    fzf_opts="--preview 'bat --style=numbers --color=always {}'"
+    IFS=$'\n'
+    out=$(FZF_DEFAULT_COMMAND="$fzf_cmd" FZF_DEFAULT_OPTS="$fzf_opts" fzf-tmux --print-query --query="$1")
+    rc=$?
+    if [[ $rc -eq 0 ]]; then
+        file=$(echo "$out" | tail -n 1)
+        emacsclient -nw "$file"
+    fi
+}
+
+ff() {
+    _ff "$1" "fd -t f"
+}
+
+fff() {
+    _ff "$1" "fd -t f -X file | awk -F: '/ASCII text/ {print \$1}'"
+}
