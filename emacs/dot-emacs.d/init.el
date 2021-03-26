@@ -1,6 +1,23 @@
 ;; Initialization
 (setq gc-cons-threshold 64000000)
 
+;; (defvar bootstrap-version)
+;; (let ((bootstrap-file
+;;        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+;;       (bootstrap-version 5))
+;;   (unless (file-exists-p bootstrap-file)
+;;     (with-current-buffer
+;;         (url-retrieve-synchronously
+;;          "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+;;          'silent 'inhibit-cookies)
+;;       (goto-char (point-max))
+;;       (eval-print-last-sexp)))
+;;   (load bootstrap-file nil 'nomessage))
+;; ;; (setq-default package-enable-at-startup nil)
+
+;; (straight-use-package 'use-package)
+;; (setq-default straight-use-package-by-default)
+
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
@@ -280,15 +297,15 @@
   :init
   (dashboard-setup-startup-hook)
   (add-to-list 'dashboard-item-generators  '(scratch . dashboard-insert-scratch))
-  (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*"))
-        dashboard-center-content t
-        dashboard-startup-banner 'logo
-        dashboard-items '((scratch . 1)
-                          (recents  . 5)
-                          (bookmarks . 5)
-                          (projects . 5)
-                          (agenda . 5))
-        dashboard-banner-logo-title "Emacs"))
+  (setq-default initial-buffer-choice (lambda () (get-buffer "*dashboard*"))
+                dashboard-center-content t
+                dashboard-startup-banner 'logo
+                dashboard-items '((scratch . 1)
+                                  (recents  . 5)
+                                  (bookmarks . 5)
+                                  (projects . 5)
+                                  (agenda . 5))
+                dashboard-banner-logo-title "Emacs"))
 
 (use-package isearch :ensure nil :demand t :bind (("C-c s" . isearch-forward)))
 
@@ -427,9 +444,9 @@
 (use-package image+
   :after image-mode
   :bind (:map image-mode-map
-         ("C-+" . imagex-sticky-zoom-in)
-         ("C--" . imagex-sticky-zoom-out)
-         ("C-0" . imagex-sticky-restore-original)))
+              ("C-+" . imagex-sticky-zoom-in)
+              ("C--" . imagex-sticky-zoom-out)
+              ("C-0" . imagex-sticky-restore-original)))
 
 
 (defun +rss/delete-pane ()
@@ -578,14 +595,14 @@
 
 (use-package flycheck
   :config (global-flycheck-mode)
+  :commands flycheck-add-mode
   :init
   (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc verilog-verilator)
                 flycheck-clang-language-standard "c++20"
                 flycheck-gcc-language-standard "c++20"
                 flycheck-cppcheck-standards "c++20")
   ;; flycheck-clang-standard-library "libc++")
-  (flycheck-add-mode 'c/c++-cppcheck 'c/c++-gcc)
-  (flycheck-add-mode 'c/c++-cppcheck 'c/c++-clang))
+  (flycheck-add-mode 'c/c++-cppcheck 'c++mode))
 
 (use-package flycheck-pos-tip
   :after flycheck
@@ -612,8 +629,8 @@
   :diminish drag-stuff-mode
   :init (drag-stuff-global-mode t)
   :bind (:map drag-stuff-mode-map
-         ("<M-up>" . drag-stuff-up)
-         ("<M-down>" . drag-stuff-down)))
+              ("<M-up>" . drag-stuff-up)
+              ("<M-down>" . drag-stuff-down)))
 
 (use-package eyebrowse
   :init (eyebrowse-mode t)
@@ -697,14 +714,14 @@
   (setq-default  org-capture-file (concat org-directory "/Capture.org")
                  org-default-notes-file org-capture-file
                  org-capture-templates
-                '(("t" "TODO" entry (file+headline org-capture-file "Tasks")
-                   "* TODO %?\n  %a\n  %i\n")
-                  ("j" "Journal" entry (file+headline org-capture-file "Journal")
-                   "* %U\n  %a\n  %i")
-                  ("p" "Protocol" entry (file+headline org-capture-file "Inbox")
-                   "* %?\n  [[%:link][%:description]]\n  %U\n #+BEGIN_QUOTE\n%i\n#+END_QUOTE\n\n\n")
-	              ("L" "Protocol Link" entry (file+headline org-capture-file "Inbox")
-                   "* %?\n  [[%:link][%:description]]\n  %U")))
+                 '(("t" "TODO" entry (file+headline org-capture-file "Tasks")
+                    "* TODO %?\n  %a\n  %i\n")
+                   ("j" "Journal" entry (file+headline org-capture-file "Journal")
+                    "* %U\n  %a\n  %i")
+                   ("p" "Protocol" entry (file+headline org-capture-file "Inbox")
+                    "* %?\n  [[%:link][%:description]]\n  %U\n #+BEGIN_QUOTE\n%i\n#+END_QUOTE\n\n\n")
+                   ("L" "Protocol Link" entry (file+headline org-capture-file "Inbox")
+                    "* %?\n  [[%:link][%:description]]\n  %U")))
   :bind ("C-c c" . org-capture))
 
 (use-package org-protocol :ensure nil)
@@ -748,8 +765,8 @@
                 org-noter-insert-note-no-questions t))
 
 (use-package org-books
-  :init (setq org-books-file (concat user-notes-directory "/Books.org")
-              org-books-file-depth 0))
+  :init (setq-default org-books-file (concat user-notes-directory "/Books.org")
+                      org-books-file-depth 0))
 
 ;; https://alhassy.github.io/org-special-block-extras/
 (use-package org-special-block-extras)
@@ -879,7 +896,7 @@
 
 (use-package lsp-metals
   :hook  (scala-mode . lsp)
-  :init (setq lsp-metals-treeview-show-when-views-received nil))
+  :init (setq-default lsp-metals-treeview-show-when-views-received nil))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;            Shell          ;;
@@ -954,8 +971,8 @@
 (use-package projectile
   :config (projectile-mode 1)
   :init (setq-default projectile-enable-caching t
-                        projectile-switch-project-action 'my-open-readme
-                        projectile-completion-system 'helm)
+                      projectile-switch-project-action 'my-open-readme
+                      projectile-completion-system 'helm)
   :bind (:map projectile-mode-map ("C-c p" . projectile-command-map)))
 
 (use-package helm-projectile :after helm projectile :init (helm-projectile-on))
@@ -975,8 +992,8 @@
   :demand t
   :hook (nov-mode . shrface-mode)
   :init
-  (setq shrface-href-versatile t
-        nov-shr-rendering-functions (append nov-shr-rendering-functions shr-external-rendering-functions))
+  (setq-default shrface-href-versatile t
+                nov-shr-rendering-functions (append nov-shr-rendering-functions shr-external-rendering-functions))
   :config
   (shrface-basic)
   (shrface-trial)
@@ -1000,7 +1017,7 @@
 
 (use-package nov
   :mode ("\\.epub\\'" . nov-mode)
-  :init (setq nov-text-width 100))
+  :init (setq-default nov-text-width 100))
 
 (use-package verilog-mode
   :mode
@@ -1138,7 +1155,7 @@
 
 (use-package reftex
   :hook (LaTeX-mode . turn-on-reftex)
-  :config (setq reftex-plug-into-AUCTeX t))
+  :config (setq-default reftex-plug-into-AUCTeX t))
 
 (use-package cdlatex
   :hook (LaTeX-mode . cdlatex-mode))
@@ -1150,7 +1167,7 @@
 (use-package auctex-latexmk
   :commands auctex-latexmk-setup
   :init (auctex-latexmk-setup)
-  (setq auctex-latexmk-inherit-TeX-PDF-mode t))
+  (setq-default auctex-latexmk-inherit-TeX-PDF-mode t))
 
 ;; (use-package magic-latex-buffer
 ;;   :hook (LaTeX-mode . magic-latex-buffer))
@@ -1169,8 +1186,8 @@
          ("M-\\"   . popper-cycle)
          ("C-M-\\"   . popper-toggle-type))
   :init
-  (setq popper-reference-buffers '("\\*Messages\\*" "Output\\*$" help-mode compilation-mode)
-        popper-display-function #'popper-select-popup-at-bottom)
+  (setq-default popper-reference-buffers '("\\*Messages\\*" "Output\\*$" help-mode compilation-mode)
+                popper-display-function #'popper-select-popup-at-bottom)
   (popper-mode +1))
 
 (use-package flx)
