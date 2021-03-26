@@ -48,6 +48,7 @@
 (use-package no-littering
   :after recentf
   :commands no-littering-expand-var-file-name
+  :defines recentf-exclude
   :init
   (setq-default no-littering-etc-directory (expand-file-name "config/" user-emacs-directory)
                 no-littering-var-directory (expand-file-name "data/" user-emacs-directory)
@@ -62,13 +63,14 @@
 (unless user-data-directory
   (setq user-data-directory "~/Nextcloud"))
 
+(defvar user-papers-directory (concat user-data-directory "/Papers"))
+(defvar user-notes-directory (concat user-data-directory "/Notes"))
+(defvar user-bibliography (concat user-data-directory "/Papers/Library.bib"))
+
 (use-package emacs :ensure nil
   :init
   (setq-default user-full-name "Furkan Usta"
                 user-mail-address "furkanusta17@gmail.com"
-                user-papers-directory (concat user-data-directory "/Papers")
-                user-notes-directory (concat user-data-directory "/Notes")
-                user-bibliography (concat user-data-directory "/Papers/Library.bib")
                 save-interprogram-paste-before-kill t
                 emacs-load-start-time (current-time)
                 ad-redefinition-action 'accept
@@ -143,7 +145,12 @@
 (use-package hl-line :config (global-hl-line-mode t))
 
 ;;; file opening procedures
-(defun dired-open-xdg ()
+
+(use-package dired
+  :ensure nil
+  :commands dired-get-file-for-visit
+  :init
+  (defun dired-open-xdg ()
   "Try to run `xdg-open' to open the file under point."
   (interactive)
   (if (executable-find "xdg-open")
@@ -151,21 +158,12 @@
             (process-connection-type nil))
         (start-process "" nil "xdg-open" (file-truename file)))
     nil))
-
-(use-package dired
-  :ensure nil
-  :init (setq-default dired-listing-switches "-vaBhl  --group-directories-first"
-                      dired-auto-revert-buffer t
-                      dired-create-destination-dirs 'ask
-                      dired-dwim-target t)
+  (setq-default dired-listing-switches "-vaBhl  --group-directories-first"
+                dired-auto-revert-buffer t
+                dired-create-destination-dirs 'ask
+                dired-dwim-target t)
   :bind (:map dired-mode-map
               ("E" . dired-open-xdg)))
-
-(use-package diredfl
-  :config (diredfl-global-mode)
-  :init (setq-default diredfl-read-priv nil
-                      diredfl-write-priv nil
-                      diredfl-execute-priv nil))
 
 (use-package delsel :ensure nil :demand t :init (delete-selection-mode 1))
 
@@ -284,17 +282,17 @@
 (global-set-key [remap fill-paragraph] #'endless/fill-or-unfill)
 (define-key prog-mode-map (kbd "<tab>") 'indent-for-tab-command)
 
-(defun dashboard-insert-scratch (list-size)
+(use-package dashboard
+  :ensure t
+  :commands dashboard-insert-section dashboard-insert-heading dashboard-subseq
+  :init
+  (defun dashboard-insert-scratch (list-size)
   (dashboard-insert-section
    "Scratch:"
    '("*scratch*")
    list-size
    "s"
    `(lambda (&rest ignore) (switch-to-buffer "*scratch*"))))
-
-(use-package dashboard
-  :ensure t
-  :init
   (dashboard-setup-startup-hook)
   (add-to-list 'dashboard-item-generators  '(scratch . dashboard-insert-scratch))
   (setq-default initial-buffer-choice (lambda () (get-buffer "*dashboard*"))
@@ -358,12 +356,12 @@
   (setq-default helm-ff-skip-boring-files t))
 
 (use-package helm-bibtex
-  :init
-  (setq-default bibtex-completion-bibliography user-bibliography
-                bibtex-completion-library-path (concat user-data-directory "/Papers/")
-                bibtex-completion-find-additional-pdfs t
-                ;; bibtex-completion-display-formats '((t . "${=has-pdf=:1}     ${author:50}   | ${year:4} |   ${title:150}"))
-                bibtex-completion-notes-path (concat user-notes-directory "/Papers.org")))
+  :defines user-bibliography
+  :init (setq-default bibtex-completion-bibliography user-bibliography
+                      bibtex-completion-library-path (concat user-data-directory "/Papers/")
+                      bibtex-completion-find-additional-pdfs t
+                      ;; bibtex-completion-display-formats '((t . "${=has-pdf=:1}     ${author:50}   | ${year:4} |   ${title:150}"))
+                      bibtex-completion-notes-path (concat user-notes-directory "/Papers.org")))
 
 (use-package helm-tramp)
 
@@ -417,7 +415,10 @@
 
 (use-package all-the-icons)
 
-(use-package all-the-icons-dired :after all-the-icons :hook (dired-mode . all-the-icons-dired-mode))
+(use-package all-the-icons-dired
+  :after all-the-icons
+  :commands all-the-icons-octicon
+  :hook (dired-mode . all-the-icons-dired-mode))
 
 (use-package doom-modeline
   :init (doom-modeline-mode)
@@ -504,16 +505,10 @@
 (use-package vlf
   :after dired
   :hook (vlf-view-mode . disable-line-numbers)
+  :defines vlf-forbidden-modes-list
   :init (require 'vlf-setup)
   (add-to-list 'vlf-forbidden-modes-list 'pdf-view-mode)
   (add-to-list 'vlf-forbidden-modes-list 'nov-mode))
-
-(defun pdf-view-page-number ()
-  (interactive)
-  (message " [%s/%s]"
-           (number-to-string (pdf-view-current-page))
-           (number-to-string (pdf-cache-number-of-pages))))
-
 
 ;; requires pdf-tools-install
 (use-package pdf-tools
@@ -645,8 +640,6 @@
   :commands global-hungry-delete-mode
   :init (global-hungry-delete-mode))
 
-(use-package goto-chg :bind ("C-c g ;" . goto-last-change))
-
 (use-package writeroom-mode
   :config (setq-default writeroom-width 150
                         writeroom-mode-line nil)
@@ -710,18 +703,18 @@
 (use-package org-cliplink :bind (:map org-mode-map ("C-c i l" . org-cliplink)))
 
 (use-package org-capture :ensure nil
-  :init
-  (setq-default  org-capture-file (concat org-directory "/Capture.org")
-                 org-default-notes-file org-capture-file
-                 org-capture-templates
-                 '(("t" "TODO" entry (file+headline org-capture-file "Tasks")
-                    "* TODO %?\n  %a\n  %i\n")
-                   ("j" "Journal" entry (file+headline org-capture-file "Journal")
-                    "* %U\n  %a\n  %i")
-                   ("p" "Protocol" entry (file+headline org-capture-file "Inbox")
-                    "* %?\n  [[%:link][%:description]]\n  %U\n #+BEGIN_QUOTE\n%i\n#+END_QUOTE\n\n\n")
-                   ("L" "Protocol Link" entry (file+headline org-capture-file "Inbox")
-                    "* %?\n  [[%:link][%:description]]\n  %U")))
+  :defines org-capture-file org-default-notes-file
+  :init (setq-default  org-capture-file (concat org-directory "/Capture.org")
+                       org-default-notes-file org-capture-file
+                       org-capture-templates
+                       '(("t" "TODO" entry (file+headline org-capture-file "Tasks")
+                          "* TODO %?\n  %a\n  %i\n")
+                         ("j" "Journal" entry (file+headline org-capture-file "Journal")
+                          "* %U\n  %a\n  %i")
+                         ("p" "Protocol" entry (file+headline org-capture-file "Inbox")
+                          "* %?\n  [[%:link][%:description]]\n  %U\n #+BEGIN_QUOTE\n%i\n#+END_QUOTE\n\n\n")
+                         ("L" "Protocol Link" entry (file+headline org-capture-file "Inbox")
+                          "* %?\n  [[%:link][%:description]]\n  %U")))
   :bind ("C-c c" . org-capture))
 
 (use-package org-protocol :ensure nil)
@@ -916,11 +909,7 @@
 (use-package shell :bind ("<f8>" . shell))
 
 (use-package treemacs
-  :commands treemacs-resize-icons treemacs-fringe-indicator-mode
-  :config
-  (treemacs-follow-mode t)
-  (treemacs-filewatch-mode t)
-  (treemacs-fringe-indicator-mode t)
+  :commands treemacs-resize-icons treemacs-fringe-indicator-mode treemacs-is-file-git-ignored?
   :init
   (setq-default treemacs-position 'right
                 treemacs-width 50)
@@ -932,16 +921,31 @@
         ("C-x t B"   . treemacs-bookmark)
         ("C-x t C-t" . treemacs-find-file)))
 
+(use-package treemacs-filewatch-mode :ensure nil
+  :after treemacs
+  :commands treemacs-filewatch-mode
+  :config (treemacs-filewatch-mode t))
+
+(use-package treemacs-fringe-indicator-mode :ensure nil
+  :after treemacs
+  :hook (treemacs-mode . treemacs-fringe-indicator-mode))
+
+(use-package treemacs-follow-mode :ensure nil
+  :after treemacs
+  :hook (treemacs-mode . treemacs-follow-mode))
+
 (use-package treemacs-icons-dired
   :after treemacs dired
   :config (treemacs-icons-dired-mode))
 
 (use-package treemacs-magit :after treemacs magit)
 
-(use-package lsp-treemacs :config (lsp-treemacs-sync-mode 1))
+(use-package lsp-treemacs
+  :config (lsp-treemacs-sync-mode 1))
 
 (use-package treemacs-persp
   :after treemacs persp-mode
+  :commands treemacs-set-scope-type
   :config (treemacs-set-scope-type 'Perspectives))
 
 (use-package dockerfile-mode :mode ("Dockerfile\\'" "\\.docker"))
@@ -958,7 +962,11 @@
   ("C-." . goto-last-change)
   ("C->" . goto-last-change-reverse))
 
-(defun my-open-readme ()
+(use-package projectile
+  :commands projectile-project-name projectile-project-root
+  :config (projectile-mode 1)
+  :init
+  (defun my-open-readme ()
   (let* ((project-name (projectile-project-name))
          (project-root (projectile-project-root))
          (project-files (directory-files project-root nil nil t))
@@ -967,12 +975,9 @@
         (let ((readme-file (car readme-files)))
           (find-file (expand-file-name readme-file project-root)))
       (find-file (expand-file-name "README.org" project-root)))))
-
-(use-package projectile
-  :config (projectile-mode 1)
-  :init (setq-default projectile-enable-caching t
-                      projectile-switch-project-action 'my-open-readme
-                      projectile-completion-system 'helm)
+  (setq-default projectile-enable-caching t
+                projectile-switch-project-action 'my-open-readme
+                projectile-completion-system 'helm)
   :bind (:map projectile-mode-map ("C-c p" . projectile-command-map)))
 
 (use-package helm-projectile :after helm projectile :init (helm-projectile-on))
@@ -988,36 +993,37 @@
 (use-package fountain-mode)
 
 (use-package shrface
-  :after nov
-  :demand t
-  :hook (nov-mode . shrface-mode)
-  :init
-  (setq-default shrface-href-versatile t
-                nov-shr-rendering-functions (append nov-shr-rendering-functions shr-external-rendering-functions))
+  :commands shrface-basic shrface-trial
+  :init (setq-default shrface-href-versatile t)
   :config
   (shrface-basic)
-  (shrface-trial)
-  :bind
-  (:map nov-mode-map
-        ("<tab>" . shrface-outline-cycle)
-        ("S-<tab>" . shrface-outline-cycle-buffer)
-        ("C-j" . shrface-next-headline)
-        ("C-k" . shrface-previous-headline)))
+  (shrface-trial))
 
-(use-package eww
-  :defer t
-  :hook (eww-after-render . shrface-mode)
-  :config (require 'shrface)
-  :bind
-  (:map eww-mode-map
-        ("<tab>" . shrface-outline-cycle)
-        ("S-<tab>" . shrface-outline-cycle-buffer)
-        ("C-j" . shrface-next-headline)
-        ("C-k" . shrface-previous-headline)))
+(use-package eww)
 
 (use-package nov
   :mode ("\\.epub\\'" . nov-mode)
   :init (setq-default nov-text-width 100))
+
+(use-package nov-eww :ensure nil
+  :after nov eww
+  :hook (eww-after-render . shrface-mode)
+  :bind (:map eww-mode-map
+              ("<tab>" . shrface-outline-cycle)
+              ("S-<tab>" . shrface-outline-cycle-buffer)
+              ("C-j" . shrface-next-headline)
+              ("C-k" . shrface-previous-headline)))
+
+(use-package nov-shr :ensure nil
+  :hook (nov-mode . shrface-mode)
+  :after nov shr
+  :defines nov-shr-rendering-functions
+  :init (add-to-list 'nov-shr-rendering-functions shr-external-rendering-functions)
+  :bind (:map nov-mode-map
+              ("<tab>" . shrface-outline-cycle)
+              ("S-<tab>" . shrface-outline-cycle-buffer)
+              ("C-j" . shrface-next-headline)
+              ("C-k" . shrface-previous-headline)))
 
 (use-package verilog-mode
   :mode
@@ -1035,12 +1041,12 @@
                       verilog-indent-level-declaration 4
                       verilog-indent-level-module 4))
 
-(defun bm-save-all ()
+(use-package bm
+  :commands bm-buffer-save-all bm-repository-save
+  :init
+  (defun bm-save-all ()
   (progn (bm-buffer-save-all)
          (bm-repository-save)))
-
-(use-package bm
-  :init
   (setq-default bm-cycle-all-buffers t
                 bm-restore-repository-on-load t
                 bm-repository-file (concat no-littering-var-directory "bm-repository")
@@ -1098,13 +1104,14 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;         LISP        ::
 ;;;;;;;;;;;;;;;;;;;;;;;;;
-(use-package sly)
+(use-package sly
+  :init (sly-setup '(sly-mrepl)))
 
 (use-package helm-sly
-  :after helm-company
-  :config (sly-mrepl . company-mode)
-  :bind
-  (:map sly-mrepl-mode-map ("<tab>" . helm-company)))
+  :after sly helm-company
+  :defines sly-mrepl-mode-map
+  :hook (sly-mrepl . company-mode)
+  :bind (:map sly-mrepl-mode-map ("<tab>" . helm-company)))
 
 (use-package smartparens
   :config (require 'smartparens-config))
@@ -1137,6 +1144,7 @@
 
 (use-package tex
   :mode ("\\.tex\\'" . latex-mode)
+  :commands TeX-revert-document-buffer
   :init (setq-default TeX-master nil
                       TeX-parse-self t
                       TeX-auto-save t
@@ -1182,6 +1190,7 @@
 
 (use-package popper
   :ensure t
+  :commands popper-select-popup-at-bottom
   :bind (("C-\\"   . popper-toggle-latest)
          ("M-\\"   . popper-cycle)
          ("C-M-\\"   . popper-toggle-type))
