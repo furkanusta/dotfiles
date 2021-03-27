@@ -17,9 +17,6 @@
 (require 'server)
 (unless (server-running-p) (server-start))
 
-(setq custom-file "~/.emacs.d/elisp/custom.el")
-(load custom-file)
-(add-to-list 'load-path (concat user-emacs-directory "elisp/"))
 (add-to-list 'load-path "/usr/share/emacs/site-lisp/")
 (add-to-list 'custom-theme-load-path (concat user-emacs-directory "elisp/"))
 ;; Init Done
