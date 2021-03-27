@@ -6,12 +6,31 @@
 (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
 (package-initialize)
 
+(unless (package-installed-p 'quelpa)
+  (with-temp-buffer
+    (url-insert-file-contents "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
+    (eval-buffer)
+    (quelpa-self-upgrade)))
+
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
 (require 'use-package)
 
+(require' quelpa)
+
+(quelpa
+ '(quelpa-use-package
+   :fetcher git
+   :url "https://github.com/quelpa/quelpa-use-package.git"))
+(require 'quelpa-use-package)
+
+(defvar my-quelpa-dir (concat user-emacs-directory "quelpa"))
+(defvar my-quelpa-build-dir (concat my-quelpa-dir "build"))
+
 (setq-default use-package-always-defer t)
+(setq use-package-ensure-function 'quelpa)
+
 ;; (setq-default use-package-always-ensure t)
 
 (require 'server)
@@ -19,6 +38,8 @@
 
 (add-to-list 'load-path "/usr/share/emacs/site-lisp/")
 (add-to-list 'custom-theme-load-path (concat user-emacs-directory "elisp/"))
+(setq custom-file (concat user-emacs-directory "elisp/custom.el"))
+(load custom-file :noerror)
 ;; Init Done
 
 ;; Debug
@@ -42,8 +63,12 @@
 (defvar my-notes-directory (concat my-data-directory "/Notes"))
 (defvar my-bibliography (concat my-data-directory "/Papers/Library.bib"))
 
+(toggle-frame-maximized)
+
 (use-package emacs :ensure nil
+  :hook (before-save-hook . delete-trailing-whitespace)
   :init
+  (fset 'yes-or-no-p 'y-or-n-p)
   (setq-default user-full-name "Furkan Usta"
                 user-mail-address "furkanusta17@gmail.com"
                 save-interprogram-paste-before-kill t
@@ -78,6 +103,9 @@
                 large-file-warning-threshold (* 1024 1024 1024) ;; 1GB
                 font-use-system-font t))
 
+(use-package calc :ensure nil
+  :custom (calc-symbolic-mode 1))
+
 (use-package column-number-mode :ensure nil)
 
 (use-package display-time :ensure nil
@@ -86,12 +114,6 @@
   (display-time-load-average-threshold 100.0)
   (display-time-24hr-format t)
   (display-time-mode 1))
-
-(fset 'yes-or-no-p 'y-or-n-p)
-
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
-
-(toggle-frame-maximized)
 
 (use-package ediff
   :custom
@@ -388,6 +410,9 @@
 (use-package all-the-icons-dired
   :after all-the-icons
   :hook (dired-mode . all-the-icons-dired-mode))
+
+(use-package all-the-icons-ibuffer
+  :custom (all-the-icons-ibuffer-mode 1))
 
 (use-package doom-modeline
   :custom
@@ -714,6 +739,12 @@
 (use-package org-tempo :ensure nil
   :after org)
 
+(use-package org-appear
+  :hook (org-mode . org-appear-mode))
+
+(use-package org-pretty-table
+  :hook (org-mode . org-pretty-table-mode))
+
 (use-package org-ref
   :custom
   (org-ref-bibliography-notes (concat org-directory "/Papers.org"))
@@ -947,9 +978,6 @@
 (use-package helm-projectile :after helm projectile
   :init (helm-projectile-on))
 
-(use-package all-the-icons-ibuffer
-  :custom (all-the-icons-ibuffer-mode 1))
-
 (use-package link-hint
   :bind
   ("C-c l o" . link-hint-open-link)
@@ -1133,6 +1161,8 @@
   :config (auctex-latexmk-setup)
   :custom (auctex-latexmk-inherit-TeX-PDF-mode t))
 
+(use-package calctex)
+
 (use-package popper
   :commands popper-select-popup-at-bottom
   :bind (("C-\\"   . popper-toggle-latest)
@@ -1165,3 +1195,8 @@
 
 (use-package transient-dwim
   :bind ("M-=" . transient-dwim-dispatch))
+
+(use-package screenshot
+  :custom
+  (screenshot-line-numbers t)
+  (screenshot-min-width 100))
