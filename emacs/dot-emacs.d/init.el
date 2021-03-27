@@ -31,25 +31,25 @@
 (defun disable-line-numbers ()
   (display-line-numbers-mode -1))
 
-(use-package no-littering)
+(use-package no-littering
+  :demand t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Defaults & Built-ins          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defvar user-data-directory (getenv "EMACS_STORAGE_LOCATION"))
-(unless user-data-directory
-  (setq user-data-directory "~/Nextcloud"))
+(defvar my-data-directory (getenv "EMACS_STORAGE_LOCATION"))
+(unless my-data-directory
+  (setq my-data-directory "~/Nextcloud"))
 
-(defvar user-papers-directory (concat user-data-directory "/Papers"))
-(defvar user-notes-directory (concat user-data-directory "/Notes"))
-(defvar user-bibliography (concat user-data-directory "/Papers/Library.bib"))
+(defvar my-papers-directory (concat my-data-directory "/Papers"))
+(defvar my-notes-directory (concat my-data-directory "/Notes"))
+(defvar my-bibliography (concat my-data-directory "/Papers/Library.bib"))
 
 (use-package emacs :ensure nil
   :init
   (setq-default user-full-name "Furkan Usta"
                 user-mail-address "furkanusta17@gmail.com"
                 save-interprogram-paste-before-kill t
-                emacs-load-start-time (current-time)
                 ad-redefinition-action 'accept
                 vc-make-backup-files t
                 version-control t
@@ -72,7 +72,6 @@
                 fill-column 100
                 scroll-step 1
                 scroll-conservatively 10000
-                initial-major-mode 'org-mode
                 auto-window-vscroll nil
                 comint-prompt-read-only t
                 vc-follow-symlinks t
@@ -330,12 +329,12 @@
   :custom (helm-ff-skip-boring-files t))
 
 (use-package helm-bibtex
-  :defines user-bibliography
+  :defines my-bibliography
   :custom
-  (bibtex-completion-bibliography user-bibliography)
-  (bibtex-completion-library-path (concat user-data-directory "/Papers/"))
+  (bibtex-completion-bibliography my-bibliography)
+  (bibtex-completion-library-path (concat my-data-directory "/Papers/"))
   (bibtex-completion-find-additional-pdfs t)
-  (bibtex-completion-notes-path (concat user-notes-directory "/Papers.org")))
+  (bibtex-completion-notes-path (concat my-notes-directory "/Papers.org")))
 
 (use-package helm-tramp)
 
@@ -637,7 +636,7 @@
   (org-adapt-indentation t)
   (org-catch-invisible-edits 'show-and-error)
   (org-cycle-separator-lines 0)
-  (org-directory user-notes-directory)
+  (org-directory my-notes-directory)
   (org-edit-src-content-indentation 0)
   (org-fontify-quote-and-verse-blocks t)
   (org-fontify-done-headline t)
@@ -721,8 +720,8 @@
 (use-package org-ref
   :custom
   (org-ref-bibliography-notes (concat org-directory "/Papers.org"))
-  (org-ref-default-bibliography (list user-bibliography))
-  (org-ref-pdf-directory (concat user-data-directory "/Papers/"))
+  (org-ref-default-bibliography (list my-bibliography))
+  (org-ref-pdf-directory (concat my-data-directory "/Papers/"))
   (org-ref-show-broken-links t))
 
 (use-package bibtex
@@ -739,7 +738,7 @@
 
 (use-package org-books
   :custom
-  (org-books-file (concat user-notes-directory "/Books.org"))
+  (org-books-file (concat my-notes-directory "/Books.org"))
   (org-books-file-depth 0))
 
 ;; https://alhassy.github.io/org-special-block-extras/
@@ -747,11 +746,11 @@
 
 (use-package ebib
   :custom
-  (ebib-preload-bib-files (list user-bibliography))
+  (ebib-preload-bib-files (list my-bibliography))
   (ebib-bibtex-dialect 'biblatex)
   (ebib-default-directory 'first-bib-dir)
   (ebib-index-window-size 20)
-  (ebib-bib-search-dirs (list user-papers-directory)))
+  (ebib-bib-search-dirs (list my-papers-directory)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          C++          ;;
