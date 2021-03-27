@@ -1,3 +1,4 @@
+# -*- mode: shell-script; -*-
 _ff() {
     local out file fzf_cmd fzf_opts rc
     fzf_cmd=$2
