@@ -25,17 +25,21 @@
 ;; Init Done
 
 ;; Debug
-;; (require 'benchmark-init)
-;; (add-hook 'after-init-hook 'benchmark-init/deactivate)
+(require 'benchmark-init)
+(add-hook 'after-init-hook 'benchmark-init/deactivate)
+
+(defun disable-line-numbers ()
+  (display-line-numbers-mode -1))
 
 (use-package no-littering
   :after recentf
   :commands no-littering-expand-var-file-name
   :defines recentf-exclude
+  :custom
+  (no-littering-etc-directory (expand-file-name "config/" user-emacs-directory))
+  (no-littering-var-directory (expand-file-name "data/" user-emacs-directory))
+  (auto-save-file-name-transforms `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
   :init
-  (setq-default no-littering-etc-directory (expand-file-name "config/" user-emacs-directory)
-                no-littering-var-directory (expand-file-name "data/" user-emacs-directory)
-                auto-save-file-name-transforms `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
   (add-to-list 'recentf-exclude no-littering-var-directory)
   (add-to-list 'recentf-exclude no-littering-etc-directory))
 
@@ -73,7 +77,6 @@
                 use-dialog-box nil
                 inhibit-startup-screen t
                 inhibit-startup-echo-area-message t
-                inhibit-startup-screen t
                 cursor-type 'bar
                 ring-bell-function 'ignore
                 scroll-step 1
@@ -94,11 +97,11 @@
 (use-package column-number-mode :ensure nil)
 
 (use-package display-time :ensure nil
-  :init
-  (setq-default display-time-default-load-average nil
-                display-time-load-average-threshold 100.0
-                display-time-24hr-format t)
-  (display-time-mode))
+  :custom
+  (display-time-default-load-average nil)
+  (display-time-load-average-threshold 100.0)
+  (display-time-24hr-format t)
+  (display-time-mode 1))
 
 (fset 'yes-or-no-p 'y-or-n-p)
 
@@ -107,43 +110,46 @@
 (toggle-frame-maximized)
 
 (use-package ediff
-  :init (setq-default ediff-window-setup-function 'ediff-setup-windows-plain
-                      ediff-split-window-function 'split-window-horizontally))
+  :custom
+  (ediff-window-setup-function 'ediff-setup-windows-plain)
+  (ediff-split-window-function 'split-window-horizontally))
 
-;; These are built-in packages and having ensure results in lots of warnings
-(use-package desktop
-  :ensure nil
-  :config
-  (desktop-save-mode 1)
-  (add-to-list 'desktop-modes-not-to-save 'dired-mode))
+;; ;; These are built-in packages and having ensure results in lots of warnings
+;; (use-package desktop :ensure nil
+;;   :custom (desktop-save-mode 1)
+;;   :init (add-to-list 'desktop-modes-not-to-save 'dired-mode))
 
-(use-package paren :demand t :config (show-paren-mode 1))
-(use-package display-line-numbers :demand t :config (global-display-line-numbers-mode))
+(use-package paren
+  :custom (show-paren-mode 1))
 
-(use-package hl-line :config (global-hl-line-mode t))
+(use-package display-line-numbers
+  :custom (global-display-line-numbers-mode 1))
+
+(use-package hl-line
+  :custom (global-hl-line-mode t))
 
 ;;; file opening procedures
 
-(use-package dired
-  :ensure nil
+(use-package dired :ensure nil
   :commands dired-get-file-for-visit
   :init
   (defun dired-open-xdg ()
-  "Try to run `xdg-open' to open the file under point."
-  (interactive)
-  (if (executable-find "xdg-open")
-      (let ((file (ignore-errors (dired-get-file-for-visit)))
-            (process-connection-type nil))
-        (start-process "" nil "xdg-open" (file-truename file)))
-    nil))
-  (setq-default dired-listing-switches "-vaBhl  --group-directories-first"
-                dired-auto-revert-buffer t
-                dired-create-destination-dirs 'ask
-                dired-dwim-target t)
-  :bind (:map dired-mode-map
-              ("E" . dired-open-xdg)))
+    "Try to run `xdg-open' to open the file under point."
+    (interactive)
+    (if (executable-find "xdg-open")
+        (let ((file (ignore-errors (dired-get-file-for-visit)))
+              (process-connection-type nil))
+          (start-process "" nil "xdg-open" (file-truename file)))
+      nil))
+  :custom
+  (dired-listing-switches "-vaBhl  --group-directories-first")
+  (dired-auto-revert-buffer t)
+  (dired-create-destination-dirs 'ask)
+  (dired-dwim-target t)
+  :bind (:map dired-mode-map ("E" . dired-open-xdg)))
 
-(use-package delsel :ensure nil :demand t :init (delete-selection-mode 1))
+(use-package delsel :ensure nil
+  :custom (delete-selection-mode 1))
 
 (use-package flyspell)
 
@@ -154,24 +160,23 @@
 (use-package flyspell-correct-helm
   :after flyspell-correct)
 
-(use-package recentf
-  :ensure nil
-  :init (recentf-mode t)
-  :config (setq-default recent-save-file "~/.emacs.d/recentf"))
+(use-package recentf :ensure nil
+  :custom (recentf-mode t))
 
-(use-package saveplace
-  :ensure nil
-  :config (save-place-mode 1)
-  :hook (server-visit . save-place-find-file-hook))
+(use-package saveplace :ensure nil
+  :hook (server-visit . save-place-find-file-hook)
+  :custom (save-place-mode 1))
 
 (use-package uniquify
   :ensure nil
-  :init (setq-default uniquify-buffer-name-style 'reverse
-                      uniquify-separator " • "
-                      uniquify-after-kill-buffer-p t
-                      uniquify-ignore-buffers-re "^\\*"))
+  :custom
+  (uniquify-buffer-name-style 'reverse)
+  (uniquify-separator " • ")
+  (uniquify-after-kill-buffer-p t)
+  (uniquify-ignore-buffers-re "^\\*"))
 
-(use-package which-func :config (which-function-mode t))
+(use-package which-func :ensure nil
+  :custom (which-function-mode t))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Functions and keybindings    ;;
@@ -261,29 +266,30 @@
 (define-key prog-mode-map (kbd "<tab>") 'indent-for-tab-command)
 
 (use-package dashboard
-  :ensure t
   :commands dashboard-insert-section dashboard-insert-heading dashboard-subseq
   :init
   (defun dashboard-insert-scratch (list-size)
-  (dashboard-insert-section
-   "Scratch:"
-   '("*scratch*")
-   list-size
-   "s"
-   `(lambda (&rest ignore) (switch-to-buffer "*scratch*"))))
+    (dashboard-insert-section
+     "Scratch:"
+     '("*scratch*")
+     list-size
+     "s"
+     `(lambda (&rest ignore) (switch-to-buffer "*scratch*"))))
   (dashboard-setup-startup-hook)
   (add-to-list 'dashboard-item-generators  '(scratch . dashboard-insert-scratch))
-  (setq-default initial-buffer-choice (lambda () (get-buffer "*dashboard*"))
-                dashboard-center-content t
-                dashboard-startup-banner 'logo
-                dashboard-items '((scratch . 1)
-                                  (recents  . 5)
-                                  (bookmarks . 5)
-                                  (projects . 5)
-                                  (agenda . 5))
-                dashboard-banner-logo-title "Emacs"))
+  :custom
+  (initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
+  (dashboard-center-content t)
+  (dashboard-startup-banner 'logo)
+  (dashboard-items '((scratch . 1)
+                     (recents  . 5)
+                     (bookmarks . 5)
+                     (projects . 5)
+                     (agenda . 5)))
+  (dashboard-banner-logo-title "Emacs"))
 
-(use-package isearch :ensure nil :demand t :bind (("C-c s" . isearch-forward)))
+(use-package isearch :ensure nil
+  :bind (("C-c s" . isearch-forward)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Helm          ;;
@@ -291,12 +297,8 @@
 ;; Helm packages for other modules will be near their corresponding modules, not in here
 
 (use-package helm
-  :diminish helm-mode
-  :commands helm-autoresize-mode
   :config
   (require 'helm-config)
-  (helm-mode 1)
-  (helm-autoresize-mode 1)
   (global-unset-key (kbd "C-x c"))
   :bind
   (("M-x" . helm-M-x)
@@ -311,35 +313,36 @@
    ("<tab>" . helm-execute-persistent-action)
    ("<left>" . helm-previous-source)
    ("<right>" . helm-next-source))
-  :init
-  (setq-default helm-ff-search-library-in-sexp t
-                helm-ff-file-name-history-use-recentf t
-                helm-ff-allow-non-existing-file-at-point nil
-                helm-ff-auto-update-initial-value t
-                helm-ff-guess-ffap-filenames t
-                helm-ff-guess-ffap-urls nil
-                helm-semantic-fuzzy-match t
-                helm-M-x-fuzzy-match t
-                helm-imenu-fuzzy-match t
-                helm-substitute-in-filename-stay-on-remote t
-                helm-boring-buffer-regexp-list (list (rx "*magit-") (rx "*helm") (rx "*flycheck"))
-                helm-split-window-inside-p t
-                helm-move-to-line-cycle-in-source t
-                helm-scroll-amount 8))
+  :custom
+  (helm-ff-search-library-in-sexp t)
+  (helm-ff-file-name-history-use-recentf t)
+  (helm-ff-allow-non-existing-file-at-point nil)
+  (helm-ff-auto-update-initial-value t)
+  (helm-ff-guess-ffap-filenames t)
+  (helm-ff-guess-ffap-urls nil)
+  (helm-semantic-fuzzy-match t)
+  (helm-M-x-fuzzy-match t)
+  (helm-imenu-fuzzy-match t)
+  (helm-substitute-in-filename-stay-on-remote t)
+  (helm-boring-buffer-regexp-list (list (rx "*magit-") (rx "*helm") (rx "*flycheck")))
+  (helm-split-window-inside-p t)
+  (helm-move-to-line-cycle-in-source t)
+  (helm-scroll-amount 8)
+  (helm-autoresize-mode 1)
+  (helm-mode 1))
 
 (use-package helm-files
   :ensure nil
   :bind ("C-x C-f" . helm-find-files)
-  :init
-  (setq-default helm-ff-skip-boring-files t))
+  :custom (helm-ff-skip-boring-files t))
 
 (use-package helm-bibtex
   :defines user-bibliography
-  :init (setq-default bibtex-completion-bibliography user-bibliography
-                      bibtex-completion-library-path (concat user-data-directory "/Papers/")
-                      bibtex-completion-find-additional-pdfs t
-                      ;; bibtex-completion-display-formats '((t . "${=has-pdf=:1}     ${author:50}   | ${year:4} |   ${title:150}"))
-                      bibtex-completion-notes-path (concat user-notes-directory "/Papers.org")))
+  :custom
+  (bibtex-completion-bibliography user-bibliography)
+  (bibtex-completion-library-path (concat user-data-directory "/Papers/"))
+  (bibtex-completion-find-additional-pdfs t)
+  (bibtex-completion-notes-path (concat user-notes-directory "/Papers.org")))
 
 (use-package helm-tramp)
 
@@ -350,10 +353,11 @@
   :bind
   ("C-s" . helm-swoop)
   ("C-c h h" . helm-swoop-back-to-last-point)
-  :init (setq-default helm-swoop-split-with-multiple-windows nil
-                      helm-swoop-move-to-line-cycle t
-                      helm-swoop-use-fuzzy-match nil
-                      helm-swoop-speed-or-color t))
+  :custom
+  (helm-swoop-split-with-multiple-windows nil)
+  (helm-swoop-move-to-line-cycle t)
+  (helm-swoop-use-fuzzy-match nil)
+  (helm-swoop-speed-or-color t))
 
 (use-package helm-rg
   :bind ("C-c C-s" .  helm-rg))
@@ -364,8 +368,7 @@
 
 (use-package ace-jump-helm-line
   :after helm
-  :bind (:map helm-map
-              ("C-'" . ace-jump-helm-line)))
+  :bind (:map helm-map ("C-'" . ace-jump-helm-line)))
 
 (use-package deadgrep
   :bind ("C-c h s" . deadgrep))
@@ -376,10 +379,10 @@
 
 (use-package helm-lsp)
 
-(use-package xref
-  :init (setq-default xref-show-xrefs-function 'helm-xref-show-xrefs))
+(use-package xref)
 
-(use-package helm-xref)
+(use-package helm-xref
+  :custom (xref-show-xrefs-function 'helm-xref-show-xrefs))
 
 (use-package avy
   :bind
@@ -395,27 +398,21 @@
 
 (use-package all-the-icons-dired
   :after all-the-icons
-  :commands all-the-icons-octicon
   :hook (dired-mode . all-the-icons-dired-mode))
 
 (use-package doom-modeline
-  :init (doom-modeline-mode)
-  :config (setq-default doom-modeline-buffer-encoding nil))
+  :custom
+  (doom-modeline-mode 1)
+  (doom-modeline-buffer-encoding nil))
 
 (use-package diminish)
 
-(use-package darkokai-theme :init (load-theme 'darkokai t))
+(use-package darkokai-theme
+  :init (load-theme 'darkokai t))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Tools & Utils          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defun disable-line-numbers ()
-  (display-line-numbers-mode -1))
-
-(defun toggle-line-numbers ()
-  (display-line-numbers-mode (or (not display-line-numbers-mode) 0)))
-
 (use-package image-mode
   :ensure nil
   :hook (image-mode . disable-line-numbers))
@@ -427,8 +424,9 @@
               ("C--" . imagex-sticky-zoom-out)
               ("C-0" . imagex-sticky-restore-original)))
 
-
-(defun +rss/delete-pane ()
+(use-package elfeed
+  :init
+  (defun +rss/delete-pane ()
   "Delete the *elfeed-entry* split pane."
   (interactive)
   (let* ((buf (get-buffer "*elfeed-entry*"))
@@ -436,10 +434,8 @@
     (delete-window window)
     (when (buffer-live-p buf)
       (kill-buffer buf))))
-
-(use-package elfeed
-  :init
-  (setq-default elfeed-feeds
+  :custom
+  (elfeed-feeds
                 '(("http://research.swtch.com/feeds/posts/default" other)
                   ("http://bitbashing.io/feed.xml" other)
                   ("http://preshing.com/feed" other)
@@ -474,9 +470,9 @@
                   ("https://www.youtube.com/feeds/videos.xml?channel_id=UCsvn_Po0SmunchJYOWpOxMg" youtube)
                   ("https://www.youtube.com/feeds/videos.xml?channel_id=UCCpTaib_e5C6Q95qwazq8OA" youtube)
                   ("https://www.youtube.com/feeds/videos.xml?channel_id=UCO-_F5ZEUhy0oKrSa69DLMw" youtube)
-                  ("https://www.youtube.com/feeds/videos.xml?channel_id=UC2eEGT06FrWFU6VBnPOR9lg" youtube))
-                elfeed-show-entry-switch #'pop-to-buffer
-                elfeed-show-entry-delete #'+rss/delete-pane))
+                  ("https://www.youtube.com/feeds/videos.xml?channel_id=UC2eEGT06FrWFU6VBnPOR9lg" youtube)))
+  (elfeed-show-entry-switch #'pop-to-buffer)
+  (elfeed-show-entry-delete #'+rss/delete-pane))
 
 (use-package pocket-reader)
 
@@ -484,7 +480,8 @@
   :after dired
   :hook (vlf-view-mode . disable-line-numbers)
   :defines vlf-forbidden-modes-list
-  :init (require 'vlf-setup)
+  :init
+  (require 'vlf-setup)
   (add-to-list 'vlf-forbidden-modes-list 'pdf-view-mode)
   (add-to-list 'vlf-forbidden-modes-list 'nov-mode))
 
@@ -497,33 +494,37 @@
          (pdf-view-mode . pdf-history-minor-mode)
          (pdf-view-mode . pdf-view-midnight-minor-mode))
   :mode ("\\.pdf\\'" . pdf-view-mode)
-  :init
-  (setq-default pdf-view-display-size 'fit-page
-                pdf-annot-activate-created-annotations nil
-                pdf-view-resize-factor 1.1))
+  :custom
+  (pdf-view-display-size 'fit-page)
+  (pdf-annot-activate-created-annotations nil)
+  (pdf-view-resize-factor 1.1))
 
 (use-package pdf-view-restore
   :after pdf-tools
   :hook (pdf-view-mode . pdf-view-restore-mode)
-  :init (setq-default pdf-view-restore-filename "~/.emacs.d/.gen/.pdf-view-restore"))
+  :custom (pdf-view-restore-filename "~/.emacs.d/.gen/.pdf-view-restore"))
 
 (use-package undo-tree
   :diminish undo-tree-mode
-  :config (global-undo-tree-mode 1)
-  :init (setq-default undo-tree-visualizer-timestamps t
-                      undo-tree-visualizer-diff t)
+  :custom
+  (global-undo-tree-mode 1)
+  (undo-tree-visualizer-timestamps t)
+  (undo-tree-visualizer-diff t)
   :bind
   ("C-+" . undo-tree-redo)
   ("C-_" . undo-tree-undo))
 
-(use-package immortal-scratch :config (immortal-scratch-mode t))
-(use-package persistent-scratch :config (persistent-scratch-setup-default))
-(use-package scratch :bind ("M-s M-s" . scratch))
+(use-package immortal-scratch
+  :custom (immortal-scratch-mode t))
 
+(use-package persistent-scratch
+  :config (persistent-scratch-setup-default))
+
+(use-package scratch
+  :bind ("M-s M-s" . scratch))
 
 (use-package yasnippet
-  :diminish yas-minor-mode
-  :config (yas-global-mode 1)
+  :custom (yas-global-mode 1)
   :bind ("M-i" . yas-expand)
   (:map yas-minor-mode-map ("<tab>" . nil)))
 
@@ -533,10 +534,8 @@
 
 ;; Generic
 (use-package company
-  :diminish company-mode
-  :commands company-complete
   :hook (after-init . global-company-mode)
-  :init (setq-default company-idle-delay nil))
+  :custom (company-idle-delay nil))
 
 (use-package helm-company
   :after helm company
@@ -546,40 +545,46 @@
   :after company
   :hook (after-init . company-statistics-mode))
 
-(use-package company-quickhelp :config (company-quickhelp-mode t))
+(use-package company-quickhelp
+  :custom (company-quickhelp-mode t))
 
 (use-package company-lsp
   :after company lsp
-  :init
-  (push 'company-lsp company-backends)
-  (setq-default company-lsp-enable-recompletion t
-                company-lsp-enable-snippet t))
+  :init (push 'company-lsp company-backends)
+  :custom
+  (company-lsp-enable-recompletion t)
+  (company-lsp-enable-snippet t))
 
 (use-package magit
-  :init (magit-wip-mode 1)
-  :config (setq-default magit-wip-merge-branch t)
+  :custom
+  (magit-wip-mode 1)
+  (magit-wip-merge-branch t)
   :bind ("C-c g s" . magit-status))
 
-(use-package magit-todos :config (magit-todos-mode))
+(use-package magit-todos
+  :custom (magit-todos-mode 1))
 
-(use-package diff-hl :config (global-diff-hl-mode))
+(use-package diff-hl
+  :custom (global-diff-hl-mode 1))
 
-(use-package hl-todo :config (global-hl-todo-mode))
+(use-package hl-todo
+  :custom (global-hl-todo-mode 1))
 
 (use-package flycheck
-  :config (global-flycheck-mode)
   :commands flycheck-add-mode
-  :init
-  (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc verilog-verilator)
-                flycheck-clang-language-standard "c++20"
-                flycheck-gcc-language-standard "c++20"
-                flycheck-cppcheck-standards "c++20")
-  ;; flycheck-clang-standard-library "libc++")
+  :custom
+  (global-flycheck-mode 1)
+  (flycheck-disabled-checkers '(emacs-lisp-checkdoc verilog-verilator))
+  (flycheck-clang-language-standard "c++20")
+  (flycheck-gcc-language-standard "c++20")
+  (flycheck-cppcheck-standards "c++20")
+  :config
+  (flycheck-add-mode 'perl-perlcritic 'perl)
   (flycheck-add-mode 'c/c++-cppcheck 'c++mode))
 
 (use-package flycheck-pos-tip
   :after flycheck
-  :config (flycheck-pos-tip-mode))
+  :custom (flycheck-pos-tip-mode 1))
 
 (use-package evil-nerd-commenter :bind ("M-;" . evilnc-comment-or-uncomment-lines))
 
@@ -599,15 +604,15 @@
   ("C-c S-<right>" . buf-move-right))
 
 (use-package drag-stuff
-  :diminish drag-stuff-mode
-  :init (drag-stuff-global-mode t)
+  :custom (drag-stuff-global-mode t)
   :bind (:map drag-stuff-mode-map
               ("<M-up>" . drag-stuff-up)
               ("<M-down>" . drag-stuff-down)))
 
 (use-package eyebrowse
-  :init (eyebrowse-mode t)
-  :init (setq-default eyebrowse-wrap-around t)
+  :custom
+  (eyebrowse-wrap-around t)
+  (eyebrowse-mode 1)
   :bind
   (:map eyebrowse-mode-map
         ("C-c C-w <left>" . eyebrowse-prev-window-config)
@@ -615,14 +620,17 @@
         ("C-c C-w <right>" . eyebrowse-next-window-config)))
 
 (use-package hungry-delete
-  :commands global-hungry-delete-mode
-  :init (global-hungry-delete-mode))
+  :custom (global-hungry-delete-mode 1))
 
 (use-package writeroom-mode
-  :config (setq-default writeroom-width 150
-                        writeroom-mode-line nil)
-  :bind ("C-c w r" . writeroom-mode)
-  :hook (writeroom-mode . toggle-line-numbers))
+  :hook (writeroom-mode . toggle-line-numbers)
+  :init
+  (defun toggle-line-numbers ()
+    (display-line-numbers-mode (or (not display-line-numbers-mode) 0)))
+  :custom
+  (writeroom-width 150)
+  (writeroom-mode-line nil)
+  :bind ("C-c w r" . writeroom-mode))
 
 (use-package focus
   :bind ("C-c C-f" . focus-mode) ;; Might be unnecessary
@@ -637,27 +645,27 @@
 ;;          Org Mode          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package org
-  :init
-  (setq-default org-adapt-indentation t
-                org-catch-invisible-edits 'show-and-error
-                org-cycle-separator-lines 0
-                org-directory user-notes-directory
-                org-edit-src-content-indentation 0
-                org-fontify-quote-and-verse-blocks t
-                org-fontify-done-headline t
-                org-fontify-whole-heading-line t
-                org-hide-emphasis-markers t
-                org-hide-leading-stars t
-                org-imenu-depth 4
-                org-indent-indentation-per-level 1
-                org-log-done t
-                org-pretty-entities t
-                org-src-fontify-natively t
-                org-src-preserve-indentation nil
-                org-src-tab-acts-natively t
-                org-yank-adjusted-subtrees t
-                org-todo-keywords '((sequence "TODO" "IN-PROGRESS" "|" "DONE")
-                                    (sequence "PAUSED" "SCHEDULED" "|"  "CANCELLED")))
+  :custom
+  (org-adapt-indentation t)
+  (org-catch-invisible-edits 'show-and-error)
+  (org-cycle-separator-lines 0)
+  (org-directory user-notes-directory)
+  (org-edit-src-content-indentation 0)
+  (org-fontify-quote-and-verse-blocks t)
+  (org-fontify-done-headline t)
+  (org-fontify-whole-heading-line t)
+  (org-hide-emphasis-markers t)
+  (org-hide-leading-stars t)
+  (org-imenu-depth 4)
+  (org-indent-indentation-per-level 1)
+  (org-log-done t)
+  (org-pretty-entities t)
+  (org-src-fontify-natively t)
+  (org-src-preserve-indentation nil)
+  (org-src-tab-acts-natively t)
+  (org-yank-adjusted-subtrees t)
+  (org-todo-keywords '((sequence "TODO" "IN-PROGRESS" "|" "DONE")
+                       (sequence "PAUSED" "SCHEDULED" "|"  "CANCELLED")))
   :hook
   (org-mode . turn-on-flyspell)
   (org-mode . auto-fill-mode)
@@ -667,7 +675,8 @@
   :commands org-alert-enable
   :config (org-alert-enable))
 
-(use-package org-fragtog :hook (org-mode . org-fragtog-mode))
+(use-package org-fragtog
+  :hook (org-mode . org-fragtog-mode))
 
 (use-package org-babel :ensure nil
   :config
@@ -678,95 +687,101 @@
      (shell . t)
      (emacs-lisp . t))))
 
-(use-package org-cliplink :bind (:map org-mode-map ("C-c i l" . org-cliplink)))
+(use-package org-cliplink
+  :bind (:map org-mode-map ("C-c i l" . org-cliplink)))
 
 (use-package org-capture :ensure nil
   :defines org-capture-file org-default-notes-file
-  :init (setq-default  org-capture-file (concat org-directory "/Capture.org")
-                       org-default-notes-file org-capture-file
-                       org-capture-templates
-                       '(("t" "TODO" entry (file+headline org-capture-file "Tasks")
-                          "* TODO %?\n  %a\n  %i\n")
-                         ("j" "Journal" entry (file+headline org-capture-file "Journal")
-                          "* %U\n  %a\n  %i")
-                         ("p" "Protocol" entry (file+headline org-capture-file "Inbox")
-                          "* %?\n  [[%:link][%:description]]\n  %U\n #+BEGIN_QUOTE\n%i\n#+END_QUOTE\n\n\n")
-                         ("L" "Protocol Link" entry (file+headline org-capture-file "Inbox")
-                          "* %?\n  [[%:link][%:description]]\n  %U")))
+  :custom
+  (org-capture-file (concat org-directory "/Capture.org"))
+  (org-default-notes-file org-capture-file)
+  (org-capture-templates '(("t" "TODO" entry (file+headline org-capture-file "Tasks")
+                            "* TODO %?\n  %a\n  %i\n")
+                           ("j" "Journal" entry (file+headline org-capture-file "Journal")
+                            "* %U\n  %a\n  %i")
+                           ("p" "Protocol" entry (file+headline org-capture-file "Inbox")
+                            "* %?\n  [[%:link][%:description]]\n  %U\n #+BEGIN_QUOTE\n%i\n#+END_QUOTE\n\n\n")
+                           ("L" "Protocol Link" entry (file+headline org-capture-file "Inbox")
+                            "* %?\n  [[%:link][%:description]]\n  %U")))
   :bind ("C-c c" . org-capture))
 
 (use-package org-protocol :ensure nil)
 
 (use-package org-agenda :ensure nil
-  :init (setq-default org-agenda-files (list org-directory)
-                      org-agenda-include-diary t
-                      org-agenda-span 10
-                      org-agenda-start-day "-2d")
+  :custom
+  (org-agenda-files (list org-directory))
+  (org-agenda-include-diary t)
+  (org-agenda-span 10)
+  (org-agenda-start-day "-2d")
   :bind ("C-c a" . org-agenda))
 
 (use-package org-refile :ensure nil
-  :init (setq-default org-refile-use-outline-path t
-                      org-refile-targets (quote ((nil :maxlevel . 9)
-                                                 (org-agenda-files :maxlevel . 9)))
-                      org-refile-allow-creating-parent-nodes (quote confirm)))
+  :custom
+  (org-refile-use-outline-path t)
+  (org-refile-targets '((nil :maxlevel . 9)
+                        (org-agenda-files :maxlevel . 9)))
+  (org-refile-allow-creating-parent-nodes 'confirm))
 
 (use-package org-clock :ensure nil
-  :init (setq-default org-clock-out-remove-zero-time-clocks t
-                      org-clock-report-include-clocking-task t
-                      org-clock-out-when-done t))
+  :custom
+  (org-clock-out-remove-zero-time-clocks t)
+  (org-clock-report-include-clocking-task t)
+  (org-clock-out-when-done t))
 
-(use-package org-tempo :defer nil :after org)
+(use-package org-tempo :ensure nil
+  :after org)
 
 (use-package org-ref
-  :init (setq-default org-ref-bibliography-notes (concat org-directory "/Papers.org")
-                      org-ref-default-bibliography (list user-bibliography)
-                      org-ref-pdf-directory (concat user-data-directory "/Papers/")
-                      org-ref-show-broken-links t))
+  :custom
+  (org-ref-bibliography-notes (concat org-directory "/Papers.org"))
+  (org-ref-default-bibliography (list user-bibliography))
+  (org-ref-pdf-directory (concat user-data-directory "/Papers/"))
+  (org-ref-show-broken-links t))
 
 (use-package bibtex
-  :init (setq-default bibtex-align-at-equal-sign t))
+  :custom (bibtex-align-at-equal-sign t))
 
 (use-package biblio)
 
 (use-package org-noter
-  :init
-  (setq-default org-noter-notes-search-path (list org-directory)
-                org-noter-default-notes-file-names (list "Papers.org")
-                org-noter-auto-save-last-location t
-                org-noter-insert-note-no-questions t))
+  :custom
+  (org-noter-notes-search-path (list org-directory))
+  (org-noter-default-notes-file-names (list "Papers.org"))
+  (org-noter-auto-save-last-location t)
+  (org-noter-insert-note-no-questions t))
 
 (use-package org-books
-  :init (setq-default org-books-file (concat user-notes-directory "/Books.org")
-                      org-books-file-depth 0))
+  :custom
+  (org-books-file (concat user-notes-directory "/Books.org"))
+  (org-books-file-depth 0))
 
 ;; https://alhassy.github.io/org-special-block-extras/
 (use-package org-special-block-extras)
 
 (use-package ebib
-  :init
-  (setq-default ebib-preload-bib-files (list user-bibliography)
-                ebib-bibtex-dialect 'biblatex
-                ebib-default-directory 'first-bib-dir
-                ebib-index-window-size 20
-                ebib-bib-search-dirs (list user-papers-directory)))
+  :custom
+  (ebib-preload-bib-files (list user-bibliography))
+  (ebib-bibtex-dialect 'biblatex)
+  (ebib-default-directory 'first-bib-dir)
+  (ebib-index-window-size 20)
+  (ebib-bib-search-dirs (list user-papers-directory)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          C++          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(use-package c++-mode
-  :ensure nil
-  :mode ("\\.h\\'" . c++-mode)
+(use-package cc-mode :ensure nil
   :init
   (c-set-offset 'substatement-open 0)
   (c-set-offset 'innamespace 0)
-  (custom-set-variables '(c-noise-macro-names '("constexpr")))
-  (setq-default c-default-style "stroustrup"
-                c-basic-offset 4
-                c-indent-level 4
-                access-label 0
-                tab-stop-list '(4 8 12 16 20 24 28 32 36 40 44 48 52 56 60)
-                tab-width 4
-                indent-tabs-mode nil))
+  :custom
+  (c-default-style "stroustrup")
+  (c-basic-offset 4)
+  (c-indent-level 4)
+  (access-label 0))
+
+(use-package c++-mode :ensure nil
+  :mode ("\\.h\\'" . c++-mode)
+  :custom (c-noise-macro-names '("constexpr")))
 
 (use-package modern-cpp-font-lock
   :diminish modern-c++-font-lock-mode
@@ -774,30 +789,29 @@
 
 (use-package cmake-mode)
 
-(use-package cmake-font-lock :hook (cmake-mode . cmake-font-lock-activate))
+(use-package cmake-font-lock
+  :hook (cmake-mode . cmake-font-lock-activate))
 
-(use-package meson-mode :hook (meson-mode . company-mode))
+(use-package meson-mode
+  :hook (meson-mode . company-mode))
 
 (use-package lsp-mode
-  :init
-  (setq-default lsp-auto-execute-action nil
-                lsp-before-save-edits nil
-                lsp-keymap-prefix "C-c C-l"
-                ;; lsp-auto-guess-root t
-                lsp-enable-snippet t
-                lsp-enable-xref t
-                lsp-enable-imenu t
-                lsp-prefer-flymake nil
-                lsp-enable-indentation nil
-                lsp-prefer-capf t
-                lsp-enable-file-watchers nil
-                lsp-enable-text-document-color nil
-                lsp-enable-semantic-highlighting nil
-                lsp-enable-on-type-formatting nil
-                ;; lsp-auto-configure t
-                ;; lsp-idle-delay 0.500
-                read-process-output-max (* 2 1024 1024)
-                lsp-enable-on-type-formatting nil))
+  :custom
+  (lsp-auto-execute-action nil)
+  (lsp-before-save-edits nil)
+  (lsp-keymap-prefix "C-c C-l")
+  (lsp-enable-snippet t)
+  (lsp-enable-xref t)
+  (lsp-enable-imenu t)
+  (lsp-prefer-flymake nil)
+  (lsp-enable-indentation nil)
+  (lsp-prefer-capf t)
+  (lsp-enable-file-watchers nil)
+  (lsp-enable-text-document-color nil)
+  (lsp-enable-semantic-highlighting nil)
+  (lsp-enable-on-type-formatting nil)
+  (read-process-output-max (* 2 1024 1024))
+  (lsp-enable-on-type-formatting nil))
 
 ;; (use-package lsp-ui
 ;;   :init
@@ -832,22 +846,14 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Perl          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(use-package cperl-mode
-  :ensure nil
-  :init
-  (defalias 'perl-mode 'cperl-mode)
-  (setq-default cperl-indent-level 4
-                cperl-close-paren-offset -4
-                cperl-continued-statement-offset 4
-                cperl-indent-parens-as-block t
-                cperl-tab-always-indent nil)
-  (with-eval-after-load 'flycheck (flycheck-add-mode 'perl-perlcritic 'perl)))
-
-
-;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; ;;           Go            ;;
-;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(use-package go-mode)
+(use-package cperl-mode :ensure nil
+  :init (defalias 'perl-mode 'cperl-mode)
+  :custom
+  (cperl-indent-level 4)
+  (cperl-close-paren-offset -4)
+  (cperl-continued-statement-offset 4)
+  (cperl-indent-parens-as-block t)
+  (cperl-tab-always-indent nil))
 
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ;;          Scala          ;;
@@ -858,8 +864,8 @@
 
 (use-package sbt-mode
   :commands sbt-start sbt-command
+  :custom (sbt:program-options '("-Dsbt.supershell=false"))
   :init
-  (setq-default sbt:program-options '("-Dsbt.supershell=false"))
   (substitute-key-definition
    'minibuffer-complete-word
    'self-insert-command
@@ -867,42 +873,42 @@
 
 (use-package lsp-metals
   :hook  (scala-mode . lsp)
-  :init (setq-default lsp-metals-treeview-show-when-views-received nil))
+  :custom (lsp-metals-treeview-show-when-views-received nil))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;            Shell          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defun colorize-compilation-buffer ()
-  (read-only-mode)
-  (ansi-color-apply-on-region (point-min) (point-max))
-  (read-only-mode -1))
-
 (use-package ansi-color
   :commands ansi-color-apply-on-region
   :hook (compilation-filter . colorize-compilation-buffer)
   :init
+  (defun colorize-compilation-buffer ()
+    (read-only-mode)
+    (ansi-color-apply-on-region (point-min) (point-max))
+    (read-only-mode -1))
   (add-to-list 'comint-output-filter-functions 'ansi-color-process-output)
   (autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t))
 
-(use-package shell :bind ("<f8>" . shell))
+(use-package shell
+  :bind ("<f8>" . shell))
 
 (use-package treemacs
-  :commands treemacs-resize-icons treemacs-fringe-indicator-mode treemacs-is-file-git-ignored?
+  :commands treemacs-resize-icons treemacs-is-file-git-ignored?
   :init
-  (setq-default treemacs-position 'right
-                treemacs-width 50)
   (treemacs-resize-icons 20)
   (add-to-list 'treemacs-pre-file-insert-predicates #'treemacs-is-file-git-ignored?)
   :bind
   (:map global-map
         ("C-x t t"   . treemacs)
         ("C-x t B"   . treemacs-bookmark)
-        ("C-x t C-t" . treemacs-find-file)))
+        ("C-x t C-t" . treemacs-find-file))
+  :custom
+  (treemacs-position 'right)
+  (treemacs-width 50))
 
 (use-package treemacs-filewatch-mode :ensure nil
   :after treemacs
-  :commands treemacs-filewatch-mode
-  :config (treemacs-filewatch-mode t))
+  :custom (treemacs-filewatch-mode t))
 
 (use-package treemacs-fringe-indicator-mode :ensure nil
   :after treemacs
@@ -910,16 +916,16 @@
 
 (use-package treemacs-follow-mode :ensure nil
   :after treemacs
-  :hook (treemacs-mode . treemacs-follow-mode))
+  :custom (treemacs-follow-mode 1))
 
 (use-package treemacs-icons-dired
   :after treemacs dired
-  :config (treemacs-icons-dired-mode))
+  :custom (treemacs-icons-dired-mode 1))
 
 (use-package treemacs-magit :after treemacs magit)
 
 (use-package lsp-treemacs
-  :config (lsp-treemacs-sync-mode 1))
+  :custom (lsp-treemacs-sync-mode 1))
 
 (use-package treemacs-persp
   :after treemacs persp-mode
@@ -942,7 +948,6 @@
 
 (use-package projectile
   :commands projectile-project-name projectile-project-root
-  :config (projectile-mode 1)
   :init
   (defun my-open-readme ()
   (let* ((project-name (projectile-project-name))
@@ -953,15 +958,17 @@
         (let ((readme-file (car readme-files)))
           (find-file (expand-file-name readme-file project-root)))
       (find-file (expand-file-name "README.org" project-root)))))
-  (setq-default projectile-enable-caching t
-                projectile-switch-project-action 'my-open-readme
-                projectile-completion-system 'helm)
+  :custom
+  (projectile-mode 1)
+  (projectile-enable-caching t)
+  (projectile-switch-project-action 'my-open-readme)
+  (projectile-completion-system 'helm)
   :bind (:map projectile-mode-map ("C-c p" . projectile-command-map)))
 
 (use-package helm-projectile :after helm projectile :init (helm-projectile-on))
 
 (use-package all-the-icons-ibuffer
-  :config (all-the-icons-ibuffer-mode 1))
+  :custom (all-the-icons-ibuffer-mode 1))
 
 (use-package link-hint
   :bind
@@ -972,7 +979,7 @@
 
 (use-package shrface
   :commands shrface-basic shrface-trial
-  :init (setq-default shrface-href-versatile t)
+  :custom (shrface-href-versatile t)
   :config
   (shrface-basic)
   (shrface-trial))
@@ -981,7 +988,7 @@
 
 (use-package nov
   :mode ("\\.epub\\'" . nov-mode)
-  :init (setq-default nov-text-width 100))
+  :custom (nov-text-width 100))
 
 (use-package nov-eww :ensure nil
   :after nov eww
@@ -1007,28 +1014,30 @@
   :mode
   ("\\.v\\'" . verilog-mode)
   ("\\.sv\\'" . verilog-mode)
-  :init (setq-default verilog-auto-newline nil
-                      verilog-tab-always-indent nil
-                      verilog-auto-indent-on-newline nil
-                      verilog-case-indent 4
-                      verilog-cexp-indent 4
-                      verilog-indent-begin-after-if nil
-                      verilog-indent-level 4
-                      verilog-indent-level-behavioral 4
-                      verilog-indent-level-directive 4
-                      verilog-indent-level-declaration 4
-                      verilog-indent-level-module 4))
+  :custom
+  (verilog-auto-newline nil)
+  (verilog-tab-always-indent nil)
+  (verilog-auto-indent-on-newline nil)
+  (verilog-case-indent 4)
+  (verilog-cexp-indent 4)
+  (verilog-indent-begin-after-if nil)
+  (verilog-indent-level 4)
+  (verilog-indent-level-behavioral 4)
+  (verilog-indent-level-directive 4)
+  (verilog-indent-level-declaration 4)
+  (verilog-indent-level-module 4))
 
 (use-package bm
   :commands bm-buffer-save-all bm-repository-save
   :init
   (defun bm-save-all ()
-  (progn (bm-buffer-save-all)
-         (bm-repository-save)))
-  (setq-default bm-cycle-all-buffers t
-                bm-restore-repository-on-load t
-                bm-repository-file (concat no-littering-var-directory "bm-repository")
-                bm-buffer-persistence t)
+    (progn (bm-buffer-save-all)
+           (bm-repository-save)))
+  :custom
+  (bm-cycle-all-buffers t)
+  (bm-restore-repository-on-load t)
+  (bm-repository-file (concat no-littering-var-directory "bm-repository"))
+  (bm-buffer-persistence t)
   :hook
   ((after-init . bm-repository-load)
    (after-save . bm-buffer-save)
@@ -1045,39 +1054,32 @@
          ( "<left-fringe> <mouse-5>" . bm-next-mouse)))
 
 (use-package beacon
-  :init (beacon-mode 1)
-  :init (setq-default beacon-blink-when-point-moves-vertically 20
-                      beacon-blink-when-buffer-changes nil
-                      beacon-blink-when-window-changes nil))
+  :custom
+  (beacon-blink-when-point-moves-vertically 20)
+  (beacon-blink-when-buffer-changes nil)
+  (beacon-blink-when-window-changes nil)
+  (beacon-mode 1))
 
 (use-package neotree
   :after projectile
-  ;; :hook (projectile-after-switch-project . neotree-projectile-action)
-  :init (setq-default neo-smart-open t
-                      neo-vc-integration nil)
+  :custom
+  (neo-smart-open t)
+  (neo-vc-integration nil)
   :bind ("C-x t n" . neotree-toggle))
 
 (use-package vterm
   :bind (:map vterm-mode-map ("C-c C-c" . vterm-copy-mode)))
 
-;; (use-package multi-vterm
-;;   :load-path "elisp/"
-;;   :demand t
-;;   :bind
-;;   ("<f8>" . multi-vterm-dedicated-open)
-;;   ("C-<f8>" . multi-vterm-dedicated-toggle)
-;;   ("M-<f8>" . multi-vterm))
-
 (use-package binder)
 
 (use-package tree-sitter
-  :init (global-tree-sitter-mode)
-  :hook (tree-sitter-after-on . tree-sitter-hl-mode))
+  :hook (tree-sitter-after-on . tree-sitter-hl-mode)
+  :custom (global-tree-sitter-mode 1))
 
 (use-package graphviz-dot-mode
-  :config (setq-default graphviz-dot-indent-width 4))
+  :custom (graphviz-dot-indent-width 4))
 
-(use-package company-graphviz-dot)
+(use-package company-graphviz-dot :ensure nil)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;         LISP        ::
@@ -1096,52 +1098,51 @@
 
 ;;
 (use-package calfw)
+
 (use-package calfw-org :after calfw
-  :init (setq-default cfw:org-overwrite-default-keybinding t)
+  :custom (cfw:org-overwrite-default-keybinding t)
   :bind
   ("C-c C-f" . cfw:open-org-calendar)
   (:map cfw:calendar-mode-map ("<return>" . cfw:org-open-agenda-day)))
-
-
-(defun exec-find (command) (locate-file command exec-path exec-suffixes 1))
-
-;; (use-package reformatter)
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;        Python       ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (use-package blacken
-  :init (setq-default blacken-line-length 100)
-  :hook (python-mode . blacken-mode))
+  :hook (python-mode . blacken-mode)
+  :custom (blacken-line-length 100))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;        LaTeX        ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (use-package tex
+  :ensure auctex
   :mode ("\\.tex\\'" . latex-mode)
   :commands TeX-revert-document-buffer
-  :init (setq-default TeX-master nil
-                      TeX-parse-self t
-                      TeX-auto-save t
-                      ;; TeX-electric-sub-and-superscript t
-                      TeX-parse-self t
-                      TeX-auto-save t
-                      LaTeX-electric-left-right-brace t
-                      TeX-view-program-selection '((output-pdf "PDF Tools"))
-                      TeX-source-correlate-start-server t
-                      TeX-source-correlate-method 'synctex
-                      TeX-electric-math (cons "\\(" "\\)"))
+  :init
   (add-hook 'TeX-after-compilation-finished-functions #'TeX-revert-document-buffer)
-  :hook ((LaTeX-mode . TeX-source-correlate-mode)
-         (LaTeX-mode . TeX-PDF-mode)))
+  :custom
+  (TeX-master nil)
+  (TeX-parse-self t)
+  (TeX-auto-save t)
+  (TeX-parse-self t)
+  (TeX-auto-save t)
+  (TeX-view-program-selection '((output-pdf "PDF Tools")))
+  (TeX-source-correlate-start-server t)
+  (TeX-source-correlate-method 'synctex)
+  (TeX-electric-math (cons "\\(" "\\)")))
 
+(use-package latex
+  :ensure auctex
+  :hook ((LaTeX-mode . TeX-source-correlate-mode)
+         (LaTeX-mode . TeX-PDF-mode))
+  :custom (LaTeX-electric-left-right-brace t))
 
 (use-package reftex
   :hook (LaTeX-mode . turn-on-reftex)
-  :config (setq-default reftex-plug-into-AUCTeX t))
+  :custom (reftex-plug-into-AUCTeX t))
 
 (use-package cdlatex
   :hook (LaTeX-mode . cdlatex-mode))
@@ -1153,42 +1154,30 @@
 (use-package auctex-latexmk
   :commands auctex-latexmk-setup
   :init (auctex-latexmk-setup)
-  (setq-default auctex-latexmk-inherit-TeX-PDF-mode t))
-
-;; (use-package magic-latex-buffer
-;;   :hook (LaTeX-mode . magic-latex-buffer))
-
-(use-package native-complete
-  :after shell
-  :init (native-complete-setup-bash))
-
-(use-package company-native-complete
-  :after company native-complete
-  :init (push 'company-native-complete company-backends))
+  :custom (auctex-latexmk-inherit-TeX-PDF-mode t))
 
 (use-package popper
-  :ensure t
   :commands popper-select-popup-at-bottom
   :bind (("C-\\"   . popper-toggle-latest)
          ("M-\\"   . popper-cycle)
          ("C-M-\\"   . popper-toggle-type))
-  :init
-  (setq-default popper-reference-buffers '("\\*Messages\\*" "Output\\*$" help-mode compilation-mode)
-                popper-display-function #'popper-select-popup-at-bottom)
+  :custom
+  (popper-reference-buffers '("\\*Messages\\*" "Output\\*$" help-mode compilation-mode))
+  (popper-display-function #'popper-select-popup-at-bottom)
   (popper-mode +1))
 
 (use-package flx)
 
 (use-package helm-flx
   :after helm flx
-  :init
-  (setq-default helm-flx-for-helm-find-files t
-                helm-flx-for-helm-locate t)
+  :custom
+  (helm-flx-for-helm-find-files t)
+  (helm-flx-for-helm-locate t)
   (helm-flx-mode +1))
 
 (use-package company-flx
   :after company flx
-  :init (company-flx-mode +1))
+  :custom (company-flx-mode +1))
 
 (use-package helpful
   :bind
