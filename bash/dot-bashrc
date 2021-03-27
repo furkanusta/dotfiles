@@ -26,6 +26,7 @@ export LC_ALL="en_US.UTF-8"
 export XDG_DATA_DIRS="$XDG_DATA_DIRS:/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share"
 export CARGO_HOME="$HOME/.cargo"
 export PATH="$PATH:$CARGO_HOME/bin"
+export TEXMFHOME="$HOME/.local/prog/texmf"
 
 alias ls=exa
 alias cat=bat

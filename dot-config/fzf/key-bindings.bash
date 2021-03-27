@@ -49,7 +49,7 @@ __fzf_history__() {
     output=$(
         builtin fc -lnr -2147483648 |
             last_hist=$(HISTTIMEFORMAT='' builtin history 1) perl -n -l0 -e 'BEGIN { getc; $/ = "\n\t"; $HISTCMD = $ENV{last_hist} + 1 } s/^[ *]//; print $HISTCMD - $. . "\t$_" if !$seen{$_}++' |
-            FZF_DEFAULT_OPTS="--height ${FZF_TMUX_HEIGHT:-40%} -n2..,.. --tiebreak=index --bind=ctrl-r:toggle-sort,ctrl-z:ignore $FZF_CTRL_R_OPTS +m --read0" $(__fzfcmd) --query "$READLINE_LINE"
+            FZF_DEFAULT_OPTS="--height ${FZF_TMUX_HEIGHT:-60%} -n2..,.. --tiebreak=index --bind=ctrl-r:toggle-sort,ctrl-z:ignore $FZF_CTRL_R_OPTS +m --read0" $(__fzfcmd) --query "$READLINE_LINE"
           ) || return
     READLINE_LINE=${output#*$'\t'}
     if [ -z "$READLINE_POINT" ]; then
@@ -66,27 +66,15 @@ bind -m vi-command '"\C-z": emacs-editing-mode'
 bind -m vi-insert '"\C-z": emacs-editing-mode'
 bind -m emacs-standard '"\C-z": vi-editing-mode'
 
-if [ "${BASH_VERSINFO[0]}" -lt 4 ]; then
-  # CTRL-T - Paste the selected file path into the command line
-  bind -m emacs-standard '"\C-t": " \C-b\C-k \C-u`__fzf_select__`\e\C-e\er\C-a\C-y\C-h\C-e\e \C-y\ey\C-x\C-x\C-f"'
-  bind -m vi-command '"\C-t": "\C-z\C-t\C-z"'
-  bind -m vi-insert '"\C-t": "\C-z\C-t\C-z"'
+# # CTRL-T - Paste the selected file path into the command line
+# bind -m emacs-standard -x '"\C-t": fzf-file-widget'
+# bind -m vi-command -x '"\C-t": fzf-file-widget'
+# bind -m vi-insert -x '"\C-t": fzf-file-widget'
 
-  # CTRL-R - Paste the selected command from history into the command line
-  bind -m emacs-standard '"\C-r": "\C-e \C-u\C-y\ey\C-u"$(__fzf_history__)"\e\C-e\er"'
-  bind -m vi-command '"\C-r": "\C-z\C-r\C-z"'
-  bind -m vi-insert '"\C-r": "\C-z\C-r\C-z"'
-else
-  # CTRL-T - Paste the selected file path into the command line
-  bind -m emacs-standard -x '"\C-t": fzf-file-widget'
-  bind -m vi-command -x '"\C-t": fzf-file-widget'
-  bind -m vi-insert -x '"\C-t": fzf-file-widget'
-
-  # CTRL-R - Paste the selected command from history into the command line
-  bind -m emacs-standard -x '"\C-r": __fzf_history__'
-  bind -m vi-command -x '"\C-r": __fzf_history__'
-  bind -m vi-insert -x '"\C-r": __fzf_history__'
-fi
+# CTRL-R - Paste the selected command from history into the command line
+bind -m emacs-standard -x '"\C-r": __fzf_history__'
+bind -m vi-command -x '"\C-r": __fzf_history__'
+bind -m vi-insert -x '"\C-r": __fzf_history__'
 
 # ALT-C - cd into the selected directory
 bind -m emacs-standard '"\ec": " \C-b\C-k \C-u`__fzf_cd__`\e\C-e\er\C-m\C-y\C-h\e \C-y\ey\C-x\C-x\C-d"'
