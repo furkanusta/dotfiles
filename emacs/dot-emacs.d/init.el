@@ -31,17 +31,7 @@
 (defun disable-line-numbers ()
   (display-line-numbers-mode -1))
 
-(use-package no-littering
-  :after recentf
-  :commands no-littering-expand-var-file-name
-  :defines recentf-exclude
-  :custom
-  (no-littering-etc-directory (expand-file-name "config/" user-emacs-directory))
-  (no-littering-var-directory (expand-file-name "data/" user-emacs-directory))
-  (auto-save-file-name-transforms `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
-  :init
-  (add-to-list 'recentf-exclude no-littering-var-directory)
-  (add-to-list 'recentf-exclude no-littering-etc-directory))
+(use-package no-littering)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Defaults & Built-ins          ;;
@@ -61,7 +51,6 @@
                 save-interprogram-paste-before-kill t
                 emacs-load-start-time (current-time)
                 ad-redefinition-action 'accept
-                ;; backup-inhibited t
                 vc-make-backup-files t
                 version-control t
                 delete-old-versions t
@@ -71,7 +60,6 @@
                 tab-width 4
                 tab-stop-list (number-sequence 4 200 4)
                 indent-tabs-mode nil
-                backup-directory-alist `(("." . "~/.emacs.d/.gen"))
                 gdb-many-windows t
                 use-file-dialog nil
                 use-dialog-box nil
@@ -132,15 +120,14 @@
 
 (use-package dired :ensure nil
   :commands dired-get-file-for-visit
-  :init
-  (defun dired-open-xdg ()
-    "Try to run `xdg-open' to open the file under point."
-    (interactive)
-    (if (executable-find "xdg-open")
-        (let ((file (ignore-errors (dired-get-file-for-visit)))
-              (process-connection-type nil))
-          (start-process "" nil "xdg-open" (file-truename file)))
-      nil))
+  :init (defun dired-open-xdg ()
+          "Try to run `xdg-open' to open the file under point."
+          (interactive)
+          (if (executable-find "xdg-open")
+              (let ((file (ignore-errors (dired-get-file-for-visit)))
+                    (process-connection-type nil))
+                (start-process "" nil "xdg-open" (file-truename file)))
+            nil))
   :custom
   (dired-listing-switches "-vaBhl  --group-directories-first")
   (dired-auto-revert-buffer t)
@@ -161,7 +148,14 @@
   :after flyspell-correct)
 
 (use-package recentf :ensure nil
-  :custom (recentf-mode t))
+  :after no-littering
+  :defines recentf-exclude
+  :custom
+  (recentf-mode t)
+  (recentf-save-file (concat no-littering-var-directory "recentf"))
+  :init
+  (add-to-list 'recentf-exclude no-littering-var-directory)
+  (add-to-list 'recentf-exclude no-littering-etc-directory))
 
 (use-package saveplace :ensure nil
   :hook (server-visit . save-place-find-file-hook)
@@ -276,7 +270,7 @@
      "s"
      `(lambda (&rest ignore) (switch-to-buffer "*scratch*"))))
   (dashboard-setup-startup-hook)
-  (add-to-list 'dashboard-item-generators  '(scratch . dashboard-insert-scratch))
+  :config (add-to-list 'dashboard-item-generators  '(scratch . dashboard-insert-scratch))
   :custom
   (initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
   (dashboard-center-content t)
@@ -297,9 +291,8 @@
 ;; Helm packages for other modules will be near their corresponding modules, not in here
 
 (use-package helm
-  :config
-  (require 'helm-config)
-  (global-unset-key (kbd "C-x c"))
+  :config (require 'helm-config)
+  :init (global-unset-key (kbd "C-x c"))
   :bind
   (("M-x" . helm-M-x)
    ;; ("C-s" . helm-occur)
@@ -480,7 +473,7 @@
   :after dired
   :hook (vlf-view-mode . disable-line-numbers)
   :defines vlf-forbidden-modes-list
-  :init
+  :config
   (require 'vlf-setup)
   (add-to-list 'vlf-forbidden-modes-list 'pdf-view-mode)
   (add-to-list 'vlf-forbidden-modes-list 'nov-mode))
@@ -502,7 +495,7 @@
 (use-package pdf-view-restore
   :after pdf-tools
   :hook (pdf-view-mode . pdf-view-restore-mode)
-  :custom (pdf-view-restore-filename "~/.emacs.d/.gen/.pdf-view-restore"))
+  :custom (pdf-view-restore-filename (concat no-littering-var-directory ".pdf-view-restore")))
 
 (use-package undo-tree
   :diminish undo-tree-mode
@@ -550,15 +543,12 @@
 
 (use-package company-lsp
   :after company lsp
-  :init (push 'company-lsp company-backends)
+  :config (push 'company-lsp company-backends)
   :custom
   (company-lsp-enable-recompletion t)
   (company-lsp-enable-snippet t))
 
 (use-package magit
-  :custom
-  (magit-wip-mode 1)
-  (magit-wip-merge-branch t)
   :bind ("C-c g s" . magit-status))
 
 (use-package magit-todos
@@ -589,7 +579,7 @@
 (use-package evil-nerd-commenter :bind ("M-;" . evilnc-comment-or-uncomment-lines))
 
 (use-package visual-regexp-steroids
-  :init (require 'visual-regexp-steroids)
+  :config (require 'visual-regexp-steroids)
   :bind ("C-r" . vr/replace))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -624,9 +614,7 @@
 
 (use-package writeroom-mode
   :hook (writeroom-mode . toggle-line-numbers)
-  :init
-  (defun toggle-line-numbers ()
-    (display-line-numbers-mode (or (not display-line-numbers-mode) 0)))
+  :init (defun toggle-line-numbers () (display-line-numbers-mode (or (not display-line-numbers-mode) 0)))
   :custom
   (writeroom-width 150)
   (writeroom-mode-line nil)
@@ -679,13 +667,12 @@
   :hook (org-mode . org-fragtog-mode))
 
 (use-package org-babel :ensure nil
-  :config
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((python . t)
-     ;; (http . t)
-     (shell . t)
-     (emacs-lisp . t))))
+  :config (org-babel-do-load-languages
+           'org-babel-load-languages
+           '((python . t)
+             ;; (http . t)
+             (shell . t)
+             (emacs-lisp . t))))
 
 (use-package org-cliplink
   :bind (:map org-mode-map ("C-c i l" . org-cliplink)))
@@ -814,16 +801,14 @@
   (lsp-enable-on-type-formatting nil))
 
 ;; (use-package lsp-ui
-;;   :init
-;;   (setq-default lsp-ui-flycheck-enable t
-;;                 lsp-ui-imenu-enable t
-;;                 ;; lsp-ui-peek-enable t
-;;                 lsp-ui-sideline-enable t
-;;                 lsp-ui-doc-position 'top))
+;;   :custom
+;;   (lsp-ui-flycheck-enable t)
+;;   (lsp-ui-imenu-enable t)
+;;   (lsp-ui-sideline-enable t)
+;;   (lsp-ui-doc-position 'top))
 
 ;; (use-package dap
-;;   :config
-;;   ;; (tooltip-mode 1)
+;;   :custom
 ;;   (dap-mode 1)
 ;;   (dap-ui-mode 1)
 ;;   (dap-tooltip-mode 1))
@@ -841,13 +826,13 @@
 
 (use-package company-c-headers
   :after company
-  :init (push 'company-c-headers company-backends))
+  :config (push 'company-c-headers company-backends))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Perl          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package cperl-mode :ensure nil
-  :init (defalias 'perl-mode 'cperl-mode)
+  :config (defalias 'perl-mode 'cperl-mode)
   :custom
   (cperl-indent-level 4)
   (cperl-close-paren-offset -4)
@@ -865,11 +850,10 @@
 (use-package sbt-mode
   :commands sbt-start sbt-command
   :custom (sbt:program-options '("-Dsbt.supershell=false"))
-  :init
-  (substitute-key-definition
-   'minibuffer-complete-word
-   'self-insert-command
-   minibuffer-local-completion-map))
+  :init (substitute-key-definition
+         'minibuffer-complete-word
+         'self-insert-command
+         minibuffer-local-completion-map))
 
 (use-package lsp-metals
   :hook  (scala-mode . lsp)
@@ -881,20 +865,19 @@
 (use-package ansi-color
   :commands ansi-color-apply-on-region
   :hook (compilation-filter . colorize-compilation-buffer)
-  :init
-  (defun colorize-compilation-buffer ()
-    (read-only-mode)
-    (ansi-color-apply-on-region (point-min) (point-max))
-    (read-only-mode -1))
-  (add-to-list 'comint-output-filter-functions 'ansi-color-process-output)
-  (autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t))
+  :init (defun colorize-compilation-buffer ()
+          (read-only-mode)
+          (ansi-color-apply-on-region (point-min) (point-max))
+          (read-only-mode -1))
+  :config (add-to-list 'comint-output-filter-functions 'ansi-color-process-output)
+  :custom (ansi-color-for-comint-mode 1))
 
 (use-package shell
   :bind ("<f8>" . shell))
 
 (use-package treemacs
   :commands treemacs-resize-icons treemacs-is-file-git-ignored?
-  :init
+  :config
   (treemacs-resize-icons 20)
   (add-to-list 'treemacs-pre-file-insert-predicates #'treemacs-is-file-git-ignored?)
   :bind
@@ -948,24 +931,25 @@
 
 (use-package projectile
   :commands projectile-project-name projectile-project-root
-  :init
-  (defun my-open-readme ()
-  (let* ((project-name (projectile-project-name))
-         (project-root (projectile-project-root))
-         (project-files (directory-files project-root nil nil t))
-         (readme-files (seq-filter (lambda (file) (string-prefix-p "readme" file t)) project-files)))
-    (if readme-files
-        (let ((readme-file (car readme-files)))
-          (find-file (expand-file-name readme-file project-root)))
-      (find-file (expand-file-name "README.org" project-root)))))
+  :init (defun my-open-readme ()
+          (let* ((project-name (projectile-project-name))
+                 (project-root (projectile-project-root))
+                 (project-files (directory-files project-root nil nil t))
+                 (readme-files (seq-filter (lambda (file) (string-prefix-p "readme" file t)) project-files)))
+            (if readme-files
+                (let ((readme-file (car readme-files)))
+                  (find-file (expand-file-name readme-file project-root)))
+              (find-file (expand-file-name "README.org" project-root)))))
   :custom
   (projectile-mode 1)
   (projectile-enable-caching t)
   (projectile-switch-project-action 'my-open-readme)
   (projectile-completion-system 'helm)
+  (projectile-known-projects-file (concat no-littering-var-directory "projectile-bookmarks.eld"))
   :bind (:map projectile-mode-map ("C-c p" . projectile-command-map)))
 
-(use-package helm-projectile :after helm projectile :init (helm-projectile-on))
+(use-package helm-projectile :after helm projectile
+  :init (helm-projectile-on))
 
 (use-package all-the-icons-ibuffer
   :custom (all-the-icons-ibuffer-mode 1))
@@ -1003,7 +987,7 @@
   :hook (nov-mode . shrface-mode)
   :after nov shr
   :defines nov-shr-rendering-functions
-  :init (add-to-list 'nov-shr-rendering-functions shr-external-rendering-functions)
+  :config (add-to-list 'nov-shr-rendering-functions shr-external-rendering-functions)
   :bind (:map nov-mode-map
               ("<tab>" . shrface-outline-cycle)
               ("S-<tab>" . shrface-outline-cycle-buffer)
@@ -1029,10 +1013,10 @@
 
 (use-package bm
   :commands bm-buffer-save-all bm-repository-save
-  :init
-  (defun bm-save-all ()
-    (progn (bm-buffer-save-all)
-           (bm-repository-save)))
+  :after no-littering
+  :init (defun bm-save-all ()
+          (progn (bm-buffer-save-all)
+                 (bm-repository-save)))
   :custom
   (bm-cycle-all-buffers t)
   (bm-restore-repository-on-load t)
@@ -1085,7 +1069,7 @@
 ;;         LISP        ::
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package sly
-  :init (sly-setup '(sly-mrepl)))
+  :config (sly-setup '(sly-mrepl)))
 
 (use-package helm-sly
   :after sly helm-company
@@ -1117,12 +1101,9 @@
 ;;        LaTeX        ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(use-package tex
-  :ensure auctex
-  :mode ("\\.tex\\'" . latex-mode)
+(use-package tex :ensure auctex
   :commands TeX-revert-document-buffer
-  :init
-  (add-hook 'TeX-after-compilation-finished-functions #'TeX-revert-document-buffer)
+  :config (add-hook 'TeX-after-compilation-finished-functions #'TeX-revert-document-buffer)
   :custom
   (TeX-master nil)
   (TeX-parse-self t)
@@ -1134,8 +1115,8 @@
   (TeX-source-correlate-method 'synctex)
   (TeX-electric-math (cons "\\(" "\\)")))
 
-(use-package latex
-  :ensure auctex
+(use-package latex :ensure auctex
+  :mode ("\\.tex\\'" . latex-mode)
   :hook ((LaTeX-mode . TeX-source-correlate-mode)
          (LaTeX-mode . TeX-PDF-mode))
   :custom (LaTeX-electric-left-right-brace t))
@@ -1149,11 +1130,11 @@
 
 (use-package company-auctex
   :commands company-auctex-init
-  :init (company-auctex-init))
+  :config (company-auctex-init))
 
 (use-package auctex-latexmk
   :commands auctex-latexmk-setup
-  :init (auctex-latexmk-setup)
+  :config (auctex-latexmk-setup)
   :custom (auctex-latexmk-inherit-TeX-PDF-mode t))
 
 (use-package popper
