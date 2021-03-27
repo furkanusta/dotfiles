@@ -557,7 +557,8 @@
 
 (use-package company-statistics
   :after company
-  :hook (after-init . company-statistics-mode))
+  :hook (after-init . company-statistics-mode)
+  :custom (company-statistics-file (concat no-littering-var-directory "company-statistics-cache.el")))
 
 (use-package company-quickhelp
   :custom (company-quickhelp-mode t))
