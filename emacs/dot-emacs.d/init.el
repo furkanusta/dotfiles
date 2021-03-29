@@ -32,7 +32,6 @@
 ;; (setq use-package-ensure-function 'quelpa)
 ;; (setq-default use-package-always-ensure t)
 
-
 (require 'server)
 (unless (server-running-p) (server-start))
 
@@ -104,7 +103,7 @@
                 font-use-system-font t))
 
 (use-package calc :ensure nil
-  :custom (calc-symbolic-mode 1))
+  :hook (calc-mode . calc-symbolic-mode))
 
 (use-package column-number-mode :ensure nil)
 
@@ -173,6 +172,7 @@
   (recentf-save-file (concat no-littering-var-directory "recentf"))
   :init
   (add-to-list 'recentf-exclude no-littering-var-directory)
+  (add-to-list 'recentf-exclude "/tmp")
   (add-to-list 'recentf-exclude no-littering-etc-directory))
 
 (use-package saveplace :ensure nil
@@ -501,7 +501,7 @@
 
 ;; requires pdf-tools-install
 (use-package pdf-tools
-  :quelpa (pdf-tools :fetcher github :repo "vedang/pdf-tools" :files ("lisp/*"))
+  :quelpa (pdf-tools :fetcher github :repo "vedang/pdf-tools" :files ("lisp/*" "server/*"))
   :hook ((pdf-view-mode . (lambda () (cua-mode 0)))
          (pdf-view-mode . disable-line-numbers)
          (pdf-view-mode . pdf-sync-minor-mode)
@@ -512,7 +512,9 @@
   :custom
   (pdf-view-display-size 'fit-page)
   (pdf-annot-activate-created-annotations nil)
-  (pdf-view-resize-factor 1.1))
+  (pdf-view-resize-factor 1.1)
+  :bind (:map pdf-view-mode-map
+              ("S-SPC" . pdf-view-scroll-down-or-previous-page)))
 
 (use-package pdf-view-restore
   :after pdf-tools
@@ -919,20 +921,16 @@
   (treemacs-width 50))
 
 (use-package treemacs-filewatch-mode :ensure nil
-  :after treemacs
-  :hook (treemacs-mode treemacs-filewatch-mode))
+  :hook (treemacs-mode . treemacs-filewatch-mode))
 
 (use-package treemacs-fringe-indicator-mode :ensure nil
-  :after treemacs
   :hook (treemacs-mode . treemacs-fringe-indicator-mode))
 
 (use-package treemacs-follow-mode :ensure nil
-  :after treemacs
-  :hook (treemacs-mode treemacs-follow-mode))
+  :hook (treemacs-mode . treemacs-follow-mode))
 
 (use-package treemacs-icons-dired
-  :after treemacs dired
-  :hook (dired-mode treemacs-icons-dired))
+  :hook (dired-mode . treemacs-icons-dired))
 
 (use-package treemacs-magit
   :after treemacs magit)
@@ -941,12 +939,13 @@
   :hook (treemacs-mode . lsp-treemacs-sync-mode))
 
 (use-package treemacs-persp
-  :after treemacs persp-mode
   :commands treemacs-set-scope-type
   :config (treemacs-set-scope-type 'Perspectives))
 
-(use-package dockerfile-mode :mode ("Dockerfile\\'" "\\.docker"))
-(use-package docker-compose-mode :mode ("docker-compose\\.yml\\'" "-compose.yml\\'"))
+(use-package dockerfile-mode
+  :mode ("Dockerfile\\'" "\\.docker"))
+(use-package docker-compose-mode
+  :mode ("docker-compose\\.yml\\'" "-compose.yml\\'"))
 
 ;; (use-package docker)
 
@@ -1002,7 +1001,6 @@
   :custom (nov-text-width 100))
 
 (use-package nov-eww :ensure nil
-  :after nov eww
   :hook (eww-after-render . shrface-mode)
   :bind (:map eww-mode-map
               ("<tab>" . shrface-outline-cycle)
@@ -1012,7 +1010,6 @@
 
 (use-package nov-shr :ensure nil
   :hook (nov-mode . shrface-mode)
-  :after nov shr
   :defines nov-shr-rendering-functions
   :config (add-to-list 'nov-shr-rendering-functions shr-external-rendering-functions)
   :bind (:map nov-mode-map
@@ -1041,12 +1038,13 @@
 (use-package bm
   :commands bm-buffer-save-all bm-repository-save
   :after no-littering
-  :init (defun bm-save-all ()
-          (progn (bm-buffer-save-all)
-                 (bm-repository-save)))
+  :init
+  (defun bm-save-all ()
+    (progn (bm-buffer-save-all)
+           (bm-repository-save)))
+  (setq bm-restore-repository-on-load t)
   :custom
   (bm-cycle-all-buffers t)
-  (bm-restore-repository-on-load t)
   (bm-repository-file (concat no-littering-var-directory "bm-repository"))
   (bm-buffer-persistence t)
   :hook
@@ -1177,15 +1175,13 @@
 (use-package flx)
 
 (use-package helm-flx
-  :after helm flx
+  :hook (helm-mode . helm-flx-mode)
   :custom
   (helm-flx-for-helm-find-files t)
-  (helm-flx-for-helm-locate t)
-  (helm-flx-mode +1))
+  (helm-flx-for-helm-locate t))
 
 (use-package company-flx
-  :after company flx
-  :custom (company-flx-mode +1))
+  :hook (company-mode . company-flx-mode))
 
 (use-package helpful
   :bind

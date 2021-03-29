@@ -66,11 +66,6 @@ bind -m vi-command '"\C-z": emacs-editing-mode'
 bind -m vi-insert '"\C-z": emacs-editing-mode'
 bind -m emacs-standard '"\C-z": vi-editing-mode'
 
-# # CTRL-T - Paste the selected file path into the command line
-# bind -m emacs-standard -x '"\C-t": fzf-file-widget'
-# bind -m vi-command -x '"\C-t": fzf-file-widget'
-# bind -m vi-insert -x '"\C-t": fzf-file-widget'
-
 # CTRL-R - Paste the selected command from history into the command line
 bind -m emacs-standard -x '"\C-r": __fzf_history__'
 bind -m vi-command -x '"\C-r": __fzf_history__'
