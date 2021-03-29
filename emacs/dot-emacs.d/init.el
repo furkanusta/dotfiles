@@ -501,6 +501,7 @@
 
 ;; requires pdf-tools-install
 (use-package pdf-tools
+  :quelpa (pdf-tools :fetcher github :repo "vedang/pdf-tools" :files ("lisp/*"))
   :hook ((pdf-view-mode . (lambda () (cua-mode 0)))
          (pdf-view-mode . disable-line-numbers)
          (pdf-view-mode . pdf-sync-minor-mode)
@@ -743,7 +744,7 @@
   :hook (org-mode . org-appear-mode))
 
 (use-package org-pretty-table
-  :load-path "elisp/"
+  :quelpa (org-pretty-table :fetcher github :repo "Fuco1/org-pretty-table")
   :hook (org-mode . org-pretty-table-mode))
 
 (use-package org-ref
@@ -1197,7 +1198,7 @@
   :bind ("M-=" . transient-dwim-dispatch))
 
 (use-package screenshot
-  :load-path "elisp/"
+  :quelpa (screenshot :fetcher github :repo "tecosaur/screenshot")
   :custom
   (screenshot-line-numbers t)
   (screenshot-min-width 100))
