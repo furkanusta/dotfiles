@@ -17,7 +17,7 @@
   (package-install 'use-package))
 (require 'use-package)
 
-(require' quelpa)
+(require 'quelpa)
 
 (quelpa
  '(quelpa-use-package
