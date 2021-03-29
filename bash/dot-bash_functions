@@ -17,5 +17,5 @@ ff() {
 }
 
 fff() {
-    _ff "$1" "fd -t f -X file | awk -F: '/ASCII text/ {print \$1}'"
+    _ff "$1" "fd -t f -j4 -x file | awk -F: '/ASCII text/ {print \$1}'"
 }
