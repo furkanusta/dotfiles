@@ -29,9 +29,9 @@
 (defvar my-quelpa-build-dir (concat my-quelpa-dir "build"))
 
 (setq-default use-package-always-defer t)
-(setq use-package-ensure-function 'quelpa)
-
+;; (setq use-package-ensure-function 'quelpa)
 ;; (setq-default use-package-always-ensure t)
+
 
 (require 'server)
 (unless (server-running-p) (server-start))
@@ -357,8 +357,8 @@
 
 (use-package helm-tramp)
 
-(use-package helm-fd
-  :bind ("C-c h f" . helm-fd))
+;; (use-package helm-fd
+;;   :bind ("C-c h f" . helm-fd))
 
 (use-package helm-swoop
   :bind
@@ -574,7 +574,7 @@
   :bind ("C-c g s" . magit-status))
 
 (use-package magit-todos
-  :custom (magit-todos-mode 1))
+  :hook (magit-mode . magit-todos-mode))
 
 (use-package diff-hl
   :custom (global-diff-hl-mode 1))
@@ -659,7 +659,6 @@
   (org-adapt-indentation t)
   (org-catch-invisible-edits 'show-and-error)
   (org-cycle-separator-lines 0)
-  (org-directory my-notes-directory)
   (org-edit-src-content-indentation 0)
   (org-fontify-quote-and-verse-blocks t)
   (org-fontify-done-headline t)
@@ -701,8 +700,8 @@
 
 (use-package org-capture :ensure nil
   :defines org-capture-file org-default-notes-file
+  :init (setq org-capture-file (concat my-notes-directory "/Capture.org"))
   :custom
-  (org-capture-file (concat org-directory "/Capture.org"))
   (org-default-notes-file org-capture-file)
   (org-capture-templates '(("t" "TODO" entry (file+headline org-capture-file "Tasks")
                             "* TODO %?\n  %a\n  %i\n")
@@ -718,7 +717,7 @@
 
 (use-package org-agenda :ensure nil
   :custom
-  (org-agenda-files (list org-directory))
+  (org-agenda-files (list my-notes-directory))
   (org-agenda-include-diary t)
   (org-agenda-span 10)
   (org-agenda-start-day "-2d")
@@ -744,11 +743,12 @@
   :hook (org-mode . org-appear-mode))
 
 (use-package org-pretty-table
+  :load-path "elisp/"
   :hook (org-mode . org-pretty-table-mode))
 
 (use-package org-ref
   :custom
-  (org-ref-bibliography-notes (concat org-directory "/Papers.org"))
+  (org-ref-bibliography-notes (concat my-notes-directory "/Papers.org"))
   (org-ref-default-bibliography (list my-bibliography))
   (org-ref-pdf-directory (concat my-data-directory "/Papers/"))
   (org-ref-show-broken-links t))
@@ -760,7 +760,7 @@
 
 (use-package org-noter
   :custom
-  (org-noter-notes-search-path (list org-directory))
+  (org-noter-notes-search-path (list my-notes-directory))
   (org-noter-default-notes-file-names (list "Papers.org"))
   (org-noter-auto-save-last-location t)
   (org-noter-insert-note-no-questions t))
@@ -919,7 +919,7 @@
 
 (use-package treemacs-filewatch-mode :ensure nil
   :after treemacs
-  :custom (treemacs-filewatch-mode t))
+  :hook (treemacs-mode treemacs-filewatch-mode))
 
 (use-package treemacs-fringe-indicator-mode :ensure nil
   :after treemacs
@@ -927,16 +927,17 @@
 
 (use-package treemacs-follow-mode :ensure nil
   :after treemacs
-  :custom (treemacs-follow-mode 1))
+  :hook (treemacs-mode treemacs-follow-mode))
 
 (use-package treemacs-icons-dired
   :after treemacs dired
-  :custom (treemacs-icons-dired-mode 1))
+  :hook (dired-mode treemacs-icons-dired))
 
-(use-package treemacs-magit :after treemacs magit)
+(use-package treemacs-magit
+  :after treemacs magit)
 
 (use-package lsp-treemacs
-  :custom (lsp-treemacs-sync-mode 1))
+  :hook (treemacs-mode . lsp-treemacs-sync-mode))
 
 (use-package treemacs-persp
   :after treemacs persp-mode
@@ -1162,8 +1163,6 @@
   :config (auctex-latexmk-setup)
   :custom (auctex-latexmk-inherit-TeX-PDF-mode t))
 
-(use-package calctex)
-
 (use-package popper
   :commands popper-select-popup-at-bottom
   :bind (("C-\\"   . popper-toggle-latest)
@@ -1198,6 +1197,7 @@
   :bind ("M-=" . transient-dwim-dispatch))
 
 (use-package screenshot
+  :load-path "elisp/"
   :custom
   (screenshot-line-numbers t)
   (screenshot-min-width 100))
