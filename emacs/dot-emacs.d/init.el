@@ -908,6 +908,7 @@
 
 (use-package treemacs
   :commands treemacs-resize-icons treemacs-is-file-git-ignored?
+  :hook (treemacs-mode . disable-line-numbers)
   :config
   (treemacs-resize-icons 20)
   (add-to-list 'treemacs-pre-file-insert-predicates #'treemacs-is-file-git-ignored?)
@@ -975,6 +976,8 @@
   (projectile-switch-project-action 'my-open-readme)
   (projectile-completion-system 'helm)
   (projectile-known-projects-file (concat no-littering-var-directory "projectile-bookmarks.eld"))
+  (projectile-sort-order 'recentf)
+  (projectile-inedxing-method 'hybrid)
   :bind (:map projectile-mode-map ("C-c p" . projectile-command-map)))
 
 (use-package helm-projectile :after helm projectile
@@ -1074,6 +1077,8 @@
   :custom
   (neo-smart-open t)
   (neo-vc-integration nil)
+  (neo-theme 'icons)
+  :hook (neotree-mode . disable-line-numbers)
   :bind ("C-x t n" . neotree-toggle))
 
 (use-package vterm
