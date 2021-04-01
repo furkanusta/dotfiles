@@ -635,6 +635,7 @@
         ("C-c C-w <right>" . eyebrowse-next-window-config)))
 
 (use-package hungry-delete
+  :load-path "elisp/"
   :custom (global-hungry-delete-mode 1))
 
 (use-package writeroom-mode
