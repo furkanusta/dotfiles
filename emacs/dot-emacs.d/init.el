@@ -603,7 +603,7 @@
 
 (use-package evil-nerd-commenter :bind ("M-;" . evilnc-comment-or-uncomment-lines))
 
-(use-package visual-regexp-steroids
+(use-package visual-regexp
   :config (require 'visual-regexp-steroids)
   :bind ("C-r" . vr/replace))
 
@@ -931,7 +931,7 @@
   :hook (treemacs-mode . treemacs-follow-mode))
 
 (use-package treemacs-icons-dired
-  :hook (dired-mode . treemacs-icons-dired))
+  :hook (dired-mode . treemacs-icons-dired-mode))
 
 (use-package treemacs-magit
   :after treemacs magit)
