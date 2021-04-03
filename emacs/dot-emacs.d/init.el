@@ -605,8 +605,8 @@
 
 (use-package evil-nerd-commenter :bind ("M-;" . evilnc-comment-or-uncomment-lines))
 
-(use-package visual-regexp
-  :config (require 'visual-regexp-steroids)
+(use-package visual-regexp-steroids
+  :demand t
   :bind ("C-r" . vr/replace))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
