@@ -35,15 +35,13 @@
 (require 'server)
 (unless (server-running-p) (server-start))
 
-(add-to-list 'load-path "/usr/share/emacs/site-lisp/")
-(add-to-list 'custom-theme-load-path (concat user-emacs-directory "elisp/"))
 (setq custom-file (concat user-emacs-directory "elisp/custom.el"))
 (load custom-file :noerror)
 ;; Init Done
 
-;; Debug
-(require 'benchmark-init)
-(add-hook 'after-init-hook 'benchmark-init/deactivate)
+;; ;; Debug
+;; (require 'benchmark-init)
+;; (add-hook 'after-init-hook 'benchmark-init/deactivate)
 
 (defun disable-line-numbers ()
   (display-line-numbers-mode -1))
@@ -407,7 +405,8 @@
 ;;          Visual          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(use-package all-the-icons)
+(use-package all-the-icons
+  :commands all-the-icons-octicon)
 
 (use-package all-the-icons-dired
   :after all-the-icons
@@ -1206,3 +1205,15 @@
   :custom
   (screenshot-line-numbers t)
   (screenshot-min-width 100))
+
+(use-package shx
+  :custom (shx-global-mode 1))
+
+(use-package compile
+  :custom (compilation-scroll-output t)
+  :bind ("C-c C-r" . recompile))
+
+(use-package isend-mode)
+
+(use-package alert
+  :custom (alert-default-style 'libnotify))
