@@ -100,7 +100,9 @@
                 frame-resize-pixelwise t
                 undo-limit 1280000
                 large-file-warning-threshold (* 1024 1024 1024) ;; 1GB
-                font-use-system-font t))
+                font-use-system-font t
+                initial-scratch-message ""
+                initial-major-mode 'org-mode))
 
 (use-package calc :ensure nil
   :hook (calc-mode . calc-symbolic-mode))
