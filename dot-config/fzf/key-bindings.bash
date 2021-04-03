@@ -24,8 +24,6 @@ __fzf_select__() {
   echo
 }
 
-if [[ $- =~ i ]]; then
-
 __fzfcmd() {
   [ -n "$TMUX_PANE" ] && { [ "${FZF_TMUX:-0}" != 0 ] || [ -n "$FZF_TMUX_OPTS" ]; } &&
     echo "fzf-tmux ${FZF_TMUX_OPTS:--d${FZF_TMUX_HEIGHT:-40%}} -- " || echo "fzf"
@@ -61,19 +59,6 @@ __fzf_history__() {
 
 # Required to refresh the prompt after fzf
 bind -m emacs-standard '"\er": redraw-current-line'
-
-bind -m vi-command '"\C-z": emacs-editing-mode'
-bind -m vi-insert '"\C-z": emacs-editing-mode'
 bind -m emacs-standard '"\C-z": vi-editing-mode'
-
-# CTRL-R - Paste the selected command from history into the command line
 bind -m emacs-standard -x '"\C-r": __fzf_history__'
-bind -m vi-command -x '"\C-r": __fzf_history__'
-bind -m vi-insert -x '"\C-r": __fzf_history__'
-
-# ALT-C - cd into the selected directory
 bind -m emacs-standard '"\ec": " \C-b\C-k \C-u`__fzf_cd__`\e\C-e\er\C-m\C-y\C-h\e \C-y\ey\C-x\C-x\C-d"'
-bind -m vi-command '"\ec": "\C-z\ec\C-z"'
-bind -m vi-insert '"\ec": "\C-z\ec\C-z"'
-
-fi

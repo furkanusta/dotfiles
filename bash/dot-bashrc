@@ -38,15 +38,16 @@ alias clang++="clang++ -std=c++17 -stdlib=libc++"
 alias flatpak="flatpak --user"
 alias whatsapp="ffmpeg -c:v libx264  -threads 4 -profile:v baseline -level 3.0 -pix_fmt yuv420p"
 
-source ~/.config/fzf/completion.bash
-source ~/.config/fzf/key-bindings.bash
+# bind does not work inside emacs
+if [[ -z "$INSIDE_EMACS" ]]; then
+    source ~/.config/fzf/completion.bash
+    source ~/.config/fzf/key-bindings.bash
+fi
 
 if [ -f .bash_functions ]; then
     source .bash_functions
 fi
 
-if [[ "$INSIDE_EMACS" = 'vterm' ]] \
-    && [[ -n ${EMACS_VTERM_PATH} ]] \
-    && [[ -f ${EMACS_VTERM_PATH}/etc/emacs-vterm-bash.sh ]]; then
-	source ${EMACS_VTERM_PATH}/etc/emacs-vterm-bash.sh
+if [[ "$INSIDE_EMACS" = 'vterm' ]] ; then
+	source ./emacs-vterm-bash.sh
 fi
