@@ -578,7 +578,12 @@
   :bind ("C-c g s" . magit-status))
 
 (use-package magit-todos
-  :hook (magit-mode . magit-todos-mode))
+  ;; :hook (magit-mode . magit-todos-mode)
+  :config
+  (let ((inhibit-message t))
+    (magit-todos-mode 1))
+  (transient-append-suffix 'magit-status-jump '(0 0 -1)
+    '("T " "Todos" magit-todos-jump-to-todos)))
 
 (use-package diff-hl
   :custom (global-diff-hl-mode 1))
@@ -637,6 +642,7 @@
 
 (use-package hungry-delete
   :load-path "elisp/"
+  :demand t
   :custom (global-hungry-delete-mode 1))
 
 (use-package writeroom-mode
