@@ -100,19 +100,16 @@
                 large-file-warning-threshold (* 1024 1024 1024) ;; 1GB
                 font-use-system-font t
                 initial-scratch-message ""
-                initial-major-mode 'org-mode))
-
-(use-package calc :ensure nil
-  :hook (calc-mode . calc-symbolic-mode))
-
-(use-package column-number-mode :ensure nil)
-
-(use-package display-time :ensure nil
+                initial-major-mode 'org-mode)
   :custom
+  (column-number-mode 1)
   (display-time-default-load-average nil)
   (display-time-load-average-threshold 100.0)
   (display-time-24hr-format t)
   (display-time-mode 1))
+
+(use-package calc :ensure nil
+  :hook (calc-mode . calc-symbolic-mode))
 
 (use-package ediff
   :custom
@@ -373,7 +370,7 @@
 (use-package helm-rg
   :bind ("C-c C-s" .  helm-rg))
 
-(use-package helm-bookmarks
+(use-package helm-bookmark
   :ensure nil
   :bind ("C-c h b" . helm-bookmarks))
 
@@ -689,7 +686,13 @@
   :hook
   (org-mode . turn-on-flyspell)
   (org-mode . auto-fill-mode)
-  :bind (:map org-mode-map ("C-c C-." . org-time-stamp-inactive)))
+  :bind (:map org-mode-map ("C-c C-." . org-time-stamp-inactive))
+  :config (org-babel-do-load-languages
+           'org-babel-load-languages
+           '((python . t)
+             ;; (http . t)
+             (shell . t)
+             (emacs-lisp . t))))
 
 (use-package org-alert
   :commands org-alert-enable
@@ -697,14 +700,6 @@
 
 (use-package org-fragtog
   :hook (org-mode . org-fragtog-mode))
-
-(use-package org-babel :ensure nil
-  :config (org-babel-do-load-languages
-           'org-babel-load-languages
-           '((python . t)
-             ;; (http . t)
-             (shell . t)
-             (emacs-lisp . t))))
 
 (use-package org-cliplink
   :bind (:map org-mode-map ("C-c i l" . org-cliplink)))
@@ -1172,7 +1167,7 @@
 
 (use-package auctex-latexmk
   :commands auctex-latexmk-setup
-  :config (auctex-latexmk-setup)
+  :init (auctex-latexmk-setup)
   :custom (auctex-latexmk-inherit-TeX-PDF-mode t))
 
 (use-package popper
