@@ -1236,3 +1236,17 @@
 
 (use-package alert
   :custom (alert-default-style 'libnotify))
+
+;; Does not work well with dark mode (Text unreadable)
+;; (use-package svg-tag-mode
+;;   :quelpa (svg-tag-mode :repo "rougier/svg-tag-mode"
+;;                         :fetcher github
+;;                         :files ("svg-tag-mode.el")))
+
+(use-package auth-source-pass
+  :init
+  (auth-source-pass-enable))
+
+(use-package pass)
+
+(use-package helm-pass)
