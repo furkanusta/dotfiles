@@ -590,7 +590,8 @@
   (company-lsp-enable-snippet t))
 
 (use-package magit
-  :bind ("C-c g s" . magit-status))
+  :bind ("C-c g s" . magit-status)
+  :custom (magit-blame-echo-style 'headings))
 
 (use-package magit-todos
   :config
@@ -603,6 +604,12 @@
   :custom (git-link-use-commit t))
 
 (use-package git-timemachine)
+
+(use-package git-messenger
+  :custom
+  (git-messenger:show-detail t)
+  (git-messenger:use-magit-popup t)
+  :bind ("C-c g m" . git-messenger:popup-message))
 
 (use-package github-review)
 
@@ -946,7 +953,7 @@
   (:map global-map
         ("C-x t t"   . treemacs)
         ("C-x t B"   . treemacs-bookmark)
-        ("C-x t C-t" . treemacs-find-file))
+        ("C-x t C-f" . treemacs-find-file))
   :custom
   (treemacs-position 'right)
   (treemacs-width 50))
@@ -1223,7 +1230,10 @@
   ("C-h f" . helpful-callable)
   ("C-h v" . helpful-variable)
   ("C-h k" . helpful-key)
-  ("C-h h" . helpful-at-point))
+  ("C-h h" . helpful-at-point)
+  :custom
+  (helpful-switch-buffer-function #'switch-to-buffer)
+  (helpful-max-buffers 5))
 
 (use-package transient-dwim
   :bind ("M-=" . transient-dwim-dispatch))
@@ -1253,8 +1263,7 @@
 ;;                         :files ("svg-tag-mode.el")))
 
 (use-package auth-source-pass
-  :init
-  (setq auth-source '(password-store)))
+  :init (setq auth-source '(password-store)))
 
 (use-package pass)
 
