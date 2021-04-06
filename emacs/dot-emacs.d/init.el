@@ -593,12 +593,21 @@
   :bind ("C-c g s" . magit-status))
 
 (use-package magit-todos
-  ;; :hook (magit-mode . magit-todos-mode)
   :config
   (let ((inhibit-message t))
     (magit-todos-mode 1))
   (transient-append-suffix 'magit-status-jump '(0 0 -1)
     '("T " "Todos" magit-todos-jump-to-todos)))
+
+(use-package git-link
+  :custom (git-link-use-commit t))
+
+(use-package git-timemachine)
+
+(use-package github-review)
+
+(use-package copy-as-format
+  :custom (copy-as-format-default "github"))
 
 (use-package diff-hl
   :custom (global-diff-hl-mode 1))
@@ -1245,7 +1254,7 @@
 
 (use-package auth-source-pass
   :init
-  (auth-source-pass-enable))
+  (setq auth-source '(password-store)))
 
 (use-package pass)
 
