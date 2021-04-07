@@ -1083,36 +1083,37 @@
 
 (use-package fountain-mode)
 
+(use-package inherit-org
+  :quelpa (inherit-org :repo "chenyanming/inherit-org" :fetcher github)
+  :hook ((eww-mode nov-mode info-mode helpful-mode) . inherit-org-mode))
+
 (use-package shrface
-  :commands shrface-basic shrface-trial
-  :custom (shrface-href-versatile t)
+  :commands (org-tab-or-next-heading)
   :config
   (shrface-basic)
-  (shrface-trial))
+  (shrface-trial)
+  :init
+  (defun org-tab-or-next-heading ()
+    (interactive)
+    (if (org-at-heading-p)
+        (shrface-outline-cycle)
+      (progn
+        (org-next-visible-heading 1)
+        (unless (org-at-heading-p)
+          (org-previous-visible-heading 1)))))
+  :hook (inherit-org-mode . shrface-mode)
+  :custom (shrface-href-versatile t)
+  :bind (:map shrface-mode-map
+              ("TAB" . #'org-tab-or-next-heading)
+              ("<backtab>" . shrface-outline-cycle-buffer)
+              ("M-<down>" . org-next-visible-heading)
+              ("M-<up>" . org-previous-visible-heading)))
 
 (use-package eww)
 
 (use-package nov
   :mode ("\\.epub\\'" . nov-mode)
   :custom (nov-text-width 100))
-
-(use-package nov-eww :ensure nil
-  :hook (eww-after-render . shrface-mode)
-  :bind (:map eww-mode-map
-              ("<tab>" . shrface-outline-cycle)
-              ("S-<tab>" . shrface-outline-cycle-buffer)
-              ("C-j" . shrface-next-headline)
-              ("C-k" . shrface-previous-headline)))
-
-(use-package nov-shr :ensure nil
-  :hook (nov-mode . shrface-mode)
-  :defines nov-shr-rendering-functions
-  :config (add-to-list 'nov-shr-rendering-functions shr-external-rendering-functions)
-  :bind (:map nov-mode-map
-              ("<tab>" . shrface-outline-cycle)
-              ("S-<tab>" . shrface-outline-cycle-buffer)
-              ("C-j" . shrface-next-headline)
-              ("C-k" . shrface-previous-headline)))
 
 (use-package verilog-mode
   :mode
