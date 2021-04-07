@@ -143,7 +143,7 @@
                 (start-process "" nil "xdg-open" (file-truename file)))
             nil))
   :custom
-  (dired-listing-switches "-vaBhl  --group-directories-first")
+  (dired-listing-switches "-vaBhl  --group-directories-first --color=always")
   (dired-auto-revert-buffer t)
   (dired-create-destination-dirs 'ask)
   (dired-dwim-target t)
@@ -570,6 +570,9 @@
   :hook (after-init . global-company-mode)
   :custom (company-idle-delay nil))
 
+(use-package company-files
+  :config (push 'company-files company-backends))
+
 (use-package helm-company
   :after helm company
   :bind ("C-<tab>" . helm-company))
@@ -673,8 +676,7 @@
 
 (use-package hungry-delete
   :load-path "elisp/"
-  :demand t
-  :custom (global-hungry-delete-mode 1))
+  :init (global-hungry-delete-mode))
 
 (use-package writeroom-mode
   :hook (writeroom-mode . toggle-line-numbers)
@@ -941,7 +943,8 @@
   :custom (ansi-color-for-comint-mode 1))
 
 (use-package shell
-  :bind ("<f8>" . shell))
+  :bind ("<f8>" . shell)
+  (:map shell-mode-map ("<tab>" . helm-company)))
 
 (use-package treemacs
   :commands treemacs-resize-icons treemacs-is-file-git-ignored?
