@@ -306,8 +306,21 @@
 ;; Helm packages for other modules will be near their corresponding modules, not in here
 
 (use-package helm
+  :commands (helm-get-selection helm-next-line helm-previous-line helm-preselect helm-ff-move-to-first-real-candidate helm-skip-dots)
   :config (require 'helm-config)
-  :init (global-unset-key (kbd "C-x c"))
+  :init
+  (defun helm-skip-dots (old-func &rest args)
+    "Skip . and .. initially in helm-find-files.  First call OLD-FUNC with ARGS."
+    (apply old-func args)
+    (let ((sel (helm-get-selection)))
+      (if (and (stringp sel) (string-match "/\\.$" sel))
+          (helm-next-line 2)))
+    (let ((sel (helm-get-selection))) ; if we reached .. move back
+      (if (and (stringp sel) (string-match "/\\.\\.$" sel))
+          (helm-previous-line 1))))
+  (advice-add #'helm-preselect :around #'helm-skip-dots)
+  (advice-add #'helm-ff-move-to-first-real-candidate :around #'helm-skip-dots)
+  (global-unset-key (kbd "C-x c"))
   :bind
   (("M-x" . helm-M-x)
    ;; ("C-s" . helm-occur)
@@ -568,10 +581,13 @@
 ;; Generic
 (use-package company
   :hook (after-init . global-company-mode)
-  :custom (company-idle-delay nil))
+  :custom
+  (company-backends '(company-cmake company-capf company-clang))
+  (company-idle-delay nil))
 
 (use-package company-files
-  :config (push 'company-files company-backends))
+  :after company
+  :init (push 'company-files company-backends))
 
 (use-package helm-company
   :after helm company
@@ -587,7 +603,7 @@
 
 (use-package company-lsp
   :after company lsp
-  :config (push 'company-lsp company-backends)
+  :init (push 'company-lsp company-backends)
   :custom
   (company-lsp-enable-recompletion t)
   (company-lsp-enable-snippet t))
@@ -676,7 +692,8 @@
 
 (use-package hungry-delete
   :load-path "elisp/"
-  :init (global-hungry-delete-mode))
+  :commands turn-on-hungry-delete-mode
+  :init (turn-on-hungry-delete-mode))
 
 (use-package writeroom-mode
   :hook (writeroom-mode . toggle-line-numbers)
@@ -893,10 +910,6 @@
   ("C-c C->" . origami-open-all-nodes))
 
 ;; (use-package lsp-origami :hook origami-mode)
-
-(use-package company-c-headers
-  :after company
-  :config (push 'company-c-headers company-backends))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Perl          ;;
@@ -1266,6 +1279,7 @@
 ;;                         :files ("svg-tag-mode.el")))
 
 (use-package auth-source-pass
+  :defines auth-source
   :init (setq auth-source '(password-store)))
 
 (use-package pass)
