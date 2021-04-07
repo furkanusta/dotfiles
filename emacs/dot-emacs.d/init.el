@@ -450,7 +450,19 @@
               ("C-0" . imagex-sticky-restore-original)))
 
 (use-package elfeed
+  :defines (elfeed-show-mode-map elfeed-search-mode-map)
   :init
+
+  (defun elfeed-get-show-or-search-entry ()
+    (let* ((search-entries (elfeed-search-selected))
+           (search-entry (when search-entries (car search-entries)))
+           (elfeed-entry (or elfeed-show-entry search-entry)))
+      elfeed-entry))
+  (defun elfeed-open-eww ()
+    (interactive)
+    (let* ((entry (elfeed-get-show-or-search-entry))
+           (url (elfeed-entry-link entry)))
+      (eww url)))
   (defun +rss/delete-pane ()
   "Delete the *elfeed-entry* split pane."
   (interactive)
@@ -459,6 +471,18 @@
     (delete-window window)
     (when (buffer-live-p buf)
       (kill-buffer buf))))
+  (defun elfeed-youtube-dl ()
+    "Youtube-DL link"
+    (interactive "P")
+    (let* ((entry (elfeed-get-show-or-search-entry))
+           (url (when entry (elfeed-entry-link entry)))
+           (default-directory (expand-file-name "~/Downloads")))
+      (when url (async-shell-command (format "youtube-dl %s" url)))))
+  (defun elfeed-open-reddit ()
+    (interactive)
+    (let* ((entry (elfeed-get-show-or-search-entry))
+           (url (elfeed-entry-link entry)))
+      (reddigg-view-comments url)))
   :custom
   (elfeed-feeds
                 '(("http://research.swtch.com/feeds/posts/default" other)
@@ -515,9 +539,25 @@
                   ("https://www.youtube.com/feeds/videos.xml?channel_id=UCO-_F5ZEUhy0oKrSa69DLMw" youtube)
                   ("https://www.youtube.com/feeds/videos.xml?channel_id=UC2eEGT06FrWFU6VBnPOR9lg" youtube)))
   (elfeed-show-entry-switch #'pop-to-buffer)
-  (elfeed-show-entry-delete #'+rss/delete-pane))
+  (elfeed-show-entry-delete #'+rss/delete-pane)
+  (elfeed-search-title-max-width 100)
+  :bind
+  (:map elfeed-show-mode-map
+        ("q" . +rss/delete-pane)
+        ("P" . pocket-reader-elfeed-entry-add-link)
+        ("d" . elfeed-youtube-dl)
+        ("e" . elfeed-open-eww)
+        ("r" . elfeed-open-reddit))
+  (:map elfeed-search-mode-map
+        ("d" . elfeed-youtube-dl)
+        ("P" . pocket-reader-elfeed-search-add-link)
+        ("r" . elfeed-open-reddit)
+        ("e" . elfeed-open-eww)))
 
-(use-package pocket-reader)
+(use-package feed-discovery)
+
+(use-package pocket-reader
+  :commands (pocket-reader-elfeed-search-add-link pocket-reader-elfeed-entry-add-link))
 
 (use-package vlf
   :after dired
