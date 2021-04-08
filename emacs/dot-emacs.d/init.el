@@ -46,6 +46,10 @@
 (defun disable-line-numbers ()
   (display-line-numbers-mode -1))
 
+(defvar use-other-window-alist
+  '((display-buffer-use-some-window display-buffer-pop-up-window)
+    (inhibit-same-window . t)))
+
 (use-package no-littering
   :demand t)
 
@@ -996,6 +1000,9 @@
   :custom (ansi-color-for-comint-mode 1))
 
 (use-package shell
+  :after window
+  :config (add-to-list 'display-buffer-alist
+                       (cons "\\*shell\\*" use-other-window-alist))
   :bind ("<f8>" . shell)
   (:map shell-mode-map ("<tab>" . helm-company)))
 
@@ -1283,14 +1290,13 @@
   :hook (company-mode . company-flx-mode))
 
 (use-package helpful
+  :config (add-to-list 'display-buffer-alist (cons "\\*helpful" use-other-window-alist))
   :bind
   ("C-h f" . helpful-callable)
   ("C-h v" . helpful-variable)
   ("C-h k" . helpful-key)
   ("C-h h" . helpful-at-point)
-  :custom
-  (helpful-switch-buffer-function #'switch-to-buffer)
-  (helpful-max-buffers 5))
+  :custom (helpful-max-buffers 5))
 
 (use-package transient-dwim
   :bind ("M-=" . transient-dwim-dispatch))
