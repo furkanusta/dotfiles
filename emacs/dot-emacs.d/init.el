@@ -676,6 +676,8 @@
 
 (use-package github-review)
 
+(use-package gitignore-mode)
+
 (use-package copy-as-format
   :custom (copy-as-format-default "github"))
 
@@ -1290,7 +1292,17 @@
   :hook (company-mode . company-flx-mode))
 
 (use-package helpful
-  :config (add-to-list 'display-buffer-alist (cons "\\*helpful" use-other-window-alist))
+  :after helm-swoop
+  :commands (get-buffers-matching-mode helpful-first-buffer-p helpful-not-first-buffer-p)
+  :config
+  (defun helpful-first-buffer-p (buf &optional alist)
+    (and
+     (with-current-buffer buf (derived-mode-p 'helpful-mode))
+     (< (length (get-buffers-matching-mode 'helpful-mode)) 2)))
+  (defun helpful-not-first-buffer-p (buf &optional alist)
+    (and (not (helpful-first-buffer-p buf alist)) (with-current-buffer buf (derived-mode-p 'helpful-mode))))
+  (add-to-list 'display-buffer-alist (cons #'helpful-first-buffer-p use-other-window-alist))
+  (add-to-list 'display-buffer-alist (cons #'helpful-not-first-buffer-p '((display-buffer-same-window))))
   :bind
   ("C-h f" . helpful-callable)
   ("C-h v" . helpful-variable)
