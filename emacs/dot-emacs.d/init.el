@@ -29,7 +29,6 @@
 (defvar my-quelpa-build-dir (concat my-quelpa-dir "build"))
 
 (setq-default use-package-always-defer t)
-;; (setq use-package-ensure-function 'quelpa)
 ;; (setq-default use-package-always-ensure t)
 
 (require 'server)
@@ -492,6 +491,18 @@
            (url (when entry (elfeed-entry-link entry)))
            (default-directory (expand-file-name "~/Downloads")))
       (when url (async-shell-command (format "youtube-dl %s" url)))))
+  (require 'reddigg)
+  (defun elfeed-open-reddit ()
+    (interactive)
+    (let* ((entry (elfeed-get-show-or-search-entry))
+           (url (elfeed-entry-link entry))
+           (existing-buffer (get-buffer "*reddigg-comments*")))
+      (progn
+        (when existing-buffer
+          (kill-buffer existing-buffer))
+        (promise-finally (reddigg-view-comments url)
+                         (lambda () (message "%s" (with-current-buffer (get-buffer "*reddigg-comments*")
+                                                    (read-only-mode +1))))))))
   :custom
   (elfeed-feeds
                 '(("http://research.swtch.com/feeds/posts/default" other)
@@ -529,9 +540,9 @@
                   ("https://old.reddit.com/r/cpp/top.rss?t=week" cpp)
                   ("https://old.reddit.com/r/emacs/top.rss?t=week" emacs)
                   ("https://old.reddit.com/r/python/top.rss?t=week" python)
-                  ("https://old.reddit.com/r/ruby/top.rss?t=week" ruby)
-                  ("https://old.reddit.com/r/perl/top.rss?t=week" perl)
-                  ("https://old.reddit.com/r/java/top.rss?t=week" java)
+                  ("https://old.reddit.com/r/ruby/top.rss?t=month" ruby)
+                  ("https://old.reddit.com/r/perl/top.rss?t=month" perl)
+                  ("https://old.reddit.com/r/java/top.rss?t=month" java)
                   ("https://old.reddit.com/r/linux/top.rss?t=week" linux)
                   ("https://old.reddit.com/r/programming/top.rss?t=week" prog)
                   ("https://old.reddit.com/r/askhistorians/top.rss?t=week" hist)
@@ -559,24 +570,8 @@
   (:map elfeed-search-mode-map
         ("d" . elfeed-youtube-dl)
         ("P" . pocket-reader-elfeed-search-add-link)
+        ("R" . elfeed-open-reddit)
         ("e" . elfeed-open-eww)))
-
-(use-package reddigg
-  :after elfeed promise-finally
-  :commands (reddigg-view-comments promise-finally)
-  :init
-  (defun elfeed-open-reddit ()
-    (interactive)
-    (let* ((entry (elfeed-get-show-or-search-entry))
-           (url (elfeed-entry-link entry)))
-      (promise-finally (reddigg-view-comments url)
-                       (lambda () (message "%s" (with-current-buffer (get-buffer "*reddigg-comments*")
-                                                  (read-only-mode +1)))))))
-  :bind
-  (:map elfeed-show-mode-map
-        ("r" . elfeed-open-reddit))
-  (:map elfeed-search-mode-map
-        ("r" . elfeed-open-reddit)))
 
 (use-package feed-discovery)
 
@@ -758,7 +753,9 @@
 
 (use-package hungry-delete
   :load-path "elisp/"
+  :demand t
   :commands turn-on-hungry-delete-mode
+  :custom (global-hungry-delete-mode 1)
   :init (turn-on-hungry-delete-mode))
 
 (use-package writeroom-mode
