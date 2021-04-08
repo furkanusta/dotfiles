@@ -454,9 +454,9 @@
               ("C-0" . imagex-sticky-restore-original)))
 
 (use-package elfeed
-  :defines (elfeed-show-mode-map elfeed-search-mode-map)
+  :defines (elfeed-show-mode-map elfeed-search-mode-map elfeed-show-entry)
+  :commands (elfeed-search-selected elfeed-get-show-or-search-entry)
   :init
-
   (defun elfeed-get-show-or-search-entry ()
     (let* ((search-entries (elfeed-search-selected))
            (search-entry (when search-entries (car search-entries)))
@@ -482,11 +482,6 @@
            (url (when entry (elfeed-entry-link entry)))
            (default-directory (expand-file-name "~/Downloads")))
       (when url (async-shell-command (format "youtube-dl %s" url)))))
-  (defun elfeed-open-reddit ()
-    (interactive)
-    (let* ((entry (elfeed-get-show-or-search-entry))
-           (url (elfeed-entry-link entry)))
-      (reddigg-view-comments url)))
   :custom
   (elfeed-feeds
                 '(("http://research.swtch.com/feeds/posts/default" other)
@@ -550,13 +545,25 @@
         ("q" . +rss/delete-pane)
         ("P" . pocket-reader-elfeed-entry-add-link)
         ("d" . elfeed-youtube-dl)
-        ("e" . elfeed-open-eww)
-        ("r" . elfeed-open-reddit))
+        ("e" . elfeed-open-eww))
   (:map elfeed-search-mode-map
         ("d" . elfeed-youtube-dl)
         ("P" . pocket-reader-elfeed-search-add-link)
-        ("r" . elfeed-open-reddit)
         ("e" . elfeed-open-eww)))
+
+(use-package reddigg
+  :commands reddigg-view-comments
+  :init
+  (defun elfeed-open-reddit ()
+    (interactive)
+    (let* ((entry (elfeed-get-show-or-search-entry))
+           (url (elfeed-entry-link entry)))
+      (reddigg-view-comments url)))
+  :bind
+  (:map elfeed-show-mode-map
+        ("r" . elfeed-open-reddit))
+  (:map elfeed-search-mode-map
+        ("r" . elfeed-open-reddit)))
 
 (use-package feed-discovery)
 
@@ -1097,7 +1104,8 @@
   :hook ((eww-mode nov-mode info-mode helpful-mode) . inherit-org-mode))
 
 (use-package shrface
-  :commands (org-tab-or-next-heading)
+  :after org
+  :commands (org-tab-or-next-heading shrface-basic shrface-trial shrface-outline-cycle org-at-heading-p)
   :config
   (shrface-basic)
   (shrface-trial)
