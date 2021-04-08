@@ -49,5 +49,10 @@ if [ -f .bash_functions ]; then
 fi
 
 if [[ "$INSIDE_EMACS" = 'vterm' ]] ; then
-	source ./emacs-vterm-bash.sh
+	source ~/.config/vterm/emacs-vterm.sh
 fi
+
+prompt_command () {
+    PS1='[$(basename $(dirname "$PWD")) / $(basename "$PWD")] \e[0;31m $ \e[m ';
+}
+PROMPT_COMMAND=prompt_command
