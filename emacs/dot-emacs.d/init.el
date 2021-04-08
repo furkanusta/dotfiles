@@ -552,13 +552,16 @@
         ("e" . elfeed-open-eww)))
 
 (use-package reddigg
-  :commands reddigg-view-comments
+  :after elfeed promise-finally
+  :commands (reddigg-view-comments promise-finally)
   :init
   (defun elfeed-open-reddit ()
     (interactive)
     (let* ((entry (elfeed-get-show-or-search-entry))
            (url (elfeed-entry-link entry)))
-      (reddigg-view-comments url)))
+      (promise-finally (reddigg-view-comments url)
+                       (lambda () (message "%s" (with-current-buffer (get-buffer "*reddigg-comments*")
+                                                  (read-only-mode +1)))))))
   :bind
   (:map elfeed-show-mode-map
         ("r" . elfeed-open-reddit))
@@ -636,7 +639,7 @@
   (company-backends '(company-cmake company-capf company-clang))
   (company-idle-delay nil))
 
-(use-package company-files
+(use-package company-files :ensure company
   :after company
   :init (push 'company-files company-backends))
 
@@ -1303,14 +1306,15 @@
   :after helm-swoop
   :commands (get-buffers-matching-mode helpful-first-buffer-p helpful-not-first-buffer-p)
   :config
-  (defun helpful-first-buffer-p (buf &optional alist)
-    (and
-     (with-current-buffer buf (derived-mode-p 'helpful-mode))
-     (< (length (get-buffers-matching-mode 'helpful-mode)) 2)))
-  (defun helpful-not-first-buffer-p (buf &optional alist)
-    (and (not (helpful-first-buffer-p buf alist)) (with-current-buffer buf (derived-mode-p 'helpful-mode))))
-  (add-to-list 'display-buffer-alist (cons #'helpful-first-buffer-p use-other-window-alist))
-  (add-to-list 'display-buffer-alist (cons #'helpful-not-first-buffer-p '((display-buffer-same-window))))
+  (defun helpful-switch-or-pop (buf &optional alist)
+    (if (derived-mode-p 'helpful-mode)
+        (switch-to-buffer buf)
+      (progn
+        (when (= (length (window-list)) 1)
+          (split-window-horizontally)
+          (other-window 1)
+        (switch-to-buffer buf nil)))))
+  (add-to-list 'display-buffer-alist '("\\*helpful" (helpful-switch-or-pop)))
   :bind
   ("C-h f" . helpful-callable)
   ("C-h v" . helpful-variable)
