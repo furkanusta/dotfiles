@@ -50,6 +50,16 @@
   '((display-buffer-use-some-window display-buffer-pop-up-window)
     (inhibit-same-window . t)))
 
+(defun alist-switch-or-pop (mode buf  &optional alist)
+    (if (derived-mode-p mode)
+        (progn (message "HERE") (switch-to-buffer buf))
+      (progn
+        (when (= (length (window-list)) 1)
+          (split-window-horizontally))
+        (other-window 1)
+        (message "HERE:: %s" (buffer-name buf))
+        (switch-to-buffer buf nil))))
+  
 (use-package no-littering
   :demand t)
 
@@ -1015,7 +1025,7 @@
   :after window
   :config (add-to-list 'display-buffer-alist
                        (cons "\\*shell\\*" use-other-window-alist))
-  :bind ("<f8>" . shell)
+  :bind ("C-<f8>" . shell)
   (:map shell-mode-map ("<tab>" . helm-company)))
 
 (use-package treemacs
@@ -1196,7 +1206,19 @@
   :bind ("C-x t n" . neotree-toggle))
 
 (use-package vterm
-  :bind (:map vterm-mode-map ("C-c C-c" . vterm-copy-mode)))
+  :commands (vterm-next-prompt vterm-prev-prompt)
+  :config (add-to-list 'display-buffer-alist (cons "\\*vterm" use-other-window-alist))
+  :init
+  (defun vterm-next-prompt () (interactive) (re-search-forward "msi.*\\$ " nil 'move))
+  (defun vterm-prev-prompt () (interactive)
+         (move-beginning-of-line nil)
+         (re-search-backward "msi.*\\$ " nil 'move)
+         (re-search-forward "\\$ " nil 'move))
+  :bind
+  ("<f8>" . vterm)
+  (:map vterm-copy-mode-map
+        ("C-<" . vterm-prev-prompt)
+        ("C-," . vterm-next-prompt)))
 
 (use-package binder)
 
@@ -1306,15 +1328,7 @@
   :after helm-swoop
   :commands (get-buffers-matching-mode helpful-first-buffer-p helpful-not-first-buffer-p)
   :config
-  (defun helpful-switch-or-pop (buf &optional alist)
-    (if (derived-mode-p 'helpful-mode)
-        (switch-to-buffer buf)
-      (progn
-        (when (= (length (window-list)) 1)
-          (split-window-horizontally)
-          (other-window 1)
-        (switch-to-buffer buf nil)))))
-  (add-to-list 'display-buffer-alist '("\\*helpful" (helpful-switch-or-pop)))
+  (add-to-list 'display-buffer-alist `("\\*helpful" (,(apply-partially #'alist-switch-or-pop 'helpful-mode))))
   :bind
   ("C-h f" . helpful-callable)
   ("C-h v" . helpful-variable)
