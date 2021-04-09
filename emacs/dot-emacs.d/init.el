@@ -380,6 +380,10 @@
   (bibtex-completion-notes-path (concat my-notes-directory "/Papers.org")))
 
 (use-package tramp
+  :init (defun tramp-done ()
+          (interactive)
+          (tramp-cleanup-all-connections)
+          (tramp-cleanup-all-buffers))
   :custom
   (tramp-backup-directory-alist backup-directory-alist))
 
@@ -491,11 +495,18 @@
       (kill-buffer buf))))
   (defun elfeed-youtube-dl ()
     "Youtube-DL link"
-    (interactive "P")
+    (interactive)
     (let* ((entry (elfeed-get-show-or-search-entry))
            (url (when entry (elfeed-entry-link entry)))
            (default-directory (expand-file-name "~/Downloads")))
       (when url (async-shell-command (format "youtube-dl %s" url)))))
+  (defun elfeed-mpv ()
+    (interactive)
+    (let* ((entry (elfeed-get-show-or-search-entry))
+           (url (when entry (elfeed-entry-link entry))))
+      (when url
+        ;; (async-shell-command (format "mpv %s" url) nil nil))))
+        (start-process "elfeed-mpv" nil "mpv" url))))
   (require 'reddigg)
   (defun elfeed-open-reddit ()
     (interactive)
@@ -505,6 +516,8 @@
       (progn
         (when existing-buffer
           (kill-buffer existing-buffer))
+        (elfeed-untag entry 'unread)
+        (next-line 1)
         (promise-finally (reddigg-view-comments url)
                          (lambda () (message "%s" (with-current-buffer (get-buffer "*reddigg-comments*")
                                                     (read-only-mode +1))))))))
@@ -571,12 +584,15 @@
         ("q" . +rss/delete-pane)
         ("P" . pocket-reader-elfeed-entry-add-link)
         ("d" . elfeed-youtube-dl)
-        ("e" . elfeed-open-eww))
+        ("R" . elfeed-open-reddit)
+        ("e" . elfeed-open-eww)
+        ("m" . elfeed-mpv))
   (:map elfeed-search-mode-map
         ("d" . elfeed-youtube-dl)
         ("P" . pocket-reader-elfeed-search-add-link)
         ("R" . elfeed-open-reddit)
-        ("e" . elfeed-open-eww)))
+        ("e" . elfeed-open-eww)
+        ("m" . elfeed-mpv)))
 
 (use-package feed-discovery)
 
