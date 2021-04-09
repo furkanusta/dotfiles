@@ -755,7 +755,10 @@
         ("C-c C-w <right>" . eyebrowse-next-window-config)))
 
 (use-package hungry-delete
-  :custom (global-hungry-delete-mode 1)
+  :load-path "elisp/"
+  :custom
+  (global-hungry-delete-mode 1)
+  (hungry-delete-join-reluctantly t)
   :bind
   ([remap delete-char] . hungry-delete-forward)
   ([remap delete-forward-char] . hungry-delete-forward)
@@ -1324,7 +1327,6 @@
   :hook (company-mode . company-flx-mode))
 
 (use-package helpful
-  :after helm-swoop
   :commands (get-buffers-matching-mode helpful-first-buffer-p helpful-not-first-buffer-p)
   :config
   (add-to-list 'display-buffer-alist `("\\*helpful" (,(apply-partially #'alist-switch-or-pop 'helpful-mode))))
