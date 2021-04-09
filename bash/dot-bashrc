@@ -52,4 +52,4 @@ if [[ "$INSIDE_EMACS" = 'vterm' ]] ; then
 	source ~/.config/vterm/emacs-vterm.sh
 fi
 
-export PS1='[$(basename $(dirname "$PWD"))/$(basename "$PWD")] \[\e[0;31m $ \e[0m\] ';
+export PS1='[$(basename $(dirname "$PWD"))/$(basename "$PWD")] \[\e[0;31m$\e[0m\] ';

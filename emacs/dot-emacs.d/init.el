@@ -118,7 +118,9 @@
   (display-time-default-load-average nil)
   (display-time-load-average-threshold 100.0)
   (display-time-24hr-format t)
-  (display-time-mode 1))
+  (display-time-mode 1)
+  :bind
+  ("C-c ." . pop-global-mark))
 
 (use-package calc :ensure nil
   :hook (calc-mode . calc-symbolic-mode))
@@ -1371,3 +1373,12 @@
 (use-package pass)
 
 (use-package helm-pass)
+
+;; (use-package togetherly)
+
+(use-package crdt
+  :commands (crdt-connect crdt-share-buffer)
+  :quelpa (crdt :fetcher git :url "https://code.librehq.com/qhong/crdt.el.git"))
+
+(use-package org-marginalia
+  :quelpa (org-marginalia :fetcher github :repo "nobiot/org-marginalia"))
