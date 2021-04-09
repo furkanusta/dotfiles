@@ -59,7 +59,7 @@
         (message "HERE:: %s" (buffer-name buf))
         (switch-to-buffer buf nil))))
   
-(use-package no-littering :defer nil)
+(use-package no-littering :demand t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Defaults & Built-ins          ;;
@@ -724,7 +724,7 @@
 (use-package evil-nerd-commenter :bind ("M-;" . evilnc-comment-or-uncomment-lines))
 
 (use-package visual-regexp-steroids
-  :defer nil
+  :demand t
   :bind ("C-r" . vr/replace))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -755,9 +755,11 @@
         ("C-c C-w <right>" . eyebrowse-next-window-config)))
 
 (use-package hungry-delete
-  :load-path "elisp/"
-  :defer nil
-  :custom (global-hungry-delete-mode 1))
+  :custom (global-hungry-delete-mode 1)
+  :bind
+  ([remap delete-char] . hungry-delete-forward)
+  ([remap delete-forward-char] . hungry-delete-forward)
+  ([remap delete-backward-char] . hungry-delete-backward))
 
 (use-package writeroom-mode
   :hook (writeroom-mode . toggle-line-numbers)
@@ -822,8 +824,7 @@
   :bind (:map org-mode-map ("C-c i l" . org-cliplink)))
 
 (use-package org-capture :ensure nil
-  :defines org-capture-file org-default-notes-file
-  :init (setq org-capture-file (concat my-notes-directory "/Capture.org"))
+  :config (setq org-capture-file (concat my-notes-directory "/Capture.org"))
   :custom
   (org-default-notes-file org-capture-file)
   (org-capture-templates '(("t" "TODO" entry (file+headline org-capture-file "Tasks")
