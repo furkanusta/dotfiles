@@ -59,8 +59,7 @@
         (message "HERE:: %s" (buffer-name buf))
         (switch-to-buffer buf nil))))
   
-(use-package no-littering
-  :demand t)
+(use-package no-littering :defer nil)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Defaults & Built-ins          ;;
@@ -377,6 +376,10 @@
   (bibtex-completion-library-path (concat my-data-directory "/Papers/"))
   (bibtex-completion-find-additional-pdfs t)
   (bibtex-completion-notes-path (concat my-notes-directory "/Papers.org")))
+
+(use-package tramp
+  :custom
+  (tramp-backup-directory-alist backup-directory-alist))
 
 (use-package helm-tramp)
 
@@ -721,7 +724,7 @@
 (use-package evil-nerd-commenter :bind ("M-;" . evilnc-comment-or-uncomment-lines))
 
 (use-package visual-regexp-steroids
-  :demand t
+  :defer nil
   :bind ("C-r" . vr/replace))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -753,10 +756,8 @@
 
 (use-package hungry-delete
   :load-path "elisp/"
-  :demand t
-  :commands turn-on-hungry-delete-mode
-  :custom (global-hungry-delete-mode 1)
-  :init (turn-on-hungry-delete-mode))
+  :defer nil
+  :custom (global-hungry-delete-mode 1))
 
 (use-package writeroom-mode
   :hook (writeroom-mode . toggle-line-numbers)
