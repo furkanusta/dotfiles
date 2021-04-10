@@ -803,6 +803,9 @@
 ;;          Org Mode          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package org
+  :config
+  (defvar org-capture-file (concat my-notes-directory "/Capture.org"))
+  (setq org-default-notes-file org-capture-file)
   :custom
   (org-adapt-indentation t)
   (org-catch-invisible-edits 'show-and-error)
@@ -845,9 +848,8 @@
   :bind (:map org-mode-map ("C-c i l" . org-cliplink)))
 
 (use-package org-capture :ensure nil
-  :config (setq org-capture-file (concat my-notes-directory "/Capture.org"))
+  :after org
   :custom
-  (org-default-notes-file org-capture-file)
   (org-capture-templates '(("t" "TODO" entry (file+headline org-capture-file "Tasks")
                             "* TODO %?\n  %a\n  %i\n")
                            ("j" "Journal" entry (file+headline org-capture-file "Journal")
@@ -1394,7 +1396,13 @@
 
 (use-package crdt
   :commands (crdt-connect crdt-share-buffer)
-  :quelpa (crdt :fetcher git :url "https://code.librehq.com/qhong/crdt.el.git"))
+  :quelpa (crdt :fetcher git :url "https://code.librehq.com/qhong/crdt.el"))
 
 (use-package org-marginalia
   :quelpa (org-marginalia :fetcher github :repo "nobiot/org-marginalia"))
+
+(use-package emacs-everywhere
+  :init (defun disable-modes ()
+          (beacon-mode -1)
+          (toggle-truncate-lines -1))
+  :hook (emacs-everywhere-mode . disable-beacon))
