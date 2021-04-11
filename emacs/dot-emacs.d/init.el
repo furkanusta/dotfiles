@@ -58,7 +58,7 @@
         (other-window 1)
         (message "HERE:: %s" (buffer-name buf))
         (switch-to-buffer buf nil))))
-  
+
 (use-package no-littering :demand t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -851,13 +851,13 @@
   :after org
   :custom
   (org-capture-templates '(("t" "TODO" entry (file+headline org-capture-file "Tasks")
-                            "* TODO %?\n  %a\n  %i\n")
-                           ("j" "Journal" entry (file+headline org-capture-file "Journal")
-                            "* %U\n  %a\n  %i")
-                           ("p" "Protocol" entry (file+headline org-capture-file "Inbox")
-                            "* %?\n  [[%:link][%:description]]\n  %U\n #+BEGIN_QUOTE\n%i\n#+END_QUOTE\n\n\n")
-                           ("L" "Protocol Link" entry (file+headline org-capture-file "Inbox")
-                            "* %?\n  [[%:link][%:description]]\n  %U")))
+  						    "* TODO %?\n	%a\n  %i\n")
+  					       ("j" "Journal" entry (file+headline org-capture-file "Journal")
+  						    "* %U\n	 %a\n	 %i")
+  					       ("p" "Protocol" entry (file+headline org-capture-file "Inbox")
+  	    				    "* %?\n	 [[%:link][%:description]]\n	%U\n #+BEGIN_QUOTE\n%i\n#+END_QUOTE\n\n\n")
+  	    			       ("L" "Protocol Link" entry (file+headline org-capture-file "Inbox")
+  						    "* %?\n	 [[%:link][%:description]]\n	%U")))
   :bind ("C-c c" . org-capture))
 
 (use-package org-protocol :ensure nil)
@@ -1405,4 +1405,4 @@
   :init (defun disable-modes ()
           (beacon-mode -1)
           (toggle-truncate-lines -1))
-  :hook (emacs-everywhere-mode . disable-beacon))
+  :hook (emacs-everywhere-mode . disable-modes))
