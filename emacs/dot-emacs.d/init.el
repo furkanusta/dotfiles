@@ -517,7 +517,7 @@
         (when existing-buffer
           (kill-buffer existing-buffer))
         (elfeed-untag entry 'unread)
-        (next-line 1)
+        (forward-line 1)
         (promise-finally (reddigg-view-comments url)
                          (lambda () (message "%s" (with-current-buffer (get-buffer "*reddigg-comments*")
                                                     (read-only-mode +1))))))))
@@ -1403,5 +1403,5 @@
   :init (defun disable-modes ()
           (setq hungry-delete-chars-to-skip " \t\r\f\v")
           (beacon-mode -1)
-          (toggle-truncate-lines -1))
+          (toggle-truncate-lines 1))
   :hook (emacs-everywhere-mode . disable-modes))
