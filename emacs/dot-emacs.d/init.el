@@ -771,7 +771,7 @@
         ("C-c C-w <right>" . eyebrowse-next-window-config)))
 
 (use-package hungry-delete
-  :load-path "elisp/"
+  ;; :load-path "elisp/"
   :custom
   (global-hungry-delete-mode 1)
   (hungry-delete-join-reluctantly t)
@@ -1401,6 +1401,7 @@
 
 (use-package emacs-everywhere
   :init (defun disable-modes ()
+          (setq hungry-delete-chars-to-skip " \t\r\f\v")
           (beacon-mode -1)
           (toggle-truncate-lines -1))
   :hook (emacs-everywhere-mode . disable-modes))
