@@ -297,17 +297,32 @@
   (defun dashboard-insert-scratch (list-size)
     (dashboard-insert-section
      "Scratch:"
-     '("*scratch*")
+     '("*scratch*" "*elfeed*" "*dired*")
+     ;; '("*scratch*" "*elfeed*" "python" "dired" "timeclock")
      list-size
      "s"
-     `(lambda (&rest ignore) (switch-to-buffer "*scratch*"))))
+     `(lambda (&rest ignore)
+        (cond
+         ((string= "*scratch*" ,el) (switch-to-buffer "*scratch*"))
+         ((string= "*elfeed*" ,el)
+          (progn
+            (if (get-buffer "*elfeed-search*")
+                (switch-to-buffer "*elfeed-search*")
+              (progn
+                (elfeed)
+                (elfeed-search-fetch nil)))))
+         ((string= "*dired*" ,el) (dired (expand-file-name "~/")))
+         (t (message "%s" ,el))))
+     (format "%s" el)))
   (dashboard-setup-startup-hook)
   :config (add-to-list 'dashboard-item-generators  '(scratch . dashboard-insert-scratch))
   :custom
   (initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
   (dashboard-center-content t)
   (dashboard-startup-banner 'logo)
-  (dashboard-items '((scratch . 1)
+  (dashboard-set-heading-icons t)
+  (dashboard-set-file-icons t)
+  (dashboard-items '((scratch . 5)
                      (recents  . 5)
                      (bookmarks . 5)
                      (projects . 5)
