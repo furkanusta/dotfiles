@@ -31,6 +31,9 @@
 (setq-default use-package-always-defer t)
 ;; (setq-default use-package-always-ensure t)
 
+(require 'exec-path-from-shell)
+(exec-path-from-shell-initialize)
+
 (require 'server)
 (unless (server-running-p) (server-start))
 
@@ -546,7 +549,6 @@
                   ("https://mrale.ph/feed.xml" other)
                   ("https://research.swtch.com/" other)
                   ("http://aras-p.info/atom.xml" other)
-                  ("https://www.city-journal.org/rss.xml" other)
                   ("https://what-if.xkcd.com/feed.atom" xkcd)
                   ("http://xkcd.com/rss.xml" xkcd)
                   ("https://esoteric.codes/rss" other)
@@ -557,11 +559,11 @@
                   ("https://old.reddit.com/r/emacs/top.rss?t=week" emacs)
                   ("https://old.reddit.com/r/python/top.rss?t=week" python)
                   ("https://old.reddit.com/r/ruby/top.rss?t=month" ruby)
-                  ("https://old.reddit.com/r/perl/top.rss?t=month" perl)
                   ("https://old.reddit.com/r/java/top.rss?t=month" java)
                   ("https://old.reddit.com/r/linux/top.rss?t=week" linux)
                   ("https://old.reddit.com/r/programming/top.rss?t=week" prog)
                   ("https://old.reddit.com/r/askhistorians/top.rss?t=week" hist)
+                  ("https://old.reddit.com/r/badhistory/top.rss?t=week" hist)
                   ("https://dave.cheney.net/feed/atom" go)
                   ("https://blog.theincredibleholk.org/atom.xml" prog)
                   ("https://ferd.ca/feed.rss" prog)
@@ -730,7 +732,6 @@
   (flycheck-gcc-language-standard "c++20")
   (flycheck-cppcheck-standards "c++20")
   :config
-  (flycheck-add-mode 'perl-perlcritic 'perl)
   (flycheck-add-mode 'c/c++-cppcheck 'c++mode))
 
 (use-package flycheck-pos-tip
@@ -891,6 +892,15 @@
   :quelpa (org-pretty-table :fetcher github :repo "Fuco1/org-pretty-table")
   :hook (org-mode . org-pretty-table-mode))
 
+;; (use-package org-variable-pitch
+;;   :quelpa (org-variable-pitch :fetcher github :repo "cadadr/elisp" :files ("org-variable-pitch.el"))
+;;   :hook (org-mode . org-pretty-table-mode))
+
+(use-package org-table-sticky-header
+  :hook (org-mode . org-table-sticky-header-mode))
+
+;; (add-hook 'org-mode-hook #'valign-mode)
+
 (use-package org-ref
   :custom
   (org-ref-bibliography-notes (concat my-notes-directory "/Papers.org"))
@@ -997,17 +1007,17 @@
 
 ;; (use-package lsp-origami :hook origami-mode)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;          Perl          ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(use-package cperl-mode :ensure nil
-  :config (defalias 'perl-mode 'cperl-mode)
-  :custom
-  (cperl-indent-level 4)
-  (cperl-close-paren-offset -4)
-  (cperl-continued-statement-offset 4)
-  (cperl-indent-parens-as-block t)
-  (cperl-tab-always-indent nil))
+;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ;;          Perl          ;;
+;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; (use-package cperl-mode :ensure nil
+;;   :config (defalias 'perl-mode 'cperl-mode)
+;;   :custom
+;;   (cperl-indent-level 4)
+;;   (cperl-close-paren-offset -4)
+;;   (cperl-continued-statement-offset 4)
+;;   (cperl-indent-parens-as-block t)
+;;   (cperl-tab-always-indent nil))
 
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ;;          Scala          ;;
