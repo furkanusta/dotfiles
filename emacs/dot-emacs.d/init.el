@@ -78,7 +78,9 @@
 (toggle-frame-maximized)
 
 (use-package emacs :ensure nil
-  :hook (before-save-hook . delete-trailing-whitespace)
+  :hook
+  (before-save . delete-trailing-whitespace)
+  (after-init . (lambda () (cua-selection-mode +1)))
   :init
   (fset 'yes-or-no-p 'y-or-n-p)
   (setq-default user-full-name "Furkan Usta"
@@ -341,9 +343,9 @@
 ;; Helm packages for other modules will be near their corresponding modules, not in here
 
 (use-package helm
-  :commands (helm-get-selection helm-next-line helm-previous-line helm-preselect helm-ff-move-to-first-real-candidate helm-skip-dots)
+  :commands (helm-get-selection helm-next-line helm-previous-line helm-preselect helm-ff-move-to-first-real-candidate)
   :config (require 'helm-config)
-  :init
+  :preface
   (defun helm-skip-dots (old-func &rest args)
     "Skip . and .. initially in helm-find-files.  First call OLD-FUNC with ARGS."
     (apply old-func args)
@@ -353,6 +355,7 @@
     (let ((sel (helm-get-selection))) ; if we reached .. move back
       (if (and (stringp sel) (string-match "/\\.\\.$" sel))
           (helm-previous-line 1))))
+  :init
   (advice-add #'helm-preselect :around #'helm-skip-dots)
   (advice-add #'helm-ff-move-to-first-real-candidate :around #'helm-skip-dots)
   (global-unset-key (kbd "C-x c"))
@@ -617,8 +620,7 @@
 
 (use-package feed-discovery)
 
-(use-package pocket-reader
-  :commands (pocket-reader-elfeed-search-add-link pocket-reader-elfeed-entry-add-link))
+(use-package pocket-reader)
 
 (use-package vlf
   :after dired
@@ -1169,11 +1171,11 @@
 
 (use-package shrface
   :after org
-  :commands (org-tab-or-next-heading shrface-basic shrface-trial shrface-outline-cycle org-at-heading-p)
+  :commands (shrface-basic shrface-trial shrface-outline-cycle org-at-heading-p)
   :config
   (shrface-basic)
   (shrface-trial)
-  :init
+  :preface
   (defun org-tab-or-next-heading ()
     (interactive)
     (if (org-at-heading-p)
@@ -1437,5 +1439,3 @@
           (toggle-truncate-lines 1))
   :hook (emacs-everywhere-mode . disable-modes))
 
-(use-package cua
-  :hook (after-init . #'(lambda () (cua-selection-mode +1))))
