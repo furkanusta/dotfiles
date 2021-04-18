@@ -34,9 +34,6 @@
 (require 'exec-path-from-shell)
 (exec-path-from-shell-initialize)
 
-(require 'server)
-(unless (server-running-p) (server-start))
-
 (setq custom-file (concat user-emacs-directory "elisp/custom.el"))
 (load custom-file :noerror)
 ;; Init Done
@@ -302,7 +299,7 @@
   (defun dashboard-insert-scratch (list-size)
     (dashboard-insert-section
      "Scratch:"
-     '("*scratch*" "*elfeed*" "*dired*")
+     '("*scratch*" "*elfeed*" "init.el" "*dired*")
      ;; '("*scratch*" "*elfeed*" "python" "dired" "timeclock")
      list-size
      "s"
@@ -310,6 +307,7 @@
         (cond
          ((string= "*scratch*" ,el) (switch-to-buffer "*scratch*"))
          ((string= "*elfeed*" ,el)
+         ((string= "init.el" ,el) (find-file user-init-file))
           (progn
             (if (get-buffer "*elfeed-search*")
                 (switch-to-buffer "*elfeed-search*")
@@ -404,10 +402,11 @@
   (bibtex-completion-notes-path (concat my-notes-directory "/Papers.org")))
 
 (use-package tramp
-  :init (defun tramp-done ()
-          (interactive)
-          (tramp-cleanup-all-connections)
-          (tramp-cleanup-all-buffers))
+  :commands (tramp-cleanup-all-connections tramp-cleanup-all-buffers)
+  :config (defun tramp-done ()
+            (interactive)
+            (tramp-cleanup-all-connections)
+            (tramp-cleanup-all-buffers))
   :custom
   (tramp-backup-directory-alist backup-directory-alist))
 
@@ -498,7 +497,7 @@
 (use-package elfeed
   :defines (elfeed-show-mode-map elfeed-search-mode-map elfeed-show-entry)
   :commands (elfeed-search-selected elfeed-get-show-or-search-entry elfeed-untag)
-  :init
+  :preface
   (defun elfeed-move (entry)
     (progn
       (elfeed-untag entry 'unread)
@@ -909,7 +908,14 @@
   :after org)
 
 (use-package org-appear
-  :hook (org-mode . org-appear-mode))
+  :hook (org-mode . org-appear-mode)
+  :custom
+  (org-appear-autolinks t)
+  (org-appear-autosubmarkers t)
+  (org-appear-autoentities t))
+
+(use-package toc-org
+  :hook (org-mode . toc-org-mode))
 
 (use-package org-pretty-table
   :quelpa (org-pretty-table :fetcher github :repo "Fuco1/org-pretty-table")
@@ -921,6 +927,10 @@
 
 (use-package org-table-sticky-header
   :hook (org-mode . org-table-sticky-header-mode))
+
+(use-package org-sticky-header
+  :hook (org-mode . org-sticky-header-mode)
+  :custom (org-sticky-header-always-show-header nil))
 
 ;; (add-hook 'org-mode-hook #'valign-mode)
 
@@ -951,6 +961,46 @@
 ;; https://alhassy.github.io/org-special-block-extras/
 (use-package org-special-block-extras)
 
+(use-package org-marginalia
+  :quelpa (org-marginalia :fetcher github :repo "nobiot/org-marginalia")
+  :hook (org-mode . org-marginalia-mode)
+  :commands (org-marginalia-next org-marginalia-prev)
+  :preface
+  (defun org-marginalia-make-annotation ()
+    (interactive)
+    (let ((mark-end (region-end)))
+      (org-marginalia-mark (region-beginning) (region-end))
+      (org-marginalia-save)
+      (org-marginalia-open (1- mark-end))
+      (goto-char (point-max))))
+  (defun org-marginalia-browse-forward ()
+    (interactive)
+    (let ((buf (current-buffer)))
+      (org-marginalia-next) (org-marginalia-open (point))
+      (pop-to-buffer buf nil t)))
+(defun org-marginalia-browse-backward ()
+    (interactive)
+    (let ((buf (current-buffer)))
+      (org-marginalia-prev) (org-marginalia-open (point))
+      (pop-to-buffer buf nil t)))
+  :bind
+  ("C-c i m" . org-marginalia-make-annotation)
+  ("C-c m o" . org-marginalia-open)
+  ("C-c m ]" . org-marginalia-browse-forward)
+  ("C-c m [" . org-marginalia-browse-backward))
+
+(use-package org-journal
+  :bind ("C-c i j" . org-journal-new-entry)
+  :custom (org-journal-dir (concat my-notes-directory "/Journal")))
+
+(use-package org-super-links
+  :quelpa (org-super-links :fetcher github :repo "toshism/org-super-links"))
+
+(use-package binder
+  :custom (binder-default-file-extension "org"))
+
+(use-package literate-calc-mode)
+
 (use-package ebib
   :custom
   (ebib-preload-bib-files (list my-bibliography))
@@ -958,6 +1008,9 @@
   (ebib-default-directory 'first-bib-dir)
   (ebib-index-window-size 20)
   (ebib-bib-search-dirs (list my-papers-directory)))
+
+(use-package annotate
+  :bind ("C-c i a" . annotate-annotate))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          C++          ;;
@@ -1273,8 +1326,6 @@
         ("C-<" . vterm-prev-prompt)
         ("C-," . vterm-next-prompt)))
 
-(use-package binder)
-
 (use-package tree-sitter
   :hook (tree-sitter-after-on . tree-sitter-hl-mode)
   :custom (global-tree-sitter-mode 1))
@@ -1429,13 +1480,9 @@
   :commands (crdt-connect crdt-share-buffer)
   :quelpa (crdt :fetcher git :url "https://code.librehq.com/qhong/crdt.el"))
 
-(use-package org-marginalia
-  :quelpa (org-marginalia :fetcher github :repo "nobiot/org-marginalia"))
-
 (use-package emacs-everywhere
   :init (defun disable-modes ()
           (setq hungry-delete-chars-to-skip " \t\r\f\v")
           (beacon-mode -1)
           (toggle-truncate-lines 1))
   :hook (emacs-everywhere-mode . disable-modes))
-
