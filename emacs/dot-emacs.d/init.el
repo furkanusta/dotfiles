@@ -123,7 +123,10 @@
   (display-time-24hr-format t)
   (display-time-mode 1)
   :bind
-  ("C-c ." . pop-global-mark))
+  ("C-c ." . pop-global-mark)
+  ("M-u" . upcase-dwim)
+  ("M-l" . downcase-dwim)
+  ("M-c" . capitalize-dwim))
 
 (use-package calc :ensure nil
   :hook (calc-mode . calc-symbolic-mode))
@@ -1433,3 +1436,6 @@
           (beacon-mode -1)
           (toggle-truncate-lines 1))
   :hook (emacs-everywhere-mode . disable-modes))
+
+(use-package cua
+  :hook (after-init . #'(lambda () (cua-selection-mode +1))))
