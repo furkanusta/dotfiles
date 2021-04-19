@@ -33,6 +33,10 @@
 
 (require 'exec-path-from-shell)
 (exec-path-from-shell-initialize)
+(require 'with-editor)
+
+(require 'server)
+(unless (server-running-p) (server-start))
 
 (setq custom-file (concat user-emacs-directory "elisp/custom.el"))
 (load custom-file :noerror)
@@ -162,7 +166,8 @@
                 (start-process "" nil "xdg-open" (file-truename file)))
             nil))
   :custom
-  (dired-listing-switches "-vaBhl  --group-directories-first --color=always")
+  (dired-use-ls-dired nil)
+  (dired-listing-switches "-aBhl  --group-directories-first --color=never")
   (dired-auto-revert-buffer t)
   (dired-create-destination-dirs 'ask)
   (dired-dwim-target t)
@@ -300,14 +305,13 @@
     (dashboard-insert-section
      "Scratch:"
      '("*scratch*" "*elfeed*" "init.el" "*dired*")
-     ;; '("*scratch*" "*elfeed*" "python" "dired" "timeclock")
      list-size
      "s"
      `(lambda (&rest ignore)
         (cond
          ((string= "*scratch*" ,el) (switch-to-buffer "*scratch*"))
-         ((string= "*elfeed*" ,el)
          ((string= "init.el" ,el) (find-file user-init-file))
+         ((string= "*elfeed*" ,el)
           (progn
             (if (get-buffer "*elfeed-search*")
                 (switch-to-buffer "*elfeed-search*")
@@ -462,10 +466,6 @@
 
 (use-package all-the-icons
   :commands all-the-icons-octicon)
-
-(use-package all-the-icons-dired
-  :after all-the-icons
-  :hook (dired-mode . all-the-icons-dired-mode))
 
 (use-package all-the-icons-ibuffer
   :custom (all-the-icons-ibuffer-mode 1))
@@ -794,7 +794,6 @@
         ("C-c C-w <right>" . eyebrowse-next-window-config)))
 
 (use-package hungry-delete
-  ;; :load-path "elisp/"
   :custom
   (global-hungry-delete-mode 1)
   (hungry-delete-join-reluctantly t)
@@ -857,6 +856,8 @@
              ;; (http . t)
              (shell . t)
              (emacs-lisp . t))))
+
+(use-package ob-async)
 
 (use-package org-alert
   :commands org-alert-enable
@@ -1486,3 +1487,31 @@
           (beacon-mode -1)
           (toggle-truncate-lines 1))
   :hook (emacs-everywhere-mode . disable-modes))
+
+(use-package ein)
+
+(use-package ob-ipython
+  :hook (org-babel-after-execute . org-display-inline-images)
+  :config
+  (add-to-list 'org-latex-minted-langs '(ipython "python"))
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((ipython . t))))
+
+(use-package org-transclusion
+  :load-path "elisp/"
+  :hook (org-mode . org-transclusion-mode)
+  :custom (org-transclusion-activate-persistent-message nil))
+
+(use-package org-roam
+      :custom
+      (org-roam-directory (concat my-notes-directory "/Roam"))
+      :bind (:map org-roam-mode-map
+              (("C-c n l" . org-roam)
+               ("C-c n f" . org-roam-find-file)
+               ("C-c n t" . org-roam-buffer-toggle-display)
+               ("C-c n b" . org-roam-switch-to-buffer)
+               ("C-c n g" . org-roam-graph))
+              :map org-mode-map
+              (("C-c n i" . org-roam-insert))
+              (("C-c n I" . org-roam-insert-immediate))))
