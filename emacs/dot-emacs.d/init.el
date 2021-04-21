@@ -1168,6 +1168,12 @@
 (use-package lsp-treemacs
   :hook (treemacs-mode . lsp-treemacs-sync-mode))
 
+(use-package persp
+  :hook
+  (after-init . persp-mode)
+  ;; (kill-emacs . persp-state-save)
+  :custom (persp-state-default-file (concat no-littering-var-directory ".persp")))
+
 (use-package treemacs-persp
   :commands treemacs-set-scope-type
   :config (treemacs-set-scope-type 'Perspectives))
@@ -1249,7 +1255,9 @@
 (use-package eww)
 
 (use-package nov
-  :mode ("\\.epub\\'" . nov-mode)
+  :mode
+  ("\\.epub\\'" . nov-mode)
+  ("\\.EPUB\\'" . nov-mode)
   :custom (nov-text-width 100))
 
 (use-package verilog-mode
@@ -1499,6 +1507,7 @@
    '((ipython . t))))
 
 (use-package org-transclusion
+  ;; :quelpa (org-transclusion :fetcher git :url "https://github.com/nobiot/org-transclusion")
   :load-path "elisp/"
   :hook (org-mode . org-transclusion-mode)
   :custom (org-transclusion-activate-persistent-message nil))
@@ -1515,3 +1524,6 @@
               :map org-mode-map
               (("C-c n i" . org-roam-insert))
               (("C-c n I" . org-roam-insert-immediate))))
+
+(use-package hl-prog-extra
+  :commands (hl-prog-extra-mode))
