@@ -1108,7 +1108,7 @@
          minibuffer-local-completion-map))
 
 (use-package lsp-metals
-  :hook  (scala-mode . lsp)
+  :hook  (scala-mode . lsp-deferred)
   :custom (lsp-metals-treeview-show-when-views-received nil))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
