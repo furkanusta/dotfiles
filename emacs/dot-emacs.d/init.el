@@ -498,10 +498,6 @@
   :defines (elfeed-show-mode-map elfeed-search-mode-map elfeed-show-entry)
   :commands (elfeed-search-selected elfeed-get-show-or-search-entry elfeed-untag)
   :preface
-  (defun elfeed-move (entry)
-    (progn
-      (elfeed-untag entry 'unread)
-      (forward-line 1)))
   (defun elfeed-get-show-or-search-entry ()
     (let* ((search-entries (elfeed-search-selected))
            (search-entry (when search-entries (car search-entries)))
@@ -512,7 +508,7 @@
     (let* ((entry (elfeed-get-show-or-search-entry))
            (url (elfeed-entry-link entry)))
       (eww url)
-      (elfeed-move entry)))
+      (elfeed-search-untag-all-unread)))
   (defun +rss/delete-pane ()
     "Delete the *elfeed-entry* split pane."
     (interactive)
@@ -527,13 +523,13 @@
            (url (when entry (elfeed-entry-link entry)))
            (default-directory (expand-file-name "~/Downloads")))
       (when url (async-shell-command (format "youtube-dl %s" url)))
-      (elfeed-move entry)))
+      (elfeed-search-untag-all-unread)))
   (defun elfeed-mpv ()
     (interactive)
     (let* ((entry (elfeed-get-show-or-search-entry))
            (url (when entry (elfeed-entry-link entry))))
       (when url (start-process "elfeed-mpv" nil "mpv" url))
-      (elfeed-move entry)))
+      (elfeed-search-untag-all-unread)))
   (require 'reddigg)
   (defun elfeed-open-reddit ()
     (interactive)
@@ -543,10 +539,10 @@
       (progn
         (when existing-buffer
           (kill-buffer existing-buffer))
-        (elfeed-move entry)
+        (elfeed-search-untag-all-unread)
         (promise-finally (reddigg-view-comments url)
-                         (lambda () (message "%s" (with-current-buffer (get-buffer "*reddigg-comments*")
-                                                    (read-only-mode +1))))))))
+                         (lambda () (with-current-buffer (get-buffer "*reddigg-comments*")
+                                                    (read-only-mode +1)))))))
   :custom
   (elfeed-feeds
    '(("http://research.swtch.com/feeds/posts/default" other)
@@ -1525,5 +1521,6 @@
               (("C-c n i" . org-roam-insert))
               (("C-c n I" . org-roam-insert-immediate))))
 
-(use-package hl-prog-extra
-  :commands (hl-prog-extra-mode))
+;; (use-package hl-prog-extra
+;;   :commands (hl-prog-extra-mode)
+;;   :custom (global-hl-prog-extra-mode 1))
