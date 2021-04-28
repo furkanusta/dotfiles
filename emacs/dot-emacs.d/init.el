@@ -337,7 +337,7 @@
   (dashboard-banner-logo-title "Emacs"))
 
 (use-package isearch :ensure nil
-  :bind (("C-c s" . isearch-forward)))
+  :bind ("C-c C-s" . isearch-forward))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Helm          ;;
@@ -367,7 +367,6 @@
    ("C-x b" . helm-mini)
    ("C-z" .  helm-select-action)
    ("M-y" . helm-show-kill-ring)
-   ("C-c s" . isearch-forward)
    ("C-c C-r" . helm-resume)
    ("<f6>" . helm-imenu)
    :map helm-map
@@ -430,7 +429,7 @@
   (helm-swoop-speed-or-color t))
 
 (use-package helm-rg
-  :bind ("C-c C-s" .  helm-rg))
+  :bind ("C-c h s" .  helm-rg))
 
 (use-package helm-bookmark
   :ensure nil
@@ -441,7 +440,7 @@
   :bind (:map helm-map ("C-'" . ace-jump-helm-line)))
 
 (use-package deadgrep
-  :bind ("C-c h s" . deadgrep))
+  :bind ("C-c h S" . deadgrep))
 
 (use-package helm-flycheck
   :after flycheck
@@ -1521,6 +1520,48 @@
               (("C-c n i" . org-roam-insert))
               (("C-c n I" . org-roam-insert-immediate))))
 
+(use-package org-ql)
+(use-package helm-org-ql)
+
+(use-package org-z
+  :quelpa (org-z :fetcher github :repo "landakram/org-z")
+  :custom
+  (org-z-mode 1)
+  (org-z-directories (list my-notes-directory))
+  (org-z-knowledge-dirs (list my-notes-directory))
+  (org-z-completion-backend 'helm))
+
+(use-package org-z-helm :requires org-z)
+
+(use-package org-linker :quelpa (org-linker :fetcher github :repo "toshism/org-linker"))
+
+(use-package org-super-links
+  ;; :quelpa (org-super-links :fetcher github :repo "toshism/org-super-links")
+  ;; :custom (org-super-links-related-into-drawer t)
+  :bind (:map org-mode-map
+              ("C-c s s" . org-super-links-link)
+              ("C-c s d" . org-super-links-delete-link)
+              ("C-c s l" . org-super-links-store-link)
+              ("C-c s i" . org-super-links-insert-link)))
+
+(use-package org-super-links-peek
+:PROPERTIES:
+:URL: https://github.com/scallywag/org-board https://github.com/Silex/docker.el
+:ID: 613b0349-8994-468b-81ad-6756b1db4ffc
+:END:
+  :quelpa (org-super-links-peek :fetcher github :repo "toshism/org-super-links-peek")
+  :bind (:map org-mode-map ("C-c s p" . org-super-links-peek-link)))
+
+;; (use-package mu4e
+;;   :quelpa (mu4e :fetcher github :repo "djcb/mu" :files ("mu4e/*")))
+
+
 ;; (use-package hl-prog-extra
 ;;   :commands (hl-prog-extra-mode)
 ;;   :custom (global-hl-prog-extra-mode 1))
+
+
+;; (use-package org-super-agenda)
+;; (use-package org-sidebar)
+;; (use-package org-protocol-capture-html)
+;; (use-package mu4e-dashboard
