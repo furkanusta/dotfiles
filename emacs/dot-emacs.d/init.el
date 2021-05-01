@@ -39,12 +39,11 @@
 (unless (server-running-p) (server-start))
 
 (setq custom-file (concat user-emacs-directory "elisp/custom.el"))
-(load custom-file :noerror)
 ;; Init Done
 
-;; ;; Debug
-;; (require 'benchmark-init)
-;; (add-hook 'after-init-hook 'benchmark-init/deactivate)
+;; Debug
+(require 'benchmark-init)
+(add-hook 'after-init-hook 'benchmark-init/deactivate)
 
 (defun disable-line-numbers ()
   (display-line-numbers-mode -1))
@@ -157,7 +156,7 @@
 
 (use-package dired :ensure nil
   :commands dired-get-file-for-visit
-  :init (defun dired-open-xdg ()
+  :preface (defun dired-open-xdg ()
           "Try to run `xdg-open' to open the file under point."
           (interactive)
           (if (executable-find "xdg-open")
@@ -191,10 +190,7 @@
   :custom
   (recentf-mode t)
   (recentf-save-file (concat no-littering-var-directory "recentf"))
-  :init
-  (add-to-list 'recentf-exclude no-littering-var-directory)
-  (add-to-list 'recentf-exclude "/tmp")
-  (add-to-list 'recentf-exclude no-littering-etc-directory))
+  (recentf-exclude (list no-littering-var-directory "/tmp" no-littering-etc-directory)))
 
 (use-package saveplace :ensure nil
   :hook (server-visit . save-place-find-file-hook)
@@ -300,28 +296,27 @@
 
 (use-package dashboard
   :commands dashboard-insert-section dashboard-insert-heading dashboard-subseq
-  :init
-  (defun dashboard-insert-scratch (list-size)
-    (dashboard-insert-section
-     "Scratch:"
-     '("*scratch*" "*elfeed*" "init.el" "*dired*")
-     list-size
-     "s"
-     `(lambda (&rest ignore)
-        (cond
-         ((string= "*scratch*" ,el) (switch-to-buffer "*scratch*"))
-         ((string= "init.el" ,el) (find-file user-init-file))
-         ((string= "*elfeed*" ,el)
-          (progn
-            (if (get-buffer "*elfeed-search*")
-                (switch-to-buffer "*elfeed-search*")
-              (progn
-                (elfeed)
-                (elfeed-search-fetch nil)))))
-         ((string= "*dired*" ,el) (dired (expand-file-name "~/")))
-         (t (message "%s" ,el))))
-     (format "%s" el)))
-  (dashboard-setup-startup-hook)
+  :preface (defun dashboard-insert-scratch (list-size)
+             (dashboard-insert-section
+              "Scratch:"
+              '("*scratch*" "*elfeed*" "init.el" "*dired*")
+              list-size
+              "s"
+              `(lambda (&rest ignore)
+                 (cond
+                  ((string= "*scratch*" ,el) (switch-to-buffer "*scratch*"))
+                  ((string= "init.el" ,el) (find-file user-init-file))
+                  ((string= "*elfeed*" ,el)
+                   (progn
+                     (if (get-buffer "*elfeed-search*")
+                         (switch-to-buffer "*elfeed-search*")
+                       (progn
+                         (elfeed)
+                         (elfeed-search-fetch nil)))))
+                  ((string= "*dired*" ,el) (dired (expand-file-name "~/")))
+                  (t (message "%s" ,el))))
+              (format "%s" el)))
+  :init (dashboard-setup-startup-hook)
   :config (add-to-list 'dashboard-item-generators  '(scratch . dashboard-insert-scratch))
   :custom
   (initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
@@ -345,19 +340,19 @@
 ;; Helm packages for other modules will be near their corresponding modules, not in here
 
 (use-package helm
-  :commands (helm-get-selection helm-next-line helm-previous-line helm-preselect helm-ff-move-to-first-real-candidate)
+  :commands
+  (helm-get-selection helm-next-line helm-previous-line helm-preselect helm-ff-move-to-first-real-candidate)
   :config (require 'helm-config)
-  :preface
-  (defun helm-skip-dots (old-func &rest args)
-    "Skip . and .. initially in helm-find-files.  First call OLD-FUNC with ARGS."
-    (apply old-func args)
-    (let ((sel (helm-get-selection)))
-      (if (and (stringp sel) (string-match "/\\.$" sel))
-          (helm-next-line 2)))
-    (let ((sel (helm-get-selection))) ; if we reached .. move back
-      (if (and (stringp sel) (string-match "/\\.\\.$" sel))
-          (helm-previous-line 1))))
-  :init
+  :preface (defun helm-skip-dots (old-func &rest args)
+             "Skip . and .. initially in helm-find-files.  First call OLD-FUNC with ARGS."
+             (apply old-func args)
+             (let ((sel (helm-get-selection)))
+               (if (and (stringp sel) (string-match "/\\.$" sel))
+                   (helm-next-line 2)))
+             (let ((sel (helm-get-selection))) ; if we reached .. move back
+               (if (and (stringp sel) (string-match "/\\.\\.$" sel))
+                   (helm-previous-line 1))))
+  :config
   (advice-add #'helm-preselect :around #'helm-skip-dots)
   (advice-add #'helm-ff-move-to-first-real-candidate :around #'helm-skip-dots)
   (global-unset-key (kbd "C-x c"))
@@ -693,7 +688,7 @@
 
 (use-package company-files :ensure company
   :after company
-  :init (push 'company-files company-backends))
+  :config (push 'company-files company-backends))
 
 (use-package helm-company
   :after helm company
@@ -709,7 +704,7 @@
 
 (use-package company-lsp
   :after company lsp
-  :init (push 'company-lsp company-backends)
+  :config (push 'company-lsp company-backends)
   :custom
   (company-lsp-enable-recompletion t)
   (company-lsp-enable-snippet t))
@@ -757,6 +752,7 @@
   (flycheck-clang-language-standard "c++20")
   (flycheck-gcc-language-standard "c++20")
   (flycheck-cppcheck-standards "c++20")
+  (flycheck-emacs-lisp-load-path 'inherit)
   :config
   (flycheck-add-mode 'c/c++-cppcheck 'c++mode))
 
@@ -808,7 +804,7 @@
 
 (use-package writeroom-mode
   :hook (writeroom-mode . toggle-line-numbers)
-  :init (defun toggle-line-numbers () (display-line-numbers-mode (or (not display-line-numbers-mode) 0)))
+  :preface (defun toggle-line-numbers () (display-line-numbers-mode (or (not display-line-numbers-mode) 0)))
   :custom
   (writeroom-width 150)
   (writeroom-mode-line nil)
@@ -1021,7 +1017,7 @@
 ;;          C++          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package cc-mode :ensure nil
-  :init
+  :config
   (c-set-offset 'substatement-open 0)
   (c-set-offset 'innamespace 0)
   :custom
@@ -1110,10 +1106,10 @@
 (use-package sbt-mode
   :commands sbt-start sbt-command
   :custom (sbt:program-options '("-Dsbt.supershell=false"))
-  :init (substitute-key-definition
-         'minibuffer-complete-word
-         'self-insert-command
-         minibuffer-local-completion-map))
+  :config (substitute-key-definition
+           'minibuffer-complete-word
+           'self-insert-command
+           minibuffer-local-completion-map))
 
 (use-package lsp-metals
   :hook  (scala-mode . lsp-deferred)
@@ -1125,18 +1121,18 @@
 (use-package ansi-color
   :commands ansi-color-apply-on-region
   :hook (compilation-filter . colorize-compilation-buffer)
-  :init (defun colorize-compilation-buffer ()
-          (read-only-mode)
-          (ansi-color-apply-on-region (point-min) (point-max))
-          (read-only-mode -1))
+  :preface (defun colorize-compilation-buffer ()
+             (read-only-mode)
+             (ansi-color-apply-on-region (point-min) (point-max))
+             (read-only-mode -1))
   :config (add-to-list 'comint-output-filter-functions 'ansi-color-process-output)
   :custom (ansi-color-for-comint-mode 1))
 
 (use-package shell
   :after window
-  :config (add-to-list 'display-buffer-alist
-                       (cons "\\*shell\\*" use-other-window-alist))
-  :bind ("C-<f8>" . shell)
+  :config (add-to-list 'display-buffer-alist (cons "\\*shell\\*" use-other-window-alist))
+  :bind
+  ("C-<f8>" . shell)
   (:map shell-mode-map ("<tab>" . helm-company)))
 
 (use-package treemacs
@@ -1200,7 +1196,7 @@
 
 (use-package projectile
   :commands projectile-project-name projectile-project-root
-  :init (defun my-open-readme ()
+  :preface (defun my-open-readme ()
           (let* ((project-name (projectile-project-name))
                  (project-root (projectile-project-root))
                  (project-files (directory-files project-root nil nil t))
@@ -1220,7 +1216,7 @@
   :bind (:map projectile-mode-map ("C-c p" . projectile-command-map)))
 
 (use-package helm-projectile :after helm projectile
-  :init (helm-projectile-on))
+  :config (helm-projectile-on))
 
 (use-package link-hint
   :bind
@@ -1284,11 +1280,10 @@
 (use-package bm
   :commands bm-buffer-save-all bm-repository-save
   :after no-littering
-  :init
-  (defun bm-save-all ()
-    (progn (bm-buffer-save-all)
-           (bm-repository-save)))
-  (setq bm-restore-repository-on-load t)
+  :preface (defun bm-save-all ()
+             (progn (bm-buffer-save-all)
+                    (bm-repository-save)))
+  :init (setq bm-restore-repository-on-load t)
   :custom
   (bm-cycle-all-buffers t)
   (bm-repository-file (concat no-littering-var-directory "bm-repository"))
@@ -1327,7 +1322,7 @@
 (use-package vterm
   :commands (vterm-next-prompt vterm-prev-prompt)
   :config (add-to-list 'display-buffer-alist (cons "\\*vterm" use-other-window-alist))
-  :init
+  :preface
   (defun vterm-next-prompt () (interactive) (re-search-forward "msi.*\\$ " nil 'move))
   (defun vterm-prev-prompt () (interactive)
          (move-beginning-of-line nil)
@@ -1417,7 +1412,7 @@
 
 (use-package auctex-latexmk
   :commands auctex-latexmk-setup
-  :init (auctex-latexmk-setup)
+  :config (auctex-latexmk-setup)
   :custom (auctex-latexmk-inherit-TeX-PDF-mode t))
 
 (use-package popper
@@ -1473,18 +1468,6 @@
 (use-package alert
   :custom (alert-default-style 'libnotify))
 
-;; Does not work well with dark mode (Text unreadable)
-;; (use-package svg-tag-mode
-;;   :quelpa (svg-tag-mode :repo "rougier/svg-tag-mode"
-;;                         :fetcher github
-;;                         :files ("svg-tag-mode.el")))
-
-(use-package auth-source-pass
-  :defines auth-source
-  :init (setq auth-source '(password-store)))
-
-(use-package pass)
-
 (use-package helm-pass)
 
 ;; (use-package togetherly)
@@ -1494,10 +1477,10 @@
   :quelpa (crdt :fetcher git :url "https://code.librehq.com/qhong/crdt.el"))
 
 (use-package emacs-everywhere
-  :init (defun disable-modes ()
-          (setq hungry-delete-chars-to-skip " \t\r\f\v")
-          (beacon-mode -1)
-          (toggle-truncate-lines 1))
+  :preface (defun disable-modes ()
+             (setq hungry-delete-chars-to-skip " \t\r\f\v")
+             (beacon-mode -1)
+             (toggle-truncate-lines 1))
   :hook (emacs-everywhere-mode . disable-modes))
 
 (use-package ein)
@@ -1554,21 +1537,12 @@
               ("C-c s i" . org-super-links-insert-link)))
 
 (use-package org-super-links-peek
-:PROPERTIES:
-:URL: https://github.com/scallywag/org-board https://github.com/Silex/docker.el
-:ID: 613b0349-8994-468b-81ad-6756b1db4ffc
-:END:
   :quelpa (org-super-links-peek :fetcher github :repo "toshism/org-super-links-peek")
   :bind (:map org-mode-map ("C-c s p" . org-super-links-peek-link)))
-
-;; (use-package mu4e
-;;   :quelpa (mu4e :fetcher github :repo "djcb/mu" :files ("mu4e/*")))
-
 
 ;; (use-package hl-prog-extra
 ;;   :commands (hl-prog-extra-mode)
 ;;   :custom (global-hl-prog-extra-mode 1))
-
 
 ;; (use-package org-super-agenda)
 ;; (use-package org-sidebar)
