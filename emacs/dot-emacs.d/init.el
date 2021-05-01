@@ -494,20 +494,7 @@
               ("C-0" . imagex-sticky-restore-original)))
 
 (use-package elfeed
-  :defines (elfeed-show-mode-map elfeed-search-mode-map elfeed-show-entry)
-  :commands (elfeed-search-selected elfeed-get-show-or-search-entry elfeed-untag)
   :preface
-  (defun elfeed-get-show-or-search-entry ()
-    (let* ((search-entries (elfeed-search-selected))
-           (search-entry (when search-entries (car search-entries)))
-           (elfeed-entry (or elfeed-show-entry search-entry)))
-      elfeed-entry))
-  (defun elfeed-open-eww ()
-    (interactive)
-    (let* ((entry (elfeed-get-show-or-search-entry))
-           (url (elfeed-entry-link entry)))
-      (eww url)
-      (elfeed-search-untag-all-unread)))
   (defun +rss/delete-pane ()
     "Delete the *elfeed-entry* split pane."
     (interactive)
@@ -515,33 +502,6 @@
            (window (get-buffer-window buf)))
       (delete-window window)
       (when (buffer-live-p buf) (kill-buffer buf))))
-  (defun elfeed-youtube-dl ()
-    "Youtube-DL link"
-    (interactive)
-    (let* ((entry (elfeed-get-show-or-search-entry))
-           (url (when entry (elfeed-entry-link entry)))
-           (default-directory (expand-file-name "~/Downloads")))
-      (when url (async-shell-command (format "youtube-dl %s" url)))
-      (elfeed-search-untag-all-unread)))
-  (defun elfeed-mpv ()
-    (interactive)
-    (let* ((entry (elfeed-get-show-or-search-entry))
-           (url (when entry (elfeed-entry-link entry))))
-      (when url (start-process "elfeed-mpv" nil "mpv" url))
-      (elfeed-search-untag-all-unread)))
-  (require 'reddigg)
-  (defun elfeed-open-reddit ()
-    (interactive)
-    (let* ((entry (elfeed-get-show-or-search-entry))
-           (url (elfeed-entry-link entry))
-           (existing-buffer (get-buffer "*reddigg-comments*")))
-      (progn
-        (when existing-buffer
-          (kill-buffer existing-buffer))
-        (elfeed-search-untag-all-unread)
-        (promise-finally (reddigg-view-comments url)
-                         (lambda () (with-current-buffer (get-buffer "*reddigg-comments*")
-                                                    (read-only-mode +1)))))))
   :custom
   (elfeed-feeds
    '(("http://research.swtch.com/feeds/posts/default" other)
@@ -576,6 +536,7 @@
      ("https://old.reddit.com/r/cpp/top.rss?t=week" cpp)
      ("https://old.reddit.com/r/emacs/top.rss?t=week" emacs)
      ("https://old.reddit.com/r/python/top.rss?t=week" python)
+     ("https://old.reddit.com/r/fpga/top.rss?t=week" fpga)
      ("https://old.reddit.com/r/ruby/top.rss?t=month" ruby)
      ("https://old.reddit.com/r/java/top.rss?t=month" java)
      ("https://old.reddit.com/r/linux/top.rss?t=week" linux)
@@ -596,21 +557,69 @@
      ("https://www.youtube.com/feeds/videos.xml?channel_id=UC2eEGT06FrWFU6VBnPOR9lg" youtube)))
   (elfeed-show-entry-switch #'pop-to-buffer)
   (elfeed-show-entry-delete #'+rss/delete-pane)
-  (elfeed-search-title-max-width 100)
-  :bind
-  (:map elfeed-show-mode-map
-        ("q" . +rss/delete-pane)
-        ("P" . pocket-reader-elfeed-entry-add-link)
-        ("d" . elfeed-youtube-dl)
-        ("R" . elfeed-open-reddit)
-        ("e" . elfeed-open-eww)
-        ("m" . elfeed-mpv))
-  (:map elfeed-search-mode-map
-        ("d" . elfeed-youtube-dl)
-        ("P" . pocket-reader-elfeed-search-add-link)
-        ("R" . elfeed-open-reddit)
-        ("e" . elfeed-open-eww)
-        ("m" . elfeed-mpv)))
+  (elfeed-search-title-max-width 100))
+
+(use-package elfeed-search :ensure elfeed
+  :after elfeed
+  :defines elfeed-show-entry
+  :commands (pocket-reader-elfeed-search-add-link elfeed-search-selected elfeed-search-untag-all-unread)
+  :preface
+  (defun elfeed-get-show-or-search-entry ()
+    (let* ((search-entries (elfeed-search-selected))
+           (search-entry (when search-entries (car search-entries)))
+           (elfeed-entry (or elfeed-show-entry search-entry)))
+      elfeed-entry))
+  (defun elfeed-youtube-dl ()
+    "Youtube-DL link"
+    (interactive)
+    (let* ((entry (elfeed-get-show-or-search-entry))
+           (url (when entry (elfeed-entry-link entry)))
+           (default-directory (expand-file-name "~/Downloads")))
+      (when url (async-shell-command (format "youtube-dl %s" url)))
+      (elfeed-search-untag-all-unread)))
+  (defun elfeed-mpv ()
+    (interactive)
+    (let* ((entry (elfeed-get-show-or-search-entry))
+           (url (when entry (elfeed-entry-link entry))))
+      (when url (start-process "elfeed-mpv" nil "mpv" url))
+      (elfeed-search-untag-all-unread)))
+  (defun elfeed-open-eww ()
+    (interactive)
+    (let* ((entry (elfeed-get-show-or-search-entry))
+           (url (elfeed-entry-link entry)))
+      (eww url)
+      (elfeed-search-untag-all-unread)))
+  :bind (:map elfeed-search-mode-map
+              ("P" . pocket-reader-elfeed-entry-add-link)
+              ("d" . elfeed-youtube-dl)
+              ("e" . elfeed-open-eww)
+              ("m" . elfeed-mpv)))
+
+(use-package elfeed-show :ensure elfeed
+  :after elfeed
+  :commands (pocket-reader-elfeed-search-add-link)
+  :bind (:map elfeed-show-mode-map
+              ("q" . +rss/delete-pane)
+              ("P" . pocket-reader-elfeed-search-add-link)))
+
+(use-package reddigg
+  :defines elfeed-search-mode-map
+  :after elfeed-search
+  :preface (defun elfeed-open-reddit ()
+             (interactive)
+             (require 'promise-finally)
+             (let* ((entry (elfeed-get-show-or-search-entry))
+                    (url (elfeed-entry-link entry))
+                    (existing-buffer (get-buffer "*reddigg-comments*")))
+               (progn
+                 (when existing-buffer
+                   (kill-buffer existing-buffer))
+                 (elfeed-search-untag-all-unread)
+                 (promise-finally (reddigg-view-comments url)
+                                  (lambda () (with-current-buffer (get-buffer "*reddigg-comments*")
+                                               (local-set-key "q" +rss/delete-pane)
+                                               (read-only-mode +1)))))))
+  :bind (:map elfeed-search-mode-map ("R" . elfeed-open-reddit)))
 
 (use-package feed-discovery)
 
