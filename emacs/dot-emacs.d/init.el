@@ -20,27 +20,13 @@
   (package-install 'use-package))
 (require 'use-package)
 
-(use-package quelpa)
-
-;; (use-package quelpa
-;;   :init (quelpa
-;;          '(quelpa-use-package
-;;            :fetcher git
-;;            :url "https://github.com/quelpa/quelpa-use-package.git")))
+(use-package quelpa
+  :custom (quelpa-update-melpa-p nil))
 
 (use-package quelpa-use-package)
 
-(defvar my-quelpa-dir (concat user-emacs-directory "quelpa"))
-(defvar my-quelpa-build-dir (concat my-quelpa-dir "build"))
-
 (setq-default use-package-always-defer t)
 ;; (setq-default use-package-always-ensure t)
-
-(use-package exec-path-from-shell
-  :hook (after-init . exec-path-from-shell-initialize))
-
-(use-package with-editor
-  :hook (shell-mode . with-editor-export-editor))
 
 (setq custom-file (concat user-emacs-directory "elisp/custom.el"))
 ;; Init Done
@@ -57,16 +43,6 @@
 (defvar use-other-window-alist
   '((display-buffer-use-some-window display-buffer-pop-up-window)
     (inhibit-same-window . t)))
-
-(defun alist-switch-or-pop (mode buf  &optional alist)
-    (if (derived-mode-p mode)
-        (progn (message "HERE") (switch-to-buffer buf))
-      (progn
-        (when (= (length (window-list)) 1)
-          (split-window-horizontally))
-        (other-window 1)
-        (message "HERE:: %s" (buffer-name buf))
-        (switch-to-buffer buf nil))))
 
 (use-package no-littering :demand t)
 
@@ -87,6 +63,7 @@
   :hook (before-save . delete-trailing-whitespace)
   :init
   (fset 'yes-or-no-p 'y-or-n-p)
+  (global-unset-key (kbd "C-x c"))
   (setq-default user-full-name "Furkan Usta"
                 user-mail-address "furkanusta17@gmail.com"
                 save-interprogram-paste-before-kill t
@@ -119,8 +96,7 @@
                 frame-resize-pixelwise t
                 undo-limit 1280000
                 large-file-warning-threshold (* 1024 1024 1024) ;; 1GB
-                font-use-system-font t
-                initial-scratch-message "")
+                font-use-system-font t)
   :custom
   (column-number-mode 1)
   (display-time-default-load-average nil)
@@ -132,6 +108,12 @@
   ("M-u" . upcase-dwim)
   ("M-l" . downcase-dwim)
   ("M-c" . capitalize-dwim))
+
+(use-package exec-path-from-shell
+  :hook (after-init . exec-path-from-shell-initialize))
+
+(use-package with-editor
+  :hook (shell-mode . with-editor-export-editor))
 
 (use-package calc :ensure nil
   :hook (calc-mode . calc-symbolic-mode))
@@ -303,14 +285,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Helm          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Helm packages for other modules will be near their corresponding modules, not in here
 
 (use-package helm
-  :config (global-unset-key (kbd "C-x c"))
   :bind
-  (("M-x" . helm-M-x)
-   ("C-c C-r" . helm-resume)
-   (:map helm-map
+  ((:map helm-map
          ("<tab>" . helm-execute-persistent-action)
          ("<left>" . helm-previous-source)
          ("<right>" . helm-next-source)))
@@ -319,7 +297,10 @@
   (helm-move-to-line-cycle-in-source t)
   (helm-scroll-amount 8)
   (helm-autoresize-mode 1)
-  (helm-mode 1))
+  (helm-mode +1))
+
+(use-package helm-command :ensure helm
+  :bind ("M-x" . helm-M-x))
 
 (use-package helm-imenu :ensure helm
   :bind ("<f6>" . helm-imenu))
@@ -332,10 +313,8 @@
   :bind ("C-x b" . helm-mini))
 
 (use-package helm-files :ensure helm
-  :after helm
   :commands (helm-get-selection helm-next-line helm-previous-line helm-ff-move-to-first-real-candidate)
   :preface (defun helm-skip-dots (old-func &rest args)
-             "Skip . and .. initially in helm-find-files.  First call OLD-FUNC with ARGS."
              (apply old-func args)
              (let ((sel (helm-get-selection)))
                (if (and (stringp sel) (string-match "/\\.$" sel))
@@ -372,7 +351,7 @@
   :custom
   (tramp-backup-directory-alist backup-directory-alist))
 
-(use-package helm-tramp)
+;; (use-package helm-tramp)
 
 ;; (use-package helm-fd
 ;;   :bind ("C-c h f" . helm-fd))
@@ -1384,6 +1363,14 @@
 
 (use-package helpful
   :commands (get-buffers-matching-mode helpful-first-buffer-p helpful-not-first-buffer-p)
+  :preface (defun alist-switch-or-pop (mode buf  &optional alist)
+             (if (derived-mode-p mode)
+                 (switch-to-buffer buf)
+               (progn
+                 (when (= (length (window-list)) 1)
+                   (split-window-horizontally))
+                 (other-window 1)
+                 (switch-to-buffer buf nil))))
   :config
   (add-to-list 'display-buffer-alist `("\\*helpful" (,(apply-partially #'alist-switch-or-pop 'helpful-mode))))
   :bind
@@ -1459,6 +1446,7 @@
               (("C-c n I" . org-roam-insert-immediate))))
 
 (use-package org-ql)
+
 (use-package helm-org-ql)
 
 ;; (use-package org-z
@@ -1475,7 +1463,6 @@
 
 (use-package org-super-links
   ;; :quelpa (org-super-links :fetcher github :repo "toshism/org-super-links")
-  ;; :custom (org-super-links-related-into-drawer t)
   :bind (:map org-mode-map
               ("C-c s s" . org-super-links-link)
               ("C-c s d" . org-super-links-delete-link)
@@ -1489,8 +1476,3 @@
 ;; (use-package hl-prog-extra
 ;;   :commands (hl-prog-extra-mode)
 ;;   :custom (global-hl-prog-extra-mode 1))
-
-;; (use-package org-super-agenda)
-;; (use-package org-sidebar)
-;; (use-package org-protocol-capture-html)
-;; (use-package mu4e-dashboard
