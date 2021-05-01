@@ -20,11 +20,13 @@
   (package-install 'use-package))
 (require 'use-package)
 
-(use-package quelpa
-  :init (quelpa
-         '(quelpa-use-package
-           :fetcher git
-           :url "https://github.com/quelpa/quelpa-use-package.git")))
+(use-package quelpa)
+
+;; (use-package quelpa
+;;   :init (quelpa
+;;          '(quelpa-use-package
+;;            :fetcher git
+;;            :url "https://github.com/quelpa/quelpa-use-package.git")))
 
 (use-package quelpa-use-package)
 
