@@ -1095,7 +1095,7 @@
 (use-package lsp-treemacs
   :hook (treemacs-mode . lsp-treemacs-sync-mode))
 
-(use-package persp
+(use-package persp-mode
   :hook (after-init . persp-mode)
   :custom (persp-state-default-file (concat no-littering-var-directory ".persp")))
 
@@ -1139,6 +1139,8 @@
   (projectile-sort-order 'recentf)
   (projectile-inedxing-method 'hybrid)
   :bind (:map projectile-mode-map ("C-c p" . projectile-command-map)))
+
+(use-package persp-projectile)
 
 (use-package helm-projectile :after helm projectile
   :config (helm-projectile-on))
