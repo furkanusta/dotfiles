@@ -82,9 +82,7 @@
 (toggle-frame-maximized)
 
 (use-package emacs :ensure nil
-  :hook
-  (before-save . delete-trailing-whitespace)
-  (after-init . (lambda () (cua-selection-mode +1)))
+  :hook (before-save . delete-trailing-whitespace)
   :init
   (fset 'yes-or-no-p 'y-or-n-p)
   (setq-default user-full-name "Furkan Usta"
@@ -120,8 +118,7 @@
                 undo-limit 1280000
                 large-file-warning-threshold (* 1024 1024 1024) ;; 1GB
                 font-use-system-font t
-                initial-scratch-message ""
-                initial-major-mode 'org-mode)
+                initial-scratch-message "")
   :custom
   (column-number-mode 1)
   (display-time-default-load-average nil)
@@ -307,8 +304,34 @@
 ;; Helm packages for other modules will be near their corresponding modules, not in here
 
 (use-package helm
-  :commands
-  (helm-get-selection helm-next-line helm-previous-line helm-preselect helm-ff-move-to-first-real-candidate)
+  :config (global-unset-key (kbd "C-x c"))
+  :bind
+  (("M-x" . helm-M-x)
+   ("C-c C-r" . helm-resume)
+   (:map helm-map
+         ("<tab>" . helm-execute-persistent-action)
+         ("<left>" . helm-previous-source)
+         ("<right>" . helm-next-source)))
+  :custom
+  (helm-split-window-inside-p t)
+  (helm-move-to-line-cycle-in-source t)
+  (helm-scroll-amount 8)
+  (helm-autoresize-mode 1)
+  (helm-mode 1))
+
+(use-package helm-imenu :ensure helm
+  :bind ("<f6>" . helm-imenu))
+
+(use-package helm-ring :ensure helm
+  :bind ("M-y" . helm-show-kill-ring))
+
+(use-package helm-buffers :ensure helm
+  :custom (helm-boring-buffer-regexp-list (list (rx "*magit-") (rx "*helm") (rx "*flycheck")))
+  :bind ("C-x b" . helm-mini))
+
+(use-package helm-files :ensure helm
+  :after helm
+  :commands (helm-get-selection helm-next-line helm-previous-line helm-ff-move-to-first-real-candidate)
   :preface (defun helm-skip-dots (old-func &rest args)
              "Skip . and .. initially in helm-find-files.  First call OLD-FUNC with ARGS."
              (apply old-func args)
@@ -318,44 +341,17 @@
              (let ((sel (helm-get-selection))) ; if we reached .. move back
                (if (and (stringp sel) (string-match "/\\.\\.$" sel))
                    (helm-previous-line 1))))
-  :config
-  (advice-add #'helm-preselect :around #'helm-skip-dots)
-  (advice-add #'helm-ff-move-to-first-real-candidate :around #'helm-skip-dots)
-  (global-unset-key (kbd "C-x c"))
-  :bind
-  (("M-x" . helm-M-x)
-   ;; ("C-s" . helm-occur)
-   ("C-x b" . helm-mini)
-   ("C-z" .  helm-select-action)
-   ("M-y" . helm-show-kill-ring)
-   ("C-c C-r" . helm-resume)
-   ("<f6>" . helm-imenu)
-   :map helm-map
-   ("<tab>" . helm-execute-persistent-action)
-   ("<left>" . helm-previous-source)
-   ("<right>" . helm-next-source))
+  :config (advice-add #'helm-ff-move-to-first-real-candidate :around #'helm-skip-dots)
+  :bind ("C-x C-f" . helm-find-files)
   :custom
+  (helm-substitute-in-filename-stay-on-remote t)
+  (helm-ff-skip-boring-files t)
   (helm-ff-search-library-in-sexp t)
   (helm-ff-file-name-history-use-recentf t)
   (helm-ff-allow-non-existing-file-at-point nil)
   (helm-ff-auto-update-initial-value t)
   (helm-ff-guess-ffap-filenames t)
-  (helm-ff-guess-ffap-urls nil)
-  (helm-semantic-fuzzy-match t)
-  (helm-M-x-fuzzy-match t)
-  (helm-imenu-fuzzy-match t)
-  (helm-substitute-in-filename-stay-on-remote t)
-  (helm-boring-buffer-regexp-list (list (rx "*magit-") (rx "*helm") (rx "*flycheck")))
-  (helm-split-window-inside-p t)
-  (helm-move-to-line-cycle-in-source t)
-  (helm-scroll-amount 8)
-  (helm-autoresize-mode 1)
-  (helm-mode 1))
-
-(use-package helm-files
-  :ensure nil
-  :bind ("C-x C-f" . helm-find-files)
-  :custom (helm-ff-skip-boring-files t))
+  (helm-ff-guess-ffap-urls nil))
 
 (use-package helm-bibtex
   :defines my-bibliography
@@ -424,11 +420,7 @@
 ;;          Visual          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(use-package all-the-icons
-  :commands all-the-icons-octicon)
-
-(use-package all-the-icons-ibuffer
-  :custom (all-the-icons-ibuffer-mode 1))
+(use-package all-the-icons)
 
 (use-package doom-modeline
   :custom
@@ -645,7 +637,7 @@
 
 ;; Generic
 (use-package company
-  :hook (after-init . global-company-mode)
+  :hook (prog-mode . company-mode)
   :custom
   (company-backends '(company-cmake company-capf company-clang))
   (company-idle-delay nil))
@@ -660,7 +652,7 @@
 
 (use-package company-statistics
   :after company
-  :hook (after-init . company-statistics-mode)
+  :hook (company-mode . company-statistics-mode)
   :custom (company-statistics-file (concat no-littering-var-directory "company-statistics-cache.el")))
 
 (use-package company-quickhelp
@@ -703,7 +695,7 @@
   :custom (copy-as-format-default "github"))
 
 (use-package diff-hl
-  :custom (global-diff-hl-mode 1))
+  :hook (find-file . diff-hl-mode))
 
 (use-package hl-todo
   :custom (global-hl-todo-mode 1))
@@ -1409,7 +1401,7 @@
   (screenshot-min-width 100))
 
 (use-package shx
-  :custom (shx-global-mode 1))
+  :hook (shell-mode . shx-mode))
 
 (use-package compile
   :custom (compilation-scroll-output t)
