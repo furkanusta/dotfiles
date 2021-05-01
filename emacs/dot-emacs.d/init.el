@@ -6,6 +6,9 @@
 (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
 (package-initialize)
 
+(require 'server)
+(unless (server-running-p) (server-start))
+
 (unless (package-installed-p 'quelpa)
   (with-temp-buffer
     (url-insert-file-contents "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
@@ -17,13 +20,13 @@
   (package-install 'use-package))
 (require 'use-package)
 
-(require 'quelpa)
+(use-package quelpa
+  :init (quelpa
+         '(quelpa-use-package
+           :fetcher git
+           :url "https://github.com/quelpa/quelpa-use-package.git")))
 
-(quelpa
- '(quelpa-use-package
-   :fetcher git
-   :url "https://github.com/quelpa/quelpa-use-package.git"))
-(require 'quelpa-use-package)
+(use-package quelpa-use-package)
 
 (defvar my-quelpa-dir (concat user-emacs-directory "quelpa"))
 (defvar my-quelpa-build-dir (concat my-quelpa-dir "build"))
@@ -31,19 +34,20 @@
 (setq-default use-package-always-defer t)
 ;; (setq-default use-package-always-ensure t)
 
-(require 'exec-path-from-shell)
-(exec-path-from-shell-initialize)
-(require 'with-editor)
+(use-package exec-path-from-shell
+  :hook (after-init . exec-path-from-shell-initialize))
 
-(require 'server)
-(unless (server-running-p) (server-start))
+(use-package with-editor
+  :hook (shell-mode . with-editor-export-editor))
 
 (setq custom-file (concat user-emacs-directory "elisp/custom.el"))
 ;; Init Done
 
 ;; Debug
-(require 'benchmark-init)
-(add-hook 'after-init-hook 'benchmark-init/deactivate)
+(use-package benchmark-init
+  :ensure t
+  :init (benchmark-init/activate)
+  :config (add-hook 'after-init-hook 'benchmark-init/deactivate))
 
 (defun disable-line-numbers ()
   (display-line-numbers-mode -1))
@@ -294,43 +298,6 @@
 (global-set-key [remap fill-paragraph] #'endless/fill-or-unfill)
 (define-key prog-mode-map (kbd "<tab>") 'indent-for-tab-command)
 
-(use-package dashboard
-  :commands dashboard-insert-section dashboard-insert-heading dashboard-subseq
-  :preface (defun dashboard-insert-scratch (list-size)
-             (dashboard-insert-section
-              "Scratch:"
-              '("*scratch*" "*elfeed*" "init.el" "*dired*")
-              list-size
-              "s"
-              `(lambda (&rest ignore)
-                 (cond
-                  ((string= "*scratch*" ,el) (switch-to-buffer "*scratch*"))
-                  ((string= "init.el" ,el) (find-file user-init-file))
-                  ((string= "*elfeed*" ,el)
-                   (progn
-                     (if (get-buffer "*elfeed-search*")
-                         (switch-to-buffer "*elfeed-search*")
-                       (progn
-                         (elfeed)
-                         (elfeed-search-fetch nil)))))
-                  ((string= "*dired*" ,el) (dired (expand-file-name "~/")))
-                  (t (message "%s" ,el))))
-              (format "%s" el)))
-  :init (dashboard-setup-startup-hook)
-  :config (add-to-list 'dashboard-item-generators  '(scratch . dashboard-insert-scratch))
-  :custom
-  (initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
-  (dashboard-center-content t)
-  (dashboard-startup-banner 'logo)
-  (dashboard-set-heading-icons t)
-  (dashboard-set-file-icons t)
-  (dashboard-items '((scratch . 5)
-                     (recents  . 5)
-                     (bookmarks . 5)
-                     (projects . 5)
-                     (agenda . 5)))
-  (dashboard-banner-logo-title "Emacs"))
-
 (use-package isearch :ensure nil
   :bind ("C-c C-s" . isearch-forward))
 
@@ -342,7 +309,6 @@
 (use-package helm
   :commands
   (helm-get-selection helm-next-line helm-previous-line helm-preselect helm-ff-move-to-first-real-candidate)
-  :config (require 'helm-config)
   :preface (defun helm-skip-dots (old-func &rest args)
              "Skip . and .. initially in helm-find-files.  First call OLD-FUNC with ARGS."
              (apply old-func args)
@@ -621,15 +587,13 @@
 (use-package pocket-reader)
 
 (use-package vlf
-  :after dired
-  :hook (vlf-view-mode . disable-line-numbers)
-  :defines vlf-forbidden-modes-list
+  :hook (vlf-view-mode . disable-line-numbers))
+
+(use-package vlf-setup :ensure vlf
   :config
-  (require 'vlf-setup)
   (add-to-list 'vlf-forbidden-modes-list 'pdf-view-mode)
   (add-to-list 'vlf-forbidden-modes-list 'nov-mode))
 
-;; requires pdf-tools-install
 (use-package pdf-tools
   :quelpa (pdf-tools :fetcher github :repo "vedang/pdf-tools" :files ("lisp/*" "server/*"))
   :hook ((pdf-view-mode . (lambda () (cua-mode 0)))
@@ -782,16 +746,6 @@
   :bind (:map drag-stuff-mode-map
               ("<M-up>" . drag-stuff-up)
               ("<M-down>" . drag-stuff-down)))
-
-(use-package eyebrowse
-  :custom
-  (eyebrowse-wrap-around t)
-  (eyebrowse-mode 1)
-  :bind
-  (:map eyebrowse-mode-map
-        ("C-c C-w <left>" . eyebrowse-prev-window-config)
-        ("C-c C-w l" . eyebrowse-switch-to-window-config)
-        ("C-c C-w <right>" . eyebrowse-next-window-config)))
 
 (use-package hungry-delete
   :custom
@@ -1169,9 +1123,7 @@
   :hook (treemacs-mode . lsp-treemacs-sync-mode))
 
 (use-package persp
-  :hook
-  (after-init . persp-mode)
-  ;; (kill-emacs . persp-state-save)
+  :hook (after-init . persp-mode)
   :custom (persp-state-default-file (concat no-littering-var-directory ".persp")))
 
 (use-package treemacs-persp
@@ -1335,8 +1287,8 @@
         ("C-," . vterm-next-prompt)))
 
 (use-package tree-sitter
-  :hook (tree-sitter-after-on . tree-sitter-hl-mode)
-  :custom (global-tree-sitter-mode 1))
+  :hook (tree-sitter-after-on . tree-sitter-hl-mode))
+  ;; :custom (global-tree-sitter-mode 1))
 
 (use-package graphviz-dot-mode
   :custom (graphviz-dot-indent-width 4))
@@ -1355,8 +1307,8 @@
   :hook (sly-mrepl . company-mode)
   :bind (:map sly-mrepl-mode-map ("<tab>" . helm-company)))
 
-(use-package smartparens
-  :config (require 'smartparens-config))
+(use-package smartparens)
+(use-package smartparens-config :ensure smartparens)
 
 ;;
 (use-package calfw)
@@ -1515,15 +1467,15 @@
 (use-package org-ql)
 (use-package helm-org-ql)
 
-(use-package org-z
-  :quelpa (org-z :fetcher github :repo "landakram/org-z")
-  :custom
-  (org-z-mode 1)
-  (org-z-directories (list my-notes-directory))
-  (org-z-knowledge-dirs (list my-notes-directory))
-  (org-z-completion-backend 'helm))
+;; (use-package org-z
+;;   :quelpa (org-z :fetcher github :repo "landakram/org-z")
+;;   :custom
+;;   (org-z-mode 1)
+;;   (org-z-directories (list my-notes-directory))
+;;   (org-z-knowledge-dirs (list my-notes-directory))
+;;   (org-z-completion-backend 'helm))
 
-(use-package org-z-helm :requires org-z)
+;; (use-package org-z-helm :requires org-z)
 
 (use-package org-linker :quelpa (org-linker :fetcher github :repo "toshism/org-linker"))
 
