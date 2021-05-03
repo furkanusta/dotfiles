@@ -481,7 +481,7 @@
      ("https://what-if.xkcd.com/feed.atom" xkcd)
      ("http://xkcd.com/rss.xml" xkcd)
      ("https://esoteric.codes/rss" other)
-     ("http://irreal.org/blog/?feed=rss2" other)
+     ("http://irreal.org/blog/?feed=rss2" emacs)
      ("https://drewdevault.com/feed.xml" other)
      ("https://jacobian.org/index.xml" other)
      ("https://old.reddit.com/r/cpp/top.rss?t=week" cpp)
@@ -568,7 +568,7 @@
                  (elfeed-search-untag-all-unread)
                  (promise-finally (reddigg-view-comments url)
                                   (lambda () (with-current-buffer (get-buffer "*reddigg-comments*")
-                                               (local-set-key "q" +rss/delete-pane)
+                                               (local-set-key "q" #'+rss/delete-pane)
                                                (read-only-mode +1)))))))
   :bind (:map elfeed-search-mode-map ("R" . elfeed-open-reddit)))
 
@@ -1273,10 +1273,16 @@
          (re-search-backward "msi.*\\$ " nil 'move)
          (re-search-forward "\\$ " nil 'move))
   :bind
-  ("<f8>" . vterm)
   (:map vterm-copy-mode-map
         ("C-<" . vterm-prev-prompt)
         ("C-," . vterm-next-prompt)))
+
+(use-package vterm-toggle
+  :custom (vterm-toggle-cd-auto-create-buffer nil)
+  :bind
+  ("<f8>" . vterm-toggle)
+  (:map vterm-mode-map
+        ("C-<return>" . vterm-toggle-insert-cd)))
 
 (use-package tree-sitter
   :hook (tree-sitter-after-on . tree-sitter-hl-mode))
