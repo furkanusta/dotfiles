@@ -413,6 +413,23 @@
 (use-package darkokai-theme
   :init (load-theme 'darkokai t))
 
+(use-package theme-switch :ensure nil
+  :preface
+  (defvar my-dark-theme 'darkokai)
+  (defvar my-light-theme 'leuven)
+  (defvar my-active-theme 'darkokai)
+  (defun my-switch-theme-helper (old-theme new-theme)
+    (disable-theme old-theme)
+    (load-theme new-theme t)
+    (setq my-active-theme new-theme))
+  (defun my-switch-theme ()
+    (interactive)
+    (progn
+      (if (eq my-active-theme my-dark-theme)
+          (my-switch-theme-helper my-dark-theme my-light-theme)
+        (my-switch-theme-helper my-light-theme my-dark-theme)))))
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Tools & Utils          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
