@@ -37,6 +37,7 @@ alias mp3-dl="youtube-dl --extract-audio --audio-format=mp3"
 alias clang++="clang++ -std=c++17 -stdlib=libc++"
 alias flatpak="flatpak --user"
 alias whatsapp="ffmpeg -c:v libx264  -threads 4 -profile:v baseline -level 3.0 -pix_fmt yuv420p"
+export PS1='[$(basename $(dirname "$PWD"))/$(basename "$PWD")] \[\e[0;31m$\e[0m\] ';
 
 # bind does not work inside emacs
 if [[ -z "$INSIDE_EMACS" ]]; then
@@ -51,5 +52,3 @@ fi
 if [[ "$INSIDE_EMACS" = 'vterm' ]] ; then
 	source ~/.config/vterm/emacs-vterm.sh
 fi
-
-export PS1='[$(basename $(dirname "$PWD"))/$(basename "$PWD")] \[\e[0;31m$\e[0m\] ';
