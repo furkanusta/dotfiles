@@ -20,22 +20,20 @@
   (package-install 'use-package))
 (require 'use-package)
 
+(setq-default use-package-always-defer t)
+;; (setq-default use-package-always-ensure t)
+
 (use-package quelpa
   :custom (quelpa-update-melpa-p nil))
 
-(use-package quelpa-use-package)
-
-(setq-default use-package-always-defer t)
-;; (setq-default use-package-always-ensure t)
+(use-package quelpa-use-package :demand t)
 
 (setq custom-file (concat user-emacs-directory "elisp/custom.el"))
 ;; Init Done
 
-;; Debug
-(use-package benchmark-init
-  :ensure t
-  :init (benchmark-init/activate)
-  :config (add-hook 'after-init-hook 'benchmark-init/deactivate))
+;; ;; Debug
+;; (require 'benchmark-init)
+;; (add-hook 'after-init-hook 'benchmark-init/deactivate)
 
 (defun disable-line-numbers ()
   (display-line-numbers-mode -1))
@@ -61,6 +59,20 @@
 
 (use-package emacs :ensure nil
   :hook (before-save . delete-trailing-whitespace)
+  :preface
+  (defvar my-dark-theme 'darkokai)
+  (defvar my-light-theme 'leuven)
+  (defvar my-active-theme 'darkokai)
+  (defun my-switch-theme-helper (old-theme new-theme)
+    (disable-theme old-theme)
+    (load-theme new-theme t)
+    (setq my-active-theme new-theme))
+  (defun my-switch-theme ()
+    (interactive)
+    (progn
+      (if (eq my-active-theme my-dark-theme)
+          (my-switch-theme-helper my-dark-theme my-light-theme)
+        (my-switch-theme-helper my-light-theme my-dark-theme))))
   :init
   (fset 'yes-or-no-p 'y-or-n-p)
   (global-unset-key (kbd "C-x c"))
@@ -413,23 +425,6 @@
 (use-package darkokai-theme
   :init (load-theme 'darkokai t))
 
-(use-package theme-switch :ensure nil
-  :preface
-  (defvar my-dark-theme 'darkokai)
-  (defvar my-light-theme 'leuven)
-  (defvar my-active-theme 'darkokai)
-  (defun my-switch-theme-helper (old-theme new-theme)
-    (disable-theme old-theme)
-    (load-theme new-theme t)
-    (setq my-active-theme new-theme))
-  (defun my-switch-theme ()
-    (interactive)
-    (progn
-      (if (eq my-active-theme my-dark-theme)
-          (my-switch-theme-helper my-dark-theme my-light-theme)
-        (my-switch-theme-helper my-light-theme my-dark-theme)))))
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Tools & Utils          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -655,13 +650,6 @@
 
 (use-package company-quickhelp
   :custom (company-quickhelp-mode t))
-
-(use-package company-lsp
-  :after company lsp
-  :config (push 'company-lsp company-backends)
-  :custom
-  (company-lsp-enable-recompletion t)
-  (company-lsp-enable-snippet t))
 
 (use-package magit
   :bind ("C-c g s" . magit-status)
