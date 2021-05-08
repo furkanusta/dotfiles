@@ -143,8 +143,8 @@
 (use-package paren
   :custom (show-paren-mode 1))
 
-(use-package display-line-numbers
-  :custom (global-display-line-numbers-mode 1))
+;; (use-package display-line-numbers
+;;   :custom (global-display-line-numbers-mode 1))
 
 (use-package hl-line
   :custom (global-hl-line-mode t))
@@ -1249,7 +1249,7 @@
   (neo-vc-integration nil)
   (neo-theme 'icons)
   :hook (neotree-mode . disable-line-numbers)
-  :bind ("C-x t n" . neotree-toggle))
+  :bind ("C-x t d" . neotree-toggle))
 
 (use-package vterm
   :commands (vterm-next-prompt vterm-prev-prompt)
@@ -1489,3 +1489,26 @@
 ;; (use-package hl-prog-extra
 ;;   :commands (hl-prog-extra-mode)
 ;;   :custom (global-hl-prog-extra-mode 1))
+
+(use-package ibuffer-sidebar
+  :commands (ibuffer-sidebar-toggle-sidebar)
+  :bind ("C-x t s" . ibuffer-sidebar-toggle-sidebar))
+
+(use-package ibuffer-vc
+  :preface (defun ibuffer-vc-setup ()
+             (ibuffer-vc-set-filter-groups-by-vc-root)
+             (unless (eq ibuffer-sorting-mode 'alphabetic)
+               (ibuffer-do-sort-by-alphabetic)))
+  :hook
+  (ibuffer-hook . ibuffer-vc-setup)
+  (ibuffer-sidebar-mode-hook . ibuffer-vc-setup))
+
+(use-package multicolumn)
+
+(use-package side-notes
+  :custom
+  (side-notes-display-alist '((side . right)
+                              (window-width . 50)))
+  (side-notes-file "Notes.org")
+  (side-notes-secondary-file "README.org")
+  :bind ("C-x t n" . side-notes-toggle-notes))
