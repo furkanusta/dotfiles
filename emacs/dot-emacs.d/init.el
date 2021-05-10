@@ -363,7 +363,7 @@
   :custom
   (tramp-backup-directory-alist backup-directory-alist))
 
-;; (use-package helm-tramp)
+(use-package helm-tramp)
 
 ;; (use-package helm-fd
 ;;   :bind ("C-c h f" . helm-fd))
@@ -593,6 +593,7 @@
   (pdf-annot-activate-created-annotations nil)
   (pdf-view-resize-factor 1.1)
   :bind (:map pdf-view-mode-map
+              ("M-w" . pdf-view-kill-ring-save)
               ("S-SPC" . pdf-view-scroll-down-or-previous-page)))
 
 (use-package pdf-view-restore
@@ -689,11 +690,11 @@
 (use-package flycheck
   :commands flycheck-add-mode
   :custom
-  (global-flycheck-mode 1)
+  (global-flycheck-mode nil)
   (flycheck-disabled-checkers '(emacs-lisp-checkdoc verilog-verilator))
-  (flycheck-clang-language-standard "c++20")
-  (flycheck-gcc-language-standard "c++20")
-  (flycheck-cppcheck-standards "c++20")
+  (flycheck-clang-language-standard "c++17")
+  (flycheck-gcc-language-standard "c++17")
+  (flycheck-cppcheck-standards "c++17")
   (flycheck-emacs-lisp-load-path 'inherit)
   :config
   (flycheck-add-mode 'c/c++-cppcheck 'c++mode))
@@ -1113,7 +1114,8 @@
 (use-package docker-compose-mode
   :mode ("docker-compose\\.yml\\'" "-compose.yml\\'"))
 
-;; (use-package docker)
+(use-package docker)
+(use-package docker-tramp)
 
 (use-package flycheck-clang-analyzer
   :after flycheck
