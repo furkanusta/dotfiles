@@ -1063,6 +1063,7 @@
 
 (use-package shell
   :after window
+  :hook (shell-mode . company-mode)
   :config (add-to-list 'display-buffer-alist (cons "\\*shell\\*" use-other-window-alist))
   :bind
   ("C-<f8>" . shell)
