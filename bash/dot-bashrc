@@ -40,7 +40,7 @@ alias whatsapp="ffmpeg -c:v libx264  -threads 4 -profile:v baseline -level 3.0 -
 export PS1='[$(basename $(dirname "$PWD"))/$(basename "$PWD")] \[\e[0;31m$\e[0m\] ';
 
 # bind does not work inside emacs
-if [[ "$TERM" -ne "dumb" ]]; then
+if [[ "$TERM" != "dumb" ]]; then
     source ~/.config/fzf/completion.bash
     source ~/.config/fzf/key-bindings.bash
 fi
