@@ -726,6 +726,12 @@
               ("<M-up>" . drag-stuff-up)
               ("<M-down>" . drag-stuff-down)))
 
+(use-package frame-movement
+  :load-path "elisp/"
+  :bind
+  ("C-x 5 n" . frame-movement/select-next-frame)
+  ("C-x 5 p" . frame-movement/select-prev-frame))
+
 (use-package hungry-delete
   :custom
   (global-hungry-delete-mode 1)
@@ -1200,6 +1206,9 @@
   ("\\.v\\'" . verilog-mode)
   ("\\.sv\\'" . verilog-mode)
   :custom
+  ;; (verilog-auto-inst-sort t)
+  (verilog-auto-declare-nettype "none")
+  (verilog-case-fold nil)
   (verilog-auto-newline nil)
   (verilog-tab-always-indent nil)
   (verilog-auto-indent-on-newline nil)
