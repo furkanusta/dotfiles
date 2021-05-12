@@ -50,5 +50,6 @@ if [ -f .bash_functions ]; then
 fi
 
 if [[ "$INSIDE_EMACS" = 'vterm' ]] ; then
+    export PS1='[$(basename $(dirname "$PWD"))/$(basename "$PWD")] $ ';
 	source ~/.config/vterm/emacs-vterm.sh
 fi

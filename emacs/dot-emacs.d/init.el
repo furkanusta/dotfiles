@@ -1207,11 +1207,12 @@
   ("\\.sv\\'" . verilog-mode)
   :custom
   ;; (verilog-auto-inst-sort t)
+  (verilog-library-directories '("." "../sim" "../rtl"))
   (verilog-auto-declare-nettype "none")
   (verilog-case-fold nil)
   (verilog-auto-newline nil)
   (verilog-tab-always-indent nil)
-  (verilog-auto-indent-on-newline nil)
+  (verilog-auto-indent-on-newline t)
   (verilog-case-indent 4)
   (verilog-cexp-indent 4)
   (verilog-indent-begin-after-if nil)
