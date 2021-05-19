@@ -1078,7 +1078,11 @@
 
 (use-package treemacs
   :commands treemacs-resize-icons treemacs-is-file-git-ignored?
-  :hook (treemacs-mode . disable-line-numbers)
+  :hook
+  (treemacs-mode . disable-line-numbers)
+  (treemacs-mode . treemacs-filewatch-mode)
+  (treemacs-mode . treemacs-fringe-indicator-mode)
+  (treemacs-mode . treemacs-follow-mode)
   :config
   (treemacs-resize-icons 20)
   (add-to-list 'treemacs-pre-file-insert-predicates #'treemacs-is-file-git-ignored?)
@@ -1091,15 +1095,6 @@
   (treemacs-position 'right)
   (treemacs-width 50))
 
-(use-package treemacs-filewatch-mode :ensure nil
-  :hook (treemacs-mode . treemacs-filewatch-mode))
-
-(use-package treemacs-fringe-indicator-mode :ensure nil
-  :hook (treemacs-mode . treemacs-fringe-indicator-mode))
-
-(use-package treemacs-follow-mode :ensure nil
-  :hook (treemacs-mode . treemacs-follow-mode))
-
 (use-package treemacs-icons-dired
   :hook (dired-mode . treemacs-icons-dired-mode))
 
@@ -1109,11 +1104,19 @@
 (use-package lsp-treemacs
   :hook (treemacs-mode . lsp-treemacs-sync-mode))
 
-(use-package persp-mode
+(use-package perspective
   :hook (after-init . persp-mode)
-  :custom (persp-state-default-file (concat no-littering-var-directory ".persp")))
+  :preface
+  (defun my-skip-buffer-p (window buffer burry-or-kill)
+    (let ((name (buffer-name buffer)))
+      (or
+       (and
+        (char-equal ?* (seq-elt name 0))
+        (not (seq-contains-p '("*Messages*" "*Warnings*" "*scratch*") name)))
+       (not (seq-contains-p (persp-current-buffers) buffer)))))
+  :custom (switch-to-prev-buffer-skip #'my-skip-buffer-p))
 
-(use-package treemacs-persp
+(use-package treemacs-perspective
   :commands treemacs-set-scope-type
   :config (treemacs-set-scope-type 'Perspectives))
 
@@ -1153,9 +1156,10 @@
   (projectile-known-projects-file (concat no-littering-var-directory "projectile-bookmarks.eld"))
   (projectile-sort-order 'recentf)
   (projectile-inedxing-method 'hybrid)
-  :bind (:map projectile-mode-map ("C-c p" . projectile-command-map)))
+  :bind-keymap ("C-x p" . projectile-command-map))
 
-(use-package persp-projectile)
+(use-package persp-projectile
+  :bind (:map projectile-command-map ("p" . projectile-persp-switch-project)))
 
 (use-package helm-projectile :after helm projectile
   :config (helm-projectile-on))
