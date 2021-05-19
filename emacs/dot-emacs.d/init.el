@@ -550,6 +550,7 @@
 
 (use-package reddigg
   :defines elfeed-search-mode-map
+  :commands promise-finally
   :after elfeed-search
   :preface (defun elfeed-open-reddit ()
              (interactive)
@@ -599,7 +600,7 @@
 (use-package pdf-view-restore
   :after pdf-tools
   :hook (pdf-view-mode . pdf-view-restore-mode)
-  :custom (pdf-view-restore-filename (concat no-littering-var-directory ".pdf-view-restore")))
+  :custom (pdf-view-restore-filename (concat no-littering-var-directory "pdf-view-restore")))
 
 (use-package undo-tree
   :diminish undo-tree-mode
@@ -743,6 +744,7 @@
 
 (use-package writeroom-mode
   :hook (writeroom-mode . toggle-line-numbers)
+  :defines display-line-numbers-mode
   :preface (defun toggle-line-numbers () (display-line-numbers-mode (or (not display-line-numbers-mode) 0)))
   :custom
   (writeroom-width 150)
@@ -848,7 +850,7 @@
   :after org)
 
 (use-package org-appear
-  :hook (org-mode . org-appear-mode)
+  ;; :hook (org-mode . org-appear-mode)
   :custom
   (org-appear-autolinks t)
   (org-appear-autosubmarkers t)
@@ -956,6 +958,8 @@
 ;;          C++          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package cc-mode :ensure nil
+  :mode
+  ("\\.h\\'" . c++-mode)
   :config
   (c-set-offset 'substatement-open 0)
   (c-set-offset 'innamespace 0)
@@ -963,11 +967,8 @@
   (c-default-style "stroustrup")
   (c-basic-offset 4)
   (c-indent-level 4)
-  (access-label 0))
-
-(use-package c++-mode :ensure nil
-  :mode ("\\.h\\'" . c++-mode)
-  :custom (c-noise-macro-names '("constexpr")))
+  (access-label 0)
+  (c-noise-macro-names '("constexpr")))
 
 (use-package modern-cpp-font-lock
   :diminish modern-c++-font-lock-mode
@@ -1505,16 +1506,17 @@
 
 (use-package ibuffer-sidebar
   :commands (ibuffer-sidebar-toggle-sidebar)
-  :bind ("C-x t s" . ibuffer-sidebar-toggle-sidebar))
+  :bind ("C-x t b" . ibuffer-sidebar-toggle-sidebar))
 
 (use-package ibuffer-vc
+  :commands ibuffer-do-sort-by-alphabetic
   :preface (defun ibuffer-vc-setup ()
              (ibuffer-vc-set-filter-groups-by-vc-root)
              (unless (eq ibuffer-sorting-mode 'alphabetic)
                (ibuffer-do-sort-by-alphabetic)))
   :hook
-  (ibuffer-hook . ibuffer-vc-setup)
-  (ibuffer-sidebar-mode-hook . ibuffer-vc-setup))
+  (ibuffer . ibuffer-vc-setup)
+  (ibuffer-sidebar-mode . ibuffer-vc-setup))
 
 (use-package multicolumn)
 
