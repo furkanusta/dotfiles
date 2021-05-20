@@ -1281,7 +1281,9 @@
   :bind
   (:map vterm-copy-mode-map
         ("C-<" . vterm-prev-prompt)
-        ("C-," . vterm-next-prompt)))
+        ("C-," . vterm-next-prompt))
+  :custom
+  (vterm-min-window-width 1000))
 
 (use-package vterm-toggle
   :custom (vterm-toggle-cd-auto-create-buffer nil)
