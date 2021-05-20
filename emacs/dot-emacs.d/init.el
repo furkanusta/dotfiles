@@ -62,7 +62,7 @@
   :preface
   (defvar my-dark-theme 'darkokai)
   (defvar my-light-theme 'leuven)
-  (defvar my-active-theme 'darkokai)
+  (defvar my-active-theme my-dark-theme)
   (defun my-switch-theme-helper (old-theme new-theme)
     (disable-theme old-theme)
     (load-theme new-theme t)
@@ -424,6 +424,9 @@
 
 (use-package darkokai-theme
   :init (load-theme 'darkokai t))
+
+;; (use-package monokai-theme
+;;   :init (load-theme 'monokai t))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Tools & Utils          ;;
@@ -1294,6 +1297,9 @@
 
 (use-package tree-sitter
   :hook (tree-sitter-after-on . tree-sitter-hl-mode))
+
+(use-package tree-sitter-langs)
+
   ;; :custom (global-tree-sitter-mode 1))
 
 (use-package graphviz-dot-mode
