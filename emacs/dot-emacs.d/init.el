@@ -1115,7 +1115,7 @@
       (or
        (and
         (char-equal ?* (seq-elt name 0))
-        (not (seq-contains-p '("*Messages*" "*Warnings*" "*scratch*") name)))
+        (not (seq-contains-p '("*Messages*" "*Warnings*" "*scratch*" "*vterm*" "*shell*") name)))
        (not (seq-contains-p (persp-current-buffers) buffer)))))
   :custom (switch-to-prev-buffer-skip #'my-skip-buffer-p))
 
@@ -1284,9 +1284,7 @@
   :bind
   (:map vterm-copy-mode-map
         ("C-<" . vterm-prev-prompt)
-        ("C-," . vterm-next-prompt))
-  :custom
-  (vterm-min-window-width 1000))
+        ("C-," . vterm-next-prompt)))
 
 (use-package vterm-toggle
   :custom (vterm-toggle-cd-auto-create-buffer nil)
