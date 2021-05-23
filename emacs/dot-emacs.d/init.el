@@ -1079,6 +1079,13 @@
   ("C-<f8>" . shell)
   (:map shell-mode-map ("<tab>" . helm-company)))
 
+(use-package eshell
+  :config (add-to-list 'display-buffer-alist (cons "\\*eshell\\*" use-other-window-alist))
+  :bind ("M-<f8>" . eshell))
+
+(use-package eshell-syntax-highlighting
+  :hook (eshell-mode . eshell-syntax-highlighting-mode))
+
 (use-package treemacs
   :commands treemacs-resize-icons treemacs-is-file-git-ignored?
   :hook
