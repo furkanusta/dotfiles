@@ -1533,7 +1533,8 @@
                (ibuffer-do-sort-by-alphabetic)))
   :hook
   (ibuffer . ibuffer-vc-setup)
-  (ibuffer-sidebar-mode . ibuffer-vc-setup))
+  (ibuffer-sidebar-mode . ibuffer-vc-setup)
+  :bind ("C-x C-b" . ibuffer))
 
 (use-package multicolumn)
 

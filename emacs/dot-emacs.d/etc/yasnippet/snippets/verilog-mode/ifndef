@@ -1,0 +1,18 @@
+# -*- mode: snippet -*-
+# name: ifndef
+# key: ifndef
+# --
+\`ifndef ${1:`
+        (upcase
+            (concat
+                (replace-regexp-in-string
+                    "/\\|\\.\\|\\-"
+                    "_"
+                    (file-relative-name
+                        buffer-file-name
+                        (projectile-project-root)))))`}
+\`define $1
+
+$0
+
+\`endif // $1
