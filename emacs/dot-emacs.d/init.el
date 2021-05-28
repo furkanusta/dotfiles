@@ -55,10 +55,10 @@
 (defvar my-notes-directory (concat my-data-directory "/Notes"))
 (defvar my-bibliography (concat my-data-directory "/Papers/Library.bib"))
 
-(toggle-frame-maximized)
-
 (use-package emacs :ensure nil
-  :hook (before-save . delete-trailing-whitespace)
+  :hook
+  (before-save . delete-trailing-whitespace)
+  (after-init . toggle-frame-maximized)
   :preface
   (defvar my-dark-theme 'darkokai)
   (defvar my-light-theme 'leuven)
@@ -73,6 +73,66 @@
       (if (eq my-active-theme my-dark-theme)
           (my-switch-theme-helper my-dark-theme my-light-theme)
         (my-switch-theme-helper my-light-theme my-dark-theme))))
+  (defun duplicate-line-or-region (arg)
+    (interactive "p")
+    (let (beg end (origin (point)))
+      (if (and mark-active (> (point) (mark)))
+          (exchange-point-and-mark))
+      (setq beg (line-beginning-position))
+      (if mark-active
+          (exchange-point-and-mark))
+      (setq end (line-end-position))
+      (let ((region (buffer-substring-no-properties beg end)))
+        (dotimes (i arg)
+          (goto-char end)
+          (newline)
+          (insert region)
+          (setq end (point)))
+        (goto-char (+ origin (* (length region) arg) arg)))))
+  (defun my-align-comments (beginning end)
+    (interactive "*r")
+    (let (indent-tabs-mode align-to-tab-stop)
+      (align-regexp beginning end "\\(\\s-*\\)//")))
+  (defun kill-other-buffers ()
+    (interactive)
+    (mapc 'kill-buffer
+          (delq (current-buffer) (buffer-list))))
+  (defun xah-cut-line-or-region ()
+    (interactive)
+    (if current-prefix-arg
+        (progn
+          (kill-new (buffer-string))
+          (delete-region (point-min) (point-max)))
+      (progn (if (use-region-p)
+                 (kill-region (region-beginning) (region-end) t)
+               (kill-region (line-beginning-position) (line-beginning-position 2))))))
+  (defun xah-copy-line-or-region ()
+    (interactive)
+    (let (-p1 -p2)
+      (if (use-region-p)
+          (setq -p1 (region-beginning) -p2 (region-end))
+        (setq -p1 (line-beginning-position) -p2 (line-end-position)))
+      (progn
+        (kill-ring-save -p1 -p2)
+        (message "Text copied"))))
+  (defun endless/fill-or-unfill ()
+    "Like `fill-paragraph', but unfill if used twice."
+    (interactive)
+    (let ((fill-column
+           (if (eq last-command 'endless/fill-or-unfill)
+               (progn (setq this-command nil) (point-max))
+             fill-column)))
+      (call-interactively #'fill-paragraph)))
+  (defun scroll-down-in-place (n)
+    (interactive "p")
+    (forward-line (* -1 n))
+    (unless (eq (window-start) (point-min))
+      (scroll-down n)))
+  (defun scroll-up-in-place (n)
+    (interactive "p")
+    (forward-line n)
+    (unless (eq (window-end) (point-max))
+      (scroll-up n)))
   :init
   (fset 'yes-or-no-p 'y-or-n-p)
   (global-unset-key (kbd "C-x c"))
@@ -119,7 +179,21 @@
   ("C-c ." . pop-global-mark)
   ("M-u" . upcase-dwim)
   ("M-l" . downcase-dwim)
-  ("M-c" . capitalize-dwim))
+  ("M-c" . capitalize-dwim)
+  ("M-n" . scroll-up-in-place)
+  ("M-p" . scroll-down-in-place)
+  ("C-M-;" . my-align-comments)
+  ("C-c k b" . kill-other-buffers)
+  ("C-c d" . duplicate-line-or-region)
+  ("C-c e r" . eval-region)
+  ("C-S-d" . delete-backward-char)
+  ("M-D" . backward-kill-word)
+  ("C-w" . xah-cut-line-or-region)
+  ("M-w" . xah-copy-line-or-region)
+  ("M-k" . kill-whole-line)
+  ("RET" . newline-and-indent)
+  ([remap fill-paragraph] . endless/fill-or-unfill)
+  (:map prog-mode-map ("<tab>" . indent-for-tab-command)))
 
 (use-package exec-path-from-shell
   :hook (after-init . exec-path-from-shell-initialize))
@@ -134,6 +208,9 @@
   :custom
   (ediff-window-setup-function 'ediff-setup-windows-plain)
   (ediff-split-window-function 'split-window-horizontally))
+
+(use-package eww :ensure nil
+  :bind ("<f7>" . eww))
 
 ;; ;; These are built-in packages and having ensure results in lots of warnings
 ;; (use-package desktop :ensure nil
@@ -203,93 +280,6 @@
 
 (use-package which-func :ensure nil
   :custom (which-function-mode t))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;          Functions and keybindings    ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defun duplicate-line-or-region (arg)
-  (interactive "p")
-  (let (beg end (origin (point)))
-    (if (and mark-active (> (point) (mark)))
-        (exchange-point-and-mark))
-    (setq beg (line-beginning-position))
-    (if mark-active
-        (exchange-point-and-mark))
-    (setq end (line-end-position))
-    (let ((region (buffer-substring-no-properties beg end)))
-      (dotimes (i arg)
-        (goto-char end)
-        (newline)
-        (insert region)
-        (setq end (point)))
-      (goto-char (+ origin (* (length region) arg) arg)))))
-
-(defun my-align-comments (beginning end)
-  (interactive "*r")
-  (let (indent-tabs-mode align-to-tab-stop)
-    (align-regexp beginning end "\\(\\s-*\\)//")))
-
-(defun kill-other-buffers ()
-  (interactive)
-  (mapc 'kill-buffer
-        (delq (current-buffer) (buffer-list))))
-
-(defun xah-cut-line-or-region ()
-  (interactive)
-  (if current-prefix-arg
-      (progn
-        (kill-new (buffer-string))
-        (delete-region (point-min) (point-max)))
-    (progn (if (use-region-p)
-               (kill-region (region-beginning) (region-end) t)
-             (kill-region (line-beginning-position) (line-beginning-position 2))))))
-
-(defun xah-copy-line-or-region ()
-  (interactive)
-  (let (-p1 -p2)
-    (if (use-region-p)
-        (setq -p1 (region-beginning) -p2 (region-end))
-      (setq -p1 (line-beginning-position) -p2 (line-end-position)))
-    (progn
-      (kill-ring-save -p1 -p2)
-      (message "Text copied"))))
-
-(defun endless/fill-or-unfill ()
-  "Like `fill-paragraph', but unfill if used twice."
-  (interactive)
-  (let ((fill-column
-         (if (eq last-command 'endless/fill-or-unfill)
-             (progn (setq this-command nil) (point-max))
-           fill-column)))
-    (call-interactively #'fill-paragraph)))
-
-(defun scroll-down-in-place (n)
-  (interactive "p")
-  (forward-line (* -1 n))
-  (unless (eq (window-start) (point-min))
-    (scroll-down n)))
-
-(defun scroll-up-in-place (n)
-  (interactive "p")
-  (forward-line n)
-  (unless (eq (window-end) (point-max))
-    (scroll-up n)))
-
-(global-set-key (kbd "M-n") 'scroll-up-in-place)
-(global-set-key (kbd "M-p") 'scroll-down-in-place)
-(global-set-key (kbd "<f7>") 'eww)
-(global-set-key (kbd "C-M-;") 'my-align-comments)
-(global-set-key (kbd "C-c C-k") 'kill-other-buffers)
-(global-set-key (kbd "C-c d") 'duplicate-line-or-region)
-(global-set-key (kbd "C-c e r") 'eval-region)
-(global-set-key (kbd "C-S-d") 'delete-backward-char)
-(global-set-key (kbd "M-D") 'backward-kill-word)
-(global-set-key (kbd "C-w") 'xah-cut-line-or-region) ; cut
-(global-set-key (kbd "M-k") 'kill-whole-line)
-(global-set-key (kbd "M-w") 'xah-copy-line-or-region) ; copy
-(global-set-key (kbd "RET") 'newline-and-indent)
-(global-set-key [remap fill-paragraph] #'endless/fill-or-unfill)
-(define-key prog-mode-map (kbd "<tab>") 'indent-for-tab-command)
 
 (use-package isearch :ensure nil
   :bind ("C-c C-s" . isearch-forward))
