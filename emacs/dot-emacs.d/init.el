@@ -1114,7 +1114,9 @@
         (char-equal ?* (seq-elt name 0))
         (not (seq-contains-p '("*Messages*" "*Warnings*" "*scratch*" "*vterm*" "*shell*") name)))
        (not (seq-contains-p (persp-current-buffers) buffer)))))
-  :custom (switch-to-prev-buffer-skip #'my-skip-buffer-p))
+  :custom
+  (persp-mode-prefix-key (kbd "C-x w"))
+  (switch-to-prev-buffer-skip #'my-skip-buffer-p))
 
 (use-package treemacs-perspective
   :commands treemacs-set-scope-type
@@ -1515,16 +1517,15 @@
   :commands (ibuffer-sidebar-toggle-sidebar)
   :bind ("C-x t b" . ibuffer-sidebar-toggle-sidebar))
 
-(use-package ibuffer-vc
-  :commands ibuffer-do-sort-by-alphabetic
-  :preface (defun ibuffer-vc-setup ()
-             (ibuffer-vc-set-filter-groups-by-vc-root)
-             (unless (eq ibuffer-sorting-mode 'alphabetic)
-               (ibuffer-do-sort-by-alphabetic)))
-  :hook
-  (ibuffer . ibuffer-vc-setup)
-  (ibuffer-sidebar-mode . ibuffer-vc-setup)
-  :bind ("C-x C-b" . ibuffer))
+(use-package bufler
+  :preface (define-prefix-command 'my-switch-command-map)
+  :bind-keymap ("C-x s" . my-switch-command-map)
+  :bind
+  (:map my-switch-command-map
+        ("b" . bufler)
+        ("s" . bufler-switch-buffer)))
+
+(use-package helm-bufler)
 
 (use-package multicolumn)
 
