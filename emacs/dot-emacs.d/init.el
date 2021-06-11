@@ -408,6 +408,7 @@
 (use-package doom-modeline
   :custom
   (doom-modeline-mode 1)
+  (doom-modeline-icon t)
   (doom-modeline-buffer-encoding nil))
 
 (use-package diminish)
@@ -472,13 +473,13 @@
      ("http://irreal.org/blog/?feed=rss2" emacs)
      ("https://drewdevault.com/feed.xml" other)
      ("https://jacobian.org/index.xml" other)
-     ("https://old.reddit.com/r/cpp/top.rss?t=week" cpp)
+     ("https://old.reddit.com/r/cpp/top.rss?t=month" cpp)
      ("https://old.reddit.com/r/emacs/top.rss?t=week" emacs)
-     ("https://old.reddit.com/r/python/top.rss?t=week" python)
-     ("https://old.reddit.com/r/fpga/top.rss?t=week" fpga)
+     ("https://old.reddit.com/r/python/top.rss?t=month" python)
+     ("https://old.reddit.com/r/fpga/top.rss?t=month" fpga)
      ("https://old.reddit.com/r/ruby/top.rss?t=month" ruby)
      ("https://old.reddit.com/r/java/top.rss?t=month" java)
-     ("https://old.reddit.com/r/linux/top.rss?t=week" linux)
+     ("https://old.reddit.com/r/linux/top.rss?t=month" linux)
      ("https://old.reddit.com/r/programming/top.rss?t=week" prog)
      ("https://old.reddit.com/r/askhistorians/top.rss?t=month" hist)
      ("https://old.reddit.com/r/badhistory/top.rss?t=month" hist)
@@ -1515,7 +1516,7 @@
   :custom (company-org-block-edit-style 'inline) ;; 'auto, 'prompt, or 'inline
   :hook ((org-mode . (lambda ()
                        (setq-local company-backends '(company-org-block))
-                       (company-mode +1))))))
+                       (company-mode +1)))))
 
 ;; (use-package hl-prog-extra
 ;;   :commands (hl-prog-extra-mode)
