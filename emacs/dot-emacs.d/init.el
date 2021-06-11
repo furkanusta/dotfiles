@@ -60,7 +60,7 @@
   (before-save . delete-trailing-whitespace)
   (after-init . toggle-frame-maximized)
   :preface
-  (defvar my-dark-theme 'darkokai)
+  (defvar my-dark-theme 'monokai)
   (defvar my-light-theme 'leuven)
   (defvar my-active-theme my-dark-theme)
   (defun my-switch-theme-helper (old-theme new-theme)
@@ -412,8 +412,8 @@
 
 (use-package diminish)
 
-(use-package darkokai-theme
-  :init (load-theme 'darkokai t))
+(use-package monokai-theme
+  :init (load-theme 'monokai t))
 
 ;; (use-package monokai-theme
 ;;   :init (load-theme 'monokai t))
@@ -1465,9 +1465,9 @@
    '((ipython . t))))
 
 (use-package org-transclusion
-  ;; :quelpa (org-transclusion :fetcher git :url "https://github.com/nobiot/org-transclusion")
+  ;; :quelpa (org-transclusion :fetcher github :repo "nobiot/org-transclusion")
   :load-path "elisp/"
-  :hook (org-mode . org-transclusion-mode)
+  ;; :hook (org-mode . org-transclusion-mode)
   :custom (org-transclusion-activate-persistent-message nil))
 
 (use-package org-roam
@@ -1511,6 +1511,12 @@
   :quelpa (org-super-links-peek :fetcher github :repo "toshism/org-super-links-peek")
   :bind (:map org-mode-map ("C-c s p" . org-super-links-peek-link)))
 
+(use-package company-org-blocks
+  :custom (company-org-block-edit-style 'inline) ;; 'auto, 'prompt, or 'inline
+  :hook ((org-mode . (lambda ()
+                       (setq-local company-backends '(company-org-block))
+                       (company-mode +1))))))
+
 ;; (use-package hl-prog-extra
 ;;   :commands (hl-prog-extra-mode)
 ;;   :custom (global-hl-prog-extra-mode 1))
@@ -1538,3 +1544,9 @@
   (side-notes-file "Notes.org")
   (side-notes-secondary-file "README.org")
   :bind ("C-x t n" . side-notes-toggle-notes))
+
+(use-package backup-walker)
+
+(use-package backups-mode
+  :quelpa (backups-mode :fetcher github :repo "chadbraunduin/backups-mode")
+  :bind (:map backups-minor-mode-keymap ("C-x s B" . list-backups)))
