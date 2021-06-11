@@ -1112,7 +1112,9 @@
       (or
        (and
         (char-equal ?* (seq-elt name 0))
-        (not (seq-contains-p '("*Messages*" "*Warnings*" "*scratch*" "*vterm*" "*shell*") name)))
+        (and
+         (not (seq-contains-p '("*Messages*" "*Warnings*" "*scratch*" "*vterm*" "*shell*") name))
+         (not (string-prefix-p "*vterminal" name))))
        (not (seq-contains-p (persp-current-buffers) buffer)))))
   :custom
   (persp-mode-prefix-key (kbd "C-x w"))
