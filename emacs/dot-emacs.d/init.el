@@ -481,6 +481,8 @@
      ("https://old.reddit.com/r/java/top.rss?t=month" java)
      ("https://old.reddit.com/r/linux/top.rss?t=month" linux)
      ("https://old.reddit.com/r/programming/top.rss?t=week" prog)
+     ("https://old.reddit.com/r/selfhosted/top.rss?t=month" prog)
+     ("https://old.reddit.com/r/commandline/top.rss?t=month" prog)
      ("https://old.reddit.com/r/askhistorians/top.rss?t=month" hist)
      ("https://old.reddit.com/r/badhistory/top.rss?t=month" hist)
      ("https://dave.cheney.net/feed/atom" go)
@@ -1114,7 +1116,7 @@
        (and
         (char-equal ?* (seq-elt name 0))
         (and
-         (not (seq-contains-p '("*Messages*" "*Warnings*" "*scratch*" "*vterm*" "*shell*") name))
+         (not (seq-contains-p '("*Messages*" "*Warnings*" "*scratch*" "*elfeed-search*" "*vterm*" "*shell*") name))
          (not (string-prefix-p "*vterminal" name))))
        (not (seq-contains-p (persp-current-buffers) buffer)))))
   :custom
