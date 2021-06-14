@@ -253,7 +253,7 @@
 
 (use-package flyspell-correct
   :after flyspell
-  :bind (:map flyspell-mode-map ("C-;" . flyspell-correct-wrapper)))
+  :bind ("C-;" . flyspell-correct-wrapper))
 
 (use-package flyspell-correct-helm
   :after flyspell-correct)
