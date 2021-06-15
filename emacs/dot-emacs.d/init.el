@@ -604,6 +604,8 @@
   (global-undo-tree-mode 1)
   (undo-tree-visualizer-timestamps t)
   (undo-tree-visualizer-diff t)
+  (undo-tree-auto-save-history t)
+  (undo-tree-enable-undo-in-region t)
   :bind
   ("C-+" . undo-tree-redo)
   ("C-_" . undo-tree-undo))
