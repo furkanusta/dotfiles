@@ -1,0 +1,25 @@
+[user]
+	name = Furkan Usta
+	email = furkanusta17@gmail.com
+
+[core]
+	editor = emacsclient
+
+[credential]
+	helper = libsecret
+
+[github]
+	user = furkanusta
+
+[alias]
+    mr-pull = !sh -c 'git fetch $1 merge-requests/$2/head:mr-$1-$2' -
+    pr-pull = !sh -c 'git fetch $1 pull/$2/head:pr-$1-$2' -
+    mr = !sh -c 'git fetch $1 merge-requests/$2/head:mr-$1-$2 && git checkout mr-$1-$2' -
+    pr = !sh -c 'git fetch $1 pull/$2/head:pr-$1-$2 && git checkout pr-$1-$2' -
+
+[delta]
+    features = decorations
+    whitespace-error-style = 22 reverse
+
+[diff]
+    colorMoved = default

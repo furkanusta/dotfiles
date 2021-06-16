@@ -1555,3 +1555,10 @@
 (use-package backups-mode
   :quelpa (backups-mode :fetcher github :repo "chadbraunduin/backups-mode")
   :bind (:map backups-minor-mode-keymap ("C-x s B" . list-backups)))
+
+(use-package abridge-diff
+  :after magit
+  :init (abridge-diff-mode 1))
+
+(use-package magit-delta
+  :init (magit-delta-mode t))

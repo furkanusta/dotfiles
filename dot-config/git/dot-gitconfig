@@ -1,9 +1,0 @@
-[user]
-	name = Furkan Usta
-	email = furkanusta17@gmail.com
-[core]
-	editor = emacsclient
-[credential]
-	helper = libsecret
-[github]
-	user = furkanusta
