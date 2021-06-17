@@ -246,6 +246,9 @@
   (dired-dwim-target t)
   :bind (:map dired-mode-map ("E" . dired-open-xdg)))
 
+(use-package dired-hide-dotfiles
+  :hook (dired-mode . dired-hide-dotfiles-mode))
+
 (use-package delsel :ensure nil
   :custom (delete-selection-mode 1))
 

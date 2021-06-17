@@ -61,4 +61,3 @@ __fzf_history__() {
 bind -m emacs-standard '"\er": redraw-current-line'
 bind -m emacs-standard '"\C-z": vi-editing-mode'
 bind -m emacs-standard -x '"\C-r": __fzf_history__'
-bind -m emacs-standard '"\ec": " \C-b\C-k \C-u`__fzf_cd__`\e\C-e\er\C-m\C-y\C-h\e \C-y\ey\C-x\C-x\C-d"'
