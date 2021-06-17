@@ -55,3 +55,4 @@ if [[ "$INSIDE_EMACS" = 'vterm' ]] ; then
 fi
 
 export PKG_CONFIG_PATH=$HOME/.local/lib/pkgconfig
+export RIPGREP_CONFIG_PATH=$HOME/.config/ripgrep/config
