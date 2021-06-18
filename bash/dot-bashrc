@@ -43,7 +43,7 @@ export PS1='[$(basename $(dirname "$PWD"))/$(basename "$PWD")] \[\e[0;31m$\e[0m\
 
 # bind does not work inside emacs
 if [[ "$TERM" != "dumb" ]]; then
-    source $XDG_CONFIG_HOME/completion.bash
+    source $XDG_CONFIG_HOME/fzf/completion.bash
     source $XDG_CONFIG_HOME/fzf/key-bindings.bash
 fi
 
