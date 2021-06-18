@@ -14,19 +14,21 @@ export HISTSIZE=100000                   # big big history
 export HISTFILESIZE=100000               # big big history
 export HISTTIMEFORMAT='%F %T '
 
+export LOCAL_PATH=$HOME/.local
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/lib:/usr/local/lib64/"
 export ALTERNATE_EDITOR=""
 export EDITOR='emacsclient -nw'
-export PERL_LOCAL_LIB_ROOT="$HOME/.local/perl";
-export PATH="$PATH:$HOME/.local/bin:$HOME/bin:$PERL_LOCAL_LIB_ROOT/bin";
+export PERL_LOCAL_LIB_ROOT="$LOCAL_PATH/perl";
+export PATH="$PATH:$LOCAL_PATH/bin:$HOME/bin:$PERL_LOCAL_LIB_ROOT/bin";
 export PERL5LIB="$PERL_LOCAL_LIB_ROOT/lib/perl5";
 export PERL_MB_OPT="--install_base '$PERL_LOCAL_LIB_ROOT'";
 export PERL_MM_OPT="INSTALL_BASE='$PERL_LOCAL_LIB_ROOT'";
 export LC_ALL="en_US.UTF-8"
-export XDG_DATA_DIRS="$XDG_DATA_DIRS:/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share"
+export XDG_DATA_DIRS="$XDG_DATA_DIRS:/var/lib/flatpak/exports/share:$LOCAL_PATH/share/flatpak/exports/share"
 export CARGO_HOME="$HOME/.cargo"
 export PATH="$PATH:$CARGO_HOME/bin"
-export TEXMFHOME="$HOME/.local/prog/texmf"
+export TEXMFHOME="$LOCAL_PATH/prog/texmf"
+export XDG_CONFIG_HOME=$HOME/.config
 
 alias ls=exa
 alias cat=bat
@@ -41,8 +43,8 @@ export PS1='[$(basename $(dirname "$PWD"))/$(basename "$PWD")] \[\e[0;31m$\e[0m\
 
 # bind does not work inside emacs
 if [[ "$TERM" != "dumb" ]]; then
-    source ~/.config/fzf/completion.bash
-    source ~/.config/fzf/key-bindings.bash
+    source $XDG_CONFIG_HOME/completion.bash
+    source $XDG_CONFIG_HOME/fzf/key-bindings.bash
 fi
 
 if [ -f .bash_functions ]; then
@@ -51,8 +53,8 @@ fi
 
 if [[ "$INSIDE_EMACS" = 'vterm' ]] ; then
     export PS1='[$(basename $(dirname "$PWD"))/$(basename "$PWD")] $ ';
-	source ~/.config/vterm/emacs-vterm.sh
+	source $XDG_CONFIG_HOME/vterm/emacs-vterm.sh
 fi
 
-export PKG_CONFIG_PATH=$HOME/.local/lib/pkgconfig
-export RIPGREP_CONFIG_PATH=$HOME/.config/ripgrep/config
+export PKG_CONFIG_PATH=$LOCAL_PATH/lib/pkgconfig
+export RIPGREP_CONFIG_PATH=$XDG_CONFIG_HOME/ripgrep/config
