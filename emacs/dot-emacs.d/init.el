@@ -230,24 +230,42 @@
 
 (use-package dired :ensure nil
   :commands dired-get-file-for-visit
-  :preface (defun dired-open-xdg ()
-          "Try to run `xdg-open' to open the file under point."
-          (interactive)
-          (if (executable-find "xdg-open")
-              (let ((file (ignore-errors (dired-get-file-for-visit)))
-                    (process-connection-type nil))
-                (start-process "" nil "xdg-open" (file-truename file)))
-            nil))
+  :preface
+  (defun dired-open-xdg ()
+    "Try to run `xdg-open' to open the file under point."
+    (interactive)
+    (if (executable-find "xdg-open")
+        (let ((file (ignore-errors (dired-get-file-for-visit)))
+              (process-connection-type nil))
+          (start-process "" nil "xdg-open" (file-truename file)))
+      nil))
+  (defun dired-current-dir ()
+    (interactive)
+    (dired default-directory))
   :custom
   (dired-use-ls-dired nil)
   (dired-listing-switches "-aBhl  --group-directories-first --color=never")
   (dired-auto-revert-buffer t)
   (dired-create-destination-dirs 'ask)
   (dired-dwim-target t)
-  :bind (:map dired-mode-map ("E" . dired-open-xdg)))
+  :bind
+  ("C-x d" . dired-current-dir)
+  (:map dired-mode-map ("E" . dired-open-xdg)))
 
 (use-package dired-hide-dotfiles
   :hook (dired-mode . dired-hide-dotfiles-mode))
+
+(use-package fd-dired
+  :preface
+  (defvar fd-dired-current-args-history nil)
+  (defun fd-dired-current ()
+    (interactive)
+    (fd-dired default-directory (read-string "Run fd (with args and search): " ""
+                                             '(fd-dired-current-args-history . 1))))
+  :bind
+  (:map dired-mode-map
+        ("f" . fd-dired-current)
+        ("F" . fd-dired)))
 
 (use-package delsel :ensure nil
   :custom (delete-selection-mode 1))
@@ -383,7 +401,10 @@
   :bind (:map helm-map ("C-'" . ace-jump-helm-line)))
 
 (use-package deadgrep
-  :bind ("C-c h S" . deadgrep))
+  :bind
+  ("C-c h S" . deadgrep)
+  (:map deadgrep-mode-map ("E" . deadgrep-edit-mode))
+  (:map deadgrep-edit-mode-map ("E" . deadgrep-mode)))
 
 (use-package helm-flycheck
   :after flycheck
