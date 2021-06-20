@@ -1143,7 +1143,8 @@
         (char-equal ?* (seq-elt name 0))
         (and
          (not (seq-contains-p '("*Messages*" "*Warnings*" "*scratch*" "*elfeed-search*" "*vterm*" "*shell*") name))
-         (not (string-prefix-p "*vterminal" name))))
+         (not (string-prefix-p "*vterminal" name))
+         (not (string-prefix-p "*deadgrep" name))))
        (not (seq-contains-p (persp-current-buffers) buffer)))))
   :custom
   (persp-mode-prefix-key (kbd "C-x w"))
