@@ -303,7 +303,7 @@
   :custom (which-function-mode t))
 
 (use-package isearch :ensure nil
-  :bind ("C-c C-s" . isearch-forward))
+  :bind ("C-c H s" . isearch-forward))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Helm          ;;
