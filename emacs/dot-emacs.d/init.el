@@ -769,7 +769,7 @@
   :defines display-line-numbers-mode
   :preface (defun toggle-line-numbers () (display-line-numbers-mode (or (not display-line-numbers-mode) 0)))
   :custom
-  (writeroom-width 150)
+  (writeroom-width 100)
   (writeroom-mode-line nil)
   :bind ("C-c w r" . writeroom-mode))
 
@@ -1137,7 +1137,7 @@
   :hook (after-init . persp-mode)
   :preface
   (defvar perspective-skip-ignore-list '("*Messages*" "*Warnings*" "*elfeed-search*"))
-  (defvar perspective-skip-ignore-prefix-list '("*vterm" "*scratch" "*deadgrep" "*shell"))
+  (defvar perspective-skip-ignore-prefix-list '("*vterm" "*scratch" "*deadgrep" "*shell" "*Customize"))
   (defun perspective-my-skip-buffer-p (window buffer burry-or-kill)
     (let ((name (buffer-name buffer)))
       (or
