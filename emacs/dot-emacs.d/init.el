@@ -1136,19 +1136,21 @@
 (use-package perspective
   :hook (after-init . persp-mode)
   :preface
-  (defun my-skip-buffer-p (window buffer burry-or-kill)
+  (defvar perspective-skip-ignore-list '("*Messages*" "*Warnings*" "*elfeed-search*"))
+  (defvar perspective-skip-ignore-prefix-list '("*vterm" "*scratch" "*deadgrep" "*shell"))
+  (defun perspective-my-skip-buffer-p (window buffer burry-or-kill)
     (let ((name (buffer-name buffer)))
       (or
        (and
         (char-equal ?* (seq-elt name 0))
-        (and
-         (not (seq-contains-p '("*Messages*" "*Warnings*" "*scratch*" "*elfeed-search*" "*vterm*" "*shell*") name))
-         (not (string-prefix-p "*vterminal" name))
-         (not (string-prefix-p "*deadgrep" name))))
+        (not (seq-contains-p perspective-skip-ignore-list name))
+        (cl-every
+         (lambda (x) x)
+         (mapcar (lambda (pref) (not (string-prefix-p pref name))) perspective-skip-ignore-prefix-list)))
        (not (seq-contains-p (persp-current-buffers) buffer)))))
   :custom
   (persp-mode-prefix-key (kbd "C-x w"))
-  (switch-to-prev-buffer-skip #'my-skip-buffer-p))
+  (switch-to-prev-buffer-skip #'perspective-my-skip-buffer-p))
 
 (use-package treemacs-perspective
   :commands treemacs-set-scope-type
