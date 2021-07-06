@@ -12,9 +12,7 @@
                     "_"
                     (file-relative-name
                         buffer-file-name
-                        (concat
-                            (projectile-project-root)
-                            "include")))))`}
+                            (projectile-project-root)))))`}
 #define $1
 
 $0

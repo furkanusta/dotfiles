@@ -765,7 +765,7 @@
   ([remap delete-backward-char] . hungry-delete-backward))
 
 (use-package writeroom-mode
-  :hook (writeroom-mode . toggle-line-numbers)
+  ;; :hook (writeroom-mode . toggle-line-numbers)
   :defines display-line-numbers-mode
   :preface (defun toggle-line-numbers () (display-line-numbers-mode (or (not display-line-numbers-mode) 0)))
   :custom
@@ -1587,5 +1587,5 @@
   :after magit
   :init (abridge-diff-mode 1))
 
-(use-package magit-delta
-  :init (magit-delta-mode t))
+;; (use-package magit-delta
+;;   :init (magit-delta-mode t))
