@@ -1589,3 +1589,37 @@
 
 ;; (use-package magit-delta
 ;;   :init (magit-delta-mode t))
+
+(use-package zygospore
+  :bind ("C-x 1" . zygospore-toggle-delete-other-windows))
+
+(use-package lively)
+
+(use-package jump-tree)
+
+(use-package transpose-mark)
+
+(use-package comment-or-uncommanet-sexp
+  :bind ("C-M-;" . comment-or-uncomment-sexp))
+
+(use-package gitlab-ci-mode
+  :mode "\\.gitlab-ci\\.yml\\'")
+
+(use-package diredfl
+  :custom-face
+  (diredfl-exec-priv ((t nil)))
+  (diredfl-read-priv ((t nil)))
+  (diredfl-write-priv ((t nil))))
+
+(use-package bifocal
+  :hook (shell-mode . bifocal-mode)
+  :custom (bifocal-tail-size 30))
+
+(use-package trashed)
+
+(use-package highlight-escape-sequences
+  :hook (prog-mode . hes-mode))
+
+(use-package exwm-mff)
+;; calfw
+;; emacsql
