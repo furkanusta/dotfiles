@@ -376,9 +376,6 @@
 
 (use-package helm-tramp)
 
-;; (use-package helm-fd
-;;   :bind ("C-c h f" . helm-fd))
-
 (use-package helm-swoop
   :bind
   ("C-s" . helm-swoop)
@@ -439,9 +436,6 @@
 
 (use-package monokai-theme
   :init (load-theme 'monokai t))
-
-;; (use-package monokai-theme
-;;   :init (load-theme 'monokai t))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Tools & Utils          ;;
@@ -885,18 +879,12 @@
   :quelpa (org-pretty-table :fetcher github :repo "Fuco1/org-pretty-table")
   :hook (org-mode . org-pretty-table-mode))
 
-;; (use-package org-variable-pitch
-;;   :quelpa (org-variable-pitch :fetcher github :repo "cadadr/elisp" :files ("org-variable-pitch.el"))
-;;   :hook (org-mode . org-pretty-table-mode))
-
 (use-package org-table-sticky-header
   :hook (org-mode . org-table-sticky-header-mode))
 
 (use-package org-sticky-header
   :hook (org-mode . org-sticky-header-mode)
   :custom (org-sticky-header-always-show-header nil))
-
-;; (add-hook 'org-mode-hook #'valign-mode)
 
 (use-package org-ref
   :custom
@@ -922,7 +910,6 @@
   (org-books-file (concat my-notes-directory "/Books.org"))
   (org-books-file-depth 0))
 
-;; https://alhassy.github.io/org-special-block-extras/
 (use-package org-special-block-extras)
 
 (use-package org-marginalia
@@ -1022,41 +1009,12 @@
   (read-process-output-max (* 2 1024 1024))
   (lsp-enable-on-type-formatting nil))
 
-;; (use-package lsp-ui
-;;   :custom
-;;   (lsp-ui-flycheck-enable t)
-;;   (lsp-ui-imenu-enable t)
-;;   (lsp-ui-sideline-enable t)
-;;   (lsp-ui-doc-position 'top))
-
-;; (use-package dap
-;;   :custom
-;;   (dap-mode 1)
-;;   (dap-ui-mode 1)
-;;   (dap-tooltip-mode 1))
-
-;; (use-package dap-lldb)
-
 (use-package origami
   :hook (prog-mode . origami-mode)
   :bind
   ("C-c ," . origami-toggle-node)
   ("C-c C-." . origami-close-all-nodes)
   ("C-c C->" . origami-open-all-nodes))
-
-;; (use-package lsp-origami :hook origami-mode)
-
-;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; ;;          Perl          ;;
-;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; (use-package cperl-mode :ensure nil
-;;   :config (defalias 'perl-mode 'cperl-mode)
-;;   :custom
-;;   (cperl-indent-level 4)
-;;   (cperl-close-paren-offset -4)
-;;   (cperl-continued-statement-offset 4)
-;;   (cperl-indent-parens-as-block t)
-;;   (cperl-tab-always-indent nil))
 
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ;;          Scala          ;;
@@ -1331,8 +1289,6 @@
 
 (use-package tree-sitter-langs)
 
-  ;; :custom (global-tree-sitter-mode 1))
-
 (use-package graphviz-dot-mode
   :custom (graphviz-dot-indent-width 4))
 
@@ -1497,8 +1453,7 @@
    '((ipython . t))))
 
 (use-package org-transclusion
-  ;; :quelpa (org-transclusion :fetcher github :repo "nobiot/org-transclusion")
-  :load-path "elisp/"
+  :quelpa (org-transclusion :fetcher github :repo "nobiot/org-transclusion")
   ;; :hook (org-mode . org-transclusion-mode)
   :custom (org-transclusion-activate-persistent-message nil))
 
@@ -1519,20 +1474,10 @@
 
 (use-package helm-org-ql)
 
-;; (use-package org-z
-;;   :quelpa (org-z :fetcher github :repo "landakram/org-z")
-;;   :custom
-;;   (org-z-mode 1)
-;;   (org-z-directories (list my-notes-directory))
-;;   (org-z-knowledge-dirs (list my-notes-directory))
-;;   (org-z-completion-backend 'helm))
-
-;; (use-package org-z-helm :requires org-z)
-
 (use-package org-linker :quelpa (org-linker :fetcher github :repo "toshism/org-linker"))
 
 (use-package org-super-links
-  ;; :quelpa (org-super-links :fetcher github :repo "toshism/org-super-links")
+  :quelpa (org-super-links :fetcher github :repo "toshism/org-super-links")
   :bind (:map org-mode-map
               ("C-c s s" . org-super-links-link)
               ("C-c s d" . org-super-links-delete-link)
@@ -1549,10 +1494,6 @@
                        (setq-local company-backends '(company-org-block))
                        (company-mode +1)))))
 
-;; (use-package hl-prog-extra
-;;   :commands (hl-prog-extra-mode)
-;;   :custom (global-hl-prog-extra-mode 1))
-
 (use-package ibuffer-sidebar
   :commands (ibuffer-sidebar-toggle-sidebar)
   :bind ("C-x t b" . ibuffer-sidebar-toggle-sidebar))
@@ -1561,6 +1502,7 @@
   :preface (define-prefix-command 'my-switch-command-map)
   :bind-keymap ("C-x s" . my-switch-command-map)
   :bind
+  ("C-x C-b" . bufler)
   (:map my-switch-command-map
         ("b" . bufler)
         ("s" . bufler-switch-buffer)))
@@ -1586,9 +1528,6 @@
 (use-package abridge-diff
   :after magit
   :init (abridge-diff-mode 1))
-
-;; (use-package magit-delta
-;;   :init (magit-delta-mode t))
 
 (use-package zygospore
   :bind ("C-x 1" . zygospore-toggle-delete-other-windows))
@@ -1621,5 +1560,3 @@
   :hook (prog-mode . hes-mode))
 
 (use-package exwm-mff)
-;; calfw
-;; emacsql
