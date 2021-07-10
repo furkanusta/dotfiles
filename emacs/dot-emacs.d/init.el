@@ -493,6 +493,7 @@
      ("https://jacobian.org/index.xml" other)
      ("https://old.reddit.com/r/cpp/top.rss?t=month" cpp)
      ("https://old.reddit.com/r/emacs/top.rss?t=week" emacs)
+     ("https://old.reddit.com/r/orgmode/top.rss?t=month" emacs)
      ("https://old.reddit.com/r/python/top.rss?t=month" python)
      ("https://old.reddit.com/r/fpga/top.rss?t=month" fpga)
      ("https://old.reddit.com/r/ruby/top.rss?t=month" ruby)
@@ -783,6 +784,7 @@
   :config
   (defvar org-capture-file (concat my-notes-directory "/Capture.org"))
   (setq org-default-notes-file org-capture-file)
+  (require 'org-tempo)
   :custom
   (org-adapt-indentation t)
   (org-catch-invisible-edits 'show-and-error)
@@ -862,9 +864,6 @@
   (org-clock-report-include-clocking-task t)
   (org-clock-out-when-done t))
 
-(use-package org-tempo :ensure nil
-  :after org)
-
 (use-package org-appear
   ;; :hook (org-mode . org-appear-mode)
   :custom
@@ -942,7 +941,9 @@
 
 (use-package org-journal
   :bind ("C-c i j" . org-journal-new-entry)
-  :custom (org-journal-dir (concat my-notes-directory "/Journal")))
+  :custom
+  (org-journal-dir (concat my-notes-directory "/Journal"))
+  (org-journal-file-format "%Y-%m-%d.org"))
 
 (use-package org-super-links
   :quelpa (org-super-links :fetcher github :repo "toshism/org-super-links"))
