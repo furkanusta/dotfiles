@@ -610,6 +610,7 @@
   (pdf-view-resize-factor 1.1)
   :bind (:map pdf-view-mode-map
               ("M-w" . pdf-view-kill-ring-save)
+              ("o" . pdf-outline)
               ("S-SPC" . pdf-view-scroll-down-or-previous-page)))
 
 (use-package pdf-view-restore
