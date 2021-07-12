@@ -310,7 +310,14 @@
 ;;          Helm          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; (use-package helm-icons
+;;   :after all-the-icons
+;;   :init
+;;   (setq helm-icons-provider 'all-the-icons)
+;;   (helm-icons-enable))
+
 (use-package helm
+  ;; :after helm-icons
   :bind
   ((:map helm-map
          ("<tab>" . helm-execute-persistent-action)
@@ -337,6 +344,7 @@
   :bind ("C-x b" . helm-mini))
 
 (use-package helm-files :ensure helm
+  :after helm
   :commands (helm-get-selection helm-next-line helm-previous-line helm-ff-move-to-first-real-candidate)
   :preface (defun helm-skip-dots (old-func &rest args)
              (apply old-func args)
@@ -417,9 +425,10 @@
 
 (use-package avy
   :bind
-  ("M-g c" . avy-goto-char-2)
-  ("C-c C-j" . avy-resume)
-  ("M-g g" . avy-goto-line))
+  ("C-c j j" . avy-goto-char)
+  ("C-c j r" . avy-resume)
+  ("C-c j b" . avy-pop-mark)
+  ("C-c j g" . avy-goto-line))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Visual          ;;
@@ -692,7 +701,7 @@
   :custom
   (git-messenger:show-detail t)
   (git-messenger:use-magit-popup t)
-  :bind ("C-c g m" . git-messenger:popup-message))
+  :bind ("C-x g m" . git-messenger:popup-message))
 
 (use-package github-review)
 
@@ -805,7 +814,7 @@
   (org-src-preserve-indentation nil)
   (org-src-tab-acts-natively t)
   (org-yank-adjusted-subtrees t)
-  (org-todo-keywords '((sequence "TODO" "IN-PROGRESS" "|" "DONE")
+  (org-todo-keywords '((sequence "TODO" "IN-PROGRESS" "NEXT" "|" "DONE")
                        (sequence "PAUSED" "SCHEDULED" "|"  "CANCELLED")))
   :hook
   (org-mode . turn-on-flyspell)
@@ -1129,10 +1138,14 @@
   :after flycheck
   :config (flycheck-clang-analyzer-setup))
 
+(use-package goto-last-point
+  :config (goto-last-point-mode)
+  :bind ("C-x g s" . goto-last-point))
+
 (use-package goto-chg
   :bind
-  ("C-." . goto-last-change)
-  ("C->" . goto-last-change-reverse))
+  ("C-x g c" . goto-last-change)
+  ("C-x g C" . goto-last-change-reverse))
 
 (use-package projectile
   :commands projectile-project-name projectile-project-root
@@ -1243,12 +1256,10 @@
    (after-revert . bm-buffer-restore)
    (kill-buffer . bm-buffer-save)
    (kill-emacs . bm-save-all))
-  :bind (("<f2>" . bm-next)
-         ("S-<f2>" . bm-previous)
-         ("C-<f2>" . bm-toggle)
-         ("<left-fringe> <mouse-1>" . bm-toggle-mouse)
-         ( "<left-fringe> <mouse-4>" . bm-previous-mouse)
-         ( "<left-fringe> <mouse-5>" . bm-next-mouse)))
+  :bind
+  ("C-c b n" . bm-next)
+  ("C-c b p" . bm-previous)
+  ("C-c b b" . bm-toggle))
 
 (use-package beacon
   :custom
@@ -1267,6 +1278,7 @@
   :bind ("C-x t d" . neotree-toggle))
 
 (use-package vterm
+  :hook (vterm-mode . (lambda () (setq-local confirm-kill-processes nil)))
   :commands (vterm-next-prompt vterm-prev-prompt)
   :config (add-to-list 'display-buffer-alist (cons "\\*vterm" use-other-window-alist))
   :preface
@@ -1462,19 +1474,6 @@
   ;; :hook (org-mode . org-transclusion-mode)
   :custom (org-transclusion-activate-persistent-message nil))
 
-(use-package org-roam
-      :custom
-      (org-roam-directory (concat my-notes-directory "/Roam"))
-      :bind (:map org-roam-mode-map
-              (("C-c n l" . org-roam)
-               ("C-c n f" . org-roam-find-file)
-               ("C-c n t" . org-roam-buffer-toggle-display)
-               ("C-c n b" . org-roam-switch-to-buffer)
-               ("C-c n g" . org-roam-graph))
-              :map org-mode-map
-              (("C-c n i" . org-roam-insert))
-              (("C-c n I" . org-roam-insert-immediate))))
-
 (use-package org-ql)
 
 (use-package helm-org-ql)
@@ -1493,7 +1492,7 @@
   :quelpa (org-super-links-peek :fetcher github :repo "toshism/org-super-links-peek")
   :bind (:map org-mode-map ("C-c s p" . org-super-links-peek-link)))
 
-(use-package company-org-blocks
+(use-package company-org-block
   :custom (company-org-block-edit-style 'inline) ;; 'auto, 'prompt, or 'inline
   :hook ((org-mode . (lambda ()
                        (setq-local company-backends '(company-org-block))
@@ -1543,7 +1542,7 @@
 
 (use-package transpose-mark)
 
-(use-package comment-or-uncommanet-sexp
+(use-package comment-or-uncomment-sexp
   :bind ("C-M-;" . comment-or-uncomment-sexp))
 
 (use-package gitlab-ci-mode
@@ -1565,3 +1564,35 @@
   :hook (prog-mode . hes-mode))
 
 (use-package exwm-mff)
+
+(use-package electric-operator
+  :hook (prog-mode . electric-operator-mode))
+
+(use-package tiny
+  :config (tiny-setup-default))
+
+(use-package fill-column-indicator
+  :hook (prog-mode . fci-mode))
+
+(use-package ialign)
+
+(use-package org-rich-yank
+  :bind (:map org-mode-map ("C-M-y" . org-rich-yank)))
+
+(use-package repl-toggle
+  :config
+  (setq-default rtog/mode-repl-alist '((emacs-lisp-mode . ielm))
+                rtog/goto-buffer-fun 'pop-to-buffer)
+  :bind ("C-c C-z" . rtog/toggle-repl))
+
+(use-package goto-line-preview
+  :bind ([remap goto-line] . goto-line-preview))
+
+(use-package fzf
+  :bind ("C-c f f" . fzf-find-file))
+
+(use-package org-link-beautify
+  :hook (org-mode . org-link-beautify-mode))
+
+(use-package lisp-extra-font-lock
+  :hook (emacs-lisp-mode . lisp-extra-font-lock-mode))
