@@ -175,6 +175,7 @@
   (display-time-load-average-threshold 100.0)
   (display-time-24hr-format t)
   (display-time-mode 1)
+  (history-delete-duplicates t)
   :bind
   ("C-c ." . pop-global-mark)
   ("M-u" . upcase-dwim)
@@ -1382,9 +1383,11 @@
 
 (use-package helm-flx
   :hook (helm-mode . helm-flx-mode)
-  :custom
-  (helm-flx-for-helm-find-files t)
-  (helm-flx-for-helm-locate t))
+  :custom (helm-flx-for-helm-locate t))
+
+(use-package helm-flx-historian
+  :hook (helm-mode . helm-flx-historian-mode)
+  :quelpa (helm-flx-historian :fetcher github :repo "PythonNut/historian.el"))
 
 (use-package company-flx
   :hook (company-mode . company-flx-mode))
