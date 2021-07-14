@@ -1107,7 +1107,7 @@
   :hook (after-init . persp-mode)
   :preface
   (defvar perspective-skip-ignore-list '("*Messages*" "*Warnings*" "*elfeed-search*"))
-  (defvar perspective-skip-ignore-prefix-list '("*vterm" "*scratch" "*deadgrep" "*shell" "*Customize" "*magit"))
+  (defvar perspective-skip-ignore-prefix-list '("*vterm" "*scratch" "*deadgrep" "*shell" "*Customize" "*magit" "*ielm*"))
   (defun perspective-my-skip-buffer-p (window buffer burry-or-kill)
     (let ((name (buffer-name buffer)))
       (or
@@ -1566,7 +1566,7 @@
 (use-package exwm-mff)
 
 (use-package electric-operator
-  :hook (prog-mode . electric-operator-mode))
+  :hook (cc-mode . electric-operator-mode))
 
 (use-package tiny
   :config (tiny-setup-default))
@@ -1596,3 +1596,7 @@
 
 (use-package lisp-extra-font-lock
   :hook (emacs-lisp-mode . lisp-extra-font-lock-mode))
+
+(use-package which-key
+  :custom (which-key-sort-order which-key-local-then-key-order)
+  :config (which-key-mode 1))
