@@ -434,6 +434,44 @@
 ;;          Visual          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(use-package dashboard
+  :commands dashboard-insert-section dashboard-insert-heading dashboard-subseq
+  :preface (defun dashboard-insert-scratch (list-size)
+             (dashboard-insert-section
+              "Shortcuts:"
+              '("*scratch*" "*elfeed*" "init.el" "*dired*")
+              list-size
+              "s"
+              `(lambda (&rest ignore)
+                 (cond
+                  ((string= "*scratch*" ,el) (switch-to-buffer "*scratch*"))
+                  ((string= "init.el" ,el) (find-file user-init-file))
+                  ((string= "*elfeed*" ,el)
+                   (progn
+                     (if (get-buffer "*elfeed-search*")
+                         (switch-to-buffer "*elfeed-search*")
+                       (progn
+                         (elfeed)
+                         (elfeed-search-fetch nil)))))
+                  ((string= "*dired*" ,el) (dired (expand-file-name "~/")))
+                  (t (message "%s" ,el))))
+              (format "%s" el)))
+  :init (dashboard-setup-startup-hook)
+  :config (add-to-list 'dashboard-item-generators  '(scratch . dashboard-insert-scratch))
+  :custom
+  (initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
+  (dashboard-center-content t)
+  (dashboard-startup-banner 'logo)
+  (dashboard-set-heading-icons t)
+  (dashboard-set-file-icons t)
+  (dashboard-page-separator "\n\f\n")
+  (dashboard-items '((scratch . 5)
+                     (recents  . 5)
+                     (bookmarks . 5)
+                     (projects . 5)
+                     (agenda . 5)))
+  (dashboard-banner-logo-title "Emacs"))
+
 (use-package all-the-icons)
 
 (use-package doom-modeline
@@ -1108,7 +1146,7 @@
 (use-package perspective
   :hook (after-init . persp-mode)
   :preface
-  (defvar perspective-skip-ignore-list '("*Messages*" "*Warnings*" "*elfeed-search*"))
+  (defvar perspective-skip-ignore-list '("*dashboard*" "*Messages*" "*Warnings*" "*elfeed-search*"))
   (defvar perspective-skip-ignore-prefix-list '("*vterm" "*scratch" "*deadgrep" "*shell" "*Customize" "*magit" "*ielm*"))
   (defun perspective-my-skip-buffer-p (window buffer burry-or-kill)
     (let ((name (buffer-name buffer)))
