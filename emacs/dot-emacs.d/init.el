@@ -798,6 +798,7 @@
   (setq org-default-notes-file org-capture-file)
   (require 'org-tempo)
   :custom
+  (org-startup-folded 'content)
   (org-adapt-indentation t)
   (org-catch-invisible-edits 'show-and-error)
   (org-cycle-separator-lines 0)
