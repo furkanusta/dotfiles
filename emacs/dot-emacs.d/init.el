@@ -612,7 +612,7 @@
          (pdf-view-mode . pdf-sync-minor-mode)
          (pdf-view-mode . pdf-links-minor-mode)
          (pdf-view-mode . pdf-history-minor-mode)
-         (pdf-view-mode . pdf-view-midnight-minor-mode))
+         (pdf-view-mode . pdf-view-midnight-minor-mode)
          (pdf-view-mode . pdf-view-themed-minor-mode))
   :mode ("\\.pdf\\'" . pdf-view-mode)
   :custom
