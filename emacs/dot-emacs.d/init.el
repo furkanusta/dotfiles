@@ -1599,5 +1599,5 @@
   :hook (emacs-lisp-mode . lisp-extra-font-lock-mode))
 
 (use-package which-key
-  :custom (which-key-sort-order which-key-local-then-key-order)
+  :custom (which-key-sort-order 'which-key-local-then-key-order)
   :config (which-key-mode 1))
