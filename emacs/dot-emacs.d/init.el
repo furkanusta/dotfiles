@@ -1640,3 +1640,6 @@
 (use-package which-key
   :custom (which-key-sort-order 'which-key-local-then-key-order)
   :config (which-key-mode 1))
+
+(use-package beginend
+  :config (beginend-global-mode))
