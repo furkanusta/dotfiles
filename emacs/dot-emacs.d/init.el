@@ -740,7 +740,7 @@
   :custom
   (git-messenger:show-detail t)
   (git-messenger:use-magit-popup t)
-  :bind ("C-x g m" . git-messenger:popup-message))
+  :bind ("C-c g m" . git-messenger:popup-message))
 
 (use-package github-review)
 
@@ -816,7 +816,7 @@
   :custom
   (writeroom-width 100)
   (writeroom-mode-line nil)
-  :bind ("C-c w r" . writeroom-mode))
+  :bind ("C-c o w" . writeroom-mode))
 
 (use-package focus
   :bind ("C-c C-f" . focus-mode) ;; Might be unnecessary
@@ -1127,9 +1127,9 @@
   (add-to-list 'treemacs-pre-file-insert-predicates #'treemacs-is-file-git-ignored?)
   :bind
   (:map global-map
-        ("C-x t t"   . treemacs)
-        ("C-x t B"   . treemacs-bookmark)
-        ("C-x t C-f" . treemacs-find-file))
+        ("C-c t t"   . treemacs)
+        ("C-c t B"   . treemacs-bookmark)
+        ("C-c t C-f" . treemacs-find-file))
   :custom
   (treemacs-position 'right)
   (treemacs-width 50))
@@ -1159,7 +1159,7 @@
          (mapcar (lambda (pref) (not (string-prefix-p pref name))) perspective-skip-ignore-prefix-list)))
        (not (seq-contains-p (persp-current-buffers) buffer)))))
   :custom
-  (persp-mode-prefix-key (kbd "C-x w"))
+  (persp-mode-prefix-key (kbd "C-c w"))
   (switch-to-prev-buffer-skip #'perspective-my-skip-buffer-p))
 
 (use-package treemacs-perspective
@@ -1206,7 +1206,7 @@
   (projectile-known-projects-file (concat no-littering-var-directory "projectile-bookmarks.eld"))
   (projectile-sort-order 'recentf)
   (projectile-inedxing-method 'hybrid)
-  :bind-keymap ("C-x p" . projectile-command-map))
+  :bind-keymap ("C-c p" . projectile-command-map))
 
 (use-package persp-projectile
   :bind (:map projectile-command-map ("p" . projectile-persp-switch-project)))
@@ -1315,7 +1315,7 @@
   (neo-vc-integration nil)
   (neo-theme 'icons)
   :hook (neotree-mode . disable-line-numbers)
-  :bind ("C-x t d" . neotree-toggle))
+  :bind ("C-c t d" . neotree-toggle))
 
 (use-package vterm
   :hook (vterm-mode . (lambda () (setq-local confirm-kill-processes nil)))
@@ -1540,7 +1540,7 @@
 
 (use-package ibuffer-sidebar
   :commands (ibuffer-sidebar-toggle-sidebar)
-  :bind ("C-x t b" . ibuffer-sidebar-toggle-sidebar))
+  :bind ("C-c t b" . ibuffer-sidebar-toggle-sidebar))
 
 (use-package bufler
   :preface (define-prefix-command 'my-switch-command-map)
@@ -1561,7 +1561,7 @@
                               (window-width . 50)))
   (side-notes-file "Notes.org")
   (side-notes-secondary-file "README.org")
-  :bind ("C-x t n" . side-notes-toggle-notes))
+  :bind ("C-c t n" . side-notes-toggle-notes))
 
 (use-package backup-walker)
 
