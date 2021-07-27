@@ -56,5 +56,6 @@ if [[ "$INSIDE_EMACS" = 'vterm' ]] ; then
 	source $XDG_CONFIG_HOME/vterm/emacs-vterm.sh
 fi
 
-export PKG_CONFIG_PATH=$LOCAL_PATH/lib/pkgconfig
-export RIPGREP_CONFIG_PATH=$XDG_CONFIG_HOME/ripgrep/config
+if [ -f .bash_env_local ]; then
+    source .bash_env_local
+fi
