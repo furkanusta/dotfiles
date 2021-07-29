@@ -1,4 +1,6 @@
 ;; Modified from: https://github.com/dfboyd/emacs-frame-movement
+;; Original sets bindings automatically
+;;
 ;; LICENSE https://github.com/dfboyd/emacs-frame-movement/blob/66b78747e1781b1075d24fbb2621bd82e6c16894/LICENSE
 ;; frame-movement:
 ;; switch Emacs frames left/right
