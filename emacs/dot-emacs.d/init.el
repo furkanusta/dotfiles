@@ -439,13 +439,15 @@
   :preface (defun dashboard-insert-scratch (list-size)
              (dashboard-insert-section
               "Shortcuts:"
-              '("*scratch*" "*elfeed*" "init.el" "*dired*")
+              '("*scratch*" "*elfeed*" "init.el" "*vterm*" "Data Folder" "Home" )
               list-size
               "s"
               `(lambda (&rest ignore)
                  (cond
                   ((string= "*scratch*" ,el) (switch-to-buffer "*scratch*"))
                   ((string= "init.el" ,el) (find-file user-init-file))
+                  ((string= "Data Folder" ,el) (find-file my-data-directory))
+                  ((string= "*vterm*" ,el) (multi-vterm))
                   ((string= "*elfeed*" ,el)
                    (progn
                      (if (get-buffer "*elfeed-search*")
@@ -453,7 +455,7 @@
                        (progn
                          (elfeed)
                          (elfeed-search-fetch nil)))))
-                  ((string= "*dired*" ,el) (dired (expand-file-name "~/")))
+                  ((string= "Home" ,el) (dired (expand-file-name "~/")))
                   (t (message "%s" ,el))))
               (format "%s" el)))
   :init (dashboard-setup-startup-hook)
@@ -465,7 +467,7 @@
   (dashboard-set-heading-icons t)
   (dashboard-set-file-icons t)
   (dashboard-page-separator "\n\f\n")
-  (dashboard-items '((scratch . 5)
+  (dashboard-items '((scratch . 6)
                      (recents  . 5)
                      (bookmarks . 5)
                      (projects . 5)
@@ -650,7 +652,6 @@
          (pdf-view-mode . pdf-sync-minor-mode)
          (pdf-view-mode . pdf-links-minor-mode)
          (pdf-view-mode . pdf-history-minor-mode)
-         (pdf-view-mode . pdf-view-midnight-minor-mode)
          (pdf-view-mode . pdf-view-themed-minor-mode))
   :mode ("\\.pdf\\'" . pdf-view-mode)
   :custom
