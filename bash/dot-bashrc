@@ -30,6 +30,9 @@ export PATH="$PATH:$CARGO_HOME/bin"
 export TEXMFHOME="$LOCAL_PATH/prog/texmf"
 export XDG_CONFIG_HOME=$HOME/.config
 
+export GEM_HOME=$LOCAL_PATH/gems
+export PATH="$PATH:$GEM_HOME"
+
 alias ls=exa
 alias cat=bat
 alias pip3-install="pip3 install --user"

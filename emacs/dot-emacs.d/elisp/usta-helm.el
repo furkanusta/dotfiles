@@ -87,7 +87,10 @@
   (helm-swoop-use-fuzzy-match nil)
   (helm-swoop-speed-or-color t))
 
-(use-package helm-rg :bind ("C-c h s" .  helm-rg))
+(use-package helm-rg
+  :bind
+  ("C-c h S" .  helm-projectile-rg)
+  ("C-c h s" .  helm-rg))
 
 (use-package helm-bookmark
   :ensure nil

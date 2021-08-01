@@ -209,7 +209,7 @@
   :custom (which-function-mode t))
 
 (use-package isearch :ensure nil
-  :bind ("C-c H s" . isearch-forward))
+  :bind ("C-c H S" . isearch-forward))
 
 (use-package eww :ensure nil)
 

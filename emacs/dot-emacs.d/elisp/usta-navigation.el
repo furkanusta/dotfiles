@@ -17,7 +17,8 @@
               ("<M-down>" . drag-stuff-down)))
 
 (use-package frame-movement
-  ;; :load-path "elisp/"
+  :load-path "elisp/"
+  ;; :quelpa (frame-movement :fetcher github :repo "dfboyd/emacs-frame-movement")
   :bind
   ("C-x 5 n" . frame-movement/select-next-frame)
   ("C-x 5 p" . frame-movement/select-prev-frame))
@@ -38,6 +39,7 @@
   :custom
   (writeroom-width 100)
   (writeroom-mode-line nil)
+  (writeroom-fullscreen-effect 'maximized)
   :bind ("C-c o w" . writeroom-mode))
 
 (use-package focus

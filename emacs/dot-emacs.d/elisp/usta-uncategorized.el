@@ -74,9 +74,11 @@
   :after flyspell
   :bind ("C-;" . flyspell-correct-wrapper))
 
+(use-package wgrep)
+
 (use-package deadgrep
   :bind
-  ("C-c h S" . deadgrep)
+  ("C-c H s" . deadgrep)
   (:map deadgrep-mode-map ("E" . deadgrep-edit-mode))
   (:map deadgrep-edit-mode-map ("E" . deadgrep-mode)))
 
