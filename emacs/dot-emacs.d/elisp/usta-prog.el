@@ -25,7 +25,8 @@
   :hook (after-init . persp-mode)
   :preface
   (defvar perspective-skip-ignore-list '("*dashboard*" "*Messages*" "*Warnings*" "*elfeed-search*"))
-  (defvar perspective-skip-ignore-prefix-list '("*vterm" "*scratch" "*deadgrep" "*shell" "*Customize" "*magit" "*ielm*"))
+  (defvar perspective-skip-ignore-prefix-list
+  '("*vterm" "*scratch" "*deadgrep" "*shell" "*Customize" "*magit" "*ielm*" "*org" "*ein"))
   (defun perspective-my-skip-buffer-p (window buffer burry-or-kill)
     (let ((name (buffer-name buffer)))
       (or

@@ -246,4 +246,64 @@
   (side-notes-secondary-file "README.org")
   :bind ("C-c t n" . side-notes-toggle-notes))
 
+(use-package org-roam
+  :custom
+  (org-roam-directory (file-truename (concat my-notes-directory "/Roam")))
+  :bind
+  ("C-c n l" . org-roam-buffer-toggle)
+  ("C-c n f" . org-roam-node-find)
+  ("C-c n g" . org-roam-graph)
+  ("C-c n i" . org-roam-node-insert)
+  ("C-c n c" . org-roam-capture)
+  ;; Dailies
+  ("C-c n j" . org-roam-dailies-capture-today)
+  :config
+  (org-roam-setup)
+  (require 'org-roam-protocol))
+
+(use-package highlight
+  :preface
+  (defun hlt-general()
+    (interactive)
+    (unless (bound-and-true-p enriched-mode)
+      (enriched-mode t))
+    (hlt-highlight-region (region-beginning) (region-end) 'highlight))
+  (defun highlight-on-capture ()
+    (when (equal (plist-get org-capture-plist :key) "f")
+      (save-excursion
+        (with-current-buffer (plist-get org-capture-plist :original-buffer)
+          (hlt-general)))))
+  :hook (org-capture-after-finalize . highlight-on-capture)
+  :bind (("C-c o h" . hlt-general)
+         ("C-c o H" . hlt-unhighlight-region)))
+
+(use-package ox-gfm)
+
+(use-package ox-pandoc)
+
+(use-package org-pandoc-import
+  :quelpa (org-pandoc-import
+           :fetcher github
+           :repo "tecosaur/org-pandoc-import"
+           :files ("*.el" "filters" "preprocessors"))
+  :hook (after-init . org-pandoc-import-transient-mode))
+
+(use-package org-web-tools)
+
+(use-package ein)
+
+(use-package ob-ein :ensure ein)
+
+(use-package jupyter)
+
+(use-package code-cells
+  :bind
+  (:map code-cells-mode-map
+        ("C-c C-C" . code-cells-eval)
+        ("C-c C-p" . code-cells-backward-cell)
+        ("C-c C-n" . code-cells-forward-cell)))
+
+(use-package ox-ipynb
+  :quelpa (ox-ipynb :fetcher github :repo "jkitchin/ox-ipynb"))
+
 (provide 'usta-org)
