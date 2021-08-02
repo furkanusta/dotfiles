@@ -39,7 +39,9 @@
   :custom (auctex-latexmk-inherit-TeX-PDF-mode t))
 
 (use-package bibtex
-  :custom (bibtex-align-at-equal-sign t))
+  :custom
+  (bibtex-align-at-equal-sign t)
+  (bibtex-dialect 'biblatex))
 
 (use-package biblio)
 
@@ -50,5 +52,33 @@
   (ebib-default-directory 'first-bib-dir)
   (ebib-index-window-size 20)
   (ebib-bib-search-dirs (list my-papers-directory)))
+
+(use-package magic-latex-buffer
+  :hook (latex-mode . magic-latex-buffer))
+
+(use-package latexdiff
+  :preface
+  (defvar helm-source-latexdiff-choose-commit
+    (helm-make-source "Latexdiff choose a commit:"
+        'helm-source-sync
+        :candidates 'latexdiff--get-commit-hash-alist
+        :action '(("Choose this commit" .
+                   latexdiff-vc--compile-diff-with-current)))
+    "Helm source for modified projectile projects.")
+  (defun latexdiff-wip ()
+    "Compile the pdf difference between the choosen commit and the current version of the current file."
+    (interactive)
+    (let* ((commits (latexdiff--get-commit-hash-alist))
+           (commit-hash (cdr (car commits))))
+      (latexdiff-vc--compile-diff-with-current commit-hash))))
+
+(use-package lsp-latex
+  :hook
+  ((latex-mode . lsp-deferred)
+   (bibtex-mode . lsp-deferred)))
+
+(use-package xenops
+  :hook (latex-mode . xenops-mode)
+  :init (setq xenops-reveal-on-entry t))
 
 (provide 'usta-latex)

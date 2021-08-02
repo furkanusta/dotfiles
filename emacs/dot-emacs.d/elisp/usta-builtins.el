@@ -141,7 +141,7 @@
   (display-time-24hr-format t)
   (display-time-mode 1)
   (history-delete-duplicates t)
-
+  (native-comp-async-report-warnings-errors nil)
   :bind
   ("C-c ." . pop-global-mark)
   ("M-u" . upcase-dwim)

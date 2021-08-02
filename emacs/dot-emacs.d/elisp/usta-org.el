@@ -130,7 +130,7 @@
 
 (use-package org-marginalia
   :quelpa (org-marginalia :fetcher github :repo "nobiot/org-marginalia")
-  :hook (org-mode . org-marginalia-mode)
+  ;; :hook (org-mode . org-marginalia-mode)
   :commands (org-marginalia-next org-marginalia-prev)
   :preface
   (defun org-marginalia-make-annotation ()
