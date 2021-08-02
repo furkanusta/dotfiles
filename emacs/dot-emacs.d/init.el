@@ -55,4 +55,6 @@
 (use-package usta-prog-lang :load-path "elisp/" :demand t)
 (use-package usta-uncategorized :load-path "elisp/" :demand t)
 
+;; (use-package usta-vertico :load-path "elisp/" :demand t)
+
 (use-package flx)

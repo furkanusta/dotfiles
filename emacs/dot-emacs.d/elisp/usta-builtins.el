@@ -14,11 +14,14 @@
 (use-package emacs :ensure nil
   :hook
   (before-save . delete-trailing-whitespace)
+  (minibuffer-setup-hook . cursor-intangible-mode)
   (after-init . toggle-frame-maximized)
   :preface
   (defvar my-dark-theme 'monokai)
   (defvar my-light-theme 'leuven)
   (defvar my-active-theme my-dark-theme)
+  (defun crm-indicator (args)
+    (cons (concat "[CRM] " (car args)) (cdr args)))
   (defun my-switch-theme-helper (old-theme new-theme)
     (disable-theme old-theme)
     (load-theme new-theme t)
@@ -92,6 +95,7 @@
   :init
   (fset 'yes-or-no-p 'y-or-n-p)
   (global-unset-key (kbd "C-x c"))
+  (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
   (setq-default user-full-name "Furkan Usta"
                 user-mail-address "furkanusta17@gmail.com"
                 save-interprogram-paste-before-kill t
@@ -124,6 +128,11 @@
                 frame-resize-pixelwise t
                 undo-limit 1280000
                 large-file-warning-threshold (* 1024 1024 1024) ;; 1GB
+                read-extended-command-predicate #'command-completion-default-include-p
+                enable-recursive-minibuffers t
+                minibuffer-prompt-properties '(read-only t cursor-intangible t face minibuffer-prompt)
+                read-file-name-completion-ignore-case t
+                read-buffer-completion-ignore-case t
                 font-use-system-font t)
   :custom
   (column-number-mode 1)
@@ -132,6 +141,7 @@
   (display-time-24hr-format t)
   (display-time-mode 1)
   (history-delete-duplicates t)
+
   :bind
   ("C-c ." . pop-global-mark)
   ("M-u" . upcase-dwim)
