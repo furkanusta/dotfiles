@@ -19,7 +19,20 @@
 (use-package frame-movement
   :load-path "elisp/"
   ;; :quelpa (frame-movement :fetcher github :repo "dfboyd/emacs-frame-movement")
+  :preface
+  (defun move-next-frame-or-window ()
+    (interactive)
+    (if (= (length (window-list)) 1)
+        (frame-movement/select-next-frame 1)
+      (other-window 1)))
+  (defun move-prev-frame-or-window ()
+    (interactive)
+    (if (= (length (window-list)) 1)
+        (frame-movement/select-prev-frame 1)
+      (other-window -11)))
   :bind
+  ;; ("C-x o" . move-next-frame-or-window)
+  ;; ("C-x O" . move-prev-frame-or-window)
   ("C-x 5 n" . frame-movement/select-next-frame)
   ("C-x 5 p" . frame-movement/select-prev-frame))
 
