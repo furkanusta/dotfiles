@@ -285,8 +285,8 @@
   :quelpa (org-pandoc-import
            :fetcher github
            :repo "tecosaur/org-pandoc-import"
-           :files ("*.el" "filters" "preprocessors"))
-  :hook (after-init . org-pandoc-import-transient-mode))
+           :files ("*.el" "filters" "preprocessors")))
+  ;; :hook (after-init . org-pandoc-import-transient-mode)
 
 (use-package org-web-tools)
 

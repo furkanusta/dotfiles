@@ -78,8 +78,9 @@
   (treemacs-position 'right)
   (treemacs-width 50))
 
-(use-package treemacs-icons-dired
-  :hook (dired-mode . treemacs-icons-dired-mode))
+(use-package all-the-icons-dired
+  :hook (dired-mode . all-the-icons-dired-mode)
+  :custom (all-the-icons-dired-monochrome nil))
 
 (use-package treemacs-magit
   :after treemacs magit)
@@ -93,5 +94,13 @@
 
 (use-package fzf
   :bind ("C-c f f" . fzf-find-file))
+
+(use-package dired-rsync
+  :bind
+  (:map dired-mode-map
+        ("C-c C-r" . dired-rsync)))
+
+(use-package dired-collapse
+  :hook (dired-mode . dired-collapse-mode))
 
 (provide 'usta-dired)

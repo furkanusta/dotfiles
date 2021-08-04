@@ -43,7 +43,9 @@
 
 (use-package magit
   :bind ("C-c g s" . magit-status)
-  :custom (magit-blame-echo-style 'headings))
+  :custom
+  (magit-blame-echo-style 'headings)
+  (magit-repository-directories (list (cons (file-truename "~/Projects") 1))))
 
 (use-package magit-todos
   :config
