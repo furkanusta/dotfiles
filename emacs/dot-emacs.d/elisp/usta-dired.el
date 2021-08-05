@@ -15,14 +15,16 @@
     (interactive)
     (dired default-directory))
   :custom
-  (dired-use-ls-dired nil)
-  (dired-listing-switches "-aBhl  --group-directories-first --color=never")
   (dired-auto-revert-buffer t)
-  (dired-create-destination-dirs 'ask)
   (dired-dwim-target t)
+  (dired-create-destination-dirs 'ask)
+  (dired-recursive-copies 'always)
+  (dired-use-ls-dired nil)
+  (dired-listing-switches "-aBhlv --group-directories-first --color=never")
   :bind
   ("C-x d" . dired-current-dir)
-  (:map dired-mode-map ("E" . dired-open-xdg)))
+  (:map dired-mode-map
+        ("E" . dired-open-xdg)))
 
 (use-package dired-hide-dotfiles
   :hook (dired-mode . dired-hide-dotfiles-mode)
