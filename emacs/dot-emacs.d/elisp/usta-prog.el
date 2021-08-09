@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 (use-package projectile
   :commands projectile-project-name projectile-project-root
   :preface (defun my-open-readme ()

@@ -1,3 +1,4 @@
+;;; -*- lexical-binding: t -*-
 ;; Initialization
 (setq gc-cons-threshold 64000000)
 

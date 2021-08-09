@@ -1,3 +1,5 @@
+;; -*- lexical-binding: t; -*-
+
 (use-package vertico
   :demand t
   :defines vertico-mode

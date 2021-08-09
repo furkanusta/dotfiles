@@ -1,4 +1,4 @@
-
+;; -*- lexical-binding: t; -*-
 ;; Generic
 (use-package company
   :hook (prog-mode . company-mode)
