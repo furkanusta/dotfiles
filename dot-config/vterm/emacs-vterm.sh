@@ -45,6 +45,6 @@ vterm_cmd() {
 # The escape sequence "51;A" has also the role of identifying the end of the
 # prompt
 vterm_prompt_end(){
-    vterm_printf "51;A$PS1"
+    # vterm_printf "51;A$PS1"
+    vterm_printf "51;A$(pwd)";
 }
-PS1=$PS1'\[$(vterm_prompt_end)\]'

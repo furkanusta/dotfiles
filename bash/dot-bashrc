@@ -57,6 +57,7 @@ fi
 if [[ "$INSIDE_EMACS" = 'vterm' ]] ; then
     export PS1='[$(basename $(dirname "$PWD"))/$(basename "$PWD")] $ ';
 	source $XDG_CONFIG_HOME/vterm/emacs-vterm.sh
+    export PS1=$PS1'\[$(vterm_prompt_end)\]'
 fi
 
 if [ -f .bash_env_local ]; then
