@@ -24,6 +24,8 @@
 
 (use-package perspective
   :commands persp-current-buffers
+  :after helm
+  :config (persp-mode t)
   :preface
   (defvar perspective-skip-ignore-list '("*dashboard*" "*Messages*" "*Warnings*" "*elfeed-search*"))
   (defvar perspective-skip-prefix-list '("magit"))
@@ -42,7 +44,6 @@
         (lambda (x) x)
         (mapcar (lambda (pref) (string-prefix-p pref name)) perspective-skip-prefix-list))
        (not (seq-contains-p (persp-current-buffers) buffer)))))
-  :init (persp-mode t)
   :custom
   (persp-mode-prefix-key (kbd "C-c w"))
   (switch-to-prev-buffer-skip #'perspective-my-skip-buffer-p))
