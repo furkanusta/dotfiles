@@ -26,8 +26,9 @@
   :commands persp-current-buffers
   :preface
   (defvar perspective-skip-ignore-list '("*dashboard*" "*Messages*" "*Warnings*" "*elfeed-search*"))
+  (defvar perspective-skip-prefix-list '("magit"))
   (defvar perspective-skip-ignore-prefix-list
-  '("*vterm" "*scratch" "*deadgrep" "*shell" "*Customize" "*magit" "*ielm*" "*org" "*ein"))
+    '("*vterm" "*scratch" "*shell" "*Customize" "*ielm*" "*org" "*ein"))
   (defun perspective-my-skip-buffer-p (window buffer burry-or-kill)
     (let ((name (buffer-name buffer)))
       (or
@@ -37,9 +38,14 @@
         (cl-every
          (lambda (x) x)
          (mapcar (lambda (pref) (not (string-prefix-p pref name))) perspective-skip-ignore-prefix-list)))
+       (cl-some
+        (lambda (x) x)
+        (mapcar (lambda (pref) (string-prefix-p pref name)) perspective-skip-prefix-list))
        (not (seq-contains-p (persp-current-buffers) buffer)))))
   :init (persp-mode t)
-  :custom (persp-mode-prefix-key (kbd "C-c w")))
+  :custom
+  (persp-mode-prefix-key (kbd "C-c w"))
+  (switch-to-prev-buffer-skip #'perspective-my-skip-buffer-p))
 
 (use-package magit
   :bind ("C-c g s" . magit-status)
