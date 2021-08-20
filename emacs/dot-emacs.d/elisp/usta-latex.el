@@ -58,6 +58,8 @@
   :hook (latex-mode . magic-latex-buffer))
 
 (use-package latexdiff
+  :after helm
+  :functions helm-make-source
   :preface
   (defvar helm-source-latexdiff-choose-commit
     (helm-make-source "Latexdiff choose a commit:"
