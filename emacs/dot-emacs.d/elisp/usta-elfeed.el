@@ -78,6 +78,7 @@
      ("https://www.youtube.com/feeds/videos.xml?channel_id=UCsvn_Po0SmunchJYOWpOxMg" youtube)
      ("https://www.youtube.com/feeds/videos.xml?channel_id=UCCpTaib_e5C6Q95qwazq8OA" youtube)
      ("https://www.youtube.com/feeds/videos.xml?channel_id=UCO-_F5ZEUhy0oKrSa69DLMw" youtube)
+     ("https://www.youtube.com/feeds/videos.xml?channel_id=UCvjeeQfd-FxV5c8Q7YZ2WGQ" youtube)
      ("https://www.youtube.com/feeds/videos.xml?channel_id=UC2eEGT06FrWFU6VBnPOR9lg" youtube)))
   (elfeed-show-entry-switch #'pop-to-buffer)
   (elfeed-show-entry-delete #'+rss/delete-pane)

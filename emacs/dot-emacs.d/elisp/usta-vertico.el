@@ -128,7 +128,6 @@
   (:map minibuffer-local-map ("M-A" . marginalia-cycle)))
 
 (use-package all-the-icons-completion
-  :quelpa (all-the-icons-completion  :fetcher github :repo "iyefrat/all-the-icons-completion")
   :hook (marginalia-mode-hook . all-the-icons-completion-marginalia-setup)
   :init (all-the-icons-completion-mode))
 
