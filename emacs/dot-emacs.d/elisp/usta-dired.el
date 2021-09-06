@@ -39,6 +39,7 @@
     (fd-dired default-directory (read-string "Run fd (with args and search): " ""
                                              '(fd-dired-current-args-history . 1))))
   :bind
+  ("C-c h f" . fd-dired-current)
   (:map dired-mode-map
         ("f" . fd-dired-current)
         ("F" . fd-dired)))
@@ -95,7 +96,13 @@
   :config (treemacs-set-scope-type 'Perspectives))
 
 (use-package fzf
-  :bind ("C-c f f" . fzf-find-file))
+  :preface (defun fzf-my-projectile ()
+             (interactive)
+             (fzf-with-command "fd -t f" #'fzf/action-find-file (projectile-project-root)))
+  :custom (fzf/args "-x --print-query")
+  :bind
+  ("C-c h z" . fzf-my-projectile)
+  ("C-c h Z" . fzf-find-file))
 
 (use-package dired-rsync
   :bind
