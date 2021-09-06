@@ -65,3 +65,5 @@ if [ -f .bash_env_local ]; then
 fi
 
 export PROMPT_COMMAND='echo -ne "\033]2;${PWD/#${HOME}/\~}\007"'
+
+source $HOME/.local/prog/vcpkg/scripts/vcpkg_completion.bash
