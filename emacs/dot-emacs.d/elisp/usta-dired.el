@@ -96,7 +96,8 @@
   :config (treemacs-set-scope-type 'Perspectives))
 
 (use-package fzf
-  :preface
+  :commands fzf-with-command
+  :init
   (defun fzf-my-projectile ()
     (interactive)
     (fzf-with-command "fd -t f" #'fzf/action-find-file (or (projectile-project-root) default-directory)))

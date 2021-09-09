@@ -231,13 +231,14 @@
 (use-package org-link-beautify
   :hook (org-mode . org-link-beautify-mode))
 
-(use-package calfw-org :after calfw
+(use-package calfw-org :ensure calfw
   :custom (cfw:org-overwrite-default-keybinding t)
   :bind
-  ("C-c C-f" . cfw:open-org-calendar)
+  ("C-c o c" . cfw:open-org-calendar)
   (:map cfw:calendar-mode-map ("<return>" . cfw:org-open-agenda-day)))
 
-(use-package calfw)
+(use-package calfw
+  :quelpa (calfw :fetcher github :repo "furkanusta/emacs-calfw"))
 
 (use-package side-notes
   :custom
@@ -306,5 +307,14 @@
 
 (use-package ox-ipynb
   :quelpa (ox-ipynb :fetcher github :repo "jkitchin/ox-ipynb"))
+
+(use-package org-habit)
+
+(use-package org-agenda-property
+  :custom
+  (org-agenda-property-list '(LOCATION)))
+
+;; (use-package nano
+;;   :quelpa (nano :fetcher github :repo "rougier/nano-emacs"))
 
 (provide 'usta-org)

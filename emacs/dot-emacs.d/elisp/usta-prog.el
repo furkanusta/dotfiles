@@ -27,7 +27,7 @@
   :after helm
   :config (persp-mode t)
   :preface
-  (defvar perspective-skip-ignore-list '("*dashboard*" "*Messages*" "*Warnings*" "*elfeed-search*"))
+  (defvar perspective-skip-ignore-list '("*dashboard*" "*Messages*" "*Warnings*" "*elfeed-search*" "*Fd*"))
   (defvar perspective-skip-prefix-list '("magit-"))
   (defvar perspective-skip-ignore-prefix-list '("*vterm" "*scratch" "*shell" "*Customize" "*ielm*" "*org" "*ein"))
   (defun perspective-my-skip-buffer-p (window buffer burry-or-kill)

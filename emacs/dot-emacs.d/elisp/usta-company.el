@@ -8,7 +8,7 @@
 
 (use-package company-files :ensure company
   :after company
-  :config (push 'company-files company-backends))
+  :config (add-to-list company-backends 'company-files))
 
 (use-package company-statistics
   :after company
@@ -24,7 +24,7 @@
   :hook (company-mode . company-flx-mode))
 
 (use-package company-org-block
-  :custom (company-org-block-edit-style 'inline) ;; 'auto, 'prompt, or 'inline
+  :custom (company-org-block-edit-style 'inline)
   :hook ((org-mode . (lambda ()
                        (setq-local company-backends '(company-org-block))
                        (company-mode +1)))))

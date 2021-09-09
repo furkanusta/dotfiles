@@ -39,14 +39,15 @@
 (use-package helm-files :ensure helm
   :after helm
   :commands (helm-get-selection helm-next-line helm-previous-line helm-ff-move-to-first-real-candidate)
-  :preface (defun helm-skip-dots (old-func &rest args)
-             (apply old-func args)
-             (let ((sel (helm-get-selection)))
-               (if (and (stringp sel) (string-match "/\\.$" sel))
-                   (helm-next-line 2)))
-             (let ((sel (helm-get-selection))) ; if we reached .. move back
-               (if (and (stringp sel) (string-match "/\\.\\.$" sel))
-                   (helm-previous-line 1))))
+  :preface
+  (defun helm-skip-dots (old-func &rest args)
+    (apply old-func args)
+    (let ((sel (helm-get-selection)))
+      (if (and (stringp sel) (string-match "/\\.$" sel))
+          (helm-next-line 2)))
+    (let ((sel (helm-get-selection))) ; if we reached .. move back
+      (if (and (stringp sel) (string-match "/\\.\\.$" sel))
+          (helm-previous-line 1))))
   :config (advice-add #'helm-ff-move-to-first-real-candidate :around #'helm-skip-dots)
   :bind ("C-x C-f" . helm-find-files)
   :custom
