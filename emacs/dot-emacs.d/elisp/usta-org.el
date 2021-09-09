@@ -314,6 +314,14 @@
   :custom
   (org-agenda-property-list '(LOCATION)))
 
+(use-package org-timeline
+  :hook (org-agenda-finalize-hook . org-timeline-insert-timeline))
+
+(use-package org-radiobutton)
+
+(use-package org-clock-budget
+  :quelpa (org-clock-budget :fetcher github :repo "Fuco1/org-clock-budget"))
+
 ;; (use-package nano
 ;;   :quelpa (nano :fetcher github :repo "rougier/nano-emacs"))
 

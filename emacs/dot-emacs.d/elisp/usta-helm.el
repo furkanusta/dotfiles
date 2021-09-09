@@ -91,8 +91,8 @@
 
 (use-package helm-rg
   :bind
-  ("C-c h S" .  helm-projectile-rg)
-  ("C-c h s" .  helm-rg))
+  ("C-c h s" .  helm-projectile-rg)
+  ("C-c h S" .  helm-rg))
 
 (use-package helm-bookmark
   :ensure nil
