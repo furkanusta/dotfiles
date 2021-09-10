@@ -66,4 +66,6 @@ fi
 
 export PROMPT_COMMAND='echo -ne "\033]2;${PWD/#${HOME}/\~}\007"'
 
-source $HOME/.local/prog/vcpkg/scripts/vcpkg_completion.bash
+if [ -f $HOME/.local/prog/vcpkg/scripts/vcpkg_completion.bash ]; then
+    source $HOME/.local/prog/vcpkg/scripts/vcpkg_completion.bash
+fi

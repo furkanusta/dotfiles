@@ -8,7 +8,7 @@
 
 (use-package company-files :ensure company
   :after company
-  :config (add-to-list company-backends 'company-files))
+  :config (add-to-list 'company-backends 'company-files))
 
 (use-package company-statistics
   :after company
