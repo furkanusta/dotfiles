@@ -27,7 +27,7 @@
   (org-src-tab-acts-natively t)
   (org-yank-adjusted-subtrees t)
   (org-todo-keywords '((sequence "TODO" "IN-PROGRESS" "NEXT" "|" "DONE")
-                       (sequence "PAUSED" "SCHEDULED" "|"  "CANCELLED")))
+                       (sequence "PAUSED" "SCHEDULED" "WAITING" "|"  "CANCELLED")))
   :hook
   (org-mode . turn-on-flyspell)
   (org-mode . auto-fill-mode)

@@ -6,6 +6,9 @@
   (company-backends '(company-cmake company-capf company-clang))
   (company-idle-delay nil))
 
+(use-package company-box
+  :hook (company-mode . company-box-mode))
+
 (use-package company-files :ensure company
   :after company
   :config (add-to-list 'company-backends 'company-files))
