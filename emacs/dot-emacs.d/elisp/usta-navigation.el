@@ -145,4 +145,12 @@
 
 (use-package exwm-mff :custom (exwm-mff-mode 1))
 
+(use-package resize-window
+  :init
+  (add-to-list 'resize-window-dispatch-alist '(?- shrink-window-if-larger-than-buffer "Shrink if larger" nil))
+  (add-to-list 'resize-window-dispatch-alist '(?+ balance-windows "Balance windows" nil))
+  :bind ("C-c ;" . resize-window)
+  :custom (resize-window-allow-backgrounds nil))
+
+
 (provide 'usta-navigation)

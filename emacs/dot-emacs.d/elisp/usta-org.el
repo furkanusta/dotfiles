@@ -311,8 +311,7 @@
 (use-package org-habit)
 
 (use-package org-agenda-property
-  :custom
-  (org-agenda-property-list '(LOCATION)))
+  :custom (org-agenda-property-list '(LOCATION)))
 
 (use-package org-timeline
   :hook (org-agenda-finalize-hook . org-timeline-insert-timeline))
@@ -324,5 +323,7 @@
 
 ;; (use-package nano
 ;;   :quelpa (nano :fetcher github :repo "rougier/nano-emacs"))
+
+(use-package lentic)
 
 (provide 'usta-org)
