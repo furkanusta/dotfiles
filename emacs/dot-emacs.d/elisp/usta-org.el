@@ -308,7 +308,7 @@
 (use-package ox-ipynb
   :quelpa (ox-ipynb :fetcher github :repo "jkitchin/ox-ipynb"))
 
-(use-package org-habit)
+(use-package org-habit :ensure org)
 
 (use-package org-agenda-property
   :custom (org-agenda-property-list '(LOCATION)))
