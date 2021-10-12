@@ -3,7 +3,7 @@
 (use-package company
   :hook (prog-mode . company-mode)
   :custom
-  (company-backends '(company-cmake company-capf company-clang))
+  (company-backends '(company-cmake company-capf company-files))
   (company-idle-delay nil))
 
 (use-package company-box

@@ -94,9 +94,6 @@
   :custom
   (global-flycheck-mode nil)
   (flycheck-disabled-checkers '(emacs-lisp-checkdoc verilog-verilator))
-  (flycheck-clang-language-standard "c++17")
-  (flycheck-gcc-language-standard "c++17")
-  (flycheck-cppcheck-standards "c++17")
   (flycheck-emacs-lisp-load-path 'inherit)
   :config
   (flycheck-add-mode 'c/c++-cppcheck 'c++mode))
