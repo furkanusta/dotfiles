@@ -101,8 +101,7 @@
   :quelpa (org-pretty-table :fetcher github :repo "Fuco1/org-pretty-table")
   :hook (org-mode . org-pretty-table-mode))
 
-(use-package org-table-sticky-header
-  :hook (org-mode . org-table-sticky-header-mode))
+(use-package org-table-sticky-header)
 
 (use-package org-sticky-header
   :hook (org-mode . org-sticky-header-mode)
