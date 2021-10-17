@@ -174,4 +174,7 @@
 (use-package gitlab-ci-mode
   :mode "\\.gitlab-ci\\.yml\\'")
 
+(use-package aphelia
+  :hook (python-mode . aphelia-mode))
+
 (provide 'usta-prog-lang)

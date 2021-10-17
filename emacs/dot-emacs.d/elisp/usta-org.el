@@ -262,6 +262,24 @@
   (org-roam-setup)
   (require 'org-roam-protocol))
 
+(use-package org-roam-bibtex
+  :after org-roam
+  :config (require 'org-ref))
+
+(use-package org-roam-ui
+  :quelpa (org-roam-ui :fetcher github :repo "org-roam/org-roam-ui")
+  :after org-roam
+  :config
+  (setq org-roam-ui-sync-theme t
+        org-roam-ui-follow t
+        org-roam-ui-update-on-save t
+        org-roam-ui-open-on-start t))
+
+(use-package org-roam-timestamps
+  :quelpa (org-roam-timestamps :fetcher github :repo "ThomasFKJorna/org-roam-timestamps")
+  :after org-roam
+  :config (org-roam-timestamps-mode))
+
 (use-package highlight
   :preface
   (defun hlt-general()
