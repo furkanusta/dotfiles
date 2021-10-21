@@ -54,6 +54,10 @@
   (magit-blame-echo-style 'headings)
   (magit-repository-directories (list (cons (file-truename "~/Projects") 1))))
 
+(use-package magit-delta
+  :hook (magit-mode . magit-delta-mode)
+  :custom (magit-delta-default-dark-theme "Monokai Extended Origin"))
+
 (use-package magit-todos
   :config
   (let ((inhibit-message t))
