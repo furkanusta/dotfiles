@@ -24,24 +24,24 @@
     pr = !sh -c 'git fetch $1 pull/$2/head:pr-$1-$2 && git checkout pr-$1-$2' -
     diffside = !sh -c 'git -c delta.side-by-side=true diff'
 
-[interactive]
-    diffFilter = delta --color-only --features=interactive
+# [interactive]
+#     diffFilter = delta --color-only --features=interactive
 
-[delta]
-    features = decorations
-    whitespace-error-style = 22 reverse
+# [delta]
+#     features = decorations
+#     whitespace-error-style = 22 reverse
 
-[delta "interactive"]
-    keep-plus-minus-markers = false
+# [delta "interactive"]
+#     keep-plus-minus-markers = false
 
-[delta "decorations"]
-    commit-decoration-style = blue ol
-    commit-style = raw
-    file-style = omit
-    hunk-header-decoration-style = blue box
-    hunk-header-file-style = red
-    hunk-header-line-number-style = "#067a00"
-    hunk-header-style = file line-number syntax
+# [delta "decorations"]
+#     commit-decoration-style = blue ol
+#     commit-style = raw
+#     file-style = omit
+#     hunk-header-decoration-style = blue box
+#     hunk-header-file-style = red
+#     hunk-header-line-number-style = "#067a00"
+#     hunk-header-style = file line-number syntax
 
 [diff]
     colorMoved = default

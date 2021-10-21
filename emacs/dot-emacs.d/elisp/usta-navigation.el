@@ -112,9 +112,24 @@
   (beacon-blink-when-window-changes nil)
   (beacon-mode 1))
 
+(use-package ibuffer-projectile
+  :commands (ibuffer-projectile-set-filter-groups ibuffer-projectile-generate-filter-groups)
+  :init
+  (defun j-ibuffer-projectile-run ()
+    "Set up `ibuffer-projectile'."
+    (ibuffer-projectile-set-filter-groups)
+    (unless (eq ibuffer-sorting-mode 'alphabetic)
+      (ibuffer-do-sort-by-alphabetic)))
+  (add-hook 'ibuffer-sidebar-mode-hook #'j-ibuffer-projectile-run)
+  (add-hook 'ibuffer-hook #'j-ibuffer-projectile-run)
+  :config (setq ibuffer-projectile-prefix "Project: "))
+
 (use-package ibuffer-sidebar
   :commands (ibuffer-sidebar-toggle-sidebar)
   :bind ("C-c t b" . ibuffer-sidebar-toggle-sidebar))
+
+(use-package all-the-icons-ibuffer
+  :init (all-the-icons-ibuffer-mode 1))
 
 (use-package bufler
   :preface (define-prefix-command 'my-switch-command-map)
@@ -146,7 +161,8 @@
 (use-package exwm-mff :custom (exwm-mff-mode 1))
 
 (use-package resize-window
-  :init
+  :defines resize-window-dispatch-alist
+  :config
   (add-to-list 'resize-window-dispatch-alist '(?- shrink-window-if-larger-than-buffer "Shrink if larger" nil))
   (add-to-list 'resize-window-dispatch-alist '(?+ balance-windows "Balance windows" nil))
   :bind ("C-c ;" . resize-window)

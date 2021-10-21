@@ -81,6 +81,9 @@
   (treemacs-position 'right)
   (treemacs-width 50))
 
+(use-package treemacs-all-the-icons :after treemacs
+  :config (treemacs-load-theme "all-the-icons"))
+
 (use-package all-the-icons-dired
   :hook (dired-mode . all-the-icons-dired-mode)
   :custom (all-the-icons-dired-monochrome nil))
