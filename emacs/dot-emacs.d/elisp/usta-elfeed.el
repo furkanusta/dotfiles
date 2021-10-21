@@ -92,6 +92,8 @@
      ("https://guzey.substack.com/feed/" blog)
      ("https://www.darkcoding.net/feed/" prog)
      ("https://bernsteinbear.com/feed.xml" prog)
+     ("https://www.adriancourreges.com/atom.xml" prog)
+     ("https://simoncoenen.com/feed.xml" prog)
      ("https://www.youtube.com/feeds/videos.xml?channel_id=UC-xTvXTm-lrLWYk308-Km3A" youtube)
      ("https://www.youtube.com/feeds/videos.xml?channel_id=UCsvn_Po0SmunchJYOWpOxMg" youtube)
      ("https://www.youtube.com/feeds/videos.xml?channel_id=UCCpTaib_e5C6Q95qwazq8OA" youtube)
