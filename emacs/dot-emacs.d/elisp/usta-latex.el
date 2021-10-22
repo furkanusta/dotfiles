@@ -77,8 +77,8 @@
 
 (use-package lsp-latex
   :hook
-  ((latex-mode . lsp-deferred)
-   (bibtex-mode . lsp-deferred)))
+  (latex-mode . lsp)
+  (bibtex-mode . lsp))
 
 (use-package xenops
   :hook (latex-mode . xenops-mode)

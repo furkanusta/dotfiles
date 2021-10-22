@@ -122,6 +122,7 @@
          (pdf-view-mode . pdf-sync-minor-mode)
          (pdf-view-mode . pdf-links-minor-mode)
          (pdf-view-mode . pdf-history-minor-mode)
+         (pdf-view-mode . pdf-annot-minor-mode)
          (pdf-view-mode . pdf-view-themed-minor-mode))
   :mode ("\\.pdf\\'" . pdf-view-mode)
   :custom
@@ -131,6 +132,7 @@
   :bind (:map pdf-view-mode-map
               ("M-w" . pdf-view-kill-ring-save)
               ("o" . pdf-outline)
+              ("i" . org-noter)
               ("S-SPC" . pdf-view-scroll-down-or-previous-page)))
 
 (use-package pdf-view-restore
