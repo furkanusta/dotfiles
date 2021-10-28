@@ -116,6 +116,8 @@
   (add-to-list 'vlf-forbidden-modes-list 'nov-mode))
 
 (use-package pdf-tools
+  :after org-noter
+  :defines org-noter
   :quelpa (pdf-tools :fetcher github :repo "vedang/pdf-tools" :files ("lisp/*" "server/*"))
   :hook ((pdf-view-mode . (lambda () (cua-mode 0)))
          (pdf-view-mode . disable-line-numbers)
@@ -129,10 +131,15 @@
   (pdf-view-display-size 'fit-page)
   (pdf-annot-activate-created-annotations nil)
   (pdf-view-resize-factor 1.1)
+  :preface (defun my-org-noter-insert-and-highlight ()
+               (progn
+                 (when (pdf-view-active-region-p)
+                   (pdf-annot-add-highlight-markup-annotation (pdf-view-active-region t)))
+                 (org-noter-insert-note nil)))
   :bind (:map pdf-view-mode-map
               ("M-w" . pdf-view-kill-ring-save)
               ("o" . pdf-outline)
-              ("i" . org-noter)
+              ("i" . my-org-noter-insert-and-highlight)
               ("S-SPC" . pdf-view-scroll-down-or-previous-page)))
 
 (use-package pdf-view-restore
