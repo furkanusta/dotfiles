@@ -57,5 +57,3 @@
 (use-package usta-visuals :load-path "elisp/" :demand t)
 
 ;; (use-package usta-vertico :load-path "elisp/" :demand t)
-
-(use-package flx)

@@ -77,8 +77,11 @@
 
 (use-package lsp-latex
   :hook
-  (latex-mode . lsp)
-  (bibtex-mode . lsp))
+  ((latex-mode . lsp)
+   (bibtex-mode . lsp))
+  :custom
+  (lsp-latex-forward-search-executable "emacsclient")
+  (lsp-latex-forward-search-args '("--eval" "(lsp-latex-forward-search-with-pdf-tools \"%f\" \"%p\" \"%l\")")))
 
 (use-package xenops
   :hook (latex-mode . xenops-mode)

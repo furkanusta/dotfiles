@@ -94,6 +94,7 @@
      ("https://bernsteinbear.com/feed.xml" prog)
      ("https://www.adriancourreges.com/atom.xml" prog)
      ("https://simoncoenen.com/feed.xml" prog)
+     ("https://zipcpu.com/feed.xml" prog fpga)
      ("https://www.youtube.com/feeds/videos.xml?channel_id=UC-xTvXTm-lrLWYk308-Km3A" youtube)
      ("https://www.youtube.com/feeds/videos.xml?channel_id=UCsvn_Po0SmunchJYOWpOxMg" youtube)
      ("https://www.youtube.com/feeds/videos.xml?channel_id=UCCpTaib_e5C6Q95qwazq8OA" youtube)

@@ -4,6 +4,7 @@
   :hook (prog-mode . company-mode)
   :custom
   (company-backends '(company-cmake company-capf company-files))
+  (completion-ignore-case t)
   (company-idle-delay nil))
 
 (use-package company-box
@@ -25,11 +26,5 @@
 
 (use-package company-flx
   :hook (company-mode . company-flx-mode))
-
-(use-package company-org-block
-  :custom (company-org-block-edit-style 'inline)
-  :hook ((org-mode . (lambda ()
-                       (setq-local company-backends '(company-org-block))
-                       (company-mode +1)))))
 
 (provide 'usta-company)

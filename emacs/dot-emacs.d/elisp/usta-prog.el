@@ -29,7 +29,7 @@
   :preface
   (defvar perspective-skip-ignore-list '("*dashboard*" "*Messages*" "*Warnings*" "*elfeed-search*" "*Fd*"))
   (defvar perspective-skip-prefix-list '("magit-"))
-  (defvar perspective-skip-ignore-prefix-list '("*vterm" "*scratch" "*shell" "*Customize" "*ielm*" "*org" "*ein"))
+  (defvar perspective-skip-ignore-prefix-list '("*vterm" "*scratch" "*shell" "*Customize" "*ielm*" "*helpful" "*org" "*ein"))
   (defun perspective-my-skip-buffer-p (window buffer burry-or-kill)
     (let ((name (buffer-name buffer)))
       (or
@@ -55,7 +55,7 @@
   (magit-repository-directories (list (cons (file-truename "~/Projects") 1))))
 
 (use-package magit-delta
-  :hook (magit-mode . magit-delta-mode)
+  ;; :hook (magit-mode . magit-delta-mode)
   :custom (magit-delta-default-dark-theme "Monokai Extended Origin"))
 
 (use-package magit-todos

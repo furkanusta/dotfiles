@@ -31,13 +31,16 @@
   :hook
   (org-mode . turn-on-flyspell)
   (org-mode . auto-fill-mode)
+  (org-mode . smartparens-mode)
   :bind (:map org-mode-map ("C-c C-." . org-time-stamp-inactive))
-  :config (org-babel-do-load-languages
-           'org-babel-load-languages
-           '((python . t)
-             ;; (http . t)
-             (shell . t)
-             (emacs-lisp . t))))
+  :config
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((python . t)
+     ;; (http . t)
+     (shell . t)
+     (emacs-lisp . t)))
+  (add-to-list 'company-backends 'company-capf))
 
 (use-package ob-async)
 
@@ -286,7 +289,9 @@ With a prefix ARG, remove start location."
 
 (use-package org-roam
   :custom
-  (org-roam-directory (file-truename (concat my-notes-directory "/Roam")))
+  (org-roam-directory my-notes-directory)
+  (org-roam-auto-replace-fuzzy-links nil)
+  (org-roam-v2-ack t)
   :bind
   ("C-c n l" . org-roam-buffer-toggle)
   ("C-c n f" . org-roam-node-find)
@@ -297,6 +302,7 @@ With a prefix ARG, remove start location."
   ("C-c n j" . org-roam-dailies-capture-today)
   :config
   (org-roam-setup)
+  (add-to-list 'completion-at-point-functions 'org-roam-complete-link-at-point)
   (require 'org-roam-protocol))
 
 (use-package org-roam-bibtex
@@ -379,5 +385,11 @@ With a prefix ARG, remove start location."
 ;;   :quelpa (nano :fetcher github :repo "rougier/nano-emacs"))
 
 (use-package lentic)
+
+(use-package company-org-block
+  :custom (company-org-block-edit-style 'inline)
+  :hook ((org-mode . (lambda ()
+                       (setq-local company-backends '(company-capf company-org-block))
+                       (company-mode +1)))))
 
 (provide 'usta-org)
