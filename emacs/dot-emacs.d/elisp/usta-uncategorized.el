@@ -59,6 +59,7 @@
 (use-package visual-regexp-steroids :demand t
   :bind ("C-r" . vr/replace))
 
+
 (use-package literate-calc-mode)
 
 (use-package fountain-mode)

@@ -20,6 +20,7 @@
 (use-package latex :ensure auctex
   :mode ("\\.tex\\'" . latex-mode)
   :hook ((LaTeX-mode . TeX-source-correlate-mode)
+         (LaTeX-mode . flyspell-mode)
          (LaTeX-mode . TeX-PDF-mode))
   :custom (LaTeX-electric-left-right-brace t))
 
@@ -29,6 +30,19 @@
 
 (use-package cdlatex
   :hook (LaTeX-mode . cdlatex-mode))
+
+(use-package company-reftex
+  :after company
+  :hook (LaTeX-mode . (lambda (progn
+                                (add-to-list 'company-backends #'company-reftex-labels)
+                                (add-to-list 'company-backends #'company-reftex-citations)))))
+
+(use-package company-math
+  :after company
+  :hook (LaTeX-mode . (lambda (progn
+                                (add-to-list 'company-backends #'company-math-symbols-unicode)))))
+
+(use-package company-math)
 
 (use-package company-auctex
   :commands company-auctex-init

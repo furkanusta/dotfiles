@@ -163,6 +163,8 @@
 (use-package comment-or-uncomment-sexp
   :bind ("C-M-;" . comment-or-uncomment-sexp))
 
+(use-package refine)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;        Python       ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -174,7 +176,7 @@
 (use-package gitlab-ci-mode
   :mode "\\.gitlab-ci\\.yml\\'")
 
-(use-package aphelia
-  :hook (python-mode . aphelia-mode))
+(use-package apheleia
+  :hook (python-mode . apheleia-mode))
 
 (provide 'usta-prog-lang)

@@ -39,7 +39,8 @@ alias pip3-install="pip3 install --user"
 alias gem-install="gem install --user"
 alias ec="emacsclient -t"
 alias mp3-dl="youtube-dl --extract-audio --audio-format=mp3"
-alias clang++="clang++ -std=c++17 -stdlib=libc++"
+alias mp3-tags="fd -t f -x ffprobe -loglevel error -show_entries format_tags=title,artist -of compact"
+
 alias flatpak="flatpak --user"
 alias whatsapp="ffmpeg -c:v libx264  -threads 4 -profile:v baseline -level 3.0 -pix_fmt yuv420p"
 export PS1='[$(basename $(dirname "$PWD"))/$(basename "$PWD")] \[\e[0;31m$\e[0m\] ';

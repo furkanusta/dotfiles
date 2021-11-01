@@ -67,6 +67,19 @@
   						    "* %?\n	 [[%:link][%:description]]\n	%U")))
   :bind ("C-c c" . org-capture))
 
+(use-package org-table :ensure nil
+  :preface
+  (defun my-org-copy-table-cell ()
+    (interactive)
+    (when (org-at-table-p)
+      (kill-new
+       (string-trim
+        (substring-no-properties(org-table-get-field))))))
+  :bind
+  (:map org-mode-map
+        ("M-W" . my-org-copy-table-cell)))
+
+
 (use-package org-protocol :ensure nil)
 
 (use-package org-agenda :ensure nil
@@ -117,6 +130,9 @@
   (org-ref-pdf-directory (concat my-data-directory "/Papers/"))
   (org-ref-show-broken-links t))
 
+(use-package org-ref-prettify
+  :hook (org-mode . org-ref-prettify-mode))
+
 (use-package org-pdftools
   :hook (org-mode . org-pdftools-setup-link))
 
@@ -152,6 +168,7 @@ With a prefix ARG, remove start location."
     (add-hook 'pdf-annot-activate-handler-functions #'org-noter-pdftools-jump-to-note)))
 
 (use-package org-noter
+  :quelpa (org-noter :fetcher github :repo "furkanusta/org-noter")
   :custom
   (org-noter-notes-search-path (list my-notes-directory))
   (org-noter-always-create-frame nil)
@@ -255,9 +272,9 @@ With a prefix ARG, remove start location."
 (use-package org-super-links
   :quelpa (org-super-links :fetcher github :repo "toshism/org-super-links")
   :bind (:map org-mode-map
-              ("C-c s s" . org-super-links-link)
+              ("C-c s l" . org-super-links-link)
               ("C-c s d" . org-super-links-delete-link)
-              ("C-c s l" . org-super-links-store-link)
+              ("C-c s s" . org-super-links-store-link)
               ("C-c s i" . org-super-links-insert-link)))
 
 (use-package org-super-links-peek
@@ -265,6 +282,7 @@ With a prefix ARG, remove start location."
   :bind (:map org-mode-map ("C-c s p" . org-super-links-peek-link)))
 
 (use-package org-rich-yank
+  :demand t
   :bind (:map org-mode-map ("C-M-y" . org-rich-yank)))
 
 (use-package org-link-beautify
@@ -306,7 +324,7 @@ With a prefix ARG, remove start location."
   (require 'org-roam-protocol))
 
 (use-package org-roam-bibtex
-  :after org-roam
+  :after org-roam org-ref
   :config (require 'org-ref))
 
 (use-package org-roam-ui
@@ -391,5 +409,53 @@ With a prefix ARG, remove start location."
   :hook ((org-mode . (lambda ()
                        (setq-local company-backends '(company-capf company-org-block))
                        (company-mode +1)))))
+
+(use-package org-pomodoro
+  :custom (org-pomodoro-length 35)
+  :bind (:map org-mode-map
+              ("C-c C-x i" . org-pomodoro)))
+
+(use-package org-download
+  :hook
+  (dired-mode . org-download-enable)
+  (org-mode . org-download-enable))
+
+(use-package org-mru-clock
+  :custom
+  (org-mru-clock-completing-read #'helm-completing-read)
+  :bind
+  ("C-c C-x c" . org-mru-clock-in)
+  ("C-c C-x C-c" . org-mru-clock-select-recent-task))
+
+(use-package org-dashboard
+  :custom (org-dashboard-files (list (concat my-notes-directory "TODO.org"))))
+
+(use-package orgit)
+(use-package orgit-forge)
+
+(use-package orgtbl-aggregate)
+(use-package orgtbl-join)
+(use-package mysql-to-org)
+(use-package ob-sql-mode)
+(use-package org-simple-timeline)
+(use-package org-latex-impatient)
+(use-package org-board)
+(use-package org-reverse-datetree)
+(use-package ob-blockdiag)
+(use-package org-clock-convenience)
+(use-package ox-report)
+(use-package org-babel-eval-in-repl)
+
+(use-package org-latex-impatient
+  :custom
+  (org-latex-impatient-tex2svg-bin "/home/eksi/.local/prog/node_modules/mathjax-node-cli/bin/tex2svg"))
+
+(use-package org-time-budgets
+  :custom
+  (org-time-budgets '((:title "Business" :match "+business" :budget "30:00" :blocks (workday week))
+                      (:title "Sideprojects" :match "+personal+project" :budget "14:00" :blocks (day week))
+                      (:title "Practice Music" :match "+music+practice" :budget "2:55" :blocks (nil week))
+                      (:title "Exercise" :match "+exercise" :budget "5:15" :blocks (day))
+                      (:title "Language" :match "+lang" :budget "5:15" :blocks (day week)))))
 
 (provide 'usta-org)
