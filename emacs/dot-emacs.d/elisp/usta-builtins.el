@@ -12,6 +12,8 @@
 (defvar my-notes-directory (concat my-data-directory "/Notes"))
 (defvar my-bibliography (concat my-data-directory "/Papers/Library.bib"))
 
+(defvar my-bibliography-directory (concat my-papers-directory "/bibs"))
+
 (use-package emacs :ensure nil
   :hook
   (before-save . delete-trailing-whitespace)

@@ -21,8 +21,8 @@
   (package-install 'use-package))
 (require 'use-package)
 
-(setq-default use-package-always-defer t)
-;; (setq-default use-package-always-ensure t)
+;; (setq-default use-package-always-defer t)
+(setq-default use-package-always-ensure t)
 
 (use-package quelpa
   :custom (quelpa-update-melpa-p nil))
@@ -47,7 +47,7 @@
 (use-package usta-company :load-path "elisp/" :demand t)
 (use-package usta-dired :load-path "elisp/" :demand t)
 (use-package usta-elfeed :load-path "elisp/" :demand t)
-(use-package usta-helm :load-path "elisp/" :demand t)
+;; (use-package usta-helm :load-path "elisp/" :demand t)
 (use-package usta-latex :load-path "elisp/" :demand t)
 (use-package usta-navigation :load-path "elisp/" :demand t)
 (use-package usta-org :load-path "elisp/" :demand t)
@@ -56,4 +56,4 @@
 (use-package usta-uncategorized :load-path "elisp/" :demand t)
 (use-package usta-visuals :load-path "elisp/" :demand t)
 
-;; (use-package usta-vertico :load-path "elisp/" :demand t)
+(use-package usta-vertico :load-path "elisp/" :demand t)

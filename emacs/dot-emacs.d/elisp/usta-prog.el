@@ -157,4 +157,13 @@
   :bind ("M-i" . yas-expand)
   (:map yas-minor-mode-map ("<tab>" . nil)))
 
+(use-package tramp
+  :commands (tramp-cleanup-all-connections tramp-cleanup-all-buffers)
+  :config (defun tramp-done ()
+            (interactive)
+            (tramp-cleanup-all-connections)
+            (tramp-cleanup-all-buffers))
+  :custom
+  (tramp-backup-directory-alist backup-directory-alist))
+
 (provide 'usta-prog)

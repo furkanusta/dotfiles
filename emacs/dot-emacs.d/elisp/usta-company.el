@@ -5,7 +5,9 @@
   :custom
   (company-backends '(company-cmake company-capf company-files))
   (completion-ignore-case t)
-  (company-idle-delay nil))
+  (company-idle-delay nil)
+  :bind
+  ("C-<tab>" . company-complete))
 
 (use-package company-box
   :hook (company-mode . company-box-mode))

@@ -5,18 +5,33 @@
   :defines vertico-mode
   :config (vertico-mode)
   :quelpa (vertico :fetcher github :repo "minad/vertico" :files ("*.el" "extensions/*.el"))
-  :config
-  (add-hook 'rfn-eshadow-update-overlay-hook  #'vertico-directory-tidy)
-  (setq completion-in-region-function
-        (lambda (&rest args)
-          (apply (if vertico-mode
-                     #'consult-completion-in-region
-                   #'completion--in-region)
-                 args)))
+  :hook (rfn-eshadow-update-overlay . vertico-directory-tidy)
   :custom
-  (vertico-resize t)
-  (vertico-count 17)
-  (vertico-cycle t))
+  (vertico-resize 'grow)
+  (vertico-count 15)
+  (vertico-cycle t)
+  (completion-in-region-function
+   (lambda (&rest args)
+     (apply (if vertico-mode
+                #'consult-completion-in-region
+              #'completion--in-region)
+            args)))
+  :preface
+  (defun my-vertico-insert-and-exit () (interactive) (progn (vertico-insert) (exit-minibuffer)))
+  :bind
+  (:map vertico-map
+        ("M-q" . vertico-quick-insert)
+        ("C-q" . vertico-quick-exit)
+        ("TAB" . vertico-insert)
+        ("RET" . my-vertico-insert-and-exit)
+        ("?" . minibuffer-completion-help)))
+
+(use-package vertico-directory
+  :ensure vertico
+  :bind (:map vertico-map
+              ("RET" . vertico-directory-enter)
+              ("DEL" . vertico-directory-delete-char)
+              ("M-DEL" . vertico-directory-delete-word)))
 
 (use-package orderless
   :custom
@@ -24,17 +39,38 @@
   (completion-category-defaults nil)
   (completion-category-overrides '((file (styles . (orderless partial-completion)))))
   :config
-  (set-face-attribute 'completions-first-difference nil :inherit nil)
-  )
+  (set-face-attribute 'completions-first-difference nil :inherit nil))
 
 (use-package savehist :init (savehist-mode))
 
-(define-key vertico-map "?" #'minibuffer-completion-help)
-(define-key vertico-map (kbd "M-RET") #'minibuffer-force-complete-and-exit)
-(define-key vertico-map (kbd "M-TAB") #'minibuffer-complete)
-
 (use-package consult
   :hook (completion-list-mode . consult-preview-at-point-mode)
+  :preface
+  (defvar consult--fd-command nil)
+  (defun consult--fd-builder (input)
+    (unless consult--fd-command
+      (setq consult--fd-command
+            (if (eq 0 (call-process-shell-command "fdfind"))
+                "fdfind"
+              "fd")))
+    (pcase-let* ((`(,arg . ,opts) (consult--command-split input))
+                 (`(,re . ,hl) (funcall consult--regexp-compiler
+                                        arg 'extended)))
+      (when re
+        (list :command (append
+                        (list consult--fd-command
+                              "--color=never" "--full-path"
+                              (consult--join-regexps re 'extended))
+                        opts)
+              :highlight hl))))
+  (defun consult-fd (&optional dir initial)
+    (interactive "P")
+    (let* ((prompt-dir (consult--directory-prompt "Fd" dir))
+           (default-directory (cdr prompt-dir)))
+      (find-file (consult--find (car prompt-dir) #'consult--fd-builder initial))))
+  (defun consult-line-symbol-at-point ()
+    (interactive)
+    (consult-line (thing-at-point 'symbol)))
   :bind
   ;; ("C-c h" . consult-history)
   ;; ("C-c m" . consult-mode-command)
@@ -62,19 +98,15 @@
   ("M-s F" . consult-locate)
   ("M-s g" . consult-grep)
   ("M-s G" . consult-git-grep)
-  ("M-s r" . consult-ripgrep)
-  ("M-s l" . consult-line)
-  ("M-s L" . consult-line-multi)
-  ("M-s m" . consult-multi-occur)
-  ("M-s k" . consult-keep-lines)
-  ("M-s u" . consult-focus-lines)
-  ("M-s e" . consult-isearch)
-  ("C-s" . consult-line)
+  ("C-c h s" . consult-ripgrep)
+  ("C-c h f" . consult-fd)
+  ("M-s e" . consult-isearch-history)
+  ("C-s" . consult-line-symbol-at-point)
   (:map isearch-mode-map
-  ("M-e" . consult-isearch)
-  ("M-s e" . consult-isearch)
-  ("M-s l" . consult-line)
-  ("M-s L" . consult-line-multi))
+        ("M-e" . consult-isearch)
+        ("M-s e" . consult-isearch)
+        ("M-s l" . consult-line)
+        ("M-s L" . consult-line-multi))
   :init
   (setq register-preview-delay 0
         register-preview-function #'consult-register-format
@@ -99,6 +131,9 @@
   (autoload 'projectile-project-root "projectile")
   (setq consult-project-root-function #'projectile-project-root))
 
+(use-package consult-company
+  :bind (:map company-mode-map ([remap completion-at-point] . consult-company)))
+
 (use-package embark
   :bind
   ("C-." . embark-act)
@@ -119,20 +154,22 @@
 
 (use-package marginalia
   :init (marginalia-mode)
-  :config
-  (nconc marginalia-command-categories
-         '((persp-switch-to-buffer . buffer)
-           (projectile-find-file . project-file)))
-  :bind
-  ("M-A" . marginalia-cycle)
-  (:map minibuffer-local-map ("M-A" . marginalia-cycle)))
+  :custom
+  (marginalia-command-categories
+   '((imenu . imenu)
+     (persp-switch-to-buffer . buffer)
+     (projectile-find-file . project-file))))
 
 (use-package all-the-icons-completion
   :hook (marginalia-mode-hook . all-the-icons-completion-marginalia-setup)
   :init (all-the-icons-completion-mode))
 
+
 (use-package corfu
   :quelpa (corfu :fetcher github :repo "minad/corfu")
+  :hook ((prog-mode . corfu-mode)
+         (shell-mode . corfu-mode)
+         (eshell-mode . corfu-mode))
   :custom
   (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
   (corfu-auto t)                 ;; Enable auto completion
@@ -140,19 +177,44 @@
   (corfu-quit-at-boundary t)     ;; Automatically quit at word boundary
   (corfu-quit-no-match t)        ;; Automatically quit if there is no match
   ;; (corfu-echo-documentation nil) ;; Do not show documentation in the echo area
+  :bind
+  ("C-<tab>" . corfu-complete)
+  (:map corfu-map
+        ("TAB" . corfu-next)
+        ([tab] . corfu-next)
+        ("S-TAB" . corfu-previous)
+        ([backtab] . corfu-previous)))
 
-  ;; Optionally use TAB for cycling, default is `corfu-complete'.
-  ;; :bind (:map corfu-map
-  ;;        ("TAB" . corfu-next)
-  ;;        ([tab] . corfu-next)
-  ;;        ("S-TAB" . corfu-previous)
-  ;;        ([backtab] . corfu-previous))
+(use-package citar
+  :bind (("C-c b" . citar-insert-citation)
+         :map minibuffer-local-map
+         ("M-b" . citar-insert-preset))
+  :after (embark bibtex-completion)
+  :config
+  ;; Make the 'citar' bindings and targets available to `embark'.
+  (add-to-list 'embark-target-finders 'citar-citation-key-at-point)
+  (add-to-list 'embark-keymap-alist '(bib-reference . citar-map))
+  (add-to-list 'embark-keymap-alist '(citation-key . citar-buffer-map))
+  (setq citar-bibliography (f-glob "*.bib" my-bibliography-directory)))
 
-  ;; You may want to enable Corfu only for certain modes.
-  ;; :hook ((prog-mode . corfu-mode)
-  ;;        (shell-mode . corfu-mode)
-  ;;        (eshell-mode . corfu-mode))
 
-  :init (corfu-global-mode))
+(use-package citar-org
+  :quelpa (citar-org :fetcher github :repo "bdarcus/citar" :files ("citar-org.el"))
+  :bind (("C-c b" . org-cite-insert)
+         ("M-o" . org-open-at-point)
+         :map minibuffer-local-map
+         ("M-b" . citar-insert-preset))
+  :after (embark oc)
+  :config
+  (setq citar-bibliography my/bibs
+        org-cite-global-bibliography my/bibs
+        org-cite-insert-processor 'citar
+        org-cite-follow-processor 'citar
+        org-cite-activate-processor 'citar))
+
+(setq citar-at-point-function 'embark-act)
+
+;; use consult-completing-read for enhanced interface
+(advice-add #'completing-read-multiple :override #'consult-completing-read-multiple)
 
 (provide 'usta-vertico)

@@ -68,15 +68,6 @@
   (bibtex-completion-find-additional-pdfs t)
   (bibtex-completion-notes-path (concat my-notes-directory "/Papers.org")))
 
-(use-package tramp
-  :commands (tramp-cleanup-all-connections tramp-cleanup-all-buffers)
-  :config (defun tramp-done ()
-            (interactive)
-            (tramp-cleanup-all-connections)
-            (tramp-cleanup-all-buffers))
-  :custom
-  (tramp-backup-directory-alist backup-directory-alist))
-
 (use-package helm-tramp)
 
 (use-package helm-swoop

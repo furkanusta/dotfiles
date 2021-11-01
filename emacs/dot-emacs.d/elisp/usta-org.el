@@ -437,7 +437,7 @@ With a prefix ARG, remove start location."
 (use-package orgtbl-join)
 (use-package mysql-to-org)
 (use-package ob-sql-mode)
-(use-package org-simple-timeline)
+(use-package ox-timeline)
 (use-package org-latex-impatient)
 (use-package org-board)
 (use-package org-reverse-datetree)
