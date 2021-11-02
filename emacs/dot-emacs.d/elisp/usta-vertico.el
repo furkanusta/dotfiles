@@ -35,9 +35,10 @@
 
 (use-package orderless
   :custom
-  (completion-styles '(substring orderless))
+  (completion-styles '(orderless))
   (completion-category-defaults nil)
   (completion-category-overrides '((file (styles . (orderless partial-completion)))))
+  (orderless-matching-styles  '(orderless-prefixes orderless-literal orderless-regexp orderless-flex))
   :config
   (set-face-attribute 'completions-first-difference nil :inherit nil))
 
@@ -167,19 +168,17 @@
   :hook (marginalia-mode-hook . all-the-icons-completion-marginalia-setup)
   :init (all-the-icons-completion-mode))
 
-
 (use-package corfu
+  :after orderless
   :quelpa (corfu :fetcher github :repo "minad/corfu")
   :hook ((prog-mode . corfu-mode)
          (shell-mode . corfu-mode)
          (eshell-mode . corfu-mode))
   :custom
-  (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
-  (corfu-auto t)                 ;; Enable auto completion
-  ;; (corfu-commit-predicate nil)   ;; Do not commit selected candidates on next input
-  (corfu-quit-at-boundary t)     ;; Automatically quit at word boundary
-  (corfu-quit-no-match t)        ;; Automatically quit if there is no match
-  ;; (corfu-echo-documentation nil) ;; Do not show documentation in the echo area
+  (corfu-cycle t)
+  (corfu-auto t)
+  (corfu-quit-at-boundary nil)
+  (corfu-quit-no-match t)
   :bind
   ("C-<tab>" . corfu-complete)
   (:map corfu-map

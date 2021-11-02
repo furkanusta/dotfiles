@@ -46,13 +46,14 @@
 (use-package usta-company :load-path "elisp/" :demand t)
 (use-package usta-dired :load-path "elisp/" :demand t)
 (use-package usta-elfeed :load-path "elisp/" :demand t)
-;; (use-package usta-helm :load-path "elisp/" :demand t)
 (use-package usta-latex :load-path "elisp/" :demand t)
 (use-package usta-navigation :load-path "elisp/" :demand t)
 (use-package usta-org :load-path "elisp/" :demand t)
 (use-package usta-prog :load-path "elisp/" :demand t)
 (use-package usta-prog-lang :load-path "elisp/" :demand t)
 (use-package usta-uncategorized :load-path "elisp/" :demand t)
+(use-package usta-vertico :load-path "elisp/" :demand t)
 (use-package usta-visuals :load-path "elisp/" :demand t)
 
-(use-package usta-vertico :load-path "elisp/" :demand t)
+
+(use-package helm-tramp)

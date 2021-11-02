@@ -178,11 +178,6 @@ With a prefix ARG, remove start location."
   (org-noter-auto-save-last-location t)
   (org-noter-insert-note-no-questions t))
 
-(use-package org-books
-  :custom
-  (org-books-file (concat my-notes-directory "/Books.org"))
-  (org-books-file-depth 0))
-
 (use-package org-special-block-extras)
 
 (use-package org-marginalia
