@@ -283,6 +283,7 @@ With a prefix ARG, remove start location."
 
 (use-package org-rich-yank
   :demand t
+  :after org
   :bind (:map org-mode-map ("C-M-y" . org-rich-yank)))
 
 (use-package org-link-beautify

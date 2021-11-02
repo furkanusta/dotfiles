@@ -71,6 +71,9 @@
   (defun consult-line-symbol-at-point ()
     (interactive)
     (consult-line (thing-at-point 'symbol)))
+  (defun my-consult-ripgrep ()
+    (interactive)
+    (consult-ripgrep (or (projectile-project-root) default-directory) (thing-at-point 'symbol)))
   :bind
   ;; ("C-c h" . consult-history)
   ;; ("C-c m" . consult-mode-command)
@@ -98,7 +101,7 @@
   ("M-s F" . consult-locate)
   ("M-s g" . consult-grep)
   ("M-s G" . consult-git-grep)
-  ("C-c h s" . consult-ripgrep)
+  ("C-c h s" . my-consult-ripgrep)
   ("C-c h f" . consult-fd)
   ("M-s e" . consult-isearch-history)
   ("C-s" . consult-line-symbol-at-point)
@@ -198,19 +201,19 @@
   (setq citar-bibliography (f-glob "*.bib" my-bibliography-directory)))
 
 
-(use-package citar-org
-  :quelpa (citar-org :fetcher github :repo "bdarcus/citar" :files ("citar-org.el"))
-  :bind (("C-c b" . org-cite-insert)
-         ("M-o" . org-open-at-point)
-         :map minibuffer-local-map
-         ("M-b" . citar-insert-preset))
-  :after (embark oc)
-  :config
-  (setq citar-bibliography my/bibs
-        org-cite-global-bibliography my/bibs
-        org-cite-insert-processor 'citar
-        org-cite-follow-processor 'citar
-        org-cite-activate-processor 'citar))
+;; (use-package citar-org
+;;   :quelpa (citar-org :fetcher github :repo "bdarcus/citar" :files ("citar-org.el"))
+;;   :bind (("C-c b" . org-cite-insert)
+;;          ("M-o" . org-open-at-point)
+;;          :map minibuffer-local-map
+;;          ("M-b" . citar-insert-preset))
+;;   :after (embark oc)
+;;   :config
+;;   (setq citar-bibliography my/bibs
+;;         org-cite-global-bibliography my/bibs
+;;         org-cite-insert-processor 'citar;
+;         org-cite-follow-processor 'citar
+;;         org-cite-activate-processor 'citar))
 
 (setq citar-at-point-function 'embark-act)
 
