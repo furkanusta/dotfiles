@@ -20,8 +20,8 @@
   (package-install 'use-package))
 (require 'use-package)
 
-;; (setq-default use-package-always-defer t)
-(setq-default use-package-always-ensure t)
+(setq-default use-package-always-defer t)
+;; (setq-default use-package-always-ensure t)
 
 (use-package quelpa
   :custom (quelpa-update-melpa-p nil))

@@ -24,7 +24,6 @@
 
 (use-package perspective
   :commands persp-current-buffers
-  :after helm
   :config (persp-mode t)
   :preface
   (defvar perspective-skip-ignore-list '("*dashboard*" "*Messages*" "*Warnings*" "*elfeed-search*" "*Fd*"))

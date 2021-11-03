@@ -131,6 +131,7 @@
   (org-ref-show-broken-links t))
 
 (use-package org-ref-prettify
+  :after org-ref
   :hook (org-mode . org-ref-prettify-mode))
 
 (use-package org-pdftools
