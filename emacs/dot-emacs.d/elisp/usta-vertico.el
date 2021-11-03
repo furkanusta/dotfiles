@@ -38,7 +38,7 @@
   (completion-styles '(orderless))
   (completion-category-defaults nil)
   (completion-category-overrides '((file (styles . (orderless partial-completion)))))
-  (orderless-matching-styles  '(orderless-prefixes orderless-literal orderless-regexp orderless-flex))
+  (orderless-matching-styles  '(orderless-literal orderless-prefixes))
   :config
   (set-face-attribute 'completions-first-difference nil :inherit nil))
 
