@@ -158,4 +158,6 @@
 (use-package secret-mode
   :quelpa (secret-mode :fetcher github :repo "bkaestner/secret-mode.el"))
 
+(use-package sudoedit)
+
 (provide 'usta-uncategorized)

@@ -139,17 +139,31 @@
   :bind (:map company-mode-map ([remap completion-at-point] . consult-company)))
 
 (use-package embark
+  :after vertico
+  :init (setq prefix-help-command #'embark-prefix-help-command)
+  :custom (embark-indicators '(embark-verbose-indicator))
+  :preface
+  (defun sudo-find-file (file)
+    "Open FILE as root."
+    (interactive "FOpen file as root: ")
+    (when (file-writable-p file)
+      (user-error "File is user writeable, aborting sudo"))
+    (find-file (if (file-remote-p file)
+                   (concat "/" (file-remote-p file 'method) ":"
+                           (file-remote-p file 'user) "@" (file-remote-p file 'host)
+                           "|sudo:root@"
+                           (file-remote-p file 'host) ":" (file-remote-p file 'localname))
+                 (concat "/sudo:root@localhost:" file))))
   :bind
   ("C-." . embark-act)
   ("C-;" . embark-dwim)
+  ("C-:" . embark-export)
   ("C-h B" . embark-bindings)
+  (:map vertico-map
+        ("C-." . embark-act))
   (:map embark-file-map
-        ("s" . sudo-edit))
-  :init (setq prefix-help-command #'embark-prefix-help-command)
-  :config (add-to-list 'display-buffer-alist
-                       '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
-                         nil
-                         (window-parameters (mode-line-format . none)))))
+        ("s" . sudo-edit)
+        ("S" . sudo-find-file)))
 
 (use-package embark-consult
   :after (embark consult)
