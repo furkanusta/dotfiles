@@ -79,7 +79,7 @@
   ;; ("C-c h" . consult-history)
   ;; ("C-c m" . consult-mode-command)
   ("M-g b" . consult-bookmark)
-  ("C-c k" . consult-kmacro)
+  ;; ("C-c k" . consult-kmacro)
   ("C-x M-:" . consult-complex-command)
   ("C-x b" . consult-buffer)
   ("C-x 4 b" . consult-buffer-other-window)

@@ -161,6 +161,7 @@
   ("C-w" . xah-cut-line-or-region)
   ("M-w" . xah-copy-line-or-region)
   ("M-k" . kill-whole-line)
+  ("C-x C-f" . find-file-at-point)
   ("RET" . newline-and-indent)
   ([remap fill-paragraph] . endless/fill-or-unfill)
   (:map prog-mode-map ("<tab>" . indent-for-tab-command)))
@@ -225,5 +226,21 @@
   :bind ("C-c H S" . isearch-forward))
 
 (use-package eww :ensure nil)
+
+(use-package compilation :ensure nil
+  :preface
+  (make-variable-buffer-local 'my-compilation-start-time)
+  (defun my-compilation-start-hook (proc)
+    (setq my-compilation-start-time (current-time)))
+  (defun my-compilation-finish-function (buf why)
+    (let* ((elapsed  (time-subtract nil my-compilation-start-time))
+           (msg (format "Elapsed: %s" (format-time-string "%T.%N" elapsed t))))
+      (save-excursion (goto-char (point-max)) (insert msg))
+      (alert (format "Emacs: %s at %s" why (buffer-name buf)))
+      (message "Compilation %s: %s" (string-trim-right why) msg)))
+  :hook
+  (compilation-start . my-compilation-start-hook)
+  :config
+  (add-hook 'compilation-finish-functions #'my-compilation-finish-function))
 
 (provide 'usta-builtins)
