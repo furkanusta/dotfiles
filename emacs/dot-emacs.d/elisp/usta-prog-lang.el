@@ -153,9 +153,9 @@
 (use-package sly
   :config (sly-setup '(sly-mrepl)))
 
-(use-package smartparens)
-
-(use-package smartparens-config :ensure smartparens)
+(use-package smartparens
+  :hook (prog-mode . smartparens-mode)
+  :init (require 'smartparens-config))
 
 (use-package lisp-extra-font-lock
   :hook (emacs-lisp-mode . lisp-extra-font-lock-mode))
