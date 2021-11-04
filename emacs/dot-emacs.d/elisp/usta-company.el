@@ -1,7 +1,7 @@
 ;; -*- lexical-binding: t; -*-
 ;; Generic
 (use-package company
-  :hook (prog-mode . company-mode)
+  ;; :hook (prog-mode . company-mode)
   :custom
   (company-backends '(company-cmake company-capf company-files))
   (completion-ignore-case t)

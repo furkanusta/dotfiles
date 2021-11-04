@@ -202,16 +202,18 @@
         ([backtab] . corfu-previous)))
 
 (use-package citar
+  :after embark
   :bind (("C-c b" . citar-insert-citation)
          :map minibuffer-local-map
          ("M-b" . citar-insert-preset))
   :after (embark bibtex-completion)
+  :custom
+  (citar-bibliography (f-glob "*.bib" my-bibliography-directory))
+  (citar-at-point-function 'embark-act)
   :config
-  ;; Make the 'citar' bindings and targets available to `embark'.
   (add-to-list 'embark-target-finders 'citar-citation-key-at-point)
   (add-to-list 'embark-keymap-alist '(bib-reference . citar-map))
-  (add-to-list 'embark-keymap-alist '(citation-key . citar-buffer-map))
-  (setq citar-bibliography (f-glob "*.bib" my-bibliography-directory)))
+  (add-to-list 'embark-keymap-alist '(citation-key . citar-buffer-map)))
 
 
 ;; (use-package citar-org
@@ -228,9 +230,7 @@
 ;         org-cite-follow-processor 'citar
 ;;         org-cite-activate-processor 'citar))
 
-(setq citar-at-point-function 'embark-act)
-
-;; use consult-completing-read for enhanced interface
-(advice-add #'completing-read-multiple :override #'consult-completing-read-multiple)
+(use-package consult-flycheck
+  :bind ("C-c l f" . consult-flycheck))
 
 (provide 'usta-vertico)
