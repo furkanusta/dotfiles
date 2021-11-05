@@ -191,7 +191,8 @@
   :custom
   (corfu-cycle t)
   (corfu-auto t)
-  (corfu-quit-at-boundary nil)
+  (corfu-commit-predicate nil)
+  (corfu-quit-at-boundary t)
   (corfu-quit-no-match t)
   :bind
   ("C-<tab>" . corfu-complete)
