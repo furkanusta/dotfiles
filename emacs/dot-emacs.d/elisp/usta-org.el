@@ -438,7 +438,14 @@ With a prefix ARG, remove start location."
 (use-package org-latex-impatient)
 (use-package org-board)
 (use-package org-reverse-datetree)
+
 (use-package ob-blockdiag)
+(use-package ob-mermaid)
+(use-package ob-diagrams)
+(use-package ob-napkin)
+(use-package ob-reticulate)
+(use-package axiom-environment)
+
 (use-package org-clock-convenience)
 (use-package ox-report)
 (use-package org-babel-eval-in-repl)

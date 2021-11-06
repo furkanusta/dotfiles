@@ -165,4 +165,12 @@
   :custom
   (tramp-backup-directory-alist backup-directory-alist))
 
+(use-package eval-in-repl
+  :custom
+  (eir-jump-after-eval nil)
+  (eir-repl-placement 'right)
+  :bind
+  (:map emacs-lisp-mode-map ("C-<return>" . eir-eval-in-ielm))
+  (:map lisp-interaction-mode-map ("C-<return>" . eir-eval-in-ielm)))
+
 (provide 'usta-prog)
