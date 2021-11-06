@@ -430,8 +430,10 @@ With a prefix ARG, remove start location."
 (use-package orgit)
 (use-package orgit-forge)
 
+(use-package ox-hugo)
 (use-package orgtbl-aggregate)
 (use-package orgtbl-join)
+(use-package orgtbl-edit)
 (use-package mysql-to-org)
 (use-package ob-sql-mode)
 (use-package ox-timeline)

@@ -173,4 +173,7 @@
   (:map emacs-lisp-mode-map ("C-<return>" . eir-eval-in-ielm))
   (:map lisp-interaction-mode-map ("C-<return>" . eir-eval-in-ielm)))
 
+(use-package auto-highlight-symbol
+  :custom (global-auto-highlight-symbol-mode t))
+
 (provide 'usta-prog)
