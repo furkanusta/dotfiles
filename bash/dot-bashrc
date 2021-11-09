@@ -105,5 +105,3 @@ function _comp-kdesrc-run
 
 ## Register autocomplete function
 complete -o nospace -F _comp-kdesrc-run kdesrc-run
-
-################################################################################

@@ -369,7 +369,7 @@ With a prefix ARG, remove start location."
 
 (use-package ein)
 
-(use-package ob-ein :ensure ein)
+;; (use-package ob-ein :ensure ein)
 
 (use-package jupyter)
 
@@ -433,7 +433,7 @@ With a prefix ARG, remove start location."
 (use-package ox-hugo)
 (use-package orgtbl-aggregate)
 (use-package orgtbl-join)
-(use-package orgtbl-edit)
+;; (use-package orgtbl-edit)
 (use-package mysql-to-org)
 (use-package ob-sql-mode)
 (use-package ox-timeline)
