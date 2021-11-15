@@ -170,8 +170,8 @@
   (eir-jump-after-eval nil)
   (eir-repl-placement 'right)
   :bind
-  (:map emacs-lisp-mode-map ("C-<return>" . eir-eval-in-ielm))
-  (:map lisp-interaction-mode-map ("C-<return>" . eir-eval-in-ielm)))
+  (:map emacs-lisp-mode-map ("C-M-<return>" . eir-eval-in-ielm))
+  (:map lisp-interaction-mode-map ("C-M-<return>" . eir-eval-in-ielm)))
 
 (use-package auto-highlight-symbol
   :custom (global-auto-highlight-symbol-mode t))

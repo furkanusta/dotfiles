@@ -37,7 +37,6 @@
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((python . t)
-     ;; (http . t)
      (shell . t)
      (emacs-lisp . t)))
   (add-to-list 'company-backends 'company-capf))
