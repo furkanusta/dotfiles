@@ -11,6 +11,14 @@
               (process-connection-type nil))
           (start-process "" nil "xdg-open" (file-truename file)))
       nil))
+  (defun dired-open-current-directory-xdg ()
+    "Try to run `xdg-open' to open the current directory."
+    (interactive)
+    (if (executable-find "xdg-open")
+        (let ((file (ignore-errors default-directory))
+              (process-connection-type nil))
+          (start-process "" nil "xdg-open" (file-truename file)))
+      nil))
   (defun dired-current-dir ()
     (interactive)
     (dired default-directory))
@@ -24,7 +32,8 @@
   :bind
   ("C-x d" . dired-current-dir)
   (:map dired-mode-map
-        ("E" . dired-open-xdg)))
+        ("E" . dired-open-current-directory-xdg)
+        ("e" . dired-open-xdg)))
 
 (use-package dired-hide-dotfiles
   :hook (dired-mode . dired-hide-dotfiles-mode)

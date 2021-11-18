@@ -122,6 +122,7 @@
                 scroll-step 1
                 sentence-end-double-space -1
                 fill-column 100
+                emacs-lisp-docstring-fill-column 100
                 scroll-step 1
                 scroll-conservatively 10000
                 auto-window-vscroll nil
