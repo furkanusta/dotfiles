@@ -121,7 +121,7 @@
   :init
   (advice-add #'register-preview :override #'consult-register-window)
   (advice-add #'completing-read-multiple :override #'consult-completing-read-multiple)
-  :customize
+  :custom
   (consult-project-root-function #'projectile-project-root)
   (register-preview-delay 0)
   (register-preview-function #'consult-register-format)
