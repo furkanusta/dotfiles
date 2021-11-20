@@ -45,6 +45,8 @@
 (use-package savehist :init (savehist-mode))
 
 (use-package consult
+  :after projectile
+  :defines projectile-project-root
   :hook (completion-list-mode . consult-preview-at-point-mode)
   :preface
   (defvar consult--fd-command nil)
@@ -117,28 +119,35 @@
         ("M-s l" . consult-line)
         ("M-s L" . consult-line-multi))
   :init
-  (setq register-preview-delay 0
-        register-preview-function #'consult-register-format
-        xref-show-xrefs-function #'consult-xref
-        xref-show-definitions-function #'consult-xref
-        consult-preview-key (kbd "M-.")
-        consult-narrow-key "<")
   (advice-add #'register-preview :override #'consult-register-window)
   (advice-add #'completing-read-multiple :override #'consult-completing-read-multiple)
+  :customize
+  (consult-project-root-function #'projectile-project-root)
+  (register-preview-delay 0)
+  (register-preview-function #'consult-register-format)
+  (xref-show-xrefs-function #'consult-xref)
+  (xref-show-definitions-function #'consult-xref)
+  (consult-preview-key (kbd "M-."))
+  (consult-narrow-key "<")
   :config
-  ;; For some commands and buffer sources it is useful to configure the
-  ;; :preview-key on a per-command basis using the `consult-customize' macro.
   (consult-customize
-   consult-theme
-   :preview-key '(:debounce 0.2 any)
-   consult-ripgrep consult-git-grep consult-grep
+   consult-line consult-line-symbol-at-point consult-ripgrep
+   consult-git-grep consult-grep
    consult-bookmark consult-recent-file consult-xref
    consult--source-file consult--source-project-file consult--source-bookmark
-   :preview-key (kbd "M-."))
-  ;; You may want to use `embark-prefix-help-command' or which-key instead.
-  (define-key consult-narrow-map (vconcat consult-narrow-key "?") #'consult-narrow-help)
-  (autoload 'projectile-project-root "projectile")
-  (setq consult-project-root-function #'projectile-project-root))
+   :preview-key '(:debounce 0.01 any))
+  (define-key consult-narrow-map (vconcat consult-narrow-key "?") #'consult-narrow-help))
+
+
+
+
+;; (consult-customize consult-theme :preview-key '(:debounce 0.1 any))
+
+;; (consult-customize :preview-key
+;;                    (list (kbd "M-.")
+;;                          :debounce 0.1 (kbd "<up>") (kbd "<down>")
+;;                          :debounce 0.1 'any))
+
 
 (use-package consult-company
   :bind (:map company-mode-map ([remap completion-at-point] . consult-company)))
@@ -238,5 +247,8 @@
 
 (use-package consult-flycheck
   :bind ("C-c l f" . consult-flycheck))
+
+
+(use-package consult-tramp)
 
 (provide 'usta-vertico)
