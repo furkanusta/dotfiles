@@ -96,6 +96,7 @@
      ("https://simoncoenen.com/feed.xml" prog)
      ("https://zipcpu.com/feed.xml" prog fpga)
      ("https://xania.org/feed.atom" prog cpp)
+     ("https://emacsredux.com/atom.xml" prog emacs)
      ("https://www.youtube.com/feeds/videos.xml?channel_id=UC-xTvXTm-lrLWYk308-Km3A" youtube)
      ("https://www.youtube.com/feeds/videos.xml?channel_id=UCsvn_Po0SmunchJYOWpOxMg" youtube)
      ("https://www.youtube.com/feeds/videos.xml?channel_id=UCCpTaib_e5C6Q95qwazq8OA" youtube)
