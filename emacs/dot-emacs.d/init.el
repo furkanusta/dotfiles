@@ -1,7 +1,5 @@
 ;;; -*- lexical-binding: t -*-
 ;; Initialization
-(setq gc-cons-threshold 64000000)
-
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 (package-initialize)
