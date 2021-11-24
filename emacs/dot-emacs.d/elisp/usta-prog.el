@@ -79,6 +79,18 @@
 
 (use-package gitignore-mode)
 
+(use-package magit-pretty-graph
+  :quelpa (magit-pretty-graph :fetcher github :repo "georgek/magit-pretty-graph")
+  :after magit
+  :preface
+  (defun magit-pretty-log ()
+    (interactive)
+    (magit-pg-repo (or (projectile-project-root) default-directory))
+    (with-current-buffer (get-buffer "*magit-prettier-graph*")
+      (view-mode +1)))
+  :init
+  (transient-append-suffix 'magit-log "l" '("p" "Pretty Log" magit-pretty-log)))
+
 (use-package copy-as-format
   :custom (copy-as-format-default "github"))
 
