@@ -248,7 +248,6 @@
 (use-package consult-flycheck
   :bind ("C-c l f" . consult-flycheck))
 
-
-(use-package consult-tramp)
+(use-package consult-tramp :load-path "elisp/")
 
 (provide 'usta-vertico)
