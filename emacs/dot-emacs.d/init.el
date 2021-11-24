@@ -41,7 +41,7 @@
     (inhibit-same-window . t)))
 
 (use-package usta-builtins :load-path "elisp/" :demand t)
-(use-package usta-company :load-path "elisp/" :demand t)
+;; (use-package usta-company :load-path "elisp/" :demand t)
 (use-package usta-dired :load-path "elisp/" :demand t)
 (use-package usta-elfeed :load-path "elisp/" :demand t)
 (use-package usta-latex :load-path "elisp/" :demand t)

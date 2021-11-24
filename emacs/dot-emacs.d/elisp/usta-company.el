@@ -29,4 +29,21 @@
 (use-package company-flx
   :hook (company-mode . company-flx-mode))
 
+(use-package company-reftex
+  :after company
+  :hook (LaTeX-mode . (lambda (progn
+                                (add-to-list 'company-backends #'company-reftex-labels)
+                                (add-to-list 'company-backends #'company-reftex-citations)))))
+
+(use-package company-math
+  :after company
+  :hook (LaTeX-mode . (lambda (progn
+                                (add-to-list 'company-backends #'company-math-symbols-unicode)))))
+
+(use-package company-math)
+
+(use-package company-auctex
+  :commands company-auctex-init
+  :config (company-auctex-init))
+
 (provide 'usta-company)

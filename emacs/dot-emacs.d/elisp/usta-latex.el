@@ -31,23 +31,6 @@
 (use-package cdlatex
   :hook (LaTeX-mode . cdlatex-mode))
 
-(use-package company-reftex
-  :after company
-  :hook (LaTeX-mode . (lambda (progn
-                                (add-to-list 'company-backends #'company-reftex-labels)
-                                (add-to-list 'company-backends #'company-reftex-citations)))))
-
-(use-package company-math
-  :after company
-  :hook (LaTeX-mode . (lambda (progn
-                                (add-to-list 'company-backends #'company-math-symbols-unicode)))))
-
-(use-package company-math)
-
-(use-package company-auctex
-  :commands company-auctex-init
-  :config (company-auctex-init))
-
 (use-package auctex-latexmk
   :commands auctex-latexmk-setup
   :config (auctex-latexmk-setup)

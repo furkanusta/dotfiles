@@ -38,8 +38,7 @@
    'org-babel-load-languages
    '((python . t)
      (shell . t)
-     (emacs-lisp . t)))
-  (add-to-list 'company-backends 'company-capf))
+     (emacs-lisp . t))))
 
 (use-package ob-async)
 

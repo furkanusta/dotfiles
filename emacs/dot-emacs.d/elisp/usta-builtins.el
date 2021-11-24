@@ -139,6 +139,7 @@
                 read-buffer-completion-ignore-case t
                 font-use-system-font t)
   :custom
+  (confirm-kill-processes nil)
   (column-number-mode 1)
   (display-time-default-load-average nil)
   (display-time-load-average-threshold 100.0)

@@ -196,6 +196,7 @@
   :hook (marginalia-mode-hook . all-the-icons-completion-marginalia-setup)
   :init (all-the-icons-completion-mode))
 
+
 (use-package corfu
   :after orderless
   :quelpa (corfu :fetcher github :repo "minad/corfu")
@@ -215,6 +216,26 @@
         ([tab] . corfu-next)
         ("S-TAB" . corfu-previous)
         ([backtab] . corfu-previous)))
+
+;; Add extensions
+(use-package cape
+  :init
+  ;; Add `completion-at-point-functions', used by `completion-at-point'.
+  (add-to-list 'completion-at-point-functions #'cape-file-capf)
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev-capf)
+  (add-to-list 'completion-at-point-functions #'cape-keyword-capf)
+  ;;(add-to-list 'completion-at-point-functions #'cape-abbrev-capf)
+  ;;(add-to-list 'completion-at-point-functions #'cape-ispell-capf)
+  ;;(add-to-list 'completion-at-point-functions #'cape-dict-capf)
+)
+
+;; (use-package kind-icon
+;;   :after corfu
+;;   :defer nil
+;;   :custom
+;;   (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
+;;   :config
+;;   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
 (use-package citar
   :after embark

@@ -120,7 +120,6 @@
 (use-package evil-nerd-commenter :bind ("M-;" . evilnc-comment-or-uncomment-lines))
 
 (use-package vterm
-  :hook (vterm-mode . (lambda () (setq-local confirm-kill-processes nil)))
   :commands (vterm-next-prompt vterm-prev-prompt)
   :config (add-to-list 'display-buffer-alist (cons "\\*vterm" use-other-window-alist))
   :preface
