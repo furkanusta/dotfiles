@@ -37,6 +37,8 @@
   (dashboard-set-heading-icons t)
   (dashboard-set-file-icons t)
   (dashboard-page-separator "\n\f\n")
+  (dashboard-projects-backend 'projectile)
+  (dashboard-projects-switch-function 'projectile-persp-switch-project)
   (dashboard-items '((scratch . 6)
                      (recents  . 5)
                      (bookmarks . 5)
