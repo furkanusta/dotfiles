@@ -108,6 +108,16 @@
   (org-appear-autosubmarkers t)
   (org-appear-autoentities t))
 
+(use-package oc
+  :custom
+  (org-cite-global-bibliography bibtex-completion-bibliography)
+  (org-cite-export-processors '((latex biblatex) (t csl)))
+  (org-support-shift-select t))
+
+(use-package oc-biblatex :after oc)
+(use-package oc-csl :after oc)
+(use-package oc-natbib :after oc)
+
 (use-package toc-org
   :hook (org-mode . toc-org-mode))
 
@@ -301,10 +311,10 @@ With a prefix ARG, remove start location."
   :bind ("C-c t n" . side-notes-toggle-notes))
 
 (use-package org-roam
+  :init (setq org-roam-v2-ack t)
   :custom
   (org-roam-directory my-notes-directory)
   (org-roam-auto-replace-fuzzy-links nil)
-  (org-roam-v2-ack t)
   :bind
   ("C-c n l" . org-roam-buffer-toggle)
   ("C-c n f" . org-roam-node-find)

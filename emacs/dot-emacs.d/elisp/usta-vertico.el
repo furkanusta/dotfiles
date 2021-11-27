@@ -131,8 +131,8 @@
   (consult-narrow-key "<")
   :config
   (consult-customize
-   consult-line consult-line-symbol-at-point consult-ripgrep
-   consult-git-grep consult-grep
+   consult-line consult-line-symbol-at-point my-consult-ripgrep
+   consult-git-grep consult-grep consult-ripgrep my-consult-ripgrep-here
    consult-bookmark consult-recent-file consult-xref
    consult--source-file consult--source-project-file consult--source-bookmark
    :preview-key '(:debounce 0.01 any))
@@ -220,36 +220,35 @@
 ;; Add extensions
 (use-package cape
   :init
-  ;; Add `completion-at-point-functions', used by `completion-at-point'.
-  (add-to-list 'completion-at-point-functions #'cape-file-capf)
-  (add-to-list 'completion-at-point-functions #'cape-dabbrev-capf)
-  (add-to-list 'completion-at-point-functions #'cape-keyword-capf)
-  ;;(add-to-list 'completion-at-point-functions #'cape-abbrev-capf)
-  ;;(add-to-list 'completion-at-point-functions #'cape-ispell-capf)
-  ;;(add-to-list 'completion-at-point-functions #'cape-dict-capf)
-)
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+  (add-to-list 'completion-at-point-functions #'cape-keyword))
 
-;; (use-package kind-icon
-;;   :after corfu
-;;   :defer nil
-;;   :custom
-;;   (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
-;;   :config
-;;   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
+(use-package kind-icon
+  :after corfu
+  :defer nil
+  :custom (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
+  :config (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
 (use-package citar
-  :after embark
-  :bind (("C-c b" . citar-insert-citation)
-         :map minibuffer-local-map
-         ("M-b" . citar-insert-preset))
-  :after (embark bibtex-completion)
+  :after (embark bibtex-completion oc)
   :custom
   (citar-bibliography (f-glob "*.bib" my-bibliography-directory))
   (citar-at-point-function 'embark-act)
   :config
+  (append org-cite-global-bibliography citar-bibliography)
+  (setq org-cite-insert-processor 'citar
+        org-cite-follow-processor 'citar
+        org-cite-activate-processor 'citar
+        citar-file-note-org-include '(org-id org-roam-ref))
   (add-to-list 'embark-target-finders 'citar-citation-key-at-point)
   (add-to-list 'embark-keymap-alist '(bib-reference . citar-map))
-  (add-to-list 'embark-keymap-alist '(citation-key . citar-buffer-map)))
+  (add-to-list 'embark-keymap-alist '(citation-key . citar-buffer-map))
+  :bind
+  (
+   ;; ("C-c b" . citar-insert-citation)
+   :map minibuffer-local-map
+   ("M-b" . citar-insert-preset)))
 
 
 ;; (use-package citar-org

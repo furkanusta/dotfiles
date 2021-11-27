@@ -77,6 +77,7 @@
   ((latex-mode . lsp)
    (bibtex-mode . lsp))
   :custom
+  (lsp-latex-texlab-executable "/home/eksi/.local/prog/texlab/target/release/texlab")
   (lsp-latex-forward-search-executable "emacsclient")
   (lsp-latex-forward-search-args '("--eval" "(lsp-latex-forward-search-with-pdf-tools \"%f\" \"%p\" \"%l\")")))
 
