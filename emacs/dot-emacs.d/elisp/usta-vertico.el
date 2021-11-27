@@ -236,12 +236,11 @@
   (citar-bibliography (f-glob "*.bib" my-bibliography-directory))
   (citar-at-point-function 'embark-act)
   :config
-  (append org-cite-global-bibliography citar-bibliography)
+  (setq org-cite-global-bibliography (append org-cite-global-bibliography citar-bibliography))
   (setq org-cite-insert-processor 'citar
         org-cite-follow-processor 'citar
         org-cite-activate-processor 'citar
         citar-file-note-org-include '(org-id org-roam-ref))
-  (add-to-list 'embark-target-finders 'citar-citation-key-at-point)
   (add-to-list 'embark-keymap-alist '(bib-reference . citar-map))
   (add-to-list 'embark-keymap-alist '(citation-key . citar-buffer-map))
   :bind
