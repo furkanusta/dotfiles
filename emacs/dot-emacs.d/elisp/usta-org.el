@@ -110,7 +110,6 @@
 
 (use-package oc
   :custom
-  (org-cite-global-bibliography bibtex-completion-bibliography)
   (org-cite-export-processors '((latex biblatex) (t csl)))
   (org-support-shift-select t))
 
