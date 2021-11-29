@@ -70,7 +70,10 @@
 
 (use-package flyspell-correct
   :after flyspell
-  :bind ("C-;" . flyspell-correct-wrapper))
+  :bind
+  (:map flyspell-mode-map
+        ("C-c $" . flyspell-correct-at-point)
+        ("C-;" . flyspell-correct-wrapper)))
 
 (use-package wgrep)
 

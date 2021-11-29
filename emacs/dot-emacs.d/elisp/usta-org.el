@@ -271,8 +271,6 @@ With a prefix ARG, remove start location."
 
 (use-package org-ql)
 
-(use-package org-linker :quelpa (org-linker :fetcher github :repo "toshism/org-linker"))
-
 (use-package org-super-links
   :quelpa (org-super-links :fetcher github :repo "toshism/org-super-links")
   :bind (:map org-mode-map
@@ -426,8 +424,6 @@ With a prefix ARG, remove start location."
   (org-mode . org-download-enable))
 
 (use-package org-mru-clock
-  :custom
-  (org-mru-clock-completing-read #'helm-completing-read)
   :bind
   ("C-c C-x c" . org-mru-clock-in)
   ("C-c C-x C-c" . org-mru-clock-select-recent-task))

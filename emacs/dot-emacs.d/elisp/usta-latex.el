@@ -55,16 +55,7 @@
   :hook (latex-mode . magic-latex-buffer))
 
 (use-package latexdiff
-  ;; :after helm
-  ;; :functions helm-make-source
   :preface
-  ;; (defvar helm-source-latexdiff-choose-commit
-  ;;   (helm-make-source "Latexdiff choose a commit:"
-  ;;       'helm-source-sync
-  ;;       :candidates 'latexdiff--get-commit-hash-alist
-  ;;       :action '(("Choose this commit" .
-  ;;                  latexdiff-vc--compile-diff-with-current)))
-  ;;   "Helm source for modified projectile projects.")
   (defun latexdiff-wip ()
     "Compile the pdf difference between the choosen commit and the current version of the current file."
     (interactive)
