@@ -233,8 +233,10 @@
 
 (use-package citar
   :after (embark bibtex-completion oc)
+  :demand t
   :custom
   (citar-bibliography (f-glob "*.bib" my-bibliography-directory))
+  (citar-library-paths (list my-papers-directory (concat my-papers-directory "/Papers")))
   (citar-at-point-function 'embark-act)
   :config
   (setq org-cite-global-bibliography (append org-cite-global-bibliography citar-bibliography))
@@ -245,25 +247,22 @@
   (add-to-list 'embark-keymap-alist '(bib-reference . citar-map))
   (add-to-list 'embark-keymap-alist '(citation-key . citar-buffer-map))
   :bind
-  (
-   ;; ("C-c b" . citar-insert-citation)
-   :map minibuffer-local-map
+  (:map minibuffer-local-map
    ("M-b" . citar-insert-preset)))
 
-
-;; (use-package citar-org
-;;   :quelpa (citar-org :fetcher github :repo "bdarcus/citar" :files ("citar-org.el"))
-;;   :bind (("C-c b" . org-cite-insert)
-;;          ("M-o" . org-open-at-point)
-;;          :map minibuffer-local-map
-;;          ("M-b" . citar-insert-preset))
-;;   :after (embark oc)
-;;   :config
-;;   (setq citar-bibliography my/bibs
-;;         org-cite-global-bibliography my/bibs
-;;         org-cite-insert-processor 'citar;
-;         org-cite-follow-processor 'citar
-;;         org-cite-activate-processor 'citar))
+(use-package citar-org
+  :quelpa (citar-org :fetcher github :repo "bdarcus/citar" :files ("citar-org.el"))
+  :bind (("C-c b" . org-cite-insert)
+         ("M-o" . org-open-at-point)
+         :map minibuffer-local-map
+         ("M-b" . citar-insert-preset))
+  :after (embark oc)
+  :config
+  (setq citar-bibliography my/bibs
+        org-cite-global-bibliography my/bibs
+        org-cite-insert-processor 'citar
+        org-cite-follow-processor 'citar
+        org-cite-activate-processor 'citar))
 
 (use-package consult-flycheck
   :bind ("C-c l f" . consult-flycheck))

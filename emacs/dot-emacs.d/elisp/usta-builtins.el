@@ -4,14 +4,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Defaults & Built-ins          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defvar my-data-directory (getenv "EMACS_STORAGE_LOCATION"))
-(unless my-data-directory
-  (setq my-data-directory "~/Nextcloud"))
-
+(defvar my-data-directory (or (getenv "EMACS_STORAGE_LOCATION") "~/Nextcloud"))
 (defvar my-papers-directory (concat my-data-directory "/Papers"))
 (defvar my-notes-directory (concat my-data-directory "/Notes"))
-(defvar my-bibliography (concat my-data-directory "/Papers/Library.bib"))
-
+(defvar my-bibliography (concat my-papers-directory "/Library.bib"))
 (defvar my-bibliography-directory (concat my-papers-directory "/bibs"))
 
 (use-package emacs :ensure nil
