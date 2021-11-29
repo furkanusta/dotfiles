@@ -219,10 +219,11 @@
 
 ;; Add extensions
 (use-package cape
+  :defer nil
   :init
-  (add-to-list 'completion-at-point-functions #'cape-file)
-  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-  (add-to-list 'completion-at-point-functions #'cape-keyword))
+  (setq completion-at-point-functions (-insert-at (- (length completion-at-point-functions) 1)
+                                                  (cape-super-capf #'cape-file #'cape-keyword #'cape-dabbrev)
+                                                  completion-at-point-functions)))
 
 (use-package kind-icon
   :after corfu

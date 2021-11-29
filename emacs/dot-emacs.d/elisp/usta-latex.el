@@ -64,11 +64,14 @@
       (latexdiff-vc--compile-diff-with-current commit-hash))))
 
 (use-package lsp-latex
+  :demand t
   :hook
   ((latex-mode . lsp)
    (bibtex-mode . lsp))
   :custom
-  (lsp-latex-texlab-executable "/home/eksi/.local/prog/texlab/target/release/texlab")
+  (lsp-latex-texlab-executable
+   (or (executable-find "texlab")
+       (expand-file-name "~/.local/prog/texlab/target/release/texlab")))
   (lsp-latex-forward-search-executable "emacsclient")
   (lsp-latex-forward-search-args '("--eval" "(lsp-latex-forward-search-with-pdf-tools \"%f\" \"%p\" \"%l\")")))
 
