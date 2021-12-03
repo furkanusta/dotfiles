@@ -167,8 +167,8 @@
 (use-package exec-path-from-shell
   :hook (after-init . exec-path-from-shell-initialize))
 
-(use-package with-editor
-  :hook (shell-mode . with-editor-export-editor))
+;; (use-package with-editor
+;;   :hook (shell-mode . with-editor-export-editor))
 
 (use-package calc :ensure nil
   :hook (calc-mode . calc-symbolic-mode))

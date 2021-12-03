@@ -1,4 +1,4 @@
-;; (setq-default package-enable-at-startup nil)
+(setq-default package-enable-at-startup nil)
 
 (setq gc-cons-threshold 64000000
       gc-cons-percentage 0.8

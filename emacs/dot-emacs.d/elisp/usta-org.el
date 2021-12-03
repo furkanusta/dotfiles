@@ -109,13 +109,15 @@
   (org-appear-autoentities t))
 
 (use-package oc
+  :ensure org
+  :demand t
   :custom
   (org-cite-export-processors '((latex biblatex) (t csl)))
   (org-support-shift-select t))
 
-(use-package oc-biblatex :after oc)
-(use-package oc-csl :after oc)
-(use-package oc-natbib :after oc)
+(use-package oc-biblatex :after oc :ensure org)
+(use-package oc-csl :after oc :ensure org)
+(use-package oc-natbib :after oc :ensure org)
 
 (use-package toc-org
   :hook (org-mode . toc-org-mode))

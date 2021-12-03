@@ -153,6 +153,7 @@
   :bind (:map company-mode-map ([remap completion-at-point] . consult-company)))
 
 (use-package embark
+  :demand t
   :after vertico
   :init (setq prefix-help-command #'embark-prefix-help-command)
   :custom (embark-indicators '(embark-verbose-indicator))
@@ -227,42 +228,51 @@
 
 (use-package kind-icon
   :after corfu
-  :defer nil
+  :demand t
   :custom (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
   :config (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
 (use-package citar
-  :after (embark bibtex-completion oc)
+  :after (embark)
   :demand t
   :custom
   (citar-bibliography (f-glob "*.bib" my-bibliography-directory))
   (citar-library-paths (list my-papers-directory (concat my-papers-directory "/Papers")))
   (citar-at-point-function 'embark-act)
   :config
-  (setq org-cite-global-bibliography (append org-cite-global-bibliography citar-bibliography))
-  (setq org-cite-insert-processor 'citar
-        org-cite-follow-processor 'citar
-        org-cite-activate-processor 'citar
-        citar-file-note-org-include '(org-id org-roam-ref))
   (add-to-list 'embark-keymap-alist '(bib-reference . citar-map))
-  (add-to-list 'embark-keymap-alist '(citation-key . citar-buffer-map))
-  :bind
-  (:map minibuffer-local-map
-   ("M-b" . citar-insert-preset)))
+  (add-to-list 'embark-keymap-alist '(citation-key . citar-buffer-map)))
+
+;; ;; define the keymap
+;; (defvar my-citar-embark-become-map
+;;   (let ((map (make-sparse-keymap)))
+;;     (define-key map (kbd "f") 'citar-open-library-files)
+;;     (define-key map (kbd "x") 'biblio-arxiv-lookup)
+;;     (define-key map (kbd "c") 'biblio-crossref-lookup)
+;;     (define-key map (kbd "i") 'biblio-ieee-lookup)
+;;     (define-key map (kbd "h") 'biblio-hal-lookup)
+;;     (define-key map (kbd "s") 'biblio-dissemin-lookup)
+;;     (define-key map (kbd "b") 'biblio-dblp-lookup)
+;;     (define-key map (kbd "o") 'biblio-doi-insert-bibtex)
+;;   map)
+;;   "Citar Embark become keymap for biblio lookup.")
+
+;; tell embark about the keymap
+(add-to-list 'embark-become-keymaps 'my-citar-embark-become-map)
 
 (use-package citar-org
   :quelpa (citar-org :fetcher github :repo "bdarcus/citar" :files ("citar-org.el"))
-  :bind (("C-c b" . org-cite-insert)
-         ("M-o" . org-open-at-point)
+  :demand t
+  :after (citar oc)
+  :custom
+  (org-cite-global-bibliography citar-bibliography)
+  (org-cite-insert-processor 'citar)
+  (org-cite-follow-processor 'citar)
+  (org-cite-activate-processor 'citar)
+  (citar-file-note-org-include '(org-id org-roam-ref))
+  :bind (("M-o" . org-open-at-point)
          :map minibuffer-local-map
-         ("M-b" . citar-insert-preset))
-  :after (embark oc)
-  :config
-  (setq citar-bibliography my/bibs
-        org-cite-global-bibliography my/bibs
-        org-cite-insert-processor 'citar
-        org-cite-follow-processor 'citar
-        org-cite-activate-processor 'citar))
+         ("M-b" . citar-insert-preset)))
 
 (use-package consult-flycheck
   :bind ("C-c l f" . consult-flycheck))
