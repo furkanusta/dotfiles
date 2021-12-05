@@ -233,32 +233,33 @@
   :config (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
 (use-package citar
-  :after (embark)
+  :after (embark bibtex)
   :demand t
+  :preface
+  (defun my-citar-embark-open-pdf (keys-entries)
+    (interactive (list (citar-select-refs :rebuild-cache current-prefix-arg)))
+    (let* ((entry (car keys-entries))
+           (key (car entry)))
+      (citar-file-open
+       (car
+        (citar-file--files-for-entry key nil citar-library-paths citar-file-extensions)))))
   :custom
-  (citar-bibliography (f-glob "*.bib" my-bibliography-directory))
+  (citar-bibliography (-filter (lambda (file) (not (s-starts-with? "." (f-filename file)))) (f-glob "*.bib" my-bibliography-directory)))
+  (bibtex-completion-bibliography citar-bibliography)
+  (citar-open-note-function 'orb-citar-edit-note)
   (citar-library-paths (list my-papers-directory (concat my-papers-directory "/Papers")))
   (citar-at-point-function 'embark-act)
+  (citar-symbols
+   `((file ,(all-the-icons-octicon "file-pdf" :face 'all-the-icons-green :v-adjust -0.1) . " ")
+     (note ,(all-the-icons-material "speaker_notes" :face 'all-the-icons-blue :v-adjust -0.3) . " ")
+     (link ,(all-the-icons-octicon "link" :face 'all-the-icons-orange :v-adjust 0.01) . " ")))
+  (citar-symbol-separator " ")
   :config
   (add-to-list 'embark-keymap-alist '(bib-reference . citar-map))
-  (add-to-list 'embark-keymap-alist '(citation-key . citar-buffer-map)))
-
-;; ;; define the keymap
-;; (defvar my-citar-embark-become-map
-;;   (let ((map (make-sparse-keymap)))
-;;     (define-key map (kbd "f") 'citar-open-library-files)
-;;     (define-key map (kbd "x") 'biblio-arxiv-lookup)
-;;     (define-key map (kbd "c") 'biblio-crossref-lookup)
-;;     (define-key map (kbd "i") 'biblio-ieee-lookup)
-;;     (define-key map (kbd "h") 'biblio-hal-lookup)
-;;     (define-key map (kbd "s") 'biblio-dissemin-lookup)
-;;     (define-key map (kbd "b") 'biblio-dblp-lookup)
-;;     (define-key map (kbd "o") 'biblio-doi-insert-bibtex)
-;;   map)
-;;   "Citar Embark become keymap for biblio lookup.")
-
-;; tell embark about the keymap
-(add-to-list 'embark-become-keymaps 'my-citar-embark-become-map)
+  (add-to-list 'embark-keymap-alist '(citar-reference . citar-map))
+  (add-to-list 'embark-keymap-alist '(citation-key . citar-buffer-map))
+  :bind (:map citar-map
+              ("M-RET" . my-citar-embark-open-pdf)))
 
 (use-package citar-org
   :quelpa (citar-org :fetcher github :repo "bdarcus/citar" :files ("citar-org.el"))

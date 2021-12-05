@@ -21,7 +21,7 @@
   (org-imenu-depth 4)
   (org-indent-indentation-per-level 1)
   (org-log-done t)
-  (org-pretty-entities t)
+  ;; (org-pretty-entities t)
   (org-src-fontify-natively t)
   (org-src-preserve-indentation nil)
   (org-src-tab-acts-natively t)
@@ -133,6 +133,7 @@
   :custom (org-sticky-header-always-show-header nil))
 
 (use-package org-ref
+  :demand t
   :custom
   (org-ref-bibliography-notes (concat my-notes-directory "/Papers.org"))
   (org-ref-default-bibliography (list my-bibliography))
@@ -289,8 +290,8 @@ With a prefix ARG, remove start location."
   :after org
   :bind (:map org-mode-map ("C-M-y" . org-rich-yank)))
 
-(use-package org-link-beautify
-  :hook (org-mode . org-link-beautify-mode))
+;; (use-package org-link-beautify
+;;   :hook (org-mode . org-link-beautify-mode))
 
 (use-package calfw-org :ensure calfw
   :custom (cfw:org-overwrite-default-keybinding t)
@@ -311,9 +312,13 @@ With a prefix ARG, remove start location."
 
 (use-package org-roam
   :init (setq org-roam-v2-ack t)
+  :after org-ref
+  :demand t
   :custom
   (org-roam-directory my-notes-directory)
   (org-roam-auto-replace-fuzzy-links nil)
+  (org-roam-capture-templates
+   '(("p" "Paper Note" plain "* %^{citekey}" :target (file "Papers.org"))))
   :bind
   ("C-c n l" . org-roam-buffer-toggle)
   ("C-c n f" . org-roam-node-find)

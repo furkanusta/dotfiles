@@ -4,7 +4,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Defaults & Built-ins          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defvar my-data-directory (or (getenv "EMACS_STORAGE_LOCATION") "~/Nextcloud"))
+(defvar my-data-directory (or (getenv "EMACS_STORAGE_LOCATION") (expand-file-name "~/Nextcloud")))
 (defvar my-papers-directory (concat my-data-directory "/Papers"))
 (defvar my-notes-directory (concat my-data-directory "/Notes"))
 (defvar my-bibliography (concat my-papers-directory "/Library.bib"))

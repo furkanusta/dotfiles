@@ -114,9 +114,11 @@
   (add-to-list 'vlf-forbidden-modes-list 'pdf-view-mode)
   (add-to-list 'vlf-forbidden-modes-list 'nov-mode))
 
+
 (use-package pdf-tools
   :after org-noter
-  :defines org-noter
+  :demand t
+  :defines org-noter-insert-note
   :quelpa (pdf-tools :fetcher github :repo "vedang/pdf-tools" :files ("lisp/*" "server/*"))
   :hook ((pdf-view-mode . (lambda () (cua-mode 0)))
          (pdf-view-mode . disable-line-numbers)
@@ -130,16 +132,31 @@
   (pdf-view-display-size 'fit-page)
   (pdf-annot-activate-created-annotations nil)
   (pdf-view-resize-factor 1.1)
-  :preface (defun my-org-noter-insert-and-highlight ()
-               (progn
-                 (when (pdf-view-active-region-p)
-                   (pdf-annot-add-highlight-markup-annotation (pdf-view-active-region t)))
-                 (org-noter-insert-note nil)))
-  :bind (:map pdf-view-mode-map
-              ("M-w" . pdf-view-kill-ring-save)
-              ("o" . pdf-outline)
-              ("i" . my-org-noter-insert-and-highlight)
-              ("S-SPC" . pdf-view-scroll-down-or-previous-page)))
+  :preface
+  (defun my-org-noter-insert-and-highlight ()
+    (interactive)
+    (progn
+      (when (pdf-view-active-region-p)
+        (pdf-annot-add-highlight-markup-annotation (pdf-view-active-region t)))
+      (org-noter-insert-note nil)))
+  (defun my-org-noter-insert-precise-and-highlight ()
+    (interactive)
+    (progn
+      (when (pdf-view-active-region-p)
+        (pdf-annot-add-highlight-markup-annotation (pdf-view-active-region nil)))
+      (org-noter-insert-precise-note)
+      (when (pdf-view-active-region-p)
+        (pdf-view-active-region t))))
+  :bind
+  (:map pdf-view-mode-map
+        ("M-w" . pdf-view-kill-ring-save)
+        ("o" . pdf-outline)
+        ("i" . my-org-noter-insert-and-highlight)
+        ("M-i" . my-org-noter-insert-precise-and-highlight)
+        ("S-SPC" . pdf-view-scroll-down-or-previous-page))
+  (:map org-noter-doc-mode-map
+        ("i" . my-org-noter-insert-and-highlight)
+        ("M-i" . my-org-noter-insert-precise-and-highlight)))
 
 (use-package pdf-view-restore
   :after pdf-tools
