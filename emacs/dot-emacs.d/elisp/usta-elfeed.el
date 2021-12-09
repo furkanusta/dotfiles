@@ -58,7 +58,7 @@
      ("https://old.reddit.com/r/python/top.rss?t=month" python)
      ("https://old.reddit.com/r/fpga/top.rss?t=month" fpga)
      ("https://old.reddit.com/r/ruby/top.rss?t=month" ruby)
-     ("https://old.reddit.com/r/contagiouslaughter/top.rss?t=monther" other)
+     ("https://old.reddit.com/r/contagiouslaughter/top.rss?t=month" other)
      ("https://old.reddit.com/r/java/top.rss?t=month" java)
      ("https://old.reddit.com/r/linux/top.rss?t=month" linux)
      ("https://old.reddit.com/r/programming/top.rss?t=week" prog)
