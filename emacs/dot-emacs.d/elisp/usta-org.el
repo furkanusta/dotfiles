@@ -318,7 +318,8 @@ With a prefix ARG, remove start location."
   (org-roam-directory my-notes-directory)
   (org-roam-auto-replace-fuzzy-links nil)
   (org-roam-capture-templates
-   '(("p" "Paper Note" plain "* %^{citekey}" :target (file "Papers.org"))))
+   '(("d" "default" plain "%?" :target  (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")  :unnarrowed t)
+     ("p" "Paper Note" plain "* %^{citekey}" :target (file "Papers.org" "#+title: ${title}"))))
   :bind
   ("C-c n l" . org-roam-buffer-toggle)
   ("C-c n f" . org-roam-node-find)
