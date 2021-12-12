@@ -17,7 +17,25 @@
               #'completion--in-region)
             args)))
   :preface
-  (defun my-vertico-insert-and-exit () (interactive) (progn (vertico-insert) (exit-minibuffer)))
+  (defun my-vertico-insert-and-exit ()
+    (interactive)
+    (progn
+      (vertico-insert)
+      (exit-minibuffer)))
+  (defun auto-minor-mode-enabled-p (minor-mode)
+    "Return non-nil if MINOR-MODE is enabled in the current buffer."
+    (and (memq minor-mode minor-mode-list)
+         (symbol-value minor-mode)))
+  (defun +completion-category-highlight-commands (cand)
+    (let ((len (length cand)))
+      (when (and (> len 0)
+                 (with-current-buffer (nth 1 (buffer-list))
+                   (or (eq major-mode (intern cand))
+                       (auto-minor-mode-enabled-p (intern cand)))))
+        (add-face-text-property 0 len '(:foreground "red") 'append cand)))
+    cand)
+  :config
+  (add-to-list '+completion-category-hl-func-overrides `(command . ,#'+completion-category-highlight-commands))
   :bind
   (:map vertico-map
         ("M-q" . vertico-quick-insert)
@@ -197,7 +215,6 @@
   :hook (marginalia-mode-hook . all-the-icons-completion-marginalia-setup)
   :init (all-the-icons-completion-mode))
 
-
 (use-package corfu
   :after orderless
   :quelpa (corfu :fetcher github :repo "minad/corfu")
@@ -207,9 +224,9 @@
   :custom
   (corfu-cycle t)
   (corfu-auto t)
-  (corfu-commit-predicate nil)
+  (corfu-commit-predicate #'corfu-candidate-previewed-p)
   (corfu-quit-at-boundary t)
-  (corfu-quit-no-match t)
+  (corfu-quit-no-match nil)
   :bind
   ("C-<tab>" . corfu-complete)
   (:map corfu-map
