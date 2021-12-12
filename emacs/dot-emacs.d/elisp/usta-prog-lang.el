@@ -179,4 +179,9 @@
 (use-package apheleia
   :hook (python-mode . apheleia-mode))
 
+(use-package python-mls
+  :hook
+  (inferior-python-mode . python-mls-mode)
+  (python-mode . python-mls-python-setup))
+
 (provide 'usta-prog-lang)
