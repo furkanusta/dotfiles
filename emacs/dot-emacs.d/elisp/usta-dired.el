@@ -126,4 +126,7 @@
 (use-package dired-collapse
   :hook (dired-mode . dired-collapse-mode))
 
+(use-package dired-async
+  :hook (dired-mode . dired-async-mode))
+
 (provide 'usta-dired)

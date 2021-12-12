@@ -475,4 +475,12 @@ With a prefix ARG, remove start location."
                       (:title "Exercise" :match "+exercise" :budget "5:15" :blocks (day))
                       (:title "Language" :match "+lang" :budget "5:15" :blocks (day week)))))
 
+(use-package org-tanglesync
+  ;; :hook ((org-mode . org-tanglesync-mode)
+  ;;        ((prog-mode text-mode) . org-tanglesync-watch-mode))
+  :bind
+  (( "C-c M-i" . org-tanglesync-process-buffer-interactive)
+   ( "C-c M-a" . org-tanglesync-process-buffer-automatic)))
+
+
 (provide 'usta-org)
