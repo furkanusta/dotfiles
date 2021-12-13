@@ -17,6 +17,15 @@
               #'completion--in-region)
             args)))
   :preface
+  (defvar +completion-category-hl-func-overrides
+    `((file . ,#'+completion-category-highlight-files))
+    "Alist mapping category to highlight functions.")
+  (defun +completion-category-highlight-files (cand)
+  (let ((len (length cand)))
+    (when (and (> len 0)
+               (eq (aref cand (1- len)) ?/))
+      (add-face-text-property 0 len 'dired-directory 'append cand)))
+  cand)
   (defun my-vertico-insert-and-exit ()
     (interactive)
     (progn
@@ -35,6 +44,18 @@
         (add-face-text-property 0 len '(:foreground "red") 'append cand)))
     cand)
   :config
+  (advice-add #'vertico--arrange-candidates :around
+            (defun vertico-format-candidates+ (func)
+              (let ((hl-func (or (alist-get (vertico--metadata-get 'category)
+                                            +completion-category-hl-func-overrides)
+                                 #'identity)))
+                (cl-letf* (((symbol-function 'actual-vertico-format-candidate)
+                            (symbol-function #'vertico--format-candidate))
+                           ((symbol-function #'vertico--format-candidate)
+                            (lambda (cand &rest args)
+                              (apply #'actual-vertico-format-candidate
+                                     (funcall hl-func cand) args))))
+                  (funcall func)))))
   (add-to-list '+completion-category-hl-func-overrides `(command . ,#'+completion-category-highlight-commands))
   :bind
   (:map vertico-map
