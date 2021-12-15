@@ -118,21 +118,22 @@
   :after flycheck
   :custom (flycheck-pos-tip-mode 1))
 
-(use-package evil-nerd-commenter :bind ("M-;" . evilnc-comment-or-uncomment-lines))
+(use-package evil-nerd-commenter
+  :bind ("M-;" . evilnc-comment-or-uncomment-lines))
 
 (use-package vterm
   :commands (vterm-next-prompt vterm-prev-prompt)
   :config (add-to-list 'display-buffer-alist (cons "\\*vterm" use-other-window-alist))
   :preface
-  (defun vterm-next-prompt () (interactive) (re-search-forward "msi.*\\$ " nil 'move))
+  (defun vterm-next-prompt () (interactive) (re-search-forward "\\] \\$ " nil 'move))
   (defun vterm-prev-prompt () (interactive)
          (move-beginning-of-line nil)
-         (re-search-backward "msi.*\\$ " nil 'move)
-         (re-search-forward "\\$ " nil 'move))
+         (re-search-backward "\\] .*\\$ " nil 'move)
+         (re-search-forward "\\] \\$ " nil 'move))
   :bind
   (:map vterm-copy-mode-map
         ("C-<" . vterm-prev-prompt)
-        ("C-," . vterm-next-prompt)))
+        ("C->" . vterm-next-prompt)))
 
 (use-package vterm-toggle
   :custom (vterm-toggle-cd-auto-create-buffer nil)

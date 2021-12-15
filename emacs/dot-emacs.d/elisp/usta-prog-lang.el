@@ -34,6 +34,7 @@
 
 (use-package lsp-mode
   :custom
+  (lsp-completion-provider :none)
   (lsp-auto-execute-action nil)
   (lsp-before-save-edits nil)
   (lsp-keymap-prefix "C-c C-l")
@@ -48,7 +49,12 @@
   (lsp-enable-semantic-highlighting nil)
   (lsp-enable-on-type-formatting nil)
   (read-process-output-max (* 2 1024 1024))
-  (lsp-enable-on-type-formatting nil))
+  (lsp-enable-on-type-formatting nil)
+  :preface
+  (defun my/lsp-mode-setup-completion ()
+    (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
+          '(orderless)))
+  :hook (lsp-completion-mode . my/lsp-mode-setup-completion))
 
 (use-package origami
   :hook (prog-mode . origami-mode)
