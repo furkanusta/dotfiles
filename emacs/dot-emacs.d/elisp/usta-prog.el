@@ -23,6 +23,7 @@
   :bind (:map projectile-command-map ("p" . projectile-persp-switch-project)))
 
 (use-package perspective
+  :hook (after-init . persp-mode)
   :commands persp-current-buffers
   :preface
   (defvar perspective-skip-ignore-list '("*dashboard*" "*Messages*" "*Warnings*" "*elfeed-search*" "*Fd*" "*compilation*"))
@@ -41,10 +42,14 @@
         (lambda (x) x)
         (mapcar (lambda (pref) (string-prefix-p pref name)) perspective-skip-prefix-list))
        (not (seq-contains-p (persp-current-buffers) buffer)))))
-  :init (persp-mode t)
   :custom
   (persp-mode-prefix-key (kbd "C-c w"))
+  ;; (persp-initial-frame-name ".dotfiles")
   (switch-to-prev-buffer-skip #'perspective-my-skip-buffer-p))
+
+(use-package eyebrowse
+  :hook (after-init . eyebrowse-mode)
+  :custom (eyebrowse-keymap-prefix (kbd "C-c l")))
 
 (use-package magit
   :bind ("C-c g s" . magit-status)
