@@ -117,6 +117,7 @@
   (flycheck-disabled-checkers '(emacs-lisp-checkdoc verilog-verilator))
   (flycheck-emacs-lisp-load-path 'inherit)
   :config
+  (flycheck-add-mode 'proselint 'lsp-mode)
   (flycheck-add-mode 'c/c++-cppcheck 'c++mode))
 
 (use-package flycheck-pos-tip

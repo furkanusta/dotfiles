@@ -76,6 +76,10 @@
   (lsp-latex-forward-search-executable "emacsclient")
   (lsp-latex-forward-search-args '("--eval" "(lsp-latex-forward-search-with-pdf-tools \"%f\" \"%p\" \"%l\")")))
 
+(use-package lsp-ltex :demand t
+  :custom
+  (lsp-ltex-version "15.2.0"))
+
 (use-package xenops
   :hook (latex-mode . xenops-mode)
   :init (setq xenops-reveal-on-entry t))
