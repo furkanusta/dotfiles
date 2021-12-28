@@ -259,10 +259,27 @@
 ;; Add extensions
 (use-package cape
   :defer nil
+  :demand t
   :init
   (setq completion-at-point-functions (-insert-at (- (length completion-at-point-functions) 1)
                                                   (cape-super-capf #'cape-file #'cape-keyword #'cape-dabbrev)
                                                   completion-at-point-functions)))
+
+
+
+(use-package savehist
+  :hook (after-init . savehist-mode))
+
+(use-package corfu-history
+  :after savehist
+  :load-path "elisp/"
+  :hook (corfu-mode . corfu-history-mode)
+  :custom (corfu-sort-function #'corfu-history--sort)
+  :config (add-to-list 'savehist-additional-variables 'corfu-history--list))
+
+(use-package corfu-doc
+  :quelpa (corfu-doc :fetcher github :repo "galeo/corfu-doc")
+  :hook (corfu-mode . corfu-doc-mode))
 
 (use-package kind-icon
   :after corfu

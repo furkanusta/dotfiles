@@ -482,5 +482,7 @@ With a prefix ARG, remove start location."
   (( "C-c M-i" . org-tanglesync-process-buffer-interactive)
    ( "C-c M-a" . org-tanglesync-process-buffer-automatic)))
 
+(use-package notebook
+  :quelpa (notebook :fetcher github :repo "rougier/notebook-mode"))
 
 (provide 'usta-org)

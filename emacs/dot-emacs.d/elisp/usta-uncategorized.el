@@ -180,4 +180,10 @@
 
 (use-package sudo-edit)
 
+(use-package piper
+  :quelpa (piper :fetcher gitlab :repo "howardabrams/emacs-piper"))
+
+(use-package dtache
+  :quelpa (dtache :fetcher gitlab :repo "niklaseklund/dtache"))
+
 (provide 'usta-uncategorized)
