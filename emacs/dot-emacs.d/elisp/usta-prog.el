@@ -118,7 +118,8 @@
   (flycheck-emacs-lisp-load-path 'inherit)
   :config
   (flycheck-add-mode 'proselint 'lsp-mode)
-  (flycheck-add-mode 'c/c++-cppcheck 'c++mode))
+  (flycheck-add-mode 'c/c++-cppcheck 'c++-mode)
+  (flycheck-add-mode 'python-mypyp 'python-mode))
 
 (use-package flycheck-pos-tip
   :after flycheck
@@ -194,5 +195,40 @@
 
 (use-package auto-highlight-symbol
   :custom (global-auto-highlight-symbol-mode t))
+
+(use-package origami
+  :hook (prog-mode . origami-mode)
+  :bind
+  ("C-c ," . origami-toggle-node)
+  ("C-c C-." . origami-close-all-nodes)
+  ("C-c C->" . origami-open-all-nodes))
+
+(use-package lsp-mode
+  :custom
+  (lsp-completion-provider :none)
+  (lsp-auto-execute-action nil)
+  (lsp-before-save-edits nil)
+  (lsp-keymap-prefix "C-c C-l")
+  (lsp-enable-snippet t)
+  (lsp-enable-xref t)
+  (lsp-enable-imenu t)
+  (lsp-prefer-flymake nil)
+  (lsp-enable-indentation nil)
+  (lsp-prefer-capf t)
+  (lsp-enable-file-watchers nil)
+  (lsp-enable-text-document-color nil)
+  (lsp-enable-semantic-highlighting nil)
+  (lsp-enable-on-type-formatting nil)
+  (read-process-output-max (* 2 1024 1024))
+  (lsp-enable-on-type-formatting nil)
+  :preface
+  (defun my/lsp-mode-setup-completion ()
+    (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
+          '(orderless)))
+  :hook (lsp-completion-mode . my/lsp-mode-setup-completion))
+
+(use-package dap-mode
+  :custom
+  (dap-auto-configure-features '(sessions locals breakpoints expressions controls tooltip repl)))
 
 (provide 'usta-prog)

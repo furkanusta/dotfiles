@@ -175,8 +175,7 @@
   ("C-+" . undo-tree-redo)
   ("C-_" . undo-tree-undo))
 
-(use-package secret-mode
-  :quelpa (secret-mode :fetcher github :repo "bkaestner/secret-mode.el"))
+(use-package redacted)
 
 (use-package sudo-edit)
 

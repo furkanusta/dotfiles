@@ -32,37 +32,7 @@
 (use-package meson-mode
   :hook (meson-mode . company-mode))
 
-(use-package lsp-mode
-  :custom
-  (lsp-completion-provider :none)
-  (lsp-auto-execute-action nil)
-  (lsp-before-save-edits nil)
-  (lsp-keymap-prefix "C-c C-l")
-  (lsp-enable-snippet t)
-  (lsp-enable-xref t)
-  (lsp-enable-imenu t)
-  (lsp-prefer-flymake nil)
-  (lsp-enable-indentation nil)
-  (lsp-prefer-capf t)
-  (lsp-enable-file-watchers nil)
-  (lsp-enable-text-document-color nil)
-  (lsp-enable-semantic-highlighting nil)
-  (lsp-enable-on-type-formatting nil)
-  (read-process-output-max (* 2 1024 1024))
-  (lsp-enable-on-type-formatting nil)
-  :preface
-  (defun my/lsp-mode-setup-completion ()
-    (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
-          '(orderless)))
-  :hook (lsp-completion-mode . my/lsp-mode-setup-completion))
-
-(use-package origami
-  :hook (prog-mode . origami-mode)
-  :bind
-  ("C-c ," . origami-toggle-node)
-  ("C-c C-." . origami-close-all-nodes)
-  ("C-c C->" . origami-open-all-nodes))
-
+(use-package dap-lldb)
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ;;          Scala          ;;
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -175,9 +145,9 @@
 ;;        Python       ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(use-package blacken
-  :hook (python-mode . blacken-mode)
-  :custom (blacken-line-length 100))
+;; (use-package blacken
+;;   :hook (python-mode . blacken-mode)
+;;   :custom (blacken-line-length 100))
 
 (use-package gitlab-ci-mode
   :mode "\\.gitlab-ci\\.yml\\'")
@@ -189,5 +159,82 @@
   :hook
   (inferior-python-mode . python-mls-mode)
   (python-mode . python-mls-python-setup))
+
+;; Built-in Python utilities
+(use-package python
+  :hook (python-mode . (lambda ()
+                         (flycheck-add-next-checker 'lsp 'python-mypy)))
+  :custom
+  (python-indent-guess-indent-offset-verbose nil)
+  :config
+  (cond
+   ((executable-find "ipython")
+    (progn
+      (setq python-shell-buffer-name "IPython")
+      (setq python-shell-interpreter "ipython")
+      (setq python-shell-interpreter-args "-i --simple-prompt")))
+   ((executable-find "python3")
+    (setq python-shell-interpreter "python3"))
+   ((executable-find "python2")
+    (setq python-shell-interpreter "python2"))
+   (t
+    (setq python-shell-interpreter "python")))
+  :preface
+  (defun yasnippet-radical-snippets--python-split-args (arg-string)
+    "Split the python ARG-STRING into ((name, default)..) tuples."
+    (mapcar (lambda (x)
+              (split-string x "[[:blank:]]*=[[:blank:]]*" t))
+            (split-string arg-string "[[:blank:]]*,[[:blank:]]*" t)))
+
+  (defun yasnippet-radical-snippets--python-args-to-google-docstring (text &optional make-fields)
+    "Return a Google docstring for the Python arguments in TEXT.
+Optional argument MAKE-FIELDS will create yasnippet compatible
+field that the can be jumped to upon further expansion."
+    (let* ((indent (concat "\n" (make-string (current-column) 32)))
+           (args (yasnippet-radical-snippets--python-split-args text))
+    	   (nr 0)
+           (formatted-args
+    	    (mapconcat
+    	     (lambda (x)
+    	       (concat "   " (nth 0 x)
+    		           (if make-fields (format " ${%d:arg%d}" (cl-incf nr) nr))
+    		           (if (nth 1 x) (concat " \(default " (nth 1 x) "\)"))))
+    	     args
+    	     indent)))
+      (unless (string= formatted-args "")
+        (concat
+         (mapconcat 'identity
+    		        (list "" "Args:" formatted-args)
+    		        indent)
+         "\n")))))
+
+(use-package pyvenv
+  :hook
+  (python-mode . pyvenv-try-activate)
+  (pyvenv-post-activate . (lambda () (pyvenv-restart-python)))
+  :preface
+  (defun pyvenv-try-activate ()
+    (pyvenv-mode t)
+    (if (not pyvenv-virtual-env)
+        (pyvenv-activate (concat (projectile-project-root) "venv"))
+        (pyvenv-activate (concat (projectile-project-root) ".venv")))
+    (if (not pyvenv-virtual-env)
+        (pyvenv-activate (read-directory-name "Activate venv: " nil nil nil
+					                          pyvenv-default-virtual-env-name)))))
+
+(use-package pyinspect
+  :bind
+  (:map python-mode-map
+        ("C-c C-i" . pyinspect-inspect-at-point)))
+
+(use-package python-pytest)
+
+(use-package py-isort
+  :hook (before-save . py-isort-before-save))
+
+(use-package dap-python :ensure dap-mode)
+
+;; (use-package tox :custom (tox-runner py.test))
+;; (use-package poetry)
 
 (provide 'usta-prog-lang)
