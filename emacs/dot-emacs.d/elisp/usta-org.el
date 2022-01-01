@@ -2,7 +2,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Org Mode          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(use-package org
+(use-package org :ensure nil
   :config
   (defvar org-capture-file (concat my-notes-directory "/Capture.org"))
   (setq org-default-notes-file org-capture-file)
@@ -409,8 +409,8 @@ With a prefix ARG, remove start location."
 (use-package org-clock-budget
   :quelpa (org-clock-budget :fetcher github :repo "Fuco1/org-clock-budget"))
 
-;; (use-package nano
-;;   :quelpa (nano :fetcher github :repo "rougier/nano-emacs"))
+(use-package nano-theme
+  :quelpa (nano-theme :fetcher github :repo "rougier/nano-theme") )
 
 (use-package lentic)
 
@@ -484,5 +484,11 @@ With a prefix ARG, remove start location."
 
 (use-package notebook
   :quelpa (notebook :fetcher github :repo "rougier/notebook-mode"))
+
+(use-package org-bib-mode
+  :load-path "elisp/"
+  ;; :quelpa (org-bib-mode :fetcher github :repo "rougier/org-bib-mode")
+  :custom
+  (org-bib-pdf-directory my-papers-directory))
 
 (provide 'usta-org)

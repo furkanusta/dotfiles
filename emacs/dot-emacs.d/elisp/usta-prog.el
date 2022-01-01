@@ -119,7 +119,7 @@
   :config
   (flycheck-add-mode 'proselint 'lsp-mode)
   (flycheck-add-mode 'c/c++-cppcheck 'c++-mode)
-  (flycheck-add-mode 'python-mypyp 'python-mode))
+  (flycheck-add-mode 'python-mypy 'python-mode))
 
 (use-package flycheck-pos-tip
   :after flycheck
