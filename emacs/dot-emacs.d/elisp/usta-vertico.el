@@ -236,20 +236,21 @@
   :hook (marginalia-mode-hook . all-the-icons-completion-marginalia-setup)
   :init (all-the-icons-completion-mode))
 
+
 (use-package corfu
-  :after orderless
   :quelpa (corfu :fetcher github :repo "minad/corfu")
   :hook ((prog-mode . corfu-mode)
          (shell-mode . corfu-mode)
+         (cmake-mode . corfu-mode)
          (eshell-mode . corfu-mode))
   :custom
   (corfu-cycle t)
-  (corfu-auto t)
+  (corfu-auto nil)
   (corfu-commit-predicate #'corfu-candidate-previewed-p)
   (corfu-quit-at-boundary t)
   (corfu-quit-no-match nil)
   :bind
-  ("C-<tab>" . corfu-complete)
+  ("C-<tab>" . completion-at-point)
   (:map corfu-map
         ("TAB" . corfu-next)
         ([tab] . corfu-next)
@@ -261,9 +262,9 @@
   :defer nil
   :demand t
   :init
-  (setq completion-at-point-functions (-insert-at (- (length completion-at-point-functions) 1)
-                                                  (cape-super-capf #'cape-file #'cape-keyword #'cape-dabbrev)
-                                                  completion-at-point-functions)))
+  (add-to-list 'completion-at-point-functions (cape-super-capf #'cape-file #'cape-keyword #'cape-dabbrev))
+  (require 'company-cmake)
+  (add-to-list 'completion-at-point-functions (cape-company-to-capf #'company-cmake)))
 
 
 
