@@ -147,6 +147,8 @@
   :bind
   ("<f8>" . vterm-toggle)
   (:map vterm-mode-map
+        ("C-c n"  . vterm-toggle-forward)
+        ("C-c p"  . vterm-toggle-backward)
         ("C-<return>" . vterm-toggle-insert-cd)))
 
 

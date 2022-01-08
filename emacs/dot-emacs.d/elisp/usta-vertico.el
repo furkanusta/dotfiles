@@ -3,13 +3,15 @@
 (use-package vertico
   :demand t
   :defines vertico-mode
-  :config (vertico-mode)
   :quelpa (vertico :fetcher github :repo "minad/vertico" :files ("*.el" "extensions/*.el"))
-  :hook (rfn-eshadow-update-overlay . vertico-directory-tidy)
+  :hook
+  (after-init . vertico-mode)
+  (rfn-eshadow-update-overlay . vertico-directory-tidy)
   :custom
   (vertico-resize 'grow)
   (vertico-count 15)
   (vertico-cycle t)
+  (vertico-indexed-mode t)
   (completion-in-region-function
    (lambda (&rest args)
      (apply (if vertico-mode
@@ -177,17 +179,6 @@
    :preview-key '(:debounce 0.01 any))
   (define-key consult-narrow-map (vconcat consult-narrow-key "?") #'consult-narrow-help))
 
-
-
-
-;; (consult-customize consult-theme :preview-key '(:debounce 0.1 any))
-
-;; (consult-customize :preview-key
-;;                    (list (kbd "M-.")
-;;                          :debounce 0.1 (kbd "<up>") (kbd "<down>")
-;;                          :debounce 0.1 'any))
-
-
 (use-package consult-company
   :bind (:map company-mode-map ([remap completion-at-point] . consult-company)))
 
@@ -261,12 +252,10 @@
 (use-package cape
   :defer nil
   :demand t
-  :init
+  :config
   (add-to-list 'completion-at-point-functions (cape-super-capf #'cape-file #'cape-keyword #'cape-dabbrev))
   (require 'company-cmake)
   (add-to-list 'completion-at-point-functions (cape-company-to-capf #'company-cmake)))
-
-
 
 (use-package savehist
   :hook (after-init . savehist-mode))
