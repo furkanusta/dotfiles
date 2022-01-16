@@ -183,6 +183,39 @@
   :quelpa (piper :fetcher gitlab :repo "howardabrams/emacs-piper"))
 
 (use-package dtache
-  :quelpa (dtache :fetcher gitlab :repo "niklaseklund/dtache"))
+  :quelpa (dtache :fetcher gitlab :repo "niklaseklund/dtache")
+  :preface
+  (defun my/dtache-state-transition-notification (session)
+    "Send an `alert' notification when SESSION becomes inactive."
+    (let ((status (dtache--session-status session))
+          (title
+           (pcase (dtache--session-status session)
+             ('success "Dtache finished!")
+             ('failure "Dtache failed!"))))
+      (alert (dtache--session-command session)
+             :title title
+             :severity (pcase status
+                         ('success 'moderate)
+                         ('failure 'high))
+             :category 'compile
+             :id (pcase status
+                   ('success 'dtache-success)
+                   ('failure 'dtache-failure)))))
+  :custom
+  (dtache-notification-function #'my/dtache-state-transition-notification))
+
+(use-package dtache-compile
+  :ensure dtache
+  ;; :hook (after-init . dtache-compile-setup)
+  :bind (([remap compile] . dtache-compile)
+         ([remap recompile] . dtache-compile-recompile)
+         :map dtache-compilation-mode-map
+         ("C-c C-q" . dtache-detach-dwim)))
+
+(use-package dtache-consult
+  :ensure dtache
+  :after dtache
+  :bind ([remap dtache-open-session] . dtache-consult-session))
+
 
 (provide 'usta-uncategorized)
