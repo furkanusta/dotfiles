@@ -235,4 +235,8 @@
   :custom
   (dap-auto-configure-features '(sessions locals breakpoints expressions controls tooltip repl)))
 
+(use-package gdb-mi
+  :custom
+  (gdb-many-windows t))
+
 (provide 'usta-prog)

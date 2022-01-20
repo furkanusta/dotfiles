@@ -95,46 +95,46 @@
   (fset 'yes-or-no-p 'y-or-n-p)
   (global-unset-key (kbd "C-x c"))
   (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+  (add-to-list 'default-frame-alist '(fullscreen . maximized))
   (setq-default user-full-name "Furkan Usta"
-                user-mail-address "furkanusta17@gmail.com"
-                save-interprogram-paste-before-kill t
-                ad-redefinition-action 'accept
-                vc-make-backup-files t
-                version-control t
-                delete-old-versions t
-                calendar-week-start-day 1
                 delete-by-moving-to-trash t
-                confirm-nonexistent-file-or-buffer nil
                 tab-width 4
-                tab-stop-list (number-sequence 4 200 4)
                 indent-tabs-mode nil
-                gdb-many-windows t
                 use-file-dialog nil
                 use-dialog-box nil
-                inhibit-startup-screen t
-                inhibit-startup-echo-area-message t
                 cursor-type 'bar
                 ring-bell-function 'ignore
                 scroll-step 1
-                sentence-end-double-space -1
                 fill-column 100
-                emacs-lisp-docstring-fill-column 100
                 scroll-step 1
                 scroll-conservatively 10000
                 auto-window-vscroll nil
                 comint-prompt-read-only t
-                vc-follow-symlinks t
                 scroll-preserve-screen-position t
                 frame-resize-pixelwise t
                 undo-limit 1280000
-                large-file-warning-threshold (* 1024 1024 1024) ;; 1GB
-                read-extended-command-predicate #'command-completion-default-include-p
                 enable-recursive-minibuffers t
                 minibuffer-prompt-properties '(read-only t cursor-intangible t face minibuffer-prompt)
-                read-file-name-completion-ignore-case t
                 read-buffer-completion-ignore-case t
                 font-use-system-font t)
   :custom
+  (version-control t)
+  (delete-old-versions t)
+  (calendar-week-start-day 1)
+  (confirm-nonexistent-file-or-buffer nil)
+  (user-mail-address "furkanusta17@gmail.com")
+  (save-interprogram-paste-before-kill t)
+  (ad-redefinition-action 'accept)
+  (vc-make-backup-files t)
+  (tab-stop-list (number-sequence 4 200 4))
+  (inhibit-startup-screen t)
+  (inhibit-startup-echo-area-message t)
+  (emacs-lisp-docstring-fill-column 100)
+  (sentence-end-double-space -1)
+  (vc-follow-symlinks t)
+  (large-file-warning-threshold (* 1024 1024 1024)) ;; 1GB
+  (read-extended-command-predicate #'command-completion-default-include-p)
+  (read-file-name-completion-ignore-case t)
   (confirm-kill-processes nil)
   (column-number-mode 1)
   (display-time-default-load-average nil)
