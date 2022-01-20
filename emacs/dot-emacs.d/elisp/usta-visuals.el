@@ -9,8 +9,9 @@
   :preface (defun dashboard-insert-scratch (list-size)
              (dashboard-insert-section
               "Shortcuts:"
-              '("*scratch*" "*elfeed*" "init.el" "*vterm*" "Data Folder" "Home" )
+              '("*scratch*" "*elfeed*" "init.el" "*vterm*" "Data Folder" "Home")
               list-size
+              "Scratch"
               "s"
               `(lambda (&rest ignore)
                  (cond

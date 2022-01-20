@@ -168,5 +168,4 @@
   :bind ("C-c ;" . resize-window)
   :custom (resize-window-allow-backgrounds nil))
 
-
 (provide 'usta-navigation)

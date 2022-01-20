@@ -55,6 +55,7 @@
   :bind ("C-c g s" . magit-status)
   :init (setq magit-define-global-key-bindings nil)
   :custom
+  (magit-define-global-key-bindings nil)
   (magit-blame-echo-style 'headings)
   (magit-repository-directories (list (cons (file-truename "~/Projects") 1))))
 
