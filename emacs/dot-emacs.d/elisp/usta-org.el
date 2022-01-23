@@ -191,33 +191,15 @@ With a prefix ARG, remove start location."
 
 (use-package org-special-block-extras)
 
-(use-package org-marginalia
-  :quelpa (org-marginalia :fetcher github :repo "nobiot/org-marginalia")
-  ;; :hook (org-mode . org-marginalia-mode)
-  :commands (org-marginalia-next org-marginalia-prev)
-  :preface
-  (defun org-marginalia-make-annotation ()
-    (interactive)
-    (let ((mark-end (region-end)))
-      (org-marginalia-mark (region-beginning) (region-end))
-      (org-marginalia-save)
-      (org-marginalia-open (1- mark-end))
-      (goto-char (point-max))))
-  (defun org-marginalia-browse-forward ()
-    (interactive)
-    (let ((buf (current-buffer)))
-      (org-marginalia-next) (org-marginalia-open (point))
-      (pop-to-buffer buf nil t)))
-(defun org-marginalia-browse-backward ()
-    (interactive)
-    (let ((buf (current-buffer)))
-      (org-marginalia-prev) (org-marginalia-open (point))
-      (pop-to-buffer buf nil t)))
+(use-package org-remark
+  :quelpa (org-remark :fetcher github :repo "nobiot/org-remark")
   :bind
-  ("C-c i m" . org-marginalia-make-annotation)
-  ("C-c m o" . org-marginalia-open)
-  ("C-c m ]" . org-marginalia-browse-forward)
-  ("C-c m [" . org-marginalia-browse-backward))
+  (:map org-remark-mode-map
+        ("C-c i m" . org-remark-mark)
+        ("C-c m o" . org-remark-open)
+        ("C-c m r" . org-remark-remove)
+        ("C-c m ]" . org-remark-next)
+        ("C-c m [" . org-remark-prev)))
 
 (use-package org-journal
   :bind ("C-c i j" . org-journal-new-entry)
