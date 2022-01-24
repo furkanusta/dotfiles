@@ -121,8 +121,9 @@
 (use-package ctrlf
   :custom
   (ctrlf-mode 1)
+  (ctrlf-auto-recenter nil)
   :bind
-  (:map ctrlf-mode-map
+  (:map ctrlf-minibuffer-mode-map
         ("C-s" . ctrlf-forward-default)
         ("C-r" . ctrlf-backward-default)))
 
