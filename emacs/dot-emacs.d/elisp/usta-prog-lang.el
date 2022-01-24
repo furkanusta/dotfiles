@@ -155,6 +155,8 @@
 (use-package apheleia
   :hook (python-mode . apheleia-mode))
 
+(use-package format-all)
+
 (use-package python-mls
   :hook
   (inferior-python-mode . python-mls-mode)

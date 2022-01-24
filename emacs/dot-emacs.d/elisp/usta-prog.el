@@ -47,9 +47,9 @@
   ;; (persp-initial-frame-name ".dotfiles")
   (switch-to-prev-buffer-skip #'perspective-my-skip-buffer-p))
 
-(use-package eyebrowse
-  :hook (after-init . eyebrowse-mode)
-  :custom (eyebrowse-keymap-prefix (kbd "C-c l")))
+;; (use-package eyebrowse
+;;   :hook (after-init . eyebrowse-mode)
+;;   :custom (eyebrowse-keymap-prefix (kbd "C-c l")))
 
 (use-package magit
   :bind ("C-c g s" . magit-status)
@@ -131,13 +131,16 @@
 
 (use-package vterm
   :commands (vterm-next-prompt vterm-prev-prompt)
-  :config (add-to-list 'display-buffer-alist (cons "\\*vterm" use-other-window-alist))
   :preface
   (defun vterm-next-prompt () (interactive) (re-search-forward "\\] \\$ " nil 'move))
   (defun vterm-prev-prompt () (interactive)
          (move-beginning-of-line nil)
          (re-search-backward "\\] .*\\$ " nil 'move)
          (re-search-forward "\\] \\$ " nil 'move))
+  :config
+  (add-to-list 'display-buffer-alist (cons "\\*vterm" use-other-window-alist))
+  :custom
+  (vterm-copy-exclude-prompt t)
   :bind
   (:map vterm-copy-mode-map
         ("C-<" . vterm-prev-prompt)
@@ -238,5 +241,8 @@
 (use-package gdb-mi
   :custom
   (gdb-many-windows t))
+
+(use-package hl-prog-extra
+  :hook (prog-mode . hl-prog-extra-mode))
 
 (provide 'usta-prog)

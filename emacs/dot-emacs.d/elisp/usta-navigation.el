@@ -112,6 +112,21 @@
   (beacon-blink-when-window-changes nil)
   (beacon-mode 1))
 
+(use-package goggles
+  :hook ((prog-mode text-mode) . goggles-mode)
+  :custom
+  (goggles-pulse t))
+
+
+(use-package ctrlf
+  :custom
+  (ctrlf-mode 1)
+  :bind
+  (:map ctrlf-mode-map
+        ("C-s" . ctrlf-forward-default)
+        ("C-r" . ctrlf-backward-default)))
+
+
 (use-package ibuffer-projectile
   :commands (ibuffer-projectile-set-filter-groups ibuffer-projectile-generate-filter-groups)
   :init
