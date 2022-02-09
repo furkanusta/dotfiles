@@ -3,13 +3,13 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          C++          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (use-package cc-mode :ensure nil
   :mode
   ("\\.h\\'" . c++-mode)
-  :config
-  (c-set-offset 'substatement-open 0)
-  (c-set-offset 'innamespace 0)
   :custom
+  (c-offsets-alist '((innamespace . 0)
+                         (substatement-open . 0)))
   (c-default-style "stroustrup")
   (c-basic-offset 4)
   (c-indent-level 4)
@@ -124,7 +124,7 @@
   :custom (graphviz-dot-indent-width 4))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
-;;         LISP        ::
+;;     LISP / ELISP    ::
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package sly
   :config (sly-setup '(sly-mrepl)))
@@ -135,6 +135,15 @@
 
 (use-package lisp-extra-font-lock
   :hook (emacs-lisp-mode . lisp-extra-font-lock-mode))
+
+(use-package highlight-function-calls
+  :hook (emacs-lisp-mode . highlight-function-calls-mode))
+
+(use-package easy-escape
+  :hook (emacs-lisp-mode . easy-escape-minor-mode))
+
+(use-package flycheck-elsa
+  :hook (emacs-lisp-mode . flycheck-elsa-setup))
 
 (use-package comment-or-uncomment-sexp
   :bind ("C-M-;" . comment-or-uncomment-sexp))

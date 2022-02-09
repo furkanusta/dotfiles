@@ -151,6 +151,7 @@
   (:map pdf-view-mode-map
         ("M-w" . pdf-view-kill-ring-save)
         ("o" . pdf-outline)
+        ("M-g M-g" . pdf-view-goto-page)
         ("i" . my-org-noter-insert-and-highlight)
         ("M-i" . my-org-noter-insert-precise-and-highlight)
         ("S-SPC" . pdf-view-scroll-down-or-previous-page))

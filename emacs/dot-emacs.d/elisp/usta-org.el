@@ -430,7 +430,6 @@ With a prefix ARG, remove start location."
 (use-package mysql-to-org)
 (use-package ob-sql-mode)
 (use-package ox-timeline)
-(use-package org-latex-impatient)
 (use-package org-board)
 (use-package org-reverse-datetree)
 
@@ -466,6 +465,9 @@ With a prefix ARG, remove start location."
 
 (use-package notebook
   :quelpa (notebook :fetcher github :repo "rougier/notebook-mode"))
+
+(use-package org-view-mode
+  :quelpa (org-view-mode :fetcher github :repo "amno1/org-view-mode"))
 
 (use-package org-bib-mode
   :load-path "elisp/"

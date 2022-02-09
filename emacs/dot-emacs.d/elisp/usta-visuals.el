@@ -5,6 +5,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (use-package dashboard
+  :hook (dashboard-mode . page-break-lines-mode)
   :commands dashboard-insert-section dashboard-insert-heading dashboard-subseq
   :preface (defun dashboard-insert-scratch (list-size)
              (dashboard-insert-section

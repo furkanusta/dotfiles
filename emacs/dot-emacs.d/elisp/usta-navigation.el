@@ -113,7 +113,7 @@
   (beacon-mode 1))
 
 (use-package goggles
-  :hook ((prog-mode text-mode) . goggles-mode)
+  :hook (prog-mode . goggles-mode)
   :custom
   (goggles-pulse t))
 

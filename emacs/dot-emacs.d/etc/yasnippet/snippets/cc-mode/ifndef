@@ -10,9 +10,9 @@
                 (replace-regexp-in-string
                     "/\\|\\.\\|\\-"
                     "_"
-                    (file-relative-name
+                    (string-remove-prefix "include/" (file-relative-name
                         buffer-file-name
-                            (projectile-project-root)))))`}
+                            (projectile-project-root))))))`}
 #define $1
 
 $0
