@@ -172,10 +172,10 @@
   (consult-narrow-key "<")
   :config
   (consult-customize
-   consult-line consult-line-symbol-at-point my-consult-ripgrep
-   consult-git-grep consult-grep consult-ripgrep my-consult-ripgrep-here
-   consult-bookmark consult-recent-file consult-xref
-   consult--source-file consult--source-project-file consult--source-bookmark
+   consult-line-symbol-at-point my-consult-ripgrep my-consult-ripgrep-here
+   consult-ripgrep consult-git-grep consult-grep consult-line
+   consult--source-recent-file consult--source-project-recent-file
+   consult-bookmark consult-recent-file consult-xref consult--source-bookmark
    :preview-key '(:debounce 0.01 any))
   (define-key consult-narrow-map (vconcat consult-narrow-key "?") #'consult-narrow-help))
 
@@ -278,7 +278,7 @@
   :config (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
 (use-package citar
-  :after (embark bibtex)
+  :after (embark bibtex-completion)
   :demand t
   :preface
   (defun my-citar-embark-open-pdf (keys-entries)
@@ -290,7 +290,6 @@
         (citar-file--files-for-entry key nil citar-library-paths citar-file-extensions)))))
   :custom
   (citar-bibliography (-filter (lambda (file) (not (s-starts-with? "." (f-filename file)))) (f-glob "*.bib" my-bibliography-directory)))
-  (bibtex-completion-bibliography citar-bibliography)
   (citar-open-note-function 'orb-citar-edit-note)
   (citar-library-paths (list my-papers-directory (concat my-papers-directory "/Papers")))
   (citar-at-point-function 'embark-act)
@@ -303,6 +302,7 @@
   (add-to-list 'embark-keymap-alist '(bib-reference . citar-map))
   (add-to-list 'embark-keymap-alist '(citar-reference . citar-map))
   (add-to-list 'embark-keymap-alist '(citation-key . citar-buffer-map))
+  (setq bibtex-completion-bibliography citar-bibliography)
   :bind (:map citar-map
               ("M-RET" . my-citar-embark-open-pdf)))
 
