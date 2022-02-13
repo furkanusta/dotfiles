@@ -50,7 +50,7 @@
   :defines display-line-numbers-mode
   :preface (defun toggle-line-numbers () (display-line-numbers-mode (or (not display-line-numbers-mode) 0)))
   :custom
-  (writeroom-width 100)
+  (writeroom-width 120)
   (writeroom-mode-line nil)
   (writeroom-fullscreen-effect 'maximized)
   :bind ("C-c o w" . writeroom-mode))
@@ -183,5 +183,16 @@
   (add-to-list 'resize-window-dispatch-alist '(?+ balance-windows "Balance windows" nil))
   :bind ("C-c ;" . resize-window)
   :custom (resize-window-allow-backgrounds nil))
+
+(use-package dogears
+  :quelpa (dogears :fetcher github :repo "alphapapa/dogears.el"
+                   :files (:defaults (:exclude "helm-dogears.el")))
+  ;; These bindings are optional, of course:
+  :bind (:map global-map
+              ("M-g d" . dogears-go)
+              ("M-g M-b" . dogears-back)
+              ("M-g M-f" . dogears-forward)
+              ("M-g M-d" . dogears-list)
+              ("M-g M-D" . dogears-sidebar)))
 
 (provide 'usta-navigation)

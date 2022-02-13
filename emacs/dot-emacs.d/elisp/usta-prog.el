@@ -1,4 +1,21 @@
 ;; -*- lexical-binding: t; -*-
+
+(use-package prog-mode :ensure nil
+  :preface
+  (defun eos/previous-function ()
+    (interactive)
+    (beginning-of-defun))
+  (defun eos/next-function ()
+    (interactive)
+    (beginning-of-defun -1))
+  :bind
+  (:map prog-mode-map
+        ("C-c C-p" . eos/previous-function)
+        ("C-c C-n" . eos/next-function)))
+
+(use-package highlight-numbers
+  :hook (prog-mode . highlight-numbers-mode))
+
 (use-package projectile
   :commands projectile-project-name projectile-project-root
   :preface (defun my-open-readme ()

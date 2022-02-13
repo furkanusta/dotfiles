@@ -207,7 +207,7 @@
 
 (use-package dtache-compile
   :ensure dtache
-  ;; :hook (after-init . dtache-compile-setup)
+  :hook (after-init . dtache-compile-setup)
   :bind (([remap compile] . dtache-compile)
          ([remap recompile] . dtache-compile-recompile)
          :map dtache-compilation-mode-map
@@ -215,8 +215,62 @@
 
 (use-package dtache-consult
   :ensure dtache
-  :after dtache
   :bind ([remap dtache-open-session] . dtache-consult-session))
 
+(use-package dtache-projectile
+  :ensure dtache
+  :preface
+  (defun my/dtache-projectile-run-compilation (cmd &optional use-comint-mode)
+    "If CMD is a string execute it with `dtache-compile', optionally USE-COMINT-MODE."
+    (if (functionp cmd)
+        (funcall cmd)
+      (let ((dtache-session-origin 'projectile))
+        (dtache-compile cmd use-comint-mode))))
+  :config
+  (advice-add 'projectile-run-compilation :override #'my/dtache-projectile-run-compilation))
+
+(use-package dtache-vterm
+  :ensure dtache
+  :preface
+  (defun dtache-vterm-send-input (&optional detach)
+    "Create a `dtache' session."
+    (interactive)
+    (vterm-send-C-a)
+    (let* ((input (buffer-substring-no-properties (point) (vterm-end-of-line)))
+           (dtache-session-origin 'vterm)
+           (dtache-session-action
+            '(:attach dtache-shell-command-attach-session
+                      :view dtache-view-dwim
+                      :run dtache-shell-command))
+           (dtache-session-mode
+            (if detach 'create 'create-and-attach)))
+      (vterm-send-C-k)
+      (process-send-string vterm--process (dtache-dtach-command input t))
+      (vterm-send-C-e)
+      (vterm-send-return)))
+
+  (defun dtache-vterm-attach (session)
+    "Attach to an active `dtache' session."
+    (interactive
+     (list
+      (let* ((host-name (car (dtache--host)))
+             (sessions
+              (thread-last (dtache-get-sessions)
+                           (seq-filter (lambda (it)
+                                         (string= (car (dtache--session-host it)) host-name)))
+                           (seq-filter (lambda (it) (eq 'active (dtache--determine-session-state it)))))))
+        (dtache-completing-read sessions))))
+    (let ((dtache-session-mode 'attach))
+      (process-send-string vterm--process (dtache-dtach-command session t))
+      (vterm-send-return)))
+
+  (defun dtache-vterm-detach ()
+    "Detach from a `dtache' session."
+    (interactive)
+    (process-send-string vterm--process dtache--dtach-detach-character))
+    :bind (:map vterm-mode-map
+              ("<S-return>" . #'dtache-vterm-send-input)
+              ("<C-return>" . #'dtache-vterm-attach)
+              ("C-c C-d" . #'dtache-vterm-detach)))
 
 (provide 'usta-uncategorized)

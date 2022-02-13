@@ -25,7 +25,7 @@
      ("https://web.eecs.utk.edu/~azh/blog/feed.rss" prog)
      ("https://thume.ca/atom.xml" prog)
      ("https://blog.acolyer.org/feed/" prog)
-     ("https://www.johndcook.com/blog/feed/" prog)
+     ;; ("https://www.johndcook.com/blog/feed/" math)
      ("https://benhoyt.com/writings/rss.xml" prog)
      ("https://lemire.me/blog/feed/" prog)
      ("https://notes.eatonphil.com/rss.xml" prog)

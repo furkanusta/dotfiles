@@ -475,4 +475,7 @@ With a prefix ARG, remove start location."
   :custom
   (org-bib-pdf-directory my-papers-directory))
 
+;; (use-package orgdiff
+;;   :quelpa (orgdiff :fetcher github :repo "tecosaur/orgdiff"))
+
 (provide 'usta-org)
