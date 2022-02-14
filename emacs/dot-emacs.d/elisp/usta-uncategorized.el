@@ -1,5 +1,6 @@
 ;; -*- lexical-binding: t; -*-
 
+;;; -*- lexical-binding: t -*-
 (use-package transient-dwim
   :bind ("M-=" . transient-dwim-dispatch))
 

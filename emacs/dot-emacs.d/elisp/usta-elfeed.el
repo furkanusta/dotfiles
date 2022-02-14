@@ -1,4 +1,5 @@
 ;; -*- lexical-binding: t; -*-
+;;; -*- lexical-binding: t -*-
 (use-package elfeed
   :preface
   (defun +rss/delete-pane ()

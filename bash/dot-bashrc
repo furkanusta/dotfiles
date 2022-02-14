@@ -31,7 +31,7 @@ export TEXMFHOME="$LOCAL_PATH/prog/texmf"
 export XDG_CONFIG_HOME=$HOME/.config
 
 export GEM_HOME=$LOCAL_PATH/gems
-export PATH="$PATH:$GEM_HOME"
+export PATH="$PATH:$GEM_HOME/bin"
 
 alias ls=exa
 alias cat=bat

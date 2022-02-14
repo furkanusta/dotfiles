@@ -1,5 +1,6 @@
 ;; -*- lexical-binding: t; -*-
 
+;;; -*- lexical-binding: t -*-
 (use-package prog-mode :ensure nil
   :preface
   (defun eos/previous-function ()

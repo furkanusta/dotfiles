@@ -1,5 +1,6 @@
 ;; -*- lexical-binding: t; -*-
 ;;; file opening procedures
+;;; -*- lexical-binding: t -*-
 (use-package dired :ensure nil
   :commands dired-get-file-for-visit
   :preface

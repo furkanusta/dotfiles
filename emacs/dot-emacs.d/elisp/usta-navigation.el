@@ -3,6 +3,7 @@
 ;;          Navigation          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;;; -*- lexical-binding: t -*-
 (use-package buffer-move
   :bind
   ("C-c S-<up>"    . buf-move-up)

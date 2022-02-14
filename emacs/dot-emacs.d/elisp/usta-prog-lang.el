@@ -32,7 +32,8 @@
 (use-package meson-mode
   :hook (meson-mode . company-mode))
 
-(use-package dap-lldb)
+(use-package dap-lldb :ensure dap)
+
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ;;          Scala          ;;
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
