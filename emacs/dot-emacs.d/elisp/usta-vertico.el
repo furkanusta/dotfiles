@@ -185,8 +185,10 @@
 (use-package embark
   :demand t
   :after vertico
-  :init (setq prefix-help-command #'embark-prefix-help-command)
-  :custom (embark-indicators '(embark-verbose-indicator))
+  :init
+  (setq prefix-help-command #'embark-prefix-help-command)
+  :custom
+  (embark-indicators '(embark-verbose-indicator))
   :preface
   (defun sudo-find-file (file)
     "Open FILE as root."
@@ -199,12 +201,37 @@
                            "|sudo:root@"
                            (file-remote-p file 'host) ":" (file-remote-p file 'localname))
                  (concat "/sudo:root@localhost:" file))))
+  (defun with-minibuffer-keymap (keymap)
+    (lambda (fn &rest args)
+      (minibuffer-with-setup-hook
+          (:append (lambda ()
+                     (use-local-map
+                      (make-composed-keymap keymap (current-local-map)))))
+        (apply fn args))))
+  (defvar embark-completing-read-prompter-map
+    (let ((map (make-sparse-keymap)))
+      (define-key map (kbd "C-<tab>") 'abort-recursive-edit)
+      map))
+  (defun embark-act-with-completing-read (&optional arg)
+    (interactive "P")
+    (let* ((embark-prompter 'embark-completing-read-prompter)
+           (act (propertize "Act" 'face 'highlight))
+           (embark-indicators '(embark-minimal-indicator)))
+      (embark-act arg)))
+  :config
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameters (mode-line-format . none))))
+  (advice-add 'embark-completing-read-prompter :around
+              (with-minibuffer-keymap embark-completing-read-prompter-map))
   :bind
   ("C-." . embark-act)
   ("C-;" . embark-dwim)
   ("C-:" . embark-export)
   ("C-h B" . embark-bindings)
   (:map vertico-map
+        ("C-<tab>" . embark-act-with-completing-read)
         ("C-." . embark-act))
   (:map embark-file-map
         ("s" . sudo-edit)
@@ -218,6 +245,7 @@
 (use-package marginalia
   :init (marginalia-mode)
   :custom
+  (marginalia-align 'center)
   (marginalia-command-categories
    '((imenu . imenu)
      (persp-switch-to-buffer . buffer)
@@ -289,7 +317,7 @@
        (car
         (citar-file--files-for-entry key nil citar-library-paths citar-file-extensions)))))
   :custom
-  (citar-bibliography (-filter (lambda (file) (not (s-starts-with? "." (f-filename file)))) (f-glob "*.bib" my-bibliography-directory)))
+  (citar-bibliography my-bibliographies)
   (citar-open-note-function 'orb-citar-edit-note)
   (citar-library-paths (list my-papers-directory (concat my-papers-directory "/Papers")))
   (citar-at-point-function 'embark-act)

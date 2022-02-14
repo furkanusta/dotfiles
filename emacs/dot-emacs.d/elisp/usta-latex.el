@@ -46,11 +46,11 @@
 
 (use-package ebib
   :custom
-  (ebib-preload-bib-files (list my-bibliography))
+  (ebib-preload-bib-files my-bibliographies)
   (ebib-bibtex-dialect 'biblatex)
-  (ebib-default-directory 'first-bib-dir)
+  (ebib-default-directory my-bibliography-directory)
   (ebib-index-window-size 20)
-  (ebib-bib-search-dirs (list my-papers-directory)))
+  (ebib-bib-search-dirs (list my-bibliography-directory)))
 
 (use-package magic-latex-buffer
   :hook (latex-mode . magic-latex-buffer))

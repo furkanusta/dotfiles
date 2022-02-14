@@ -1,5 +1,7 @@
 ;; -*- lexical-binding: t; -*-
 (use-package no-littering :demand t)
+(require 'dash)
+(require 'f)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Defaults & Built-ins          ;;
@@ -7,8 +9,10 @@
 (defvar my-data-directory (or (getenv "EMACS_STORAGE_LOCATION") (expand-file-name "~/Documents")))
 (defvar my-papers-directory (concat my-data-directory "/Papers"))
 (defvar my-notes-directory (concat my-data-directory "/Notes"))
-(defvar my-bibliography (concat my-papers-directory "/Library.bib"))
 (defvar my-bibliography-directory (concat my-papers-directory "/bibs"))
+(defvar my-bibliographies (-filter
+                           (lambda (file) (not (s-starts-with? "." (f-filename file))))
+                           (f-glob "*.bib" my-bibliography-directory)))
 
 (use-package emacs :ensure nil
   :hook
