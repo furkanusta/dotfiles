@@ -456,12 +456,12 @@ With a prefix ARG, remove start location."
 (use-package org-view-mode
   :quelpa (org-view-mode :fetcher github :repo "amno1/org-view-mode"))
 
-;; (use-package org-bib-mode
-;;   :quelpa (org-bib-mode :fetcher github :repo "rougier/org-bib-mode")
-;;   :custom
-;;   (org-bib-pdf-directory my-papers-directory))
+(use-package org-bib
+  :quelpa (org-bib :fetcher github :repo "rougier/org-bib-mode")
+  :custom
+  (org-bib-pdf-directory my-papers-directory))
 
-;; (use-package orgdiff
-;;   :quelpa (orgdiff :fetcher github :repo "tecosaur/orgdiff"))
+(use-package orgdiff
+  :quelpa (orgdiff :fetcher github :repo "tecosaur/orgdiff"))
 
 (provide 'usta-org)
