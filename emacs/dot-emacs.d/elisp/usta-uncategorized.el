@@ -52,7 +52,7 @@
 (use-package scratch
   :bind ("M-s M-s" . scratch))
 
-(use-package visual-regexp-steroids :demand t
+(use-package visual-regexp-steroids
   :bind ("C-r" . vr/replace))
 
 
@@ -115,14 +115,9 @@
   (add-to-list 'vlf-forbidden-modes-list 'pdf-view-mode)
   (add-to-list 'vlf-forbidden-modes-list 'nov-mode))
 
-
 (use-package pdf-tools
-  :after org-noter
-  :demand t
-  :defines org-noter-insert-note
   :quelpa (pdf-tools :fetcher github :repo "vedang/pdf-tools" :files ("lisp/*" "server/*"))
-  :hook ((pdf-view-mode . (lambda () (cua-mode 0)))
-         (pdf-view-mode . disable-line-numbers)
+  :hook ((pdf-view-mode . disable-line-numbers)
          (pdf-view-mode . pdf-sync-minor-mode)
          (pdf-view-mode . pdf-links-minor-mode)
          (pdf-view-mode . pdf-history-minor-mode)
@@ -133,6 +128,17 @@
   (pdf-view-display-size 'fit-page)
   (pdf-annot-activate-created-annotations nil)
   (pdf-view-resize-factor 1.1)
+  :bind
+  (:map pdf-view-mode-map
+        ("M-w" . pdf-view-kill-ring-save)
+        ("o" . pdf-outline)
+        ("M-g M-g" . pdf-view-goto-page)
+        ("S-SPC" . pdf-view-scroll-down-or-previous-page)))
+
+(use-package pdf-tools-note
+  :no-require t
+  :after (org-noter pdf-tools)
+  :defines org-noter-insert-note
   :preface
   (defun my-org-noter-insert-and-highlight ()
     (interactive)
@@ -150,12 +156,8 @@
         (pdf-view-active-region t))))
   :bind
   (:map pdf-view-mode-map
-        ("M-w" . pdf-view-kill-ring-save)
-        ("o" . pdf-outline)
-        ("M-g M-g" . pdf-view-goto-page)
         ("i" . my-org-noter-insert-and-highlight)
-        ("M-i" . my-org-noter-insert-precise-and-highlight)
-        ("S-SPC" . pdf-view-scroll-down-or-previous-page))
+        ("M-i" . my-org-noter-insert-precise-and-highlight))
   (:map org-noter-doc-mode-map
         ("i" . my-org-noter-insert-and-highlight)
         ("M-i" . my-org-noter-insert-precise-and-highlight)))
@@ -166,7 +168,6 @@
   :custom (pdf-view-restore-filename (concat no-littering-var-directory "pdf-view-restore")))
 
 (use-package undo-tree
-  :diminish undo-tree-mode
   :custom
   (global-undo-tree-mode 1)
   (undo-tree-visualizer-timestamps t)
@@ -219,7 +220,8 @@
   :bind ([remap dtache-open-session] . dtache-consult-session))
 
 (use-package dtache-projectile
-  :ensure dtache
+  :no-require t
+  :after (dtache projectile)
   :preface
   (defun my/dtache-projectile-run-compilation (cmd &optional use-comint-mode)
     "If CMD is a string execute it with `dtache-compile', optionally USE-COMINT-MODE."
@@ -231,7 +233,8 @@
   (advice-add 'projectile-run-compilation :override #'my/dtache-projectile-run-compilation))
 
 (use-package dtache-vterm
-  :ensure dtache
+  :no-require t
+  :after (dtache vterm)
   :preface
   (defun dtache-vterm-send-input (&optional detach)
     "Create a `dtache' session."
@@ -249,7 +252,6 @@
       (process-send-string vterm--process (dtache-dtach-command input t))
       (vterm-send-C-e)
       (vterm-send-return)))
-
   (defun dtache-vterm-attach (session)
     "Attach to an active `dtache' session."
     (interactive
@@ -264,14 +266,13 @@
     (let ((dtache-session-mode 'attach))
       (process-send-string vterm--process (dtache-dtach-command session t))
       (vterm-send-return)))
-
   (defun dtache-vterm-detach ()
     "Detach from a `dtache' session."
     (interactive)
     (process-send-string vterm--process dtache--dtach-detach-character))
-    :bind (:map vterm-mode-map
+  :bind (:map vterm-mode-map
               ("<S-return>" . #'dtache-vterm-send-input)
               ("<C-return>" . #'dtache-vterm-attach)
-              ("C-c C-d" . #'dtache-vterm-detach)))
-
+              ("C-c C-d" . #'dtache-vterm-detach))
+  )
 (provide 'usta-uncategorized)

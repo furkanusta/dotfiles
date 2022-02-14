@@ -3,11 +3,15 @@
 ;;          Org Mode          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package org :ensure nil
-  :config
+  :hook
+  (org-mode . turn-on-flyspell)
+  (org-mode . auto-fill-mode)
+  (org-mode . smartparens-mode)
+  :preface
   (defvar org-capture-file (concat my-notes-directory "/Capture.org"))
-  (setq org-default-notes-file org-capture-file)
-  (require 'org-tempo)
   :custom
+  (org-modules (list 'ol-eww 'org-tempo 'ol-info 'ol-docview 'ol-bibtex 'ol-doi))
+  (org-default-notes-file org-capture-file)
   (org-startup-folded 'content)
   (org-adapt-indentation t)
   (org-catch-invisible-edits 'show-and-error)
@@ -21,6 +25,9 @@
   (org-imenu-depth 4)
   (org-indent-indentation-per-level 1)
   (org-log-done t)
+  (org-babel-load-languages '((python . t)
+                              (shell . t)
+                              (emacs-lisp . t)))
   ;; (org-pretty-entities t)
   (org-src-fontify-natively t)
   (org-src-preserve-indentation nil)
@@ -28,17 +35,7 @@
   (org-yank-adjusted-subtrees t)
   (org-todo-keywords '((sequence "TODO" "IN-PROGRESS" "NEXT" "|" "DONE")
                        (sequence "PAUSED" "SCHEDULED" "WAITING" "|"  "CANCELLED")))
-  :hook
-  (org-mode . turn-on-flyspell)
-  (org-mode . auto-fill-mode)
-  (org-mode . smartparens-mode)
-  :bind (:map org-mode-map ("C-c C-." . org-time-stamp-inactive))
-  :config
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((python . t)
-     (shell . t)
-     (emacs-lisp . t))))
+  :bind (:map org-mode-map ("C-c C-." . org-time-stamp-inactive)))
 
 (use-package ob-async)
 
@@ -52,8 +49,7 @@
 (use-package org-cliplink
   :bind (:map org-mode-map ("C-c i l" . org-cliplink)))
 
-(use-package org-capture :ensure nil
-  :after org
+(use-package org-capture :ensure org
   :custom
   (org-capture-templates '(("t" "TODO" entry (file+headline org-capture-file "Tasks")
   						    "* TODO %?\n	%a\n  %i\n")
@@ -65,7 +61,7 @@
   						    "* %?\n	 [[%:link][%:description]]\n	%U")))
   :bind ("C-c c" . org-capture))
 
-(use-package org-table :ensure nil
+(use-package org-table :ensure org
   :preface
   (defun my-org-copy-table-cell ()
     (interactive)
@@ -77,10 +73,9 @@
   (:map org-mode-map
         ("M-W" . my-org-copy-table-cell)))
 
+(use-package org-protocol :ensure org)
 
-(use-package org-protocol :ensure nil)
-
-(use-package org-agenda :ensure nil
+(use-package org-agenda :ensure org
   :custom
   (org-agenda-files (list my-notes-directory))
   (org-agenda-include-diary t)
@@ -88,29 +83,26 @@
   (org-agenda-start-day "-2d")
   :bind ("C-c a" . org-agenda))
 
-(use-package org-refile :ensure nil
+(use-package org-refile :ensure org
   :custom
   (org-refile-use-outline-path t)
   (org-refile-targets '((nil :maxlevel . 9)
                         (org-agenda-files :maxlevel . 9)))
   (org-refile-allow-creating-parent-nodes 'confirm))
 
-(use-package org-clock :ensure nil
+(use-package org-clock :ensure org
   :custom
   (org-clock-out-remove-zero-time-clocks t)
   (org-clock-report-include-clocking-task t)
   (org-clock-out-when-done t))
 
 (use-package org-appear
-  ;; :hook (org-mode . org-appear-mode)
   :custom
   (org-appear-autolinks t)
   (org-appear-autosubmarkers t)
   (org-appear-autoentities t))
 
-(use-package oc
-  :ensure org
-  :demand t
+(use-package oc :ensure org
   :custom
   (org-cite-export-processors '((latex biblatex) (t csl)))
   (org-support-shift-select t))
@@ -133,7 +125,6 @@
   :custom (org-sticky-header-always-show-header nil))
 
 (use-package org-ref
-  :demand t
   :custom
   (org-ref-bibliography-notes (concat my-notes-directory "/Papers.org"))
   (org-ref-default-bibliography (list my-bibliography))
@@ -149,7 +140,7 @@
 
 (use-package org-noter-pdftools
   :after org-noter
-  :config
+  :preface
   (defun org-noter-pdftools-insert-precise-note (&optional toggle-no-questions)
     (interactive "P")
     (org-noter--with-valid-session
@@ -175,6 +166,7 @@ With a prefix ARG, remove start location."
               (org-entry-delete nil org-noter-property-note-location)
             (org-entry-put nil org-noter-property-note-location
                            (org-noter--pretty-print-location location))))))))
+  :config
   (with-eval-after-load 'pdf-annot
     (add-hook 'pdf-annot-activate-handler-functions #'org-noter-pdftools-jump-to-note)))
 
@@ -240,13 +232,13 @@ With a prefix ARG, remove start location."
               ("M-<down>" . org-next-visible-heading)
               ("M-<up>" . org-previous-visible-heading)))
 
-(use-package ob-ipython
-  :hook (org-babel-after-execute . org-display-inline-images)
-  :config
-  (add-to-list 'org-latex-minted-langs '(ipython "python"))
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((ipython . t))))
+;; (use-package ob-ipython
+;;   :hook (org-babel-after-execute . org-display-inline-images)
+;;   :config
+;;   (add-to-list 'org-latex-minted-langs '(ipython "python"))
+;;   (org-babel-do-load-languages
+;;    'org-babel-load-languages
+;;    '((ipython . t))))
 
 (use-package org-transclusion
   :quelpa (org-transclusion :fetcher github :repo "nobiot/org-transclusion")
@@ -268,8 +260,6 @@ With a prefix ARG, remove start location."
   :bind (:map org-mode-map ("C-c s p" . org-super-links-peek-link)))
 
 (use-package org-rich-yank
-  :demand t
-  :after org
   :bind (:map org-mode-map ("C-M-y" . org-rich-yank)))
 
 ;; (use-package org-link-beautify
@@ -294,8 +284,6 @@ With a prefix ARG, remove start location."
 
 (use-package org-roam
   :init (setq org-roam-v2-ack t)
-  :after org-ref
-  :demand t
   :custom
   (org-roam-directory my-notes-directory)
   (org-roam-auto-replace-fuzzy-links nil)
@@ -322,16 +310,15 @@ With a prefix ARG, remove start location."
 (use-package org-roam-ui
   :quelpa (org-roam-ui :fetcher github :repo "org-roam/org-roam-ui")
   :after org-roam
-  :config
-  (setq org-roam-ui-sync-theme t
-        org-roam-ui-follow t
-        org-roam-ui-update-on-save t
-        org-roam-ui-open-on-start t))
+  :custom
+  (org-roam-ui-sync-theme t)
+  (org-roam-ui-follow t)
+  (org-roam-ui-update-on-save t)
+  (org-roam-ui-open-on-start t))
 
 (use-package org-roam-timestamps
   :quelpa (org-roam-timestamps :fetcher github :repo "ThomasFKJorna/org-roam-timestamps")
-  :after org-roam
-  :config (org-roam-timestamps-mode))
+  :hook (org-roam-mode . org-roam-timestamps-mode))
 
 (use-package highlight
   :preface
@@ -469,11 +456,10 @@ With a prefix ARG, remove start location."
 (use-package org-view-mode
   :quelpa (org-view-mode :fetcher github :repo "amno1/org-view-mode"))
 
-(use-package org-bib-mode
-  :load-path "elisp/"
-  ;; :quelpa (org-bib-mode :fetcher github :repo "rougier/org-bib-mode")
-  :custom
-  (org-bib-pdf-directory my-papers-directory))
+;; (use-package org-bib-mode
+;;   :quelpa (org-bib-mode :fetcher github :repo "rougier/org-bib-mode")
+;;   :custom
+;;   (org-bib-pdf-directory my-papers-directory))
 
 ;; (use-package orgdiff
 ;;   :quelpa (orgdiff :fetcher github :repo "tecosaur/orgdiff"))

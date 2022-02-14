@@ -70,12 +70,12 @@
 
 (use-package goto-last-point
   :config (goto-last-point-mode)
-  :bind ("C-x g s" . goto-last-point))
+  :bind ("C-x j p" . goto-last-point))
 
 (use-package goto-chg
   :bind
-  ("C-x g c" . goto-last-change)
-  ("C-x g C" . goto-last-change-reverse))
+  ("C-x j c" . goto-last-change)
+  ("C-x j C" . goto-last-change-reverse))
 
 (use-package link-hint
   :bind
@@ -174,8 +174,6 @@
 
 (use-package beginend
   :config (beginend-global-mode))
-
-(use-package exwm-mff :custom (exwm-mff-mode 1))
 
 (use-package resize-window
   :defines resize-window-dispatch-alist

@@ -1,7 +1,6 @@
 ;; -*- lexical-binding: t; -*-
 
 (use-package vertico
-  :demand t
   :defines vertico-mode
   :quelpa (vertico :fetcher github :repo "minad/vertico" :files ("*.el" "extensions/*.el"))
   :hook
@@ -183,7 +182,6 @@
   :bind (:map company-mode-map ([remap completion-at-point] . consult-company)))
 
 (use-package embark
-  :demand t
   :after vertico
   :init
   (setq prefix-help-command #'embark-prefix-help-command)
@@ -239,7 +237,6 @@
 
 (use-package embark-consult
   :after (embark consult)
-  :demand t
   :hook (embark-collect-mode . consult-preview-at-point-mode))
 
 (use-package marginalia
@@ -278,8 +275,6 @@
 
 ;; Add extensions
 (use-package cape
-  :defer nil
-  :demand t
   :config
   (add-to-list 'completion-at-point-functions (cape-super-capf #'cape-file #'cape-keyword #'cape-dabbrev))
   (require 'company-cmake)
@@ -301,13 +296,11 @@
 
 (use-package kind-icon
   :after corfu
-  :demand t
   :custom (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
   :config (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
 (use-package citar
   :after (embark bibtex-completion)
-  :demand t
   :preface
   (defun my-citar-embark-open-pdf (keys-entries)
     (interactive (list (citar-select-refs :rebuild-cache current-prefix-arg)))
@@ -336,7 +329,6 @@
 
 (use-package citar-org
   :quelpa (citar-org :fetcher github :repo "bdarcus/citar" :files ("citar-org.el"))
-  :demand t
   :after (citar oc)
   :custom
   (org-cite-global-bibliography citar-bibliography)

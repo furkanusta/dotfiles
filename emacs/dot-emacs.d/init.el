@@ -7,24 +7,21 @@
 (require 'server)
 (unless (server-running-p) (server-start))
 
+(setq quelpa-update-melpa-p nil)
 (unless (package-installed-p 'quelpa)
   (with-temp-buffer
     (url-insert-file-contents "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
     (eval-buffer)
     (quelpa-self-upgrade)))
-
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-(require 'use-package)
+(require 'quelpa)
 
 (setq-default use-package-always-defer t)
 ;; (setq-default use-package-always-ensure t)
-
-(use-package quelpa
-  :custom (quelpa-update-melpa-p nil))
-
-(use-package quelpa-use-package :demand t)
+(unless (package-installed-p 'quelpa-use-package)
+  (quelpa '(quelpa-use-package :fetcher git :url "https://github.com/quelpa/quelpa-use-package.git")))
+(setq quelpa-use-package-inhibit-loading-quelpa t)
+(require 'quelpa-use-package)
+(setq use-package-ensure-function 'quelpa)
 
 (setq custom-file (concat user-emacs-directory "elisp/custom.el"))
 ;; Init Done
@@ -40,15 +37,16 @@
   '((display-buffer-use-some-window display-buffer-pop-up-window)
     (inhibit-same-window . t)))
 
-(use-package usta-builtins :load-path "elisp/" :demand t)
-;; (use-package usta-company :load-path "elisp/" :demand t)
-(use-package usta-dired :load-path "elisp/" :demand t)
-(use-package usta-elfeed :load-path "elisp/" :demand t)
-(use-package usta-latex :load-path "elisp/" :demand t)
-(use-package usta-navigation :load-path "elisp/" :demand t)
-(use-package usta-org :load-path "elisp/" :demand t)
-(use-package usta-prog :load-path "elisp/" :demand t)
-(use-package usta-prog-lang :load-path "elisp/" :demand t)
-(use-package usta-uncategorized :load-path "elisp/" :demand t)
-(use-package usta-vertico :load-path "elisp/" :demand t)
-(use-package usta-visuals :load-path "elisp/" :demand t)
+(add-to-list 'load-path (expand-file-name (concat user-emacs-directory "elisp/")))
+
+(require 'usta-builtins)
+(require 'usta-dired)
+(require 'usta-elfeed)
+(require 'usta-latex)
+(require 'usta-navigation)
+(require 'usta-org)
+(require 'usta-prog)
+(require 'usta-prog-lang)
+(require 'usta-uncategorized)
+(require 'usta-vertico)
+(require 'usta-visuals)

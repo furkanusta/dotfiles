@@ -227,8 +227,6 @@
 (use-package isearch :ensure nil
   :bind ("C-c H S" . isearch-forward))
 
-(use-package eww :ensure nil)
-
 (use-package compilation :ensure nil
   :preface
   (make-variable-buffer-local 'my-compilation-start-time)

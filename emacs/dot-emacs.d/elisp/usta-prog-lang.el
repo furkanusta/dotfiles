@@ -17,7 +17,6 @@
   (c-noise-macro-names '("constexpr")))
 
 (use-package modern-cpp-font-lock
-  :diminish modern-c++-font-lock-mode
   :hook (c++-mode . modern-c++-font-lock-mode))
 
 (use-package cmake-mode)
@@ -32,7 +31,7 @@
 (use-package meson-mode
   :hook (meson-mode . company-mode))
 
-(use-package dap-lldb :ensure dap)
+(use-package dap-lldb :ensure dap-mode)
 
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ;;          Scala          ;;
