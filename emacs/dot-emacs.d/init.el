@@ -21,7 +21,6 @@
   (quelpa '(quelpa-use-package :fetcher git :url "https://github.com/quelpa/quelpa-use-package.git")))
 (setq quelpa-use-package-inhibit-loading-quelpa t)
 (require 'quelpa-use-package)
-(setq use-package-ensure-function 'quelpa)
 
 (setq custom-file (concat user-emacs-directory "elisp/custom.el"))
 ;; Init Done

@@ -38,7 +38,7 @@
 
 (use-package bibtex
   :custom
-  (bibtex-completion-library-path (list my-papers-directory))
+  (bibtex-completion-library-path my-papers-directory)
   (bibtex-align-at-equal-sign t)
   (bibtex-dialect 'biblatex))
 

@@ -114,10 +114,14 @@
   (defun consult-line-symbol-at-point ()
     (interactive)
     (consult-line (thing-at-point 'symbol)))
+  (defun my-consult-rga-here ()
+    (interactive)
+    (let ((consult-ripgrep-args (concat "rga" (substring consult-ripgrep-args 2) " --no-ignore")))
+      (consult-ripgrep default-directory)))
   (defun my-consult-ripgrep-here ()
     (interactive)
-    (setq-local consult-ripgrep-args (concat consult-ripgrep-args "--no-ignore"))
-    (consult-ripgrep default-directory (thing-at-point 'symbol)))
+    (let ((consult-ripgrep-args (concat consult-ripgrep-args " --no-ignore")))
+    (consult-ripgrep default-directory (thing-at-point 'symbol))))
   (defun my-consult-ripgrep ()
     (interactive)
     (consult-ripgrep (or (projectile-project-root) default-directory) (thing-at-point 'symbol)))
@@ -149,6 +153,7 @@
   ("M-s g" . consult-grep)
   ("M-s G" . consult-git-grep)
   ("C-c h s" . my-consult-ripgrep)
+  ("C-c h a" . my-consult-rga-here)
   ("C-c h S" . my-consult-ripgrep-here)
   ("C-c h f" . consult-fd)
   ("M-s e" . consult-isearch-history)
@@ -169,6 +174,8 @@
   (xref-show-definitions-function #'consult-xref)
   (consult-preview-key (kbd "M-."))
   (consult-narrow-key "<")
+  (consult-ripgrep-args
+   "rg --null --line-buffered --color=never --max-columns=1000 --path-separator / --smart-case --no-heading --line-number .")
   :config
   (consult-customize
    consult-line-symbol-at-point my-consult-ripgrep my-consult-ripgrep-here
@@ -252,7 +259,6 @@
   :hook (marginalia-mode-hook . all-the-icons-completion-marginalia-setup)
   :init (all-the-icons-completion-mode))
 
-
 (use-package corfu
   :quelpa (corfu :fetcher github :repo "minad/corfu")
   :hook ((prog-mode . corfu-mode)
@@ -265,20 +271,17 @@
   (corfu-commit-predicate #'corfu-candidate-previewed-p)
   (corfu-quit-at-boundary t)
   (corfu-quit-no-match nil)
+  (corfu-preview-current 'insert)
+  :config
+  (require 'kind-icon)
   :bind
   ("C-<tab>" . completion-at-point)
   (:map corfu-map
         ("TAB" . corfu-next)
         ([tab] . corfu-next)
         ("S-TAB" . corfu-previous)
-        ([backtab] . corfu-previous)))
-
-;; Add extensions
-(use-package cape
-  :config
-  (add-to-list 'completion-at-point-functions (cape-super-capf #'cape-file #'cape-keyword #'cape-dabbrev))
-  (require 'company-cmake)
-  (add-to-list 'completion-at-point-functions (cape-company-to-capf #'company-cmake)))
+        ([backtab] . corfu-previous)
+        ("C-SPC" . corfu-insert-separator)))
 
 (use-package savehist
   :hook (after-init . savehist-mode))
@@ -294,14 +297,52 @@
   :quelpa (corfu-doc :fetcher github :repo "galeo/corfu-doc")
   :hook (corfu-mode . corfu-doc-mode))
 
+;; Add extensions
+(use-package cape
+  :config
+  (add-to-list 'completion-at-point-functions (cape-super-capf #'cape-file #'cape-keyword #'cape-dabbrev))
+  (require 'company-cmake)
+  (add-to-list 'completion-at-point-functions (cape-company-to-capf #'company-cmake)))
+
+
 (use-package kind-icon
   :after corfu
-  :custom (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
+  :custom
+  (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
   :config (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
 (use-package citar
-  :after (embark bibtex-completion)
+  :custom
+  (citar-bibliography my-bibliographies)
+  (citar-open-note-function 'orb-citar-edit-note)
+  (citar-library-paths my-papers-directory)
+  (citar-at-point-function 'embark-act)
+  (citar-symbols
+   `((file ,(all-the-icons-octicon "file-pdf" :face 'all-the-icons-green :v-adjust -0.1) . " ")
+     (note ,(all-the-icons-material "speaker_notes" :face 'all-the-icons-blue :v-adjust -0.3) . " ")
+     (link ,(all-the-icons-octicon "link" :face 'all-the-icons-orange :v-adjust 0.01) . " ")))
+  (citar-symbol-separator " ")
+  :bind
+  ("C-c o b" . citar-open)
+  ("C-c o p" . citar-open-library-file))
+
+(use-package citar-embark
+  :no-require t
+  :ensure citar
+  :after embark
   :preface
+  (defvar my-citar-embark-become-map
+    (let ((map (make-sparse-keymap)))
+      (define-key map (kbd "f") 'citar-open-library-files)
+      (define-key map (kbd "x") 'biblio-arxiv-lookup)
+      (define-key map (kbd "c") 'biblio-crossref-lookup)
+      (define-key map (kbd "i") 'biblio-ieee-lookup)
+      (define-key map (kbd "h") 'biblio-hal-lookup)
+      (define-key map (kbd "s") 'biblio-dissemin-lookup)
+      (define-key map (kbd "b") 'biblio-dblp-lookup)
+      (define-key map (kbd "o") 'biblio-doi-insert-bibtex)
+      map)
+    "Citar Embark become keymap for biblio lookup.")
   (defun my-citar-embark-open-pdf (keys-entries)
     (interactive (list (citar-select-refs :rebuild-cache current-prefix-arg)))
     (let* ((entry (car keys-entries))
@@ -309,21 +350,11 @@
       (citar-file-open
        (car
         (citar-file--files-for-entry key nil citar-library-paths citar-file-extensions)))))
-  :custom
-  (citar-bibliography my-bibliographies)
-  (citar-open-note-function 'orb-citar-edit-note)
-  (citar-library-paths (list my-papers-directory (concat my-papers-directory "/Papers")))
-  (citar-at-point-function 'embark-act)
-  (citar-symbols
-   `((file ,(all-the-icons-octicon "file-pdf" :face 'all-the-icons-green :v-adjust -0.1) . " ")
-     (note ,(all-the-icons-material "speaker_notes" :face 'all-the-icons-blue :v-adjust -0.3) . " ")
-     (link ,(all-the-icons-octicon "link" :face 'all-the-icons-orange :v-adjust 0.01) . " ")))
-  (citar-symbol-separator " ")
   :config
+  (add-to-list 'embark-become-keymaps 'my-citar-embark-become-map)
   (add-to-list 'embark-keymap-alist '(bib-reference . citar-map))
   (add-to-list 'embark-keymap-alist '(citar-reference . citar-map))
   (add-to-list 'embark-keymap-alist '(citation-key . citar-buffer-map))
-  (setq bibtex-completion-bibliography citar-bibliography)
   :bind (:map citar-map
               ("M-RET" . my-citar-embark-open-pdf)))
 
@@ -337,8 +368,8 @@
   (org-cite-activate-processor 'citar)
   (citar-file-note-org-include '(org-id org-roam-ref))
   :bind (("M-o" . org-open-at-point)
-         :map minibuffer-local-map
-         ("M-b" . citar-insert-preset)))
+         (:map org-mode-map ("C-c i c" . org-cite-insert))
+         (:map minibuffer-local-map ("M-b" . citar-insert-preset))))
 
 (use-package consult-flycheck
   :bind ("C-c l f" . consult-flycheck))

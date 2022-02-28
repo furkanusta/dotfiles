@@ -65,10 +65,6 @@
   ;; (persp-initial-frame-name ".dotfiles")
   (switch-to-prev-buffer-skip #'perspective-my-skip-buffer-p))
 
-;; (use-package eyebrowse
-;;   :hook (after-init . eyebrowse-mode)
-;;   :custom (eyebrowse-keymap-prefix (kbd "C-c l")))
-
 (use-package magit
   :bind ("C-c g s" . magit-status)
   :init (setq magit-define-global-key-bindings nil)

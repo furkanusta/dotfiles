@@ -77,6 +77,7 @@
 
 (use-package org-agenda :ensure org
   :custom
+  (org-agenda-show-future-repeats nil)
   (org-agenda-files (list my-notes-directory))
   (org-agenda-include-diary t)
   (org-agenda-span 10)
@@ -118,22 +119,21 @@
   :quelpa (org-pretty-table :fetcher github :repo "Fuco1/org-pretty-table")
   :hook (org-mode . org-pretty-table-mode))
 
-(use-package org-table-sticky-header)
+;; (use-package org-table-sticky-header)
 
 (use-package org-sticky-header
-  :hook (org-mode . org-sticky-header-mode)
-  :custom (org-sticky-header-always-show-header nil))
-
-(use-package org-ref
+  ;; :hook (org-mode . org-sticky-header-mode)
   :custom
-  (org-ref-bibliography-notes (concat my-notes-directory "/Papers.org"))
-  (org-ref-default-bibliography (list my-bibliography))
-  (org-ref-pdf-directory (concat my-data-directory "/Papers/"))
-  (org-ref-show-broken-links t))
+  (org-sticky-header-always-show-header t)
+  (org-sticky-header-show-keyword nil)
+  (org-sticky-header-full-path 'full))
 
-(use-package org-ref-prettify
-  :after org-ref
-  :hook (org-mode . org-ref-prettify-mode))
+(use-package bibtex-completion
+  :custom
+  (bibtex-completion-bibliography my-bibliographies)
+  (bibtex-completion-notes-path my-notes-directory)
+  (bibtex-completion-additional-search-fields '(keywords))
+  (bibtex-completion-library-path my-papers-directory))
 
 (use-package org-pdftools
   :hook (org-mode . org-pdftools-setup-link))
@@ -389,11 +389,6 @@ With a prefix ARG, remove start location."
                        (setq-local company-backends '(company-capf company-org-block))
                        (company-mode +1)))))
 
-(use-package org-pomodoro
-  :custom (org-pomodoro-length 35)
-  :bind (:map org-mode-map
-              ("C-c C-x i" . org-pomodoro)))
-
 (use-package org-download
   :hook
   (dired-mode . org-download-enable)
@@ -450,18 +445,38 @@ With a prefix ARG, remove start location."
   (( "C-c M-i" . org-tanglesync-process-buffer-interactive)
    ( "C-c M-a" . org-tanglesync-process-buffer-automatic)))
 
-(use-package notebook
-  :quelpa (notebook :fetcher github :repo "rougier/notebook-mode"))
+;; (use-package notebook
+;;   :quelpa (notebook :fetcher github :repo "rougier/notebook-mode"))
 
-(use-package org-view-mode
-  :quelpa (org-view-mode :fetcher github :repo "amno1/org-view-mode"))
+;; (use-package org-view-mode
+;;   :quelpa (org-view-mode :fetcher github :repo "amno1/org-view-mode"))
 
-(use-package org-bib
-  :quelpa (org-bib :fetcher github :repo "rougier/org-bib-mode")
+;; (use-package org-bib
+;;   :quelpa (org-bib :fetcher github :repo "rougier/org-bib-mode")
+;;   :custom
+;;   (org-bib-library-paths my-papers-directory))
+
+;; (use-package orgdiff
+;;   :quelpa (orgdiff :fetcher github :repo "tecosaur/orgdiff"))
+
+;; (use-package math-at-point
+;;   :quelpa (math-at-point :fetcher github :repo "shankar2k/math-at-point"))
+
+(use-package org-mru-clock
+  :hook (minibuffer-setup . org-mru-clock-embark-minibuffer-hook)
+  :bind
+  (:map org-mode-map
+        ("C-c C-x i" . org-mru-clock-in)
+        ("C-c C-x C-j" . org-mru-clock-select-recent-task))
   :custom
-  (org-bib-pdf-directory my-papers-directory))
+  ;; (org-mru-clock-keep-formatting t)
+  ;; (org-mru-clock-predicate org-mru-clock-exclude-done-and-archived)
+  (org-mru-clock-how-many 100))
 
-(use-package orgdiff
-  :quelpa (orgdiff :fetcher github :repo "tecosaur/orgdiff"))
+(use-package org-clock-reminder
+  :custom
+  (org-clock-reminder-interval 1200)
+  ;; (setq org-clock-reminder-remind-inactivity 't)
+  :config (org-clock-reminder-activate))
 
 (provide 'usta-org)

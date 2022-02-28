@@ -53,6 +53,7 @@
   :bind ("M-s M-s" . scratch))
 
 (use-package visual-regexp-steroids
+  :demand t
   :bind ("C-r" . vr/replace))
 
 
@@ -93,6 +94,10 @@
   ("C-c j b" . avy-pop-mark)
   ("C-c j g" . avy-goto-line))
 
+(use-package ace-link
+  :bind
+  ("C-c j l" . ace-link))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Tools & Utils          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -117,13 +122,24 @@
 
 (use-package pdf-tools
   :quelpa (pdf-tools :fetcher github :repo "vedang/pdf-tools" :files ("lisp/*" "server/*"))
+  :mode ("\\.pdf\\'" . pdf-view-mode)
   :hook ((pdf-view-mode . disable-line-numbers)
          (pdf-view-mode . pdf-sync-minor-mode)
          (pdf-view-mode . pdf-links-minor-mode)
          (pdf-view-mode . pdf-history-minor-mode)
          (pdf-view-mode . pdf-annot-minor-mode)
          (pdf-view-mode . pdf-view-themed-minor-mode))
-  :mode ("\\.pdf\\'" . pdf-view-mode)
+  :preface
+  (defun pdf-move-down-other-frame ()
+    (interactive)
+    (other-window 1)
+    (pdf-view-scroll-up-or-next-page)
+    (other-window 1))
+  (defun pdf-move-up-other-frame ()
+    (interactive)
+    (other-window 1)
+    (pdf-view-scroll-down-or-previous-page)
+    (other-window 1))
   :custom
   (pdf-view-display-size 'fit-page)
   (pdf-annot-activate-created-annotations nil)
@@ -133,7 +149,10 @@
         ("M-w" . pdf-view-kill-ring-save)
         ("o" . pdf-outline)
         ("M-g M-g" . pdf-view-goto-page)
-        ("S-SPC" . pdf-view-scroll-down-or-previous-page)))
+        ("S-SPC" . pdf-view-scroll-down-or-previous-page))
+  (:map org-mode-map
+        ("C-M-n" . pdf-move-down-other-frame)
+        ("C-M-p" . pdf-move-up-other-frame)))
 
 (use-package pdf-tools-note
   :no-require t
