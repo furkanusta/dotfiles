@@ -82,11 +82,9 @@
   :config
   (treemacs-resize-icons 20)
   (add-to-list 'treemacs-pre-file-insert-predicates #'treemacs-is-file-git-ignored?)
-  :bind
-  (:map global-map
-        ("C-c t t"   . treemacs)
-        ("C-c t B"   . treemacs-bookmark)
-        ("C-c t C-f" . treemacs-find-file))
+  :bind (("C-c t t"   . treemacs)
+         ("C-c t B"   . treemacs-bookmark)
+         ("C-c t C-f" . treemacs-find-file))
   :custom
   (treemacs-position 'right)
   (treemacs-width 50))

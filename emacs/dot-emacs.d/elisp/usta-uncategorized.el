@@ -19,12 +19,12 @@
   :commands (crdt-connect crdt-share-buffer)
   :quelpa (crdt :fetcher git :url "https://code.librehq.com/qhong/crdt.el"))
 
-(use-package emacs-everywhere
-  :preface (defun disable-modes ()
-             (setq hungry-delete-chars-to-skip " \t\r\f\v")
-             (beacon-mode -1)
-             (toggle-truncate-lines 1))
-  :hook (emacs-everywhere-mode . disable-modes))
+;; (use-package emacs-everywhere
+;;   :preface (defun disable-modes ()
+;;              (setq hungry-delete-chars-to-skip " \t\r\f\v")
+;;              (beacon-mode -1)
+;;              (toggle-truncate-lines 1))
+;;   :hook (emacs-everywhere-mode . disable-modes))
 
 (use-package backup-walker)
 
@@ -67,15 +67,12 @@
   ("\\.EPUB\\'" . nov-mode)
   :custom (nov-text-width 100))
 
-
 (use-package flyspell)
 
 (use-package flyspell-correct
-  :after flyspell
   :bind
   (:map flyspell-mode-map
-        ("C-c $" . flyspell-correct-at-point)
-        ("C-;" . flyspell-correct-wrapper)))
+        ("C-;" . flyspell-correct-at-point)))
 
 (use-package wgrep)
 
@@ -251,6 +248,7 @@
   :config
   (advice-add 'projectile-run-compilation :override #'my/dtache-projectile-run-compilation))
 
+
 (use-package dtache-vterm
   :no-require t
   :after (dtache vterm)
@@ -292,6 +290,20 @@
   :bind (:map vterm-mode-map
               ("<S-return>" . #'dtache-vterm-send-input)
               ("<C-return>" . #'dtache-vterm-attach)
-              ("C-c C-d" . #'dtache-vterm-detach))
-  )
+              ("C-c C-d" . #'dtache-vterm-detach)))
+
+(use-package emms
+  :custom
+  (emms-source-file-default-directory "~/Music/")
+  :config
+  (require 'emms-setup)
+  (emms-all)
+  (emms-default-players)
+  ;; (require 'emms-dbus)
+  ;; (emms-dbus-enable)
+  (require 'emms-history)
+  (emms-history-load)
+  :bind
+  ("C-c m p". emms-pause))
+
 (provide 'usta-uncategorized)

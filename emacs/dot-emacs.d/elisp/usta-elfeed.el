@@ -1,6 +1,10 @@
 ;; -*- lexical-binding: t; -*-
 (use-package elfeed
+  :hook (elfeed-new-entry . ime-elfeed-podcast-tagger)
   :preface
+  (defun ime-elfeed-podcast-tagger (entry)
+    (when (elfeed-entry-enclosures entry)
+      (elfeed-tag entry 'podcast)))
   (defun +rss/delete-pane ()
     "Delete the *elfeed-entry* split pane."
     (interactive)
@@ -63,6 +67,8 @@
      ("https://old.reddit.com/r/programming/top.rss?t=week" prog)
      ("https://old.reddit.com/r/selfhosted/top.rss?t=month" prog)
      ("https://old.reddit.com/r/commandline/top.rss?t=month" prog)
+     ;; ("https://old.reddit.com/r/simpleprompts/top.rss?t=week" writing)
+     ;; ("https://old.reddit.com/r/promptoftheday/top.rss?t=week" writing)
      ;; ("https://old.reddit.com/r/askhistorians/top.rss?t=month" hist)
      ;; ("https://old.reddit.com/r/badhistory/top.rss?t=month" hist)
      ("https://dave.cheney.net/feed/atom" go)
@@ -102,7 +108,23 @@
      ("https://mtlynch.io/posts/index.xml" prog other)
      ("https://blog.jessfraz.com/index.xml" prog other)
      ("http://endlessparentheses.com/atom.xml" emacs)
-     ("https://www.youtube.com/feeds/videos.xml?channel_id=UC-xTvXTm-lrLWYk308-Km3A" youtube)
+     ;; Podcast
+     ("https://www.omnycontent.com/d/playlist/5af088d6-01f8-4b3d-b372-acb600f45df6/bfc2b445-eb3b-4241-b228-ad950098be04/fa5fa5d2-e117-4161-8c59-ad95009915be/podcast.rss" mesut)
+     ("https://karnaval.com/programlar/rabarba/rss" mesut)
+     ;; ("https://anchor.fm/s/37c8ef88/podcast/rss")
+     ;; ("https://www.omnycontent.com/d/playlist/5af088d6-01f8-4b3d-b372-acb600f45df6/bfc2b445-eb3b-4241-b228-ad950098be04/fa5fa5d2-e117-4161-8c59-ad95009915be/podcast.rss")
+     ;; ("https://feeds.megaphone.fm/revisionisthistory")
+     ;; ("http://feed.thisamericanlife.org/talpodcast")
+     ;; ("https://feeds.simplecast.com/BqbsxVfO")
+     ;; ("https://feeds.megaphone.fm/VMP8871377602")
+     ;; ("https://feeds.simplecast.com/EZwoW5Ys")
+     ;; ("https://feeds.megaphone.fm/ep-wswb")
+     ;; ("https://feeds.simplecast.com/dHoohVNH")
+     ;; ("http://feed.loveandradio.org/loveplusradio")
+     ;; ("https://feeds.publicradio.org/public_feeds/terrible-thanks-for-asking/itunes/rss")
+     ;; ("https://feeds.npr.org/510324/podcast.xml")
+     ;; ("https://www.omnycontent.com/d/playlist/5af088d6-01f8-4b3d-b372-acb600f45df6/00b2fedd-e33f-4b4f-bb4c-ae1c00c8b6dd/8425ddd8-cc1c-4924-b379-ae1c00c919f0/podcast.rss")
+     ;; Elfeed
      ("https://www.youtube.com/feeds/videos.xml?channel_id=UCPZUQqtVDmcjm4NY5FkzqLA" youtube)
      ("https://www.youtube.com/feeds/videos.xml?channel_id=UCsvn_Po0SmunchJYOWpOxMg" youtube)
      ("https://www.youtube.com/feeds/videos.xml?channel_id=UCCpTaib_e5C6Q95qwazq8OA" youtube)
@@ -171,6 +193,7 @@
                  (elfeed-search-untag-all-unread)
                  (promise-finally (reddigg-view-comments url)
                                   (lambda () (with-current-buffer (get-buffer "*reddigg-comments*")
+                                               (use-local-map (copy-keymap org-mode-map))
                                                (local-set-key "q" #'+rss/delete-pane)
                                                (read-only-mode +1)))))))
   :bind (:map elfeed-search-mode-map ("R" . elfeed-open-reddit)))
