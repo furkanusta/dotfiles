@@ -126,12 +126,23 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;     LISP / ELISP    ::
 ;;;;;;;;;;;;;;;;;;;;;;;;;
+(use-package elisp-mode
+  :hook (emacs-lip-mode . flycheck-mode))
+
 (use-package sly
   :config (sly-setup '(sly-mrepl)))
 
 (use-package smartparens
   :hook (prog-mode . smartparens-mode)
-  :init (require 'smartparens-config))
+  :init (require 'smartparens-config)
+  :bind (:map smartparens-mode-map
+              ("C-c l w" . sp-copy-sexp)
+              ("C-c l b" . sp-backward-up-sexp)
+              ("C-c l u" . sp-unwrap-sexp)
+              ("C-c l f" . sp-forward-up)
+              ("C-c l SPC" . sp-select-next-thing)
+              ("C-c l C-SPC" . sp-select-next-thing-exchange)
+              ("C-c l k" . sp-kill-sexp)))
 
 (use-package lisp-extra-font-lock
   :hook (emacs-lisp-mode . lisp-extra-font-lock-mode))
@@ -247,5 +258,8 @@ field that the can be jumped to upon further expansion."
 
 ;; (use-package tox :custom (tox-runner py.test))
 ;; (use-package poetry)
+
+(use-package perl
+  :mode ("\\.pl\\'" . cperl-mode))
 
 (provide 'usta-prog-lang)

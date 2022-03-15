@@ -54,7 +54,9 @@
   (writeroom-width 120)
   (writeroom-mode-line nil)
   (writeroom-fullscreen-effect 'maximized)
-  :bind ("C-c o w" . writeroom-mode))
+  :bind
+  (:map writeroom-mode-map
+        ("C-c o w" . writeroom-mode)))
 
 (use-package focus
   :bind ("C-c C-f" . focus-mode) ;; Might be unnecessary
@@ -63,7 +65,12 @@
         ("C-c C-p" . focus-prev-thing)))
 
 (use-package expand-region
-  :bind ("C-}" . er/expand-region))
+  :bind
+  ("C-}" . er/expand-region)
+  ("C-c } {}" . er/contract-region)
+  ("C-c } d" . er/mark-defun)
+  ("C-c } s" . er/mark-outside-pairs)
+  ("C-c } q" . er/mark-outside-quotes))
 
 (use-package annotate
   :bind ("C-c i a" . annotate-annotate))

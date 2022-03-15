@@ -259,4 +259,9 @@
 (use-package hl-prog-extra
   :hook (prog-mode . hl-prog-extra-mode))
 
+(use-package hideshow
+  :hook (prog-mode . hs-minor-mode)
+  :bind (:map hs-minor-mode-map
+              ("C-c TAB" . hs-toggle-hiding)))
+
 (provide 'usta-prog)
