@@ -159,6 +159,11 @@
 (use-package comment-or-uncomment-sexp
   :bind ("C-M-;" . comment-or-uncomment-sexp))
 
+(use-package elisp-def
+  :hook
+  (emacs-lisp-mode . elisp-def-mode)
+  (ielm-mode . elisp-def-mode))
+
 (use-package refine)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;

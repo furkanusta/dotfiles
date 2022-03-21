@@ -59,6 +59,7 @@
 (use-package diminish)
 
 (use-package monokai-theme
+  :defer nil
   :init (load-theme 'monokai t))
 
 (use-package popper

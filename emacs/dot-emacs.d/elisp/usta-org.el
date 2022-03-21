@@ -381,7 +381,7 @@ With a prefix ARG, remove start location."
 (use-package nano-theme
   :quelpa (nano-theme :fetcher github :repo "rougier/nano-theme") )
 
-(use-package lentic)
+;; (use-package lentic)
 
 (use-package company-org-block
   :custom (company-org-block-edit-style 'inline)

@@ -294,7 +294,6 @@
   :config (add-to-list 'savehist-additional-variables 'corfu-history--list))
 
 (use-package corfu-doc
-  :quelpa (corfu-doc :fetcher github :repo "galeo/corfu-doc")
   :hook (corfu-mode . corfu-doc-mode))
 
 ;; Add extensions

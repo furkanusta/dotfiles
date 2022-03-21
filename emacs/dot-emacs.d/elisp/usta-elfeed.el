@@ -108,9 +108,10 @@
      ("https://mtlynch.io/posts/index.xml" prog other)
      ("https://blog.jessfraz.com/index.xml" prog other)
      ("http://endlessparentheses.com/atom.xml" emacs)
+     ("https://dynomight.net/feed.xml" blog other)
      ;; Podcast
-     ("https://www.omnycontent.com/d/playlist/5af088d6-01f8-4b3d-b372-acb600f45df6/bfc2b445-eb3b-4241-b228-ad950098be04/fa5fa5d2-e117-4161-8c59-ad95009915be/podcast.rss" mesut)
-     ("https://karnaval.com/programlar/rabarba/rss" mesut)
+     ;; ("https://www.omnycontent.com/d/playlist/5af088d6-01f8-4b3d-b372-acb600f45df6/bfc2b445-eb3b-4241-b228-ad950098be04/fa5fa5d2-e117-4161-8c59-ad95009915be/podcast.rss" mesut)
+     ;; ("https://karnaval.com/programlar/rabarba/rss" mesut)
      ;; ("https://anchor.fm/s/37c8ef88/podcast/rss")
      ;; ("https://www.omnycontent.com/d/playlist/5af088d6-01f8-4b3d-b372-acb600f45df6/bfc2b445-eb3b-4241-b228-ad950098be04/fa5fa5d2-e117-4161-8c59-ad95009915be/podcast.rss")
      ;; ("https://feeds.megaphone.fm/revisionisthistory")
