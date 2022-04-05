@@ -8,9 +8,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defvar my-data-directory (or (getenv "EMACS_STORAGE_LOCATION") (expand-file-name "~/Documents")))
 (defvar my-notes-directory (concat my-data-directory "/Notes"))
-(defvar my-papers-root (concat my-data-directory "/Papers"))
-(defvar my-bibliography-directory (concat my-papers-root "/bibs"))
-(defvar my-papers-directory (delete my-bibliography-directory (f-directories my-papers-root)))
+(defvar my-papers-directory (concat my-notes-directory "/PDF"))
+(defvar my-bibliography-directory (concat my-notes-directory "/bibs"))
 (defvar my-bibliographies (-filter
                            (lambda (file) (not (s-starts-with? "." (f-filename file))))
                            (f-glob "*.bib" my-bibliography-directory)))
@@ -223,9 +222,8 @@
   (uniquify-ignore-buffers-re "^\\*"))
 
 (use-package which-func :ensure nil
-  :custom
-  (which-function-mode t)
-  (which-func-non-auto-modes '(org-mode)))
+  :hook (prog-mode . which-function-mode)
+  :custom (which-func-non-auto-modes '(org-mode bibtex-mode)))
 
 (use-package isearch :ensure nil
   :bind ("C-c H S" . isearch-forward))

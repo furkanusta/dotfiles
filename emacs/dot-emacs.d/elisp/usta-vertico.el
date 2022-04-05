@@ -269,8 +269,8 @@
   (corfu-cycle t)
   (corfu-auto nil)
   (corfu-commit-predicate #'corfu-candidate-previewed-p)
-  (corfu-quit-at-boundary t)
-  (corfu-quit-no-match nil)
+  (corfu-quit-at-boundary nil)
+  (corfu-quit-no-match t)
   (corfu-preview-current 'insert)
   :config
   (require 'kind-icon)
@@ -311,10 +311,30 @@
   :config (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
 (use-package citar
+  :after org-roam
+  :preface
+  (defun my-citar-open-current-pdf ()
+    "Open REFs of the node at point."
+    (interactive)
+    (let ((keys (save-excursion
+                  (goto-char (org-roam-node-point (org-roam-node-at-point 'assert)))
+                  (when-let* ((p (org-entry-get (point) "ROAM_REFS"))
+                              (refs (when p (split-string-and-unquote p)))
+                              (refs (if (length> refs 1) (completing-read-multiple "Open: " refs) refs))
+                              (oc-cites
+                               (seq-map
+                                (lambda (ref) (substring ref 7 (- (length ref) 1)))
+                                (seq-filter (apply-partially #'string-prefix-p "[cite:@") refs))))
+                    oc-cites))))
+      (if keys
+          (progn
+            (other-window 1)
+            (citar-open-library-file keys))
+        (user-error "No ROAM_REFS found"))))
   :custom
   (citar-bibliography my-bibliographies)
   (citar-open-note-function 'orb-citar-edit-note)
-  (citar-library-paths my-papers-directory)
+  (citar-library-paths (list my-papers-directory))
   (citar-at-point-function 'embark-act)
   (citar-symbols
    `((file ,(all-the-icons-octicon "file-pdf" :face 'all-the-icons-green :v-adjust -0.1) . " ")
@@ -323,6 +343,7 @@
   (citar-symbol-separator " ")
   :bind
   ("C-c o b" . citar-open)
+  ("C-c o P" . my-citar-open-current-pdf)
   ("C-c o p" . citar-open-library-file))
 
 (use-package citar-embark

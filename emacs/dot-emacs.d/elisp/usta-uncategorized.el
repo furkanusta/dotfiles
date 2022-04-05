@@ -71,8 +71,8 @@
 
 (use-package flyspell-correct
   :bind
-  (:map flyspell-mode-map
-        ("C-;" . flyspell-correct-at-point)))
+  ("C-c $" . flyspell-correct-wrapper)
+  ("C-;" . flyspell-correct-at-point))
 
 (use-package wgrep)
 
@@ -184,8 +184,10 @@
   :custom (pdf-view-restore-filename (concat no-littering-var-directory "pdf-view-restore")))
 
 (use-package undo-tree
+  :hook
+  (prog-mode . undo-tree-mode)
+  (text-mode . undo-tree-mode)
   :custom
-  (global-undo-tree-mode 1)
   (undo-tree-visualizer-timestamps t)
   (undo-tree-visualizer-diff t)
   (undo-tree-auto-save-history t)
@@ -299,11 +301,14 @@
   (require 'emms-setup)
   (emms-all)
   (emms-default-players)
-  ;; (require 'emms-dbus)
-  ;; (emms-dbus-enable)
   (require 'emms-history)
   (emms-history-load)
   :bind
   ("C-c m p". emms-pause))
+
+(use-package kmacro-x
+  :custom
+  (kmacro-x-atomic-undo-mode 1)
+  :bind ("C-c k" . kmacro-x-mc-region))
 
 (provide 'usta-uncategorized)
