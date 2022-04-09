@@ -1,6 +1,4 @@
 ;; -*- lexical-binding: t; -*-
-
-;;; -*- lexical-binding: t -*-
 (use-package prog-mode :ensure nil
   :preface
   (defun eos/previous-function ()
@@ -235,20 +233,27 @@
   (lsp-enable-snippet t)
   (lsp-enable-xref t)
   (lsp-enable-imenu t)
-  (lsp-prefer-flymake nil)
   (lsp-enable-indentation nil)
-  (lsp-prefer-capf t)
   (lsp-enable-file-watchers nil)
   (lsp-enable-text-document-color nil)
   (lsp-enable-semantic-highlighting nil)
   (lsp-enable-on-type-formatting nil)
   (read-process-output-max (* 2 1024 1024))
   (lsp-enable-on-type-formatting nil)
+
   :preface
+  (defun my/orderless-dispatch-flex-first (_pattern index _total)
+    (and (eq index 0) 'orderless-flex))
   (defun my/lsp-mode-setup-completion ()
     (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
           '(orderless)))
-  :hook (lsp-completion-mode . my/lsp-mode-setup-completion))
+  :init
+  (add-hook 'orderless-style-dispatchers #'my/orderless-dispatch-flex-first nil 'local)
+  (setq completion-at-point-functions (list (cape-capf-buster #'lsp-completion-at-point)))
+  :hook
+  (lsp-completion-mode . my/lsp-mode-setup-completion)
+
+  )
 
 (use-package dap-mode
   :custom

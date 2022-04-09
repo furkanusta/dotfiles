@@ -311,21 +311,15 @@
   :config (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
 (use-package citar
-  :after org-roam
   :preface
   (defun my-citar-open-current-pdf ()
     "Open REFs of the node at point."
     (interactive)
-    (let ((keys (save-excursion
-                  (goto-char (org-roam-node-point (org-roam-node-at-point 'assert)))
-                  (when-let* ((p (org-entry-get (point) "ROAM_REFS"))
-                              (refs (when p (split-string-and-unquote p)))
-                              (refs (if (length> refs 1) (completing-read-multiple "Open: " refs) refs))
-                              (oc-cites
-                               (seq-map
-                                (lambda (ref) (substring ref 7 (- (length ref) 1)))
-                                (seq-filter (apply-partially #'string-prefix-p "[cite:@") refs))))
-                    oc-cites))))
+    (let ((keys (when-let* ((prop (org-entry-get (point) "ROAM_REFS" t))
+                            (refs (when prop (split-string-and-unquote prop)))
+                            (oc-cites
+                             (seq-map (lambda (ref) (substring ref 7 (- (length ref) 1))) refs)))
+                  oc-cites)))
       (if keys
           (progn
             (other-window 1)

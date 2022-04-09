@@ -265,6 +265,7 @@ field that the can be jumped to upon further expansion."
 ;; (use-package poetry)
 
 (use-package perl
+  :hook (cperl-mode . lsp)
   :mode ("\\.pl\\'" . cperl-mode))
 
 (provide 'usta-prog-lang)

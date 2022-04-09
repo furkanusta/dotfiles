@@ -72,7 +72,10 @@
 (use-package flyspell-correct
   :bind
   ("C-c $" . flyspell-correct-wrapper)
-  ("C-;" . flyspell-correct-at-point))
+  ("C-;" . flyspell-correct-at-point)
+  (:map flyspell-mode-map
+        ("C-;" . flyspell-correct-at-point)
+        ("C-c $" . flyspell-correct-wrapper)))
 
 (use-package wgrep)
 
@@ -184,10 +187,12 @@
   :custom (pdf-view-restore-filename (concat no-littering-var-directory "pdf-view-restore")))
 
 (use-package undo-tree
-  :hook
-  (prog-mode . undo-tree-mode)
-  (text-mode . undo-tree-mode)
+  ;; :hook
+  ;; (prog-mode . undo-tree-mode)
+  ;; (text-mode . undo-tree-mode)
+  ;; (bibtex-mode . undo-tree-mode)
   :custom
+  (global-undo-tree-mode t)
   (undo-tree-visualizer-timestamps t)
   (undo-tree-visualizer-diff t)
   (undo-tree-auto-save-history t)

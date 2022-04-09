@@ -185,13 +185,17 @@ With a prefix ARG, remove start location."
 
 (use-package org-remark
   :quelpa (org-remark :fetcher github :repo "nobiot/org-remark")
+  :hook (org-mode . org-remark-mode)
+  ;; :custom
+  ;; (org-remark-global-tracking-mode +1)
   :bind
+  ("C-c r m" . org-remark-mark)
   (:map org-remark-mode-map
-        ("C-c i m" . org-remark-mark)
-        ("C-c m o" . org-remark-open)
-        ("C-c m r" . org-remark-remove)
-        ("C-c m ]" . org-remark-next)
-        ("C-c m [" . org-remark-prev)))
+        ("C-c r m" . org-remark-mark)
+        ("C-c r o" . org-remark-open)
+        ("C-c r k" . org-remark-remove)
+        ("C-c r n" . org-remark-next)
+        ("C-c r p" . org-remark-prev)))
 
 (use-package org-journal
   :bind ("C-c i j" . org-journal-new-entry)
