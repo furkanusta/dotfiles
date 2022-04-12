@@ -178,12 +178,15 @@
   :custom (compilation-scroll-output t)
   :bind ("C-c C-r" . recompile))
 
-(use-package isend-mode)
+(use-package isend-mode
+  :bind
+  ("C-M-<return>" . isend-send))
 
 (use-package repl-toggle
-  :config
-  (setq-default rtog/mode-repl-alist '((emacs-lisp-mode . ielm))
-                rtog/goto-buffer-fun 'pop-to-buffer)
+  :custom
+  (rtog/mode-repl-alist (list (cons 'emacs-lisp-mode  #'ielm)
+                              (cons 'tcl-mode #'(lambda () (call-interactively #'inferior-tcl)))))
+  (rtog/goto-buffer-fun 'pop-to-buffer)
   :bind ("C-c C-z" . rtog/toggle-repl))
 
 (use-package highlight-escape-sequences
@@ -205,14 +208,6 @@
             (tramp-cleanup-all-buffers))
   :custom
   (tramp-backup-directory-alist backup-directory-alist))
-
-(use-package eval-in-repl
-  :custom
-  (eir-jump-after-eval nil)
-  (eir-repl-placement 'right)
-  :bind
-  (:map emacs-lisp-mode-map ("C-M-<return>" . eir-eval-in-ielm))
-  (:map lisp-interaction-mode-map ("C-M-<return>" . eir-eval-in-ielm)))
 
 (use-package auto-highlight-symbol
   :custom (global-auto-highlight-symbol-mode t))
@@ -251,9 +246,7 @@
   (add-hook 'orderless-style-dispatchers #'my/orderless-dispatch-flex-first nil 'local)
   (setq completion-at-point-functions (list (cape-capf-buster #'lsp-completion-at-point)))
   :hook
-  (lsp-completion-mode . my/lsp-mode-setup-completion)
-
-  )
+  (lsp-completion-mode . my/lsp-mode-setup-completion))
 
 (use-package dap-mode
   :custom
@@ -270,5 +263,13 @@
   :hook (prog-mode . hs-minor-mode)
   :bind (:map hs-minor-mode-map
               ("C-c TAB" . hs-toggle-hiding)))
+
+(use-package text-categories
+  :quelpa (text-categories :fetcher github :repo "Dspil/text-categories")
+  :init
+  (defun my-text-categories-filename ()
+    "Return a filename corresponding to the current buffer."
+    (concat no-littering-var-directory "text-categories/" (buffer-name) text-categories-file-suffix))
+  (advice-add 'text-categories-filename :override #'my-text-categories-filename))
 
 (provide 'usta-prog)

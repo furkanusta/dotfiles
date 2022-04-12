@@ -22,6 +22,8 @@
 (setq quelpa-use-package-inhibit-loading-quelpa t)
 (require 'quelpa-use-package)
 
+(require 'use-package-hydra)
+
 (setq custom-file (concat user-emacs-directory "elisp/custom.el"))
 ;; Init Done
 

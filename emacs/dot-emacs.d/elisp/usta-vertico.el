@@ -185,9 +185,6 @@
    :preview-key '(:debounce 0.01 any))
   (define-key consult-narrow-map (vconcat consult-narrow-key "?") #'consult-narrow-help))
 
-(use-package consult-company
-  :bind (:map company-mode-map ([remap completion-at-point] . consult-company)))
-
 (use-package embark
   :after vertico
   :init
@@ -299,9 +296,9 @@
 ;; Add extensions
 (use-package cape
   :config
-  (add-to-list 'completion-at-point-functions (cape-super-capf #'cape-file #'cape-keyword #'cape-dabbrev))
-  (require 'company-cmake)
-  (add-to-list 'completion-at-point-functions (cape-company-to-capf #'company-cmake)))
+  (add-to-list 'completion-at-point-functions (cape-super-capf #'cape-file #'cape-keyword #'cape-dabbrev)))
+  ;; (require 'company-cmake)
+  ;; (add-to-list 'completion-at-point-functions (cape-company-to-capf #'company-cmake))
 
 
 (use-package kind-icon

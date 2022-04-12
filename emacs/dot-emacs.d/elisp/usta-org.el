@@ -382,17 +382,6 @@ With a prefix ARG, remove start location."
 (use-package org-clock-budget
   :quelpa (org-clock-budget :fetcher github :repo "Fuco1/org-clock-budget"))
 
-(use-package nano-theme
-  :quelpa (nano-theme :fetcher github :repo "rougier/nano-theme") )
-
-;; (use-package lentic)
-
-(use-package company-org-block
-  :custom (company-org-block-edit-style 'inline)
-  :hook ((org-mode . (lambda ()
-                       (setq-local company-backends '(company-capf company-org-block))
-                       (company-mode +1)))))
-
 (use-package org-download
   :hook
   (dired-mode . org-download-enable)

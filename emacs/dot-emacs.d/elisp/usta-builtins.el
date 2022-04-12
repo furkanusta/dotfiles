@@ -244,4 +244,18 @@
   :config
   (add-hook 'compilation-finish-functions #'my-compilation-finish-function))
 
+(use-package window
+  :ensure nil
+  :preface
+  (defvar my-hydra-switch-buffer-source)
+  :hydra
+  (hydra-switch-buffer
+   (ctl-x-map nil
+              :pre (setq my-hydra-switch-buffer-source (or my-hydra-switch-buffer-source (current-buffer)))
+              :post (setq my-hydra-switch-buffer-source nil))
+   "Switch buffer"
+   ("g" (switch-to-buffer my-hydra-switch-buffer-source) "Quit" :exit t)
+   ("<left>" previous-buffer "previous-buffer")
+   ("<right>" next-buffer "next-buffer")))
+
 (provide 'usta-builtins)

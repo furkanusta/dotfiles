@@ -28,8 +28,7 @@
 (use-package cmake-font-lock
   :hook (cmake-mode . cmake-font-lock-activate))
 
-(use-package meson-mode
-  :hook (meson-mode . company-mode))
+(use-package meson-mode)
 
 (use-package dap-lldb :ensure dap-mode)
 
@@ -67,7 +66,6 @@
 
 (use-package shell
   :after window
-  :hook (shell-mode . company-mode)
   :config (add-to-list 'display-buffer-alist (cons "\\*shell\\*" use-other-window-alist))
   :bind ("C-<f8>" . shell))
 
@@ -267,5 +265,9 @@ field that the can be jumped to upon further expansion."
 (use-package perl
   :hook (cperl-mode . lsp)
   :mode ("\\.pl\\'" . cperl-mode))
+
+(use-package tcl
+  :custom
+  (tcl-application "tclsh"))
 
 (provide 'usta-prog-lang)
