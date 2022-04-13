@@ -137,7 +137,7 @@
               ("C-c l w" . sp-copy-sexp)
               ("C-c l b" . sp-backward-up-sexp)
               ("C-c l u" . sp-unwrap-sexp)
-              ("C-c l f" . sp-forward-up)
+              ("C-c l f" . sp-forward-sexp)
               ("C-c l SPC" . sp-select-next-thing)
               ("C-c l C-SPC" . sp-select-next-thing-exchange)
               ("C-c l k" . sp-kill-sexp)))

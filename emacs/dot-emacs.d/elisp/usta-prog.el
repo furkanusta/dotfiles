@@ -46,7 +46,7 @@
   '("*dashboard*" "*Messages*" "*Warnings*" "*elfeed-search*" "*Fd*" "*compilation*"))
   (defvar perspective-skip-prefix-list '("magit-"))
   (defvar perspective-skip-ignore-prefix-list
-  '("*vterm" "*scratch" "*shell" "*Customize" "*ielm*" "*helpful" "*org" "*ein" "*Org" "*Embark" "*cardboard"))
+  '("*vterm" "*scratch" "*shell" "*Customize" "*ielm*" "*helpful" "*org" "*ein" "*Org" "*Embark" "*cardboard" "*eww"))
   (defun perspective-my-skip-buffer-p (window buffer burry-or-kill)
     (let ((name (buffer-name buffer)))
       (or
@@ -126,6 +126,7 @@
   :init (abridge-diff-mode 1))
 
 (use-package flycheck
+  :hook (prog-mode . flycheck-mode)
   :commands flycheck-add-mode
   :custom
   (global-flycheck-mode nil)

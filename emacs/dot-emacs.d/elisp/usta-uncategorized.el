@@ -67,7 +67,8 @@
   ("\\.EPUB\\'" . nov-mode)
   :custom (nov-text-width 100))
 
-(use-package flyspell)
+(use-package flyspell
+  :hook (text-mode . flyspell-mode))
 
 (use-package flyspell-correct
   :bind

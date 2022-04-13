@@ -4,23 +4,23 @@
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 (package-initialize)
 
-(require 'server)
-(unless (server-running-p) (server-start))
+;; (require 'server)
+;; (unless (server-running-p) (server-start))
 
-(setq quelpa-update-melpa-p nil)
 (unless (package-installed-p 'quelpa)
   (with-temp-buffer
     (url-insert-file-contents "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
     (eval-buffer)
     (quelpa-self-upgrade)))
 (require 'quelpa)
+(customize-set-variable quelpa-update-melpa-p nil)
 
 (setq-default use-package-always-defer t)
 ;; (setq-default use-package-always-ensure t)
 (unless (package-installed-p 'quelpa-use-package)
   (quelpa '(quelpa-use-package :fetcher git :url "https://github.com/quelpa/quelpa-use-package.git")))
-(setq quelpa-use-package-inhibit-loading-quelpa t)
 (require 'quelpa-use-package)
+(customize-set-variable quelpa-use-package-inhibit-loading-quelpa t)
 
 (require 'use-package-hydra)
 
@@ -40,6 +40,7 @@
 
 (add-to-list 'load-path (expand-file-name (concat user-emacs-directory "elisp/")))
 
+(setenv "DISPLAY" ":1")
 
 (require 'usta-builtins)
 (require 'usta-dired)

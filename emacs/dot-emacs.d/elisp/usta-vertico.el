@@ -383,7 +383,14 @@
          (:map minibuffer-local-map ("M-b" . citar-insert-preset))))
 
 (use-package consult-flycheck
-  :bind ("C-c l f" . consult-flycheck))
+  :bind
+  (:map flycheck-mode-map
+        ("C-c h l" . consult-flycheck)))
+
+(use-package consult-flyspell
+  :bind
+  (:map flyspell-mode-map
+        ("C-c h s" . consult-flyspell)))
 
 (use-package consult-tramp :load-path "elisp/")
 
