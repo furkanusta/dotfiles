@@ -231,10 +231,57 @@ With a prefix ARG, remove start location."
   :hook (inherit-org-mode . shrface-mode)
   :custom (shrface-href-versatile t)
   :bind (:map shrface-mode-map
-              ("TAB" . #'org-tab-or-next-heading)
+              ("<tab>" . shrface-outline-cycle)
+              ("C-<tab>" . org-tab-or-next-heading)
               ("<backtab>" . shrface-outline-cycle-buffer)
-              ("M-<down>" . org-next-visible-heading)
+              ("C-c C-n" . shrface-next-headline)
+              ("C-c C-p" . shrface-previous-headline)
+              ("C-c C-l" . shrface-links-consult)
+              ("C-c C-h" . shrface-headline-consult)
               ("M-<up>" . org-previous-visible-heading)))
+
+(use-package shr-tag-pre-highlight
+  :after shr
+  :preface
+  (defun shrface-shr-tag-pre-highlight (pre)
+    "Highlighting code in PRE."
+    (let* ((shr-folding-mode 'none)
+           (shr-current-font 'default)
+           (code (with-temp-buffer
+                   (shr-generic pre)
+                   ;; (indent-rigidly (point-min) (point-max) 2)
+                   (buffer-string)))
+           (lang (or (shr-tag-pre-highlight-guess-language-attr pre)
+                     (let ((sym (language-detection-string code)))
+                       (and sym (symbol-name sym)))))
+           (mode (and lang
+                      (shr-tag-pre-highlight--get-lang-mode lang))))
+      (shr-ensure-newline)
+      (shr-ensure-newline)
+      (setq start (point))
+      (insert
+       (propertize (concat "#+BEGIN_SRC " lang "\n") 'face 'org-block-begin-line)
+       (or (and (fboundp mode)
+                (with-demoted-errors "Error while fontifying: %S"
+                  (shr-tag-pre-highlight-fontify code mode)))
+           code)
+       (propertize "#+END_SRC" 'face 'org-block-end-line ))
+      (shr-ensure-newline)
+      (setq end (point))
+      (add-face-text-property start end '(:background "#292b2e" :extend t))
+      (shr-ensure-newline)
+      (insert "\n")))
+  :config
+  (add-to-list 'shr-external-rendering-functions '(pre . shrface-shr-tag-pre-highlight)))
+
+(use-package engine-mode
+  :custom
+  (engine-mode t)
+  (engine/browser-function 'eww-browse-url)
+  :preface
+  (defengine github "https://github.com/search?ref=simplesearch&q=%s")
+  (defengine google "https://google.com/search?q=%s" :keybinding "g")
+  )
 
 ;; (use-package ob-ipython
 ;;   :hook (org-babel-after-execute . org-display-inline-images)

@@ -183,7 +183,20 @@
   (ediff-split-window-function 'split-window-horizontally))
 
 (use-package eww :ensure nil
-  :bind ("<f7>" . eww))
+  :preface
+  (defun eww-open-link-another-frame ()
+    (interactive)
+    (when (= 1 (length (visible-frame-list)))
+      (split-window-horizontally))
+    (let ((buf (current-buffer)))
+      (other-window 1)
+      (switch-to-buffer buf)
+      (eww-open-in-new-buffer)))
+  :bind
+  ("<f7>" . eww)
+  (:map eww-mode-map
+        ("k" . kill-this-buffer)
+        ("M-RET" . eww-open-link-another-frame)))
 
 ;; (use-package desktop :ensure nil
 ;;   :custom (desktop-save-mode 1)
