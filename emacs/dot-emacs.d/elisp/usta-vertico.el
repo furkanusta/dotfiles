@@ -82,8 +82,6 @@
   :config
   (set-face-attribute 'completions-first-difference nil :inherit nil))
 
-(use-package savehist :init (savehist-mode))
-
 (use-package consult
   :after projectile
   :defines projectile-project-root
@@ -393,5 +391,10 @@
         ("C-c h s" . consult-flyspell)))
 
 (use-package consult-tramp :load-path "elisp/")
+
+(use-package vertico-repeat
+  :after vertico
+  :hook (minibuffer-setup . vertico-repeat-save)
+  :bind ("M-r" . vertico-repeat))
 
 (provide 'usta-vertico)

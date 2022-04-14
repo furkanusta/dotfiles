@@ -188,19 +188,17 @@
   :custom (pdf-view-restore-filename (concat no-littering-var-directory "pdf-view-restore")))
 
 (use-package undo-tree
-  ;; :hook
-  ;; (prog-mode . undo-tree-mode)
-  ;; (text-mode . undo-tree-mode)
-  ;; (bibtex-mode . undo-tree-mode)
   :custom
   (global-undo-tree-mode t)
   (undo-tree-visualizer-timestamps t)
   (undo-tree-visualizer-diff t)
   (undo-tree-auto-save-history t)
   (undo-tree-enable-undo-in-region t)
+  (undo-tree-incompatible-major-modes '(elfeed-search-mode elfeed-entry-mode term-mode vterm-mode))
   :bind
-  ("C-+" . undo-tree-redo)
-  ("C-_" . undo-tree-undo))
+  (:map undo-tree-map
+        ("C-+" . undo-tree-redo)
+        ("C-_" . undo-tree-undo)))
 
 (use-package redacted)
 

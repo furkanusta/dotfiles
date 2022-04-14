@@ -271,4 +271,12 @@
    ("<left>" previous-buffer "previous-buffer")
    ("<right>" next-buffer "next-buffer")))
 
+(use-package so-long)
+
+(use-package goto-addr
+  :custom (global-goto-address-mode t)
+  :bind
+  (:map goto-address-highlight-keymap
+        ("C-c o l" . goto-address-at-point)))
+
 (provide 'usta-builtins)

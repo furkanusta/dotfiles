@@ -157,6 +157,9 @@
   :custom
   (vterm-copy-exclude-prompt t)
   :bind
+  (:map vterm-mode-map
+        ("C-y" . vterm-yank)
+        ("M-y" . vterm-yank-pop))
   (:map vterm-copy-mode-map
         ("C-<" . vterm-prev-prompt)
         ("C->" . vterm-next-prompt)))
@@ -170,7 +173,6 @@
         ("C-c n"  . vterm-toggle-forward)
         ("C-c p"  . vterm-toggle-backward)
         ("C-<return>" . vterm-toggle-insert-cd)))
-
 
 (use-package shx
   :hook (shell-mode . shx-mode))
@@ -272,5 +274,11 @@
     "Return a filename corresponding to the current buffer."
     (concat no-littering-var-directory "text-categories/" (buffer-name) text-categories-file-suffix))
   (advice-add 'text-categories-filename :override #'my-text-categories-filename))
+
+(use-package subword
+  :hook ((yaml-mode conf-mode java-mode js-mode) . subword-mode))
+
+(use-package bug-reference
+  :hook ((prog-mode org-mode) . bug-reference-prog-mode))
 
 (provide 'usta-prog)

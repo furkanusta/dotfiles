@@ -13,14 +13,14 @@
     (eval-buffer)
     (quelpa-self-upgrade)))
 (require 'quelpa)
-(customize-set-variable quelpa-update-melpa-p nil)
+(customize-set-variable 'quelpa-update-melpa-p nil)
 
 (setq-default use-package-always-defer t)
 ;; (setq-default use-package-always-ensure t)
 (unless (package-installed-p 'quelpa-use-package)
   (quelpa '(quelpa-use-package :fetcher git :url "https://github.com/quelpa/quelpa-use-package.git")))
 (require 'quelpa-use-package)
-(customize-set-variable quelpa-use-package-inhibit-loading-quelpa t)
+(customize-set-variable 'quelpa-use-package-inhibit-loading-quelpa t)
 
 (require 'use-package-hydra)
 
