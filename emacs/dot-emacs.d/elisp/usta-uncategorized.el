@@ -68,9 +68,10 @@
   :custom (nov-text-width 100))
 
 (use-package flyspell
-  :hook (text-mode . flyspell-mode))
+  :hook ((text-mode org-mode) . flyspell-mode))
 
 (use-package flyspell-correct
+  :after flyspell
   :bind
   ("C-c $" . flyspell-correct-wrapper)
   ("C-;" . flyspell-correct-at-point)
@@ -194,7 +195,7 @@
   (undo-tree-visualizer-diff t)
   (undo-tree-auto-save-history t)
   (undo-tree-enable-undo-in-region t)
-  (undo-tree-incompatible-major-modes '(elfeed-search-mode elfeed-entry-mode term-mode vterm-mode))
+  (undo-tree-incompatible-major-modes '(elfeed-search-mode elfeed-entry-mode term-mode vterm-mode fundamental-mode))
   :bind
   (:map undo-tree-map
         ("C-+" . undo-tree-redo)

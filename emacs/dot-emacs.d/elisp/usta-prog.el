@@ -141,6 +141,12 @@
   :after flycheck
   :custom (flycheck-pos-tip-mode 1))
 
+(use-package flymake)
+
+(use-package flymak-collection)
+
+(use-package flymak-cursor)
+
 (use-package evil-nerd-commenter
   :bind ("M-;" . evilnc-comment-or-uncomment-lines))
 

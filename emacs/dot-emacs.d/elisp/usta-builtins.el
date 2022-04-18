@@ -260,7 +260,7 @@
 (use-package window
   :ensure nil
   :preface
-  (defvar my-hydra-switch-buffer-source)
+  (defvar my-hydra-switch-buffer-source nil)
   :hydra
   (hydra-switch-buffer
    (ctl-x-map nil

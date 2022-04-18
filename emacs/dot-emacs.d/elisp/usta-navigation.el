@@ -201,4 +201,7 @@
               ("M-g M-d" . dogears-list)
               ("M-g M-D" . dogears-sidebar)))
 
+(use-package winner
+  :hook (after-init . winner-mode))
+
 (provide 'usta-navigation)
