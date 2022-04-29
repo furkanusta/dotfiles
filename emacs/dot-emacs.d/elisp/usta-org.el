@@ -185,7 +185,7 @@ With a prefix ARG, remove start location."
 
 (use-package org-remark
   :quelpa (org-remark :fetcher github :repo "nobiot/org-remark")
-  :hook (org-mode . org-remark-mode)
+  ;; :hook (org-mode . org-remark-mode)
   ;; :custom
   ;; (org-remark-global-tracking-mode +1)
   :bind
@@ -281,7 +281,8 @@ With a prefix ARG, remove start location."
   :preface
   (defengine github "https://github.com/search?ref=simplesearch&q=%s")
   (defengine google "https://google.com/search?q=%s" :keybinding "g")
-  )
+  (defengine wikipedia "http://www.wikipedia.org/search-redirect.php?language=en&go=Go&search=%s" :keybinding "w")
+  (defengine wolfram "http://www.wolframalpha.com/input/?i=%s"))
 
 ;; (use-package ob-ipython
 ;;   :hook (org-babel-after-execute . org-display-inline-images)
@@ -293,7 +294,6 @@ With a prefix ARG, remove start location."
 
 (use-package org-transclusion
   :quelpa (org-transclusion :fetcher github :repo "nobiot/org-transclusion")
-  ;; :hook (org-mode . org-transclusion-mode)
   :custom (org-transclusion-activate-persistent-message nil))
 
 (use-package org-ql)
@@ -396,7 +396,6 @@ With a prefix ARG, remove start location."
            :fetcher github
            :repo "tecosaur/org-pandoc-import"
            :files ("*.el" "filters" "preprocessors")))
-  ;; :hook (after-init . org-pandoc-import-transient-mode)
 
 (use-package org-web-tools)
 
@@ -479,8 +478,6 @@ With a prefix ARG, remove start location."
                       (:title "Language" :match "+lang" :budget "5:15" :blocks (day week)))))
 
 (use-package org-tanglesync
-  ;; :hook ((org-mode . org-tanglesync-mode)
-  ;;        ((prog-mode text-mode) . org-tanglesync-watch-mode))
   :bind
   (( "C-c M-i" . org-tanglesync-process-buffer-interactive)
    ( "C-c M-a" . org-tanglesync-process-buffer-automatic)))
@@ -496,8 +493,8 @@ With a prefix ARG, remove start location."
 ;;   :custom
 ;;   (org-bib-library-paths my-papers-directory))
 
-;; (use-package orgdiff
-;;   :quelpa (orgdiff :fetcher github :repo "tecosaur/orgdiff"))
+(use-package orgdiff
+  :quelpa (orgdiff :fetcher github :repo "tecosaur/orgdiff"))
 
 ;; (use-package math-at-point
 ;;   :quelpa (math-at-point :fetcher github :repo "shankar2k/math-at-point"))
@@ -518,5 +515,15 @@ With a prefix ARG, remove start location."
   (org-clock-reminder-interval 1200)
   ;; (setq org-clock-reminder-remind-inactivity 't)
   :config (org-clock-reminder-activate))
+
+;; (use-package ox-timeline)
+;; (use-package org-preview-html)
+;; (use-package org-reveal) ;; org-re-reveal
+;; (use-package ox-pandoc)
+
+(use-package org-elp
+  :custom
+  (org-elp-idle-time 0.5)
+  (org-elp-split-fraction 0.25))
 
 (provide 'usta-org)

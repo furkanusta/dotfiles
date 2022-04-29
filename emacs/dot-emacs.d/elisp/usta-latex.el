@@ -7,7 +7,7 @@
   :commands TeX-revert-document-buffer
   :config (add-hook 'TeX-after-compilation-finished-functions #'TeX-revert-document-buffer)
   :custom
-  (TeX-master nil)
+  ;; (TeX-master nil)
   (TeX-parse-self t)
   (TeX-auto-save t)
   (TeX-parse-self t)
@@ -29,7 +29,9 @@
   :custom (reftex-plug-into-AUCTeX t))
 
 (use-package cdlatex
-  :hook (LaTeX-mode . cdlatex-mode))
+  :hook (LaTeX-mode . cdlatex-mode)
+  :custom
+  (cdlatex-auto-help-delay 0.5))
 
 (use-package auctex-latexmk
   :commands auctex-latexmk-setup
@@ -52,8 +54,8 @@
   (ebib-index-window-size 20)
   (ebib-bib-search-dirs (list my-bibliography-directory)))
 
-(use-package magic-latex-buffer
-  :hook (latex-mode . magic-latex-buffer))
+;; (use-package magic-latex-buffer
+;;   :hook (LaTeX-mode . magic-latex-buffer))
 
 (use-package latexdiff
   :preface
@@ -66,8 +68,8 @@
 
 (use-package lsp-latex
   :hook
-  ((latex-mode . lsp)
-   (bibtex-mode . lsp))
+  ((LaTeX-mode . lsp-deferred)
+   (bibtex-mode . lsp-deferred))
   :custom
   (lsp-latex-texlab-executable
    (or (executable-find "texlab")
@@ -76,7 +78,66 @@
   (lsp-latex-forward-search-args '("--eval" "(lsp-latex-forward-search-with-pdf-tools \"%f\" \"%p\" \"%l\")")))
 
 (use-package xenops
-  :hook (latex-mode . xenops-mode)
+  ;; :hook (LaTeX-mode . xenops-mode)
   :init (setq xenops-reveal-on-entry t))
+
+;; (use-package outline
+;;   :hook (LaTeX-mode . outline-minor-mode)
+;;   :bind (:map outline-minor-mode-map
+;;               ("C-c C-n" . )))
+
+;; (use-package lazytab
+;;   :quelpa (lazytab :fetcher github :repo "karthink/lazytab"))
+
+;; For some reason calctex skips the first element
+(use-package calctex
+  :quelpa (calctex :fetcher github :repo "johnbcoughlin/calctex")
+  :hook (calc-mode . calctex-mode)
+  :config
+  (setq calctex-additional-latex-packages "
+\\usepackage[usenames]{xcolor}
+\\usepackage{soul}
+\\usepackage{adjustbox}
+\\usepackage{amsmath}
+\\usepackage{amssymb}
+\\usepackage{siunitx}
+\\usepackage{cancel}
+\\usepackage{mathtools}
+\\usepackage{mathalpha}
+\\usepackage{xparse}
+\\usepackage{arevmath}"
+        calctex-additional-latex-macros (concat calctex-additional-latex-macros "\n\\let\\evalto\\Rightarrow"))
+  (defun teco-calctex-fix (orig-fn &rest args)
+    (let ((inhibit-message t)
+          message-log-max)
+      (apply orig-fn args)))
+  (advice-add #'teco-calctex-fix :around #'calctex-default-dispatching-render-process)
+  (let ((vendor-folder (concat (file-truename quelpa-build-dir) "/calctex/vendor/")))
+    (setq calctex-dvichop-sty (concat vendor-folder "texd/dvichop")
+          calctex-dvichop-bin (concat vendor-folder "texd/dvichop")))
+  (unless (file-exists-p calctex-dvichop-bin)
+    (message "CalcTeX: Building dvichop binary")
+    (let ((default-directory (file-name-directory calctex-dvichop-bin)))
+      (call-process "make" nil nil nil))))
+
+(use-package laas
+  :hook (LaTeX-mode . laas-mode)
+  :config ; do whatever here
+  (aas-set-snippets 'laas-mode
+                    ;; set condition!
+                    :cond #'texmathp ; expand only while in math
+                    "supp" "\\supp"
+                    "On" "O(n)"
+                    "O1" "O(1)"
+                    "Olog" "O(\\log n)"
+                    "Olon" "O(n \\log n)"
+                    ;; bind to functions!
+                    "Sum" (lambda () (interactive)
+                            (yas-expand-snippet "\\sum_{$1}^{$2} $0"))
+                    "Span" (lambda () (interactive)
+                             (yas-expand-snippet "\\Span($1)$0"))
+                    ;; add accent snippets
+                    :cond #'laas-object-on-left-condition
+                    "qq" (lambda () (interactive) (laas-wrap-previous-object "sqrt"))))
 
 (provide 'usta-latex)
