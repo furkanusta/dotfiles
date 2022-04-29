@@ -44,8 +44,7 @@
   (dashboard-items '((scratch . 6)
                      (recents  . 5)
                      (bookmarks . 5)
-                     (projects . 5)
-                     (agenda . 5)))
+                     (projects . 5)))
   (dashboard-banner-logo-title "Emacs"))
 
 (use-package all-the-icons)

@@ -174,8 +174,7 @@
 ;; (use-package with-editor
 ;;   :hook (shell-mode . with-editor-export-editor))
 
-(use-package calc :ensure nil
-  :hook (calc-mode . calc-symbolic-mode))
+;; (use-package calc :ensure nil)
 
 (use-package ediff
   :custom

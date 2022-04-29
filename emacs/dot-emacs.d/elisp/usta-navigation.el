@@ -49,6 +49,7 @@
 (use-package writeroom-mode
   ;; :hook (writeroom-mode . toggle-line-numbers)
   :defines display-line-numbers-mode
+  :functions display-line-numbers-mode
   :preface (defun toggle-line-numbers () (display-line-numbers-mode (or (not display-line-numbers-mode) 0)))
   :custom
   (writeroom-width 120)
@@ -203,5 +204,13 @@
 
 (use-package winner
   :hook (after-init . winner-mode))
+
+(use-package buffer-expose)
+
+;; (use-package trivial-copy
+;;   :quelpa (trivial-copy :fetcher github :repo "casouri/trivial-copy"))
+
+(use-package imenu-list
+  :bind ("C-x t i" . imenu-list-smart-toggle))
 
 (provide 'usta-navigation)

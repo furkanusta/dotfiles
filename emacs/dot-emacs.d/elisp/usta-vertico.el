@@ -22,11 +22,11 @@
     `((file . ,#'+completion-category-highlight-files))
     "Alist mapping category to highlight functions.")
   (defun +completion-category-highlight-files (cand)
-  (let ((len (length cand)))
-    (when (and (> len 0)
-               (eq (aref cand (1- len)) ?/))
-      (add-face-text-property 0 len 'dired-directory 'append cand)))
-  cand)
+    (let ((len (length cand)))
+      (when (and (> len 0)
+                 (eq (aref cand (1- len)) ?/))
+        (add-face-text-property 0 len 'dired-directory 'append cand)))
+    cand)
   (defun my-vertico-insert-and-exit ()
     (interactive)
     (progn
@@ -41,22 +41,22 @@
       (when (and (> len 0)
                  (with-current-buffer (nth 1 (buffer-list))
                    (or (eq major-mode (intern cand))
-                       (auto-minor-mode-enabled-p (intern cand)))))
+                       (ignore-errors (auto-minor-mode-enabled-p (intern cand))))))
         (add-face-text-property 0 len '(:foreground "red") 'append cand)))
     cand)
   :config
   (advice-add #'vertico--arrange-candidates :around
-            (defun vertico-format-candidates+ (func)
-              (let ((hl-func (or (alist-get (vertico--metadata-get 'category)
-                                            +completion-category-hl-func-overrides)
-                                 #'identity)))
-                (cl-letf* (((symbol-function 'actual-vertico-format-candidate)
-                            (symbol-function #'vertico--format-candidate))
-                           ((symbol-function #'vertico--format-candidate)
-                            (lambda (cand &rest args)
-                              (apply #'actual-vertico-format-candidate
-                                     (funcall hl-func cand) args))))
-                  (funcall func)))))
+              (defun vertico-format-candidates+ (func)
+                (let ((hl-func (or (alist-get (vertico--metadata-get 'category)
+                                              +completion-category-hl-func-overrides)
+                                   #'identity)))
+                  (cl-letf* (((symbol-function 'actual-vertico-format-candidate)
+                              (symbol-function #'vertico--format-candidate))
+                             ((symbol-function #'vertico--format-candidate)
+                              (lambda (cand &rest args)
+                                (apply #'actual-vertico-format-candidate
+                                       (funcall hl-func cand) args))))
+                    (funcall func)))))
   (add-to-list '+completion-category-hl-func-overrides `(command . ,#'+completion-category-highlight-commands))
   :bind
   (:map vertico-map
@@ -239,6 +239,7 @@
 
 (use-package embark-consult
   :after (embark consult)
+  :demand t
   :hook (embark-collect-mode . consult-preview-at-point-mode))
 
 (use-package marginalia
@@ -390,7 +391,9 @@
   (:map flyspell-mode-map
         ("C-c h s" . consult-flyspell)))
 
-(use-package consult-tramp :load-path "elisp/")
+(use-package consult-tramp
+  :load-path "elisp/"
+  :functions consult-tramp)
 
 (use-package vertico-repeat
   :after vertico

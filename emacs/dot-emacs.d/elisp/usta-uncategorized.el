@@ -232,7 +232,7 @@
 
 (use-package dtache-compile
   :ensure dtache
-  :hook (after-init . dtache-compile-setup)
+  ;; :hook (after-init . dtache-compile-setup)
   :bind (([remap compile] . dtache-compile)
          ([remap recompile] . dtache-compile-recompile)
          :map dtache-compilation-mode-map

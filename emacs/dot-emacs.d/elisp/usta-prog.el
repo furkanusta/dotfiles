@@ -102,7 +102,7 @@
 (use-package magit-pretty-graph
   :quelpa (magit-pretty-graph :fetcher github :repo "georgek/magit-pretty-graph")
   :after magit
-  :defines magit-pg-repo
+  :functions magit-pg-repo
   :preface
   (defun magit-pretty-log ()
     (interactive)

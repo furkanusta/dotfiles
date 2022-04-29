@@ -187,8 +187,6 @@
 
 ;; Built-in Python utilities
 (use-package python
-  :hook (python-mode . (lambda ()
-                         (flycheck-add-next-checker 'lsp 'python-mypy)))
   :custom
   (python-indent-guess-indent-offset-verbose nil)
   :config
@@ -263,7 +261,7 @@ field that the can be jumped to upon further expansion."
 ;; (use-package poetry)
 
 (use-package perl
-  :hook (cperl-mode . lsp)
+  :hook (cperl-mode . lsp-deferred)
   :mode ("\\.pl\\'" . cperl-mode))
 
 (use-package tcl
