@@ -34,8 +34,18 @@
   (cdlatex-auto-help-delay 0.5))
 
 (use-package auctex-latexmk
-  :commands auctex-latexmk-setup
-  :config (auctex-latexmk-setup)
+  :after latex
+  :functions auctex-latexmk-setup
+  :preface
+  (defun my-auctex-latexmk-advice (req feature &rest args)
+    "Call REQ with FEATURE and ARGS, unless FEATURE is `tex-buf'."
+    (unless (eq feature 'tex-buf)
+      (apply req feature args)))
+  :init
+  (unwind-protect
+      (progn (advice-add 'require :around #'my-auctex-latexmk-advice)
+             (auctex-latexmk-setup))
+    (advice-remove 'require #'my-auctex-latexmk-advice))
   :custom (auctex-latexmk-inherit-TeX-PDF-mode t))
 
 (use-package bibtex
