@@ -18,6 +18,7 @@
               #'completion--in-region)
             args)))
   :preface
+  (require 'dired)
   (defvar +completion-category-hl-func-overrides
     `((file . ,#'+completion-category-highlight-files))
     "Alist mapping category to highlight functions.")
