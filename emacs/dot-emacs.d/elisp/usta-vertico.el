@@ -401,4 +401,13 @@
   :hook (minibuffer-setup . vertico-repeat-save)
   :bind ("M-r" . vertico-repeat))
 
+;; Maybe implement the inverse. (Always concealed)
+;; (use-package conceal
+;;   :quelpa (conceal :fetcher github :repo "lepisma/conceal"))
+
+;; Not exactly useful needs to be well-integrated with thing-at-point
+;; (use-package consult-yasnippet
+;;   :load-path "elsip/"
+;;   :functions c)
+
 (provide 'usta-vertico)

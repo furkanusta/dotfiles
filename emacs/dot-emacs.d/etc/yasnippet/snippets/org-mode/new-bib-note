@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: new-bib-note
+# key: new-bib-note
+# --
+#+BIBLIOGRAPHY: ./bibs/${1:`(concat (file-name-nondirectory (file-name-sans-extension (buffer-file-name))) ".bib")`}
+#+STARTUP: showeverything
+* Bibliography
+  #+PROPERTY: header-args :tangle ./bibs/$1

@@ -4,11 +4,36 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package org :ensure nil
   :hook
-  (org-mode . turn-on-flyspell)
-  (org-mode . auto-fill-mode)
-  (org-mode . smartparens-mode)
+  ((org-mode . turn-on-flyspell)
+   (org-mode . auto-fill-mode)
+   (org-mode . smartparens-mode))
   :preface
   (defvar org-capture-file (concat my-notes-directory "/Capture.org"))
+  (defun my-insert-bibtex-entry ()
+    (org-insert-subheading t)
+    (insert "Title")
+    (org-id-get-create)
+    (forward-line 1)
+    (org-cycle)
+    (forward-line 3)
+    (insert " #+begin_src bibtex\n\n #+end_src
+    bibtex\n"))
+  (with-eval-after-load 'bibtex
+    (defun my-sync-bibtex-org-entry ()
+      (interactive)
+      (save-excursion
+        (call-interactively #'org-next-block)
+        (forward-line 1)
+        (let* ((entry (bibtex-parse-entry))
+               (key (cdr (assoc "=key=" entry)))
+               (title (string-replace "\n" " " (substring (cdr (assoc "title" entry)) 1 -1))))
+          (org-set-property "ROAM_REFS" (format "[cite:@%s]" key))
+          (org-back-to-heading)
+          (forward-char 3)
+          (org-kill-line)
+          (insert title))
+        (forward-line 1)
+        (org-cycle))))
   :custom
   (org-modules (list 'ol-eww 'org-tempo 'ol-info 'ol-docview 'ol-bibtex 'ol-doi))
   (org-default-notes-file org-capture-file)
@@ -34,7 +59,7 @@
   (org-src-tab-acts-natively t)
   (org-yank-adjusted-subtrees t)
   (org-todo-keywords '((sequence "TODO" "IN-PROGRESS" "NEXT" "|" "DONE")
-                       (sequence "PAUSED" "SCHEDULED" "WAITING" "|"  "CANCELLED")))
+                       (sequence "PAUSED" "SCHEDULED" "WAITING" "|" "CANCELLED")))
   :bind (:map org-mode-map ("C-c C-." . org-time-stamp-inactive)))
 
 (use-package ob-async)

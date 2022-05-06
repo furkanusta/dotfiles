@@ -115,21 +115,17 @@
      ;; ("https://anchor.fm/s/37c8ef88/podcast/rss")
      ;; ("https://www.omnycontent.com/d/playlist/5af088d6-01f8-4b3d-b372-acb600f45df6/bfc2b445-eb3b-4241-b228-ad950098be04/fa5fa5d2-e117-4161-8c59-ad95009915be/podcast.rss")
      ;; ("https://feeds.megaphone.fm/revisionisthistory")
-     ;; ("http://feed.thisamericanlife.org/talpodcast")
      ;; ("https://feeds.simplecast.com/BqbsxVfO")
      ;; ("https://feeds.megaphone.fm/VMP8871377602")
      ;; ("https://feeds.simplecast.com/EZwoW5Ys")
      ;; ("https://feeds.megaphone.fm/ep-wswb")
      ;; ("https://feeds.simplecast.com/dHoohVNH")
-     ;; ("http://feed.loveandradio.org/loveplusradio")
-     ;; ("https://feeds.publicradio.org/public_feeds/terrible-thanks-for-asking/itunes/rss")
-     ;; ("https://feeds.npr.org/510324/podcast.xml")
-     ;; ("https://www.omnycontent.com/d/playlist/5af088d6-01f8-4b3d-b372-acb600f45df6/00b2fedd-e33f-4b4f-bb4c-ae1c00c8b6dd/8425ddd8-cc1c-4924-b379-ae1c00c919f0/podcast.rss")
      ;; Elfeed
      ("https://www.youtube.com/feeds/videos.xml?channel_id=UCPZUQqtVDmcjm4NY5FkzqLA" youtube)
      ("https://www.youtube.com/feeds/videos.xml?channel_id=UCsvn_Po0SmunchJYOWpOxMg" youtube)
      ("https://www.youtube.com/feeds/videos.xml?channel_id=UCCpTaib_e5C6Q95qwazq8OA" youtube)
      ("https://www.youtube.com/feeds/videos.xml?channel_id=UCO-_F5ZEUhy0oKrSa69DLMw" youtube)
+     ("https://www.youtube.com/feeds/videos.xml?channel_id=UCdakEeTJHMPz9MdejLKDRhg" youtube)
      ("https://www.youtube.com/feeds/videos.xml?channel_id=UC2eEGT06FrWFU6VBnPOR9lg" youtube)))
   (elfeed-show-entry-switch #'pop-to-buffer)
   (elfeed-show-entry-delete #'+rss/delete-pane)
@@ -202,5 +198,71 @@
 (use-package feed-discovery)
 
 (use-package pocket-reader)
+
+;; (use-package elfeed-score
+;;   :config
+;;   (progn
+;;     (elfeed-score-enable)
+;;     (define-key elfeed-search-mode-map "=" elfeed-score-map)))
+
+;; (defun concatenate-authors (authors-list)
+;;   "Given AUTHORS-LIST, list of plists; return string of all authors concatenated."
+;;   (mapconcat (lambda (author) (plist-get author :name)) authors-list ", "))
+
+;; (defun my-search-print-fn (entry)
+;;   "Print ENTRY to the buffer."
+;;   (let* ((date (elfeed-search-format-date (elfeed-entry-date entry)))
+;; 	     (title (or (elfeed-meta entry :title) (elfeed-entry-title entry) ""))
+;; 	     (title-faces (elfeed-search--faces (elfeed-entry-tags entry)))
+;; 	     (feed (elfeed-entry-feed entry))
+;; 	     (feed-title (when feed (or (elfeed-meta feed :title) (elfeed-feed-title feed))))
+;; 	     (entry-authors (concatenate-authors (elfeed-meta entry :authors)))
+;; 	     (tags (mapcar #'symbol-name (elfeed-entry-tags entry)))
+;; 	     (tags-str (mapconcat (lambda (s) (propertize s 'face 'elfeed-search-tag-face))e tags ","))
+;; 	     (title-width (- (window-width) 10 elfeed-search-trailing-width))
+;; 	     (title-column (elfeed-format-column
+;; 			            title (elfeed-clamp
+;; 			                   elfeed-search-title-min-width
+;; 			                   title-width
+;; 			                   elfeed-search-title-max-width)
+;; 			            :left))
+;; 	     (authors-width 135)
+;; 	     (authors-column (elfeed-format-column
+;; 			              entry-authors (elfeed-clamp
+;; 			                             elfeed-search-title-min-width
+;; 			                             authors-width
+;; 			                             131)
+;; 			              :left)))
+;;     (insert (propertize date 'face 'elfeed-search-date-face) " ")
+;;     (insert (propertize title-column 'face title-faces 'kbd-help title) " ")
+;;     (insert (propertize authors-column 'face 'elfeed-search-date-face 'kbd-help entry-authors) " ")
+;;     ;; (when feed-title (insert (propertize entry-authors 'face 'elfeed-search-feed-face) " "))
+;;     (when entry-authors (insert (propertize feed-title 'face 'elfeed-search-feed-face) " "))
+;;     (when tags (insert "(" tags-str ")"))))
+
+;; (setq elfeed-search-print-entry-function #'my-search-print-fn)
+
+;; ;;; Elfeed score file                                     -*- lisp -*-
+;; (("title"
+;;   (:text "OPEN THREAD" :value -1000 :type S)
+;;   (:text "raymond c\\(hen\\)?" :value 250 :type r) :tags (t .(@dev)))
+;;  ("content"
+;;   (:text "type erasure" :value 500 :type s))
+;;  ("title-or-content"
+;;   (:text "california" 150 100 :type s)
+;;   (:text "china" 150 100 :type w))
+;;  ("feed"
+;;   (:text "Essays in Idleness" :value 250 :type S :attr t)
+;;   (:text "Irreal" :value 250 :type S :attr t)
+;;   (:text "Julia Evans" :value 100 :type :type s :attr t)
+;;   (:text "National Weather Service" :value 400 :type S :attr t)
+;;   (:text "emacs-news – sacha chua" :value 350 :type S :attr t :comment "Essential!"))
+;;  ("authors"
+;;    (:text "Jim Geraghty" :value 500 :type s))
+;;  ("tag"
+;;   (:tags (t . reddit-question)
+;;    :value 750
+;;    :comment "Add 750 points to any entry with a tag of reddit-question"))
+;;  (mark -2500))
 
 (provide 'usta-elfeed)

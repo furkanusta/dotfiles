@@ -102,5 +102,11 @@ function _comp-kdesrc-run
   return 0
 }
 
+function wait-pid {
+    pid=$1
+    name=$(ps -o command --no-headers -p "$pid" | awk '{print $1}')
+    tail --pid=$pid -f /dev/null && apprise 'dbus://' -b "$name Done"
+}
+
 ## Register autocomplete function
 complete -o nospace -F _comp-kdesrc-run kdesrc-run

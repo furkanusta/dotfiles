@@ -150,4 +150,10 @@
                     :cond #'laas-object-on-left-condition
                     "qq" (lambda () (interactive) (laas-wrap-previous-object "sqrt"))))
 
+(use-package arxiv-citation
+  :quelpa (arxiv-citation :fetcher github :repo "slotthe/arxiv-citation")
+  :custom
+  (arXiv-citation-library my-papers-directory)
+  (arXiv-citation-bibtex-files (list (concat my-bibliography-directory "/Arxiv.bib"))))
+
 (provide 'usta-latex)
