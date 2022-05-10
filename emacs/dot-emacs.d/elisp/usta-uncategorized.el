@@ -34,8 +34,6 @@
 
 (use-package lively)
 
-(use-package jump-tree)
-
 (use-package transpose-mark)
 
 (use-package tiny
@@ -89,12 +87,10 @@
 
 (use-package xref)
 
-(use-package avy
+(use-package ace-jump
   :bind
-  ("C-c j j" . avy-goto-char)
-  ("C-c j r" . avy-resume)
-  ("C-c j b" . avy-pop-mark)
-  ("C-c j g" . avy-goto-line))
+  ("C-c j j" . ace-jump-mode)
+  ("C-c j c" . ace-jump-char-mode))
 
 (use-package ace-link
   :bind

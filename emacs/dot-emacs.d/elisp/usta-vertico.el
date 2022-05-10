@@ -3,20 +3,10 @@
 (use-package vertico
   :defines vertico-mode
   :quelpa (vertico :fetcher github :repo "minad/vertico" :files ("*.el" "extensions/*.el"))
-  :hook
-  (after-init . vertico-mode)
-  (rfn-eshadow-update-overlay . vertico-directory-tidy)
-  :custom
-  (vertico-resize 'grow)
-  (vertico-count 15)
-  (vertico-cycle t)
-  (vertico-indexed-mode t)
-  (completion-in-region-function
-   (lambda (&rest args)
-     (apply (if vertico-mode
-                #'consult-completion-in-region
-              #'completion--in-region)
-            args)))
+  :hook ((after-init . vertico-mode)
+         (rfn-eshadow-update-overlay . vertico-directory-tidy)
+         (vertico-mode . minibuffer-vertico-setup)
+         (minibuffer-setup . minibuffer-vertico-setup))
   :preface
   (require 'dired)
   (defvar +completion-category-hl-func-overrides
@@ -45,6 +35,21 @@
                        (ignore-errors (auto-minor-mode-enabled-p (intern cand))))))
         (add-face-text-property 0 len '(:foreground "red") 'append cand)))
     cand)
+  (defun minibuffer-vertico-setup ()
+    (setq truncate-lines t)
+    (setq completion-in-region-function
+          (if vertico-mode
+              #'consult-completion-in-region
+            #'completion--in-region)))
+  :custom ((vertico-resize 'grow)
+           (vertico-count 15)
+           (vertico-cycle t)
+           (vertico-indexed-mode t)
+           (completion-in-region-function (lambda (&rest args)
+                                            (apply (if vertico-mode
+                                                       #'consult-completion-in-region
+                                                     #'completion--in-region)
+                                                   args))))
   :config
   (advice-add #'vertico--arrange-candidates :around
               (defun vertico-format-candidates+ (func)

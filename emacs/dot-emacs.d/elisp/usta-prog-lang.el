@@ -128,7 +128,15 @@
   :hook (emacs-lip-mode . flycheck-mode))
 
 (use-package sly
-  :config (sly-setup '(sly-mrepl)))
+  :config (sly-setup '(sly-mrepl))
+  :custom
+  (inferior-lisp-program "sbcl")
+  (sly-symbol-completion-mode -1))
+
+(use-package sly-quicklisp)
+
+(use-package sly-repl-ansi-color
+   :init (add-to-list 'sly-contribs 'sly-repl-ansi-color))
 
 (use-package smartparens
   :hook (prog-mode . smartparens-mode)
@@ -138,6 +146,15 @@
               ("C-c l b" . sp-backward-up-sexp)
               ("C-c l u" . sp-unwrap-sexp)
               ("C-c l f" . sp-forward-sexp)
+              ("C-M-n" . sp-next-sexp)
+              ("C-M-p" . sp-previous-sexp)
+              ("C-M-a" . sp-beginning-of-sexp)
+              ("C-M-e" . sp-end-of-sexp)
+              ("C-M-u" . sp-up-sexp)
+              ("C-M-d" . sp-down-sexp)
+              ("C-c [" . sp-wrap-square)
+              ("C-c {" . sp-wrap-curly)
+              ("C-c (" . sp-wrap-round)
               ("C-c l SPC" . sp-select-next-thing)
               ("C-c l C-SPC" . sp-select-next-thing-exchange)
               ("C-c l k" . sp-kill-sexp)))

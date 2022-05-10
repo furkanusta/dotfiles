@@ -99,36 +99,36 @@
 ;; (use-package lazytab
 ;;   :quelpa (lazytab :fetcher github :repo "karthink/lazytab"))
 
-;; For some reason calctex skips the first element
-(use-package calctex
-  :quelpa (calctex :fetcher github :repo "johnbcoughlin/calctex")
-  :hook (calc-mode . calctex-mode)
-  :config
-  (setq calctex-additional-latex-packages "
-\\usepackage[usenames]{xcolor}
-\\usepackage{soul}
-\\usepackage{adjustbox}
-\\usepackage{amsmath}
-\\usepackage{amssymb}
-\\usepackage{siunitx}
-\\usepackage{cancel}
-\\usepackage{mathtools}
-\\usepackage{mathalpha}
-\\usepackage{xparse}
-\\usepackage{arevmath}"
-        calctex-additional-latex-macros (concat calctex-additional-latex-macros "\n\\let\\evalto\\Rightarrow"))
-  (defun teco-calctex-fix (orig-fn &rest args)
-    (let ((inhibit-message t)
-          message-log-max)
-      (apply orig-fn args)))
-  (advice-add #'teco-calctex-fix :around #'calctex-default-dispatching-render-process)
-  (let ((vendor-folder (concat (file-truename quelpa-build-dir) "/calctex/vendor/")))
-    (setq calctex-dvichop-sty (concat vendor-folder "texd/dvichop")
-          calctex-dvichop-bin (concat vendor-folder "texd/dvichop")))
-  (unless (file-exists-p calctex-dvichop-bin)
-    (message "CalcTeX: Building dvichop binary")
-    (let ((default-directory (file-name-directory calctex-dvichop-bin)))
-      (call-process "make" nil nil nil))))
+;; ;; For some reason calctex skips the first element
+;; (use-package calctex
+;;   :quelpa (calctex :fetcher github :repo "johnbcoughlin/calctex")
+;;   :hook (calc-mode . calctex-mode)
+;;   :config
+;;   (setq calctex-additional-latex-packages "
+;; \\usepackage[usenames]{xcolor}
+;; \\usepackage{soul}
+;; \\usepackage{adjustbox}
+;; \\usepackage{amsmath}
+;; \\usepackage{amssymb}
+;; \\usepackage{siunitx}
+;; \\usepackage{cancel}
+;; \\usepackage{mathtools}
+;; \\usepackage{mathalpha}
+;; \\usepackage{xparse}
+;; \\usepackage{arevmath}"
+;;         calctex-additional-latex-macros (concat calctex-additional-latex-macros "\n\\let\\evalto\\Rightarrow"))
+;;   (defun teco-calctex-fix (orig-fn &rest args)
+;;     (let ((inhibit-message t)
+;;           message-log-max)
+;;       (apply orig-fn args)))
+;;   (advice-add #'teco-calctex-fix :around #'calctex-default-dispatching-render-process)
+;;   (let ((vendor-folder (concat (file-truename quelpa-build-dir) "/calctex/vendor/")))
+;;     (setq calctex-dvichop-sty (concat vendor-folder "texd/dvichop")
+;;           calctex-dvichop-bin (concat vendor-folder "texd/dvichop")))
+;;   (unless (file-exists-p calctex-dvichop-bin)
+;;     (message "CalcTeX: Building dvichop binary")
+;;     (let ((default-directory (file-name-directory calctex-dvichop-bin)))
+;;       (call-process "make" nil nil nil))))
 
 (use-package laas
   :hook (LaTeX-mode . laas-mode)
@@ -150,10 +150,10 @@
                     :cond #'laas-object-on-left-condition
                     "qq" (lambda () (interactive) (laas-wrap-previous-object "sqrt"))))
 
-(use-package arxiv-citation
-  :quelpa (arxiv-citation :fetcher github :repo "slotthe/arxiv-citation")
-  :custom
-  (arXiv-citation-library my-papers-directory)
-  (arXiv-citation-bibtex-files (list (concat my-bibliography-directory "/Arxiv.bib"))))
+;; (use-package arxiv-citation
+;;   :quelpa (arxiv-citation :fetcher github :repo "slotthe/arxiv-citation")
+;;   :custom
+;;   (arXiv-citation-library my-papers-directory)
+;;   (arXiv-citation-bibtex-files (list (concat my-bibliography-directory "/Arxiv.bib"))))
 
 (provide 'usta-latex)

@@ -95,6 +95,14 @@
   (git-messenger:use-magit-popup t)
   :bind ("C-c g m" . git-messenger:popup-message))
 
+(use-package why-this
+  :config
+  (setq why-this-annotate-heat-map-cold "#203448")
+  (setq why-this-annotate-heat-map-warm "#382f27")
+  :bind
+  ("C-c g b a" . why-this-annotate)
+  ("C-c g b b" . why-this-mode))
+
 (use-package github-review)
 
 (use-package gitignore-mode)
