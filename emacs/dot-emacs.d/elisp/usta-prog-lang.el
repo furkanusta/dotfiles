@@ -181,6 +181,10 @@
 
 (use-package refine)
 
+(use-package eval-sexp-fu
+  :bind
+  ("C-c e s" . eval-sexp-fu-eval-sexp-inner-list))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;        Python       ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -295,4 +295,10 @@
 (use-package bug-reference
   :hook ((prog-mode org-mode) . bug-reference-prog-mode))
 
+(use-package devdocs
+  :hook (devdocs-mode . shrface-mode)
+  ;; (python-mode . (lambda () (setq-local devdocs-current-docs '("python~3.9"))))
+  :bind
+  ("C-h D" . devdocs-lookup))
+
 (provide 'usta-prog)

@@ -232,12 +232,11 @@
   (advice-add 'embark-completing-read-prompter :around
               (with-minibuffer-keymap embark-completing-read-prompter-map))
   :bind
-  ("C-." . embark-act)
-  ("C-;" . embark-dwim)
-  ("C-:" . embark-export)
-  ("C-h B" . embark-bindings)
   (:map vertico-map
         ("C-<tab>" . embark-act-with-completing-read)
+        ("C-." . embark-act)
+        ("C-;" . embark-dwim)
+        ("C-:" . embark-export)
         ("C-." . embark-act))
   (:map embark-file-map
         ("s" . sudo-edit)
