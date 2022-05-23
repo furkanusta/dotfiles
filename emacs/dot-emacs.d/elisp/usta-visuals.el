@@ -91,7 +91,7 @@
   :custom (helpful-max-buffers 5))
 
 (use-package window-margin
-  :hook (text-mode . window-margin-mode)
+;;   :hook (org-mode . window-margin-mode)
   :quelpa (window-margin :fetcher github :repo "aculich/window-margin.el"))
 
 (provide 'usta-visuals)

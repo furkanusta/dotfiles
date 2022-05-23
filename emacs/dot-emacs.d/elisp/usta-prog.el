@@ -33,6 +33,7 @@
   (projectile-known-projects-file (concat no-littering-var-directory "projectile-bookmarks.eld"))
   (projectile-sort-order 'recentf)
   (projectile-inedxing-method 'hybrid)
+  (projectile-dynamic-mode-line nil)
   :bind-keymap ("C-c p" . projectile-command-map))
 
 (use-package persp-projectile
@@ -62,6 +63,7 @@
        (not (seq-contains-p (persp-current-buffers) buffer)))))
   :custom
   (persp-mode-prefix-key (kbd "C-c w"))
+  (persp-modestring-short t)
   ;; (persp-initial-frame-name ".dotfiles")
   (switch-to-prev-buffer-skip #'perspective-my-skip-buffer-p))
 

@@ -1,6 +1,6 @@
 ;; -*- lexical-binding: t; -*-
 (use-package elfeed
-  :hook (elfeed-new-entry . ime-elfeed-podcast-tagger)
+  :hook ((elfeed-new-entry . ime-elfeed-podcast-tagger))
   :preface
   (defun ime-elfeed-podcast-tagger (entry)
     (when (elfeed-entry-enclosures entry)
