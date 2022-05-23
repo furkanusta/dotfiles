@@ -127,19 +127,38 @@
 (use-package elisp-mode
   :hook (emacs-lip-mode . flycheck-mode))
 
+(use-package lisp
+  :hook (lisp-mode . auto-highlight-symbol-mode))
+
 (use-package sly
-  :config (sly-setup '(sly-mrepl))
+  :config (sly-setup '(sly-fancy))
+  :hook
+  ((sly-mode . (lambda () (sly-symbol-completion-mode -1)))
+   (sly-mode . smartparens-mode))
+  :preface
+  (defun my-sly-lookup ()
+    (interactive)
+    (let ((browse-url-browser-function 'eww-browse-url))
+      (sly-documentation-lookup)))
   :custom
   (inferior-lisp-program "sbcl")
-  (sly-symbol-completion-mode -1))
+  (sly-symbol-completion-mode -1)
+  (sly-kill-without-query-p t)
+  (sly-command-switch-to-existing-lisp 'always)
+  :bind
+  (:map sly-mode-map ("C-h D" . my-sly-lookup)))
 
 (use-package sly-quicklisp)
 
 (use-package sly-repl-ansi-color
-   :init (add-to-list 'sly-contribs 'sly-repl-ansi-color))
+  :after sly
+  :init (add-to-list 'sly-contribs 'sly-repl-ansi-color))
 
 (use-package smartparens
-  :hook (prog-mode . smartparens-mode)
+  :hook
+  ((prog-mode . smartparens-mode)
+   (conf-mode . smartparens-mode)
+   (text-mode . smartparens-mode))
   :init (require 'smartparens-config)
   :bind (:map smartparens-mode-map
               ("C-c l w" . sp-copy-sexp)

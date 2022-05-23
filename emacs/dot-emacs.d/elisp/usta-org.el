@@ -2,7 +2,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Org Mode          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(use-package org :ensure nil
+(use-package org
   :hook
   ((org-mode . turn-on-flyspell)
    (org-mode . auto-fill-mode)
@@ -74,7 +74,7 @@
   (org-fontify-whole-heading-line t)
   (org-hide-emphasis-markers t)
   (org-hide-leading-stars t)
-  (org-imenu-depth 4)
+  (org-imenu-depth 2)
   (org-indent-indentation-per-level 1)
   (org-log-done t)
   (org-babel-load-languages '((python . t)
@@ -87,7 +87,10 @@
   (org-yank-adjusted-subtrees t)
   (org-todo-keywords '((sequence "TODO" "IN-PROGRESS" "NEXT" "|" "DONE")
                        (sequence "PAUSED" "SCHEDULED" "WAITING" "|" "CANCELLED")))
-  :bind (:map org-mode-map ("C-c C-." . org-time-stamp-inactive)))
+  :bind
+  (:map org-mode-map
+        ("C-c C-." . org-time-stamp-inactive)
+        ("M-q" . nil)))
 
 (use-package ob-async)
 
@@ -156,13 +159,13 @@
   (org-appear-autoentities t))
 
 (use-package oc :ensure org
+  :config
+  (require 'oc-csl)
+  (require 'oc-biblatex)
+  (require 'oc-natbib)
   :custom
   (org-cite-export-processors '((latex biblatex) (t csl)))
   (org-support-shift-select t))
-
-(use-package oc-biblatex :after oc :ensure org)
-(use-package oc-csl :after oc :ensure org)
-(use-package oc-natbib :after oc :ensure org)
 
 (use-package toc-org
   :hook (org-mode . toc-org-mode))

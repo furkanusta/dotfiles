@@ -211,6 +211,6 @@
 ;;   :quelpa (trivial-copy :fetcher github :repo "casouri/trivial-copy"))
 
 (use-package imenu-list
-  :bind ("C-x t i" . imenu-list-smart-toggle))
+  :bind ("C-c t i" . imenu-list-smart-toggle))
 
 (provide 'usta-navigation)

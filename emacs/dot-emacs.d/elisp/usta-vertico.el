@@ -169,7 +169,6 @@
         ("M-s L" . consult-line-multi))
   :init
   (advice-add #'register-preview :override #'consult-register-window)
-  (advice-add #'completing-read-multiple :override #'consult-completing-read-multiple)
   :custom
   (consult-project-root-function #'projectile-project-root)
   (register-preview-delay 0)
@@ -264,6 +263,7 @@
   :quelpa (corfu :fetcher github :repo "minad/corfu")
   :hook ((prog-mode . corfu-mode)
          (shell-mode . corfu-mode)
+         (comint-mode . corfu-mode)
          (cmake-mode . corfu-mode)
          (eshell-mode . corfu-mode))
   :custom
@@ -299,10 +299,9 @@
 
 ;; Add extensions
 (use-package cape
-  :config
-  (add-to-list 'completion-at-point-functions (cape-super-capf #'cape-file #'cape-keyword #'cape-dabbrev)))
-  ;; (require 'company-cmake)
-  ;; (add-to-list 'completion-at-point-functions (cape-company-to-capf #'company-cmake))
+  :init
+  (add-to-list 'completion-at-point-functions
+               (cape-super-capf #'cape-symbol #'cape-file #'cape-keyword #'cape-dabbrev)))
 
 
 (use-package kind-icon
