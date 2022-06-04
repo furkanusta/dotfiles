@@ -30,19 +30,23 @@ export PATH="$PATH:$CARGO_HOME/bin"
 export TEXMFHOME="$LOCAL_PATH/prog/texmf"
 export XDG_CONFIG_HOME=$HOME/.config
 
-export GEM_HOME=$LOCAL_PATH/gems
+export GEM_HOME="$(ruby -e 'puts Gem.user_dir')"
 export PATH="$PATH:$GEM_HOME/bin"
 
 alias ls=exa
 alias cat=bat
 alias pip3-install="pip3 install --user"
-alias gem-install="gem install --user"
+
 alias ec="emacsclient -t"
 alias mp3-dl="yt-dlp --extract-audio --audio-format=mp3"
 alias mp3-tags="fd -t f -x ffprobe -loglevel error -show_entries format_tags=title,artist -of compact"
 
 alias whatsapp="ffmpeg -c:v libx264  -threads 4 -profile:v baseline -level 3.0 -pix_fmt yuv420p"
-export PS1='[$(basename $(dirname "$PWD"))/$(basename "$PWD")] \[\e[0;31m$\e[0m\] ';
+export PS1='[$(basename $(dirname "$PWD"))/$(basename "$PWD")] $ ';
+
+if [[ -z "${INSIDE_EMACS}" ]]; then
+    export PS1='[$(basename $(dirname "$PWD"))/$(basename "$PWD")] \[\e[0;31m$\e[0m\] ';
+fi
 
 # bind does not work inside emacs
 if [[ "$TERM" != "dumb" ]]; then
@@ -55,58 +59,19 @@ if [ -f .bash_functions ]; then
 fi
 
 if [[ "$INSIDE_EMACS" = 'vterm' ]] ; then
-    export PS1='[$(basename $(dirname "$PWD"))/$(basename "$PWD")] $ ';
 	source $XDG_CONFIG_HOME/vterm/emacs-vterm.sh
-    export PS1=$PS1'\[$(vterm_prompt_end)\]'
 fi
 
 if [ -f .bash_env_local ]; then
     source .bash_env_local
 fi
 
-export PROMPT_COMMAND='echo -ne "\033]2;${PWD/#${HOME}/\~}\007"'
-
 if [ -f $HOME/.local/prog/vcpkg/scripts/vcpkg_completion.bash ]; then
     source $HOME/.local/prog/vcpkg/scripts/vcpkg_completion.bash
 fi
-
-# kdesrc-build #################################################################
-
-## Add kdesrc-build to PATH
-export PATH="$HOME/Projects/Contribute/kdesrc-build/:$PATH"
-
-## Autocomplete for kdesrc-run
-function _comp-kdesrc-run
-{
-  local cur
-  COMPREPLY=()
-  cur="${COMP_WORDS[COMP_CWORD]}"
-
-  # Complete only the first argument
-  if [[ $COMP_CWORD != 1 ]]; then
-    return 0
-  fi
-
-  # Retrieve build modules through kdesrc-run
-  # If the exit status indicates failure, set the wordlist empty to avoid
-  # unrelated messages.
-  local modules
-  if ! modules=$(kdesrc-run --list-installed);
-  then
-      modules=""
-  fi
-
-  # Return completions that match the current word
-  COMPREPLY=( $(compgen -W "${modules}" -- "$cur") )
-
-  return 0
-}
 
 function wait-pid {
     pid=$1
     name=$(ps -o command --no-headers -p "$pid" | awk '{print $1}')
     tail --pid=$pid -f /dev/null && apprise 'dbus://' -b "$name Done"
 }
-
-## Register autocomplete function
-complete -o nospace -F _comp-kdesrc-run kdesrc-run
