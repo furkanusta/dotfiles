@@ -187,8 +187,8 @@
 (use-package easy-escape
   :hook (emacs-lisp-mode . easy-escape-minor-mode))
 
-(use-package flycheck-elsa
-  :hook (emacs-lisp-mode . flycheck-elsa-setup))
+;; (use-package flycheck-elsa
+;;   :hook (emacs-lisp-mode . flycheck-elsa-setup))
 
 (use-package comment-or-uncomment-sexp
   :bind ("C-M-;" . comment-or-uncomment-sexp))
@@ -307,5 +307,28 @@ field that the can be jumped to upon further expansion."
 (use-package tcl
   :custom
   (tcl-application "tclsh"))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;
+;;         RUBY        ::
+;;;;;;;;;;;;;;;;;;;;;;;;;
+;; https://github.com/doomemacs/doomemacs/blob/master/modules/lang/ruby/config.el
+
+;; LSP: typeprof, solargraph, sorbet, steep??
+(use-package ruby-mode)
+;; (use-package enh-ruby-mode)
+
+(use-package yard-mode
+  :hook (ruby-mode . yard-mode))
+
+(use-package inf-ruby
+  :hook (ruby-mode . inf-ruby-minor-mode))
+
+(use-package rubocop
+  :hook (ruby-mode . rubocop-mode))
+
+(use-package rake)
+
+;; (use-package rspec)
+;; (use-package minitest)
 
 (provide 'usta-prog-lang)

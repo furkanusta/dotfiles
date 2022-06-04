@@ -106,16 +106,16 @@
   :commands treemacs-set-scope-type
   :config (treemacs-set-scope-type 'Perspectives))
 
-(use-package fzf
-  :commands fzf-with-command
-  :init
-  (defun fzf-my-projectile ()
-    (interactive)
-    (fzf-with-command "fd -t f" #'fzf/action-find-file (or (projectile-project-root) default-directory)))
-  :custom (fzf/args "-x --print-query")
+(use-package affe
+  :preface
+  (defun affe-orderless-regexp-compiler (input _type _ignorecase)
+    (setq input (orderless-pattern-compiler input))
+    (cons input (lambda (str) (orderless--highlight input str))))
+  :custom
+  (affe-count 10000)
+  (affe-regexp-compiler #'affe-orderless-regexp-compiler)
   :bind
-  ("C-c h f" . fzf-my-projectile)
-  ("C-c h F" . fzf-find-file))
+  ("C-c h F" . affe-find))
 
 (use-package dired-rsync
   :bind
