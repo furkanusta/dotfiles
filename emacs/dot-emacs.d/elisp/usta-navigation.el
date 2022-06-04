@@ -14,6 +14,8 @@
 (use-package drag-stuff
   :custom (drag-stuff-global-mode t)
   :bind (:map drag-stuff-mode-map
+              ("M-N" . drag-stuff-down)
+              ("M-P" . drag-stuff-up)
               ("<M-up>" . drag-stuff-up)
               ("<M-down>" . drag-stuff-down)))
 
@@ -211,6 +213,9 @@
 ;;   :quelpa (trivial-copy :fetcher github :repo "casouri/trivial-copy"))
 
 (use-package imenu-list
+  :custom
+  (imenu-list-position 'left)
+  (imenu-list-size 0.15)
   :bind ("C-c t i" . imenu-list-smart-toggle))
 
 (provide 'usta-navigation)

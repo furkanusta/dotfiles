@@ -476,7 +476,7 @@ With a prefix ARG, remove start location."
   :custom (org-agenda-property-list '(LOCATION)))
 
 (use-package org-timeline
-  :hook (org-agenda-finalize-hook . org-timeline-insert-timeline))
+  :hook (org-agenda-finalize . org-timeline-insert-timeline))
 
 (use-package org-radiobutton)
 

@@ -42,6 +42,13 @@
 
 (setenv "DISPLAY" ":1")
 
+
+(set-face-attribute 'default nil
+                    :family "Source Code Pro"
+                    :height 100
+                    :weight 'medium
+                    :width 'normal)
+
 (require 'usta-builtins)
 (require 'usta-dired)
 (require 'usta-elfeed)

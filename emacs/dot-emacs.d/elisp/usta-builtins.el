@@ -16,9 +16,9 @@
 
 (use-package emacs :ensure nil
   :hook
-  (before-save . delete-trailing-whitespace)
-  (minibuffer-setup-hook . cursor-intangible-mode)
-  (after-init . toggle-frame-maximized)
+  ((minibuffer-setup . cursor-intangible-mode)
+  ;; (before-save . delete-trailing-whitespace)
+   (after-init . toggle-frame-maximized))
   :preface
   (defvar my-dark-theme 'monokai)
   (defvar my-light-theme 'leuven)

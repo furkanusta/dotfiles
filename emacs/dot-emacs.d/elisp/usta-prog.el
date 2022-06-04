@@ -7,6 +7,8 @@
   (defun eos/next-function ()
     (interactive)
     (beginning-of-defun -1))
+  :custom
+  (tab-always-indent 'complete)
   :bind
   (:map prog-mode-map
         ("C-c C-p" . eos/previous-function)
@@ -44,7 +46,7 @@
   :commands persp-current-buffers
   :preface
   (defvar perspective-skip-ignore-list
-  '("*dashboard*" "*Messages*" "*Warnings*" "*elfeed-search*" "*Fd*" "*compilation*"))
+  '("*dashboard*" "*Messages*" "*Warnings*" "*elfeed-search*" "*Fd*" "*compilation*" "*Bufler*"))
   (defvar perspective-skip-prefix-list '("magit-"))
   (defvar perspective-skip-ignore-prefix-list
   '("*vterm" "*scratch" "*shell" "*Customize" "*ielm*" "*helpful" "*org" "*ein" "*Org" "*Embark" "*cardboard" "*eww" "*sly"))
@@ -160,8 +162,15 @@
 (use-package evil-nerd-commenter
   :bind ("M-;" . evilnc-comment-or-uncomment-lines))
 
+
+(defun set-no-process-query-on-exit ()
+  (let ((proc (get-buffer-process (current-buffer))))
+    (when (processp proc)
+      (set-process-query-on-exit-flag proc nil))))
+
 (use-package vterm
   :commands (vterm-next-prompt vterm-prev-prompt)
+  :hook (vterm-mode . set-no-process-query-on-exit)
   :preface
   (defun vterm-next-prompt () (interactive) (re-search-forward "\\] \\$ " nil 'move))
   (defun vterm-prev-prompt () (interactive)
@@ -239,6 +248,10 @@
   ("C-c C->" . origami-open-all-nodes))
 
 (use-package lsp-mode
+  :hook
+  ((lsp-completion-mode . my/lsp-mode-setup-completion)
+   (lsp-completion-mode . (lambda ()
+                            (setq-local completion-at-point-functions (list (cape-capf-buster #'lsp-completion-at-point))))))
   :custom
   (lsp-completion-provider :none)
   (lsp-auto-execute-action nil)
@@ -254,7 +267,6 @@
   (lsp-enable-on-type-formatting nil)
   (read-process-output-max (* 2 1024 1024))
   (lsp-enable-on-type-formatting nil)
-
   :preface
   (defun my/orderless-dispatch-flex-first (_pattern index _total)
     (and (eq index 0) 'orderless-flex))
@@ -263,9 +275,19 @@
           '(orderless)))
   :init
   (add-hook 'orderless-style-dispatchers #'my/orderless-dispatch-flex-first nil 'local)
-  (setq completion-at-point-functions (list (cape-capf-buster #'lsp-completion-at-point)))
-  :hook
-  (lsp-completion-mode . my/lsp-mode-setup-completion))
+  (lsp-enable-which-key-integration t))
+
+(use-package lsp-ui
+  :after lsp
+  :bind
+  (:map lsp-mode-map
+        ("C-c C-l h g" . lsp-ui-doc-show)
+        ("C-c C-l h i" . lsp-ui-sideline-toggle-symbols-info)
+        ("C-c C-l h m" . lsp-ui-imenu)
+        ("C-c t i" . lsp-ui-imenu))
+  (:map lsp-ui-imenu-mode-map
+        ("TAB" . lsp-ui-imenu--next-kind)
+        ("<backtab>" . lsp-ui-imenu--prev-kind)))
 
 (use-package dap-mode
   :custom

@@ -66,6 +66,17 @@
   :custom
   (nov-text-width nil))
 
+;; (use-package nov-xwidget
+;;   :quelpa (nov-xwidget :fetcher github :repo "chenyanming/nov-xwidget")
+;;   :after nov
+;;   :bind
+;;   (:map xwidget-webkit-mode-map
+;;         ("]" . nov-xwidget-next-document)
+;;         ("[" . nov-xwidget-previous-document)
+;;         ("t" . nov-xwidget-goto-toc))
+;;   (:map nov-mode-map
+;;         ("v" . nov-xwidget-view)))
+
 (use-package flyspell
   :hook ((text-mode org-mode) . flyspell-mode))
 
@@ -78,7 +89,8 @@
         ("C-;" . flyspell-correct-at-point)
         ("C-c $" . flyspell-correct-wrapper)))
 
-(use-package wgrep)
+(use-package wgrep
+  :custom (wgrep-auto-save-buffer t))
 
 (use-package deadgrep
   :bind
@@ -242,5 +254,16 @@
   :custom
   (kmacro-x-atomic-undo-mode 1)
   :bind ("C-c k" . kmacro-x-mc-region))
+
+(use-package auto-capitalize
+  :quelpa (auto-capitalize :fetcher github :repo "yuutayamada/auto-capitalize-el")
+  ;; :hook (text-mode . auto-capitalize-mode)
+  ;; :custom
+  ;; (auto-capitalize-words `("I" "English"))
+  )
+
+;; Maybe implement the inverse. (Always concealed)
+;; (use-package conceal
+;;   :quelpa (conceal :fetcher github :repo "lepisma/conceal"))
 
 (provide 'usta-uncategorized)

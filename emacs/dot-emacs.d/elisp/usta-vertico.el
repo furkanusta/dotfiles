@@ -80,29 +80,55 @@
               ("M-DEL" . vertico-directory-delete-word)))
 
 (use-package orderless
+  :preface
+  ;; From doomemacs
+  (defun vertico-orderless-dispatch (pattern _index _total)
+    (cond
+     ;; Ensure $ works with Consult commands, which add disambiguation suffixes
+     ((string-suffix-p "$" pattern)
+      `(orderless-regexp . ,(concat (substring pattern 0 -1) "[\x200000-\x300000]*$")))
+     ;; Ignore single !
+     ((string= "!" pattern) `(orderless-literal . ""))
+     ;; Without literal
+     ((string-prefix-p "!" pattern) `(orderless-without-literal . ,(substring pattern 1)))
+     ;; Character folding
+     ((string-prefix-p "%" pattern) `(char-fold-to-regexp . ,(substring pattern 1)))
+     ((string-suffix-p "%" pattern) `(char-fold-to-regexp . ,(substring pattern 0 -1)))
+     ;; Initialism matching
+     ((string-prefix-p "`" pattern) `(orderless-initialism . ,(substring pattern 1)))
+     ((string-suffix-p "`" pattern) `(orderless-initialism . ,(substring pattern 0 -1)))
+     ;; Literal matching
+     ((string-prefix-p "=" pattern) `(orderless-literal . ,(substring pattern 1)))
+     ((string-suffix-p "=" pattern) `(orderless-literal . ,(substring pattern 0 -1)))
+     ;; Flex matching
+     ((string-prefix-p "~" pattern) `(orderless-flex . ,(substring pattern 1)))
+     ((string-suffix-p "~" pattern) `(orderless-flex . ,(substring pattern 0 -1)))))
   :custom
-  (completion-styles '(orderless))
+  (orderless-matching-styles '(orderless-regexp))
+  (orderless-style-dispatchers '(vertico-orderless-dispatch))
+  (completion-styles '(substring orderless basic))
   (completion-category-defaults nil)
   (completion-category-overrides '((file (styles . (orderless partial-completion)))))
-  (orderless-matching-styles  '(orderless-literal orderless-prefixes))
+  ;; (orderless-matching-styles  '(orderless-literal orderless-prefixes))
   :config
   (set-face-attribute 'completions-first-difference nil :inherit nil))
 
 (use-package consult
   :after projectile
   :defines projectile-project-root
-  :hook (completion-list-mode . consult-preview-at-point-mode)
+  :hook
+  ((completion-list-mode . consult-preview-at-point-mode)
+   (minibuffer-setup . consult-initial-narrow))
   :preface
-  (defvar consult--fd-command nil)
+  (defvar consult--fd-command (if (eq 0 (call-process-shell-command "fdfind")) "fdfind" "fd"))
+  (defvar consult--initial-narrow-list nil)
+  (defun consult-initial-narrow ()
+    (dolist (l consult--initial-narrow-list)
+      (when (eval (car l))
+        (setq unread-command-events (append unread-command-events (cdr l))))))
   (defun consult--fd-builder (input)
-    (unless consult--fd-command
-      (setq consult--fd-command
-            (if (eq 0 (call-process-shell-command "fdfind"))
-                "fdfind"
-              "fd")))
     (pcase-let* ((`(,arg . ,opts) (consult--command-split input))
-                 (`(,re . ,hl) (funcall consult--regexp-compiler
-                                        arg 'extended)))
+                 (`(,re . ,hl) (funcall consult--regexp-compiler arg 'extended t)))
       (when re
         (list :command (append
                         (list consult--fd-command
@@ -125,7 +151,7 @@
   (defun my-consult-ripgrep-here ()
     (interactive)
     (let ((consult-ripgrep-args (concat consult-ripgrep-args " --no-ignore")))
-    (consult-ripgrep default-directory (thing-at-point 'symbol))))
+      (consult-ripgrep default-directory (thing-at-point 'symbol))))
   (defun my-consult-ripgrep ()
     (interactive)
     (consult-ripgrep (or (projectile-project-root) default-directory) (thing-at-point 'symbol)))
@@ -188,6 +214,32 @@
    :preview-key '(:debounce 0.01 any))
   (define-key consult-narrow-map (vconcat consult-narrow-key "?") #'consult-narrow-help))
 
+(use-package consult-dir
+  :preface
+  (defun consult-dir--tramp-docker-hosts ()
+    "Get a list of hosts from docker."
+    (when (require 'docker-tramp nil t)
+      (let ((hosts)
+            (docker-tramp-use-names t))
+        (dolist (cand (docker-tramp--parse-running-containers))
+          (let ((user (unless (string-empty-p (car cand))
+                        (concat (car cand) "@")))
+                (host (car (cdr cand))))
+            (push (concat "/docker:" user host ":/") hosts)))
+        hosts)))
+  (defvar consult-dir--source-tramp-docker
+    `(:name     "Docker"
+                :narrow   ?d
+                :category file
+                :face     consult-file
+                :history  file-name-history
+                :items    ,#'consult-dir--tramp-docker-hosts)
+    "Docker candiadate source for `consult-dir'.")
+  :config
+  (add-to-list 'consult-dir-sources 'consult-dir--source-tramp-docker t)
+  (add-to-list 'consult-dir-sources 'consult-dir--source-tramp-ssh t)
+  :bind ("C-x C-d" . consult-dir))
+
 (use-package embark
   :after vertico
   :init
@@ -231,14 +283,14 @@
   (advice-add 'embark-completing-read-prompter :around
               (with-minibuffer-keymap embark-completing-read-prompter-map))
   :bind
+  ("C-." . embark-act)  
   (:map vertico-map
         ("C-<tab>" . embark-act-with-completing-read)
         ("C-." . embark-act)
         ("C-;" . embark-dwim)
-        ("C-:" . embark-export)
-        ("C-." . embark-act))
+        ("C-:" . embark-export))
   (:map embark-file-map
-        ("s" . sudo-edit)
+        ("L" . vlf)
         ("S" . sudo-find-file)))
 
 (use-package embark-consult
@@ -269,6 +321,7 @@
   :custom
   (corfu-cycle t)
   (corfu-auto nil)
+  (corfu-preselect-first t)
   (corfu-commit-predicate #'corfu-candidate-previewed-p)
   (corfu-quit-at-boundary nil)
   (corfu-quit-no-match t)
@@ -288,10 +341,9 @@
   :hook (after-init . savehist-mode))
 
 (use-package corfu-history
+  :quelpa (corfu-history :fetcher github :repo "minad/corfu" :files ("extensions/corfu-history.el"))
   :after savehist
-  :load-path "elisp/"
   :hook (corfu-mode . corfu-history-mode)
-  :custom (corfu-sort-function #'corfu-history--sort)
   :config (add-to-list 'savehist-additional-variables 'corfu-history--list))
 
 (use-package corfu-doc
@@ -395,22 +447,19 @@
   (:map flyspell-mode-map
         ("C-c h s" . consult-flyspell)))
 
-(use-package consult-tramp
-  :load-path "elisp/"
-  :functions consult-tramp)
-
 (use-package vertico-repeat
   :after vertico
   :hook (minibuffer-setup . vertico-repeat-save)
   :bind ("M-r" . vertico-repeat))
 
-;; Maybe implement the inverse. (Always concealed)
-;; (use-package conceal
-;;   :quelpa (conceal :fetcher github :repo "lepisma/conceal"))
-
 ;; Not exactly useful needs to be well-integrated with thing-at-point
 ;; (use-package consult-yasnippet
-;;   :load-path "elsip/"
+;;   :load-path "elisp/"
 ;;   :functions c)
+
+(use-package consult-lsp
+  :after lsp
+  :config
+  (add-to-list 'consult--initial-narrow-list (cons `(eq this-command #'consult-lsp-symbols) (list ?< ?c))))
 
 (provide 'usta-vertico)
