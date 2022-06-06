@@ -62,7 +62,6 @@
 
 (use-package trashed)
 
-
 (use-package neotree
   :after projectile
   :custom
