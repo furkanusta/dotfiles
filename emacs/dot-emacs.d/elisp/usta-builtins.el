@@ -147,6 +147,7 @@
   (display-time-mode 1)
   (history-delete-duplicates t)
   (native-comp-async-report-warnings-errors nil)
+  (package-native-compile t)
   :bind
   ("C-c ." . pop-global-mark)
   ("M-u" . upcase-dwim)
@@ -235,26 +236,10 @@
 
 (use-package which-func :ensure nil
   :hook (prog-mode . which-function-mode)
-  :custom (which-func-non-auto-modes '(org-mode bibtex-mode)))
+  :custom (which-func-non-auto-modes '(org-mode markdown-mode bibtex-mode)))
 
 (use-package isearch :ensure nil
   :bind ("C-c H S" . isearch-forward))
-
-(use-package compilation :ensure nil
-  :preface
-  (make-variable-buffer-local 'my-compilation-start-time)
-  (defun my-compilation-start-hook (proc)
-    (setq my-compilation-start-time (current-time)))
-  (defun my-compilation-finish-function (buf why)
-    (let* ((elapsed  (time-subtract nil my-compilation-start-time))
-           (msg (format "Elapsed: %s" (format-time-string "%T.%N" elapsed t))))
-      (save-excursion (goto-char (point-max)) (insert msg))
-      (alert (format "Emacs: %s at %s" why (buffer-name buf)))
-      (message "Compilation %s: %s" (string-trim-right why) msg)))
-  :hook
-  (compilation-start . my-compilation-start-hook)
-  :config
-  (add-hook 'compilation-finish-functions #'my-compilation-finish-function))
 
 (use-package window
   :ensure nil

@@ -284,10 +284,11 @@
               (with-minibuffer-keymap embark-completing-read-prompter-map))
   :bind
   ("C-." . embark-act)  
+  ("C-," . embark-dwim)  
   (:map vertico-map
         ("C-<tab>" . embark-act-with-completing-read)
         ("C-." . embark-act)
-        ("C-;" . embark-dwim)
+        ("C-," . embark-dwim)
         ("C-:" . embark-export))
   (:map embark-file-map
         ("L" . vlf)
@@ -347,13 +348,21 @@
   :config (add-to-list 'savehist-additional-variables 'corfu-history--list))
 
 (use-package corfu-doc
+  :if (display-graphic-p)
   :hook (corfu-mode . corfu-doc-mode))
+
+(use-package corfu-doc-terminal
+  :quelpa (corfu-doc-terminal :fetcher git :url "https://codeberg.org/akib/emacs-corfu-doc-terminal.git")
+  :unless (display-graphic-p)
+  :hook (corfu-mode . corfu-doc-terminal-mode))
 
 ;; Add extensions
 (use-package cape
+  :after corfu
   :init
+  (add-to-list 'completion-at-point-functions #'cape-file)
   (add-to-list 'completion-at-point-functions
-               (cape-super-capf #'cape-symbol #'cape-file #'cape-keyword #'cape-dabbrev)))
+               (cape-super-capf #'cape-symbol #'cape-keyword #'cape-dabbrev)))
 
 
 (use-package kind-icon
@@ -452,10 +461,13 @@
   :hook (minibuffer-setup . vertico-repeat-save)
   :bind ("M-r" . vertico-repeat))
 
-;; Not exactly useful needs to be well-integrated with thing-at-point
-;; (use-package consult-yasnippet
-;;   :load-path "elisp/"
-;;   :functions c)
+(use-package consult-yasnippet
+  :load-path "~/Projects/Contribute/consult-yasnippet/"
+  :custom
+  (consult-yasnippet-use-thing-at-point t)
+  :bind ("M-i" . consult-yasnippet)
+  :config
+  (consult-customize consult-yasnippet :preview-key '(:debounce 0.01 any)))
 
 (use-package consult-lsp
   :after lsp

@@ -266,4 +266,8 @@
 ;; (use-package conceal
 ;;   :quelpa (conceal :fetcher github :repo "lepisma/conceal"))
 
+(use-package dwim-shell-command
+  ;; :quelpa (dwim-shell-command :fetcher github :repo "xenodium/dotsies" :files ("emacs/ar/dwim-shell-command.el"))
+  :load-path "elisp/")
+
 (provide 'usta-uncategorized)

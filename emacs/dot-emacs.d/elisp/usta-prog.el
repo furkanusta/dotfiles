@@ -141,7 +141,6 @@
   :hook (prog-mode . flycheck-mode)
   :commands flycheck-add-mode
   :custom
-  (global-flycheck-mode nil)
   (flycheck-disabled-checkers '(emacs-lisp-checkdoc verilog-verilator))
   (flycheck-emacs-lisp-load-path 'inherit)
   :config
@@ -202,8 +201,26 @@
 (use-package shx
   :hook (shell-mode . shx-mode))
 
-(use-package compile
-  :custom (compilation-scroll-output t)
+(use-package compile :ensure nil
+  :preface
+  (make-variable-buffer-local 'my-compilation-start-time)
+  (defun my-compilation-start-hook (proc)
+    (setq my-compilation-start-time (current-time)))
+  (defun my-compilation-finish-function (buf why)
+    (let* ((elapsed  (time-subtract nil my-compilation-start-time))
+           (msg (format "Elapsed: %s" (format-time-string "%T.%N" elapsed t))))
+      (if (get-buffer-window "*compilation*")
+          (when (string-match "finished" why)
+  	        (bury-buffer "*compilation*")
+            (popper-close-latest))
+        (save-excursion (goto-char (point-max)) (insert msg))
+        (alert (format "Emacs: %s at %s" why (buffer-name buf)))
+        (message "Compilation %s: %s" (string-trim-right why) msg))))
+  :hook
+  (compilation-start . my-compilation-start-hook)
+  :custom (compilation-scroll-output t)  
+  :config
+  (add-hook 'compilation-finish-functions #'my-compilation-finish-function)
   :bind ("C-c C-r" . recompile))
 
 (use-package isend-mode
@@ -223,10 +240,11 @@
 (use-package electric-operator
   :hook (cc-mode . electric-operator-mode))
 
+(use-package yasnippet-snippets)
+
 (use-package yasnippet
   :custom (yas-global-mode 1)
-  :bind ("M-i" . yas-expand)
-  (:map yas-minor-mode-map ("<tab>" . nil)))
+  :bind (:map yas-minor-mode-map ("<tab>" . nil)))
 
 (use-package tramp
   :commands (tramp-cleanup-all-connections tramp-cleanup-all-buffers)
@@ -275,6 +293,7 @@
           '(orderless)))
   :init
   (add-hook 'orderless-style-dispatchers #'my/orderless-dispatch-flex-first nil 'local)
+  :config
   (lsp-enable-which-key-integration t))
 
 (use-package lsp-ui

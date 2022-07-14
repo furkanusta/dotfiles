@@ -5,15 +5,16 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (use-package cc-mode :ensure nil
-  :mode
-  ("\\.h\\'" . c++-mode)
+  :mode ("\\.h\\'" . c++-mode)
   :custom
   (c-offsets-alist '((innamespace . 0)
-                         (substatement-open . 0)))
-  (c-default-style "stroustrup")
+                     (inline-open 0)
+                     (access-label 0)
+                     (substatement-open . 0)))
+  (c-default-style '((java-mode . "java")
+                     (awk-mode . "awk")
+                     (other . "stroustrup")))
   (c-basic-offset 4)
-  (c-indent-level 4)
-  (access-label 0)
   (c-noise-macro-names '("constexpr")))
 
 (use-package modern-cpp-font-lock
@@ -124,7 +125,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;     LISP / ELISP    ::
 ;;;;;;;;;;;;;;;;;;;;;;;;;
-(use-package elisp-mode
+(use-package elisp-mode :ensure nil
   :hook (emacs-lip-mode . flycheck-mode))
 
 (use-package lisp
@@ -300,7 +301,7 @@ field that the can be jumped to upon further expansion."
 ;; (use-package tox :custom (tox-runner py.test))
 ;; (use-package poetry)
 
-(use-package perl
+(use-package perl :ensure nil
   :hook (cperl-mode . lsp-deferred)
   :mode ("\\.pl\\'" . cperl-mode))
 
