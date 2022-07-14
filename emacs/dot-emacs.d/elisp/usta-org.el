@@ -90,6 +90,7 @@
   :bind
   (:map org-mode-map
         ("C-c C-." . org-time-stamp-inactive)
+        ("DEL" . org-delete-backward-char)
         ("M-q" . nil)))
 
 (use-package ob-async)
@@ -256,7 +257,12 @@ With a prefix ARG, remove start location."
   :bind ("C-c i j" . org-journal-new-entry)
   :custom
   (org-journal-dir (concat my-notes-directory "/Journal"))
-  (org-journal-file-format "%Y-%m-%d.org"))
+  (org-journal-file-format "%Y-%m.org")
+  (org-journal-date-format "%A, %d %B")
+  (org-journal-file-type 'monthly)
+  (org-journal-time-format nil)
+  (org-journal-created-property-timestamp-format "%F")
+  )
 
 (use-package org-super-links
   :quelpa (org-super-links :fetcher github :repo "toshism/org-super-links"))
@@ -323,7 +329,9 @@ With a prefix ARG, remove start location."
        (propertize "#+END_SRC" 'face 'org-block-end-line ))
       (shr-ensure-newline)
       (setq end (point))
-      (add-face-text-property start end '(:background "#292b2e" :extend t))
+      (if (eq 'my-light-theme (car custom-enabled-themes))
+          (add-face-text-property start end '(:background "#D8DEE9" :extend t))
+        (add-face-text-property start end '(:background "#292b2e" :extend t)))
       (shr-ensure-newline)
       (insert "\n")))
   :config
@@ -580,5 +588,8 @@ With a prefix ARG, remove start location."
   :custom
   (org-elp-idle-time 0.5)
   (org-elp-split-fraction 0.25))
+
+(use-package org-autolist
+  :hook (org-mode . org-autolist-mode))
 
 (provide 'usta-org)

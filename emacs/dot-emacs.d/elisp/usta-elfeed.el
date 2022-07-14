@@ -201,6 +201,26 @@
 
 (use-package pocket-reader)
 
+(use-package elfeed-tube
+  :quelpa (efeed-tube :fetcher github :repo "karthink/elfeed-tube")
+  :after elfeed
+  :config
+  ;; (setq elfeed-tube-auto-save-p nil) ;; t is auto-save (not default)
+  ;; (setq elfeed-tube-auto-fetch-p t) ;;  t is auto-fetch (default)
+  (elfeed-tube-setup)
+  :bind (:map elfeed-show-mode-map
+         ("F" . elfeed-tube-fetch)
+         ([remap save-buffer] . elfeed-tube-save)
+         :map elfeed-search-mode-map
+         ("F" . elfeed-tube-fetch)
+         ([remap save-buffer] . elfeed-tube-save)))
+
+;; (use-package elfeed-tube-mpv
+;;   :quelpa (elfeed-tube-mpv :fetcher github :repo "karthink/elfeed-tube")
+;;   :bind (:map elfeed-show-mode-map
+;;               ("C-c C-f" . elfeed-tube-mpv-follow-mode)
+;;               ("C-c C-w" . elfeed-tube-mpv-where)))
+
 ;; (use-package elfeed-score
 ;;   :config
 ;;   (progn

@@ -1,0 +1,32 @@
+[user]
+	name = Furkan Usta
+	email = furkanusta17@gmail.com
+[github]
+	user = furkanusta
+[commit]
+	gpgsign = false
+[pull]
+	rebase = true
+	ff = only
+[url "https://invent.kde.org/"]
+	insteadOf = kde:
+[url "ssh://git@invent.kde.org/"]
+	pushInsteadOf = kde:
+[init]
+	defaultBranch = master
+
+
+[core]
+    pager = delta
+
+[interactive]
+    diffFilter = delta --color-only
+
+[delta]
+    navigate = true  # use n and N to move between diff sections
+
+[merge]
+    conflictstyle = diff3
+
+[diff]
+    colorMoved = default
