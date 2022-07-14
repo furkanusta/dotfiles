@@ -12,15 +12,15 @@
     (url-insert-file-contents "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
     (eval-buffer)
     (quelpa-self-upgrade)))
+(defvar quelpa-update-melpa-p nil)
 (require 'quelpa)
-(customize-set-variable 'quelpa-update-melpa-p nil)
 
 (setq-default use-package-always-defer t)
 ;; (setq-default use-package-always-ensure t)
 (unless (package-installed-p 'quelpa-use-package)
   (quelpa '(quelpa-use-package :fetcher git :url "https://github.com/quelpa/quelpa-use-package.git")))
+(setq-default quelpa-use-package-inhibit-loading-quelpa t)
 (require 'quelpa-use-package)
-(customize-set-variable 'quelpa-use-package-inhibit-loading-quelpa t)
 
 (require 'use-package-hydra)
 
@@ -40,8 +40,7 @@
 
 (add-to-list 'load-path (expand-file-name (concat user-emacs-directory "elisp/")))
 
-(setenv "DISPLAY" ":1")
-
+;; (setenv "DISPLAY" ":1")
 
 (set-face-attribute 'default nil
                     :family "Source Code Pro"

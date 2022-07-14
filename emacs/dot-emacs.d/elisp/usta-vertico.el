@@ -456,7 +456,7 @@
   (:map flyspell-mode-map
         ("C-c h s" . consult-flyspell)))
 
-(use-package vertico-repeat
+(use-package vertico-repeat :ensure vertico
   :after vertico
   :hook (minibuffer-setup . vertico-repeat-save)
   :bind ("M-r" . vertico-repeat))

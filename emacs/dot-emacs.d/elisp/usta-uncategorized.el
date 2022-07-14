@@ -100,7 +100,7 @@
 
 (use-package xref)
 
-(use-package ace-jump
+(use-package ace-jump-mode
   :bind
   ("C-c j j" . ace-jump-mode)
   ("C-c j c" . ace-jump-char-mode))
@@ -167,6 +167,7 @@
 
 (use-package pdf-tools-note
   :no-require t
+  :ensure nil
   :after (org-noter pdf-tools)
   :defines org-noter-insert-note
   :preface
@@ -217,26 +218,13 @@
 (use-package piper
   :quelpa (piper :fetcher gitlab :repo "howardabrams/emacs-piper"))
 
-(use-package detached)
-
-(use-package detached-compile
-  :ensure detached
-  :config (detched-init-compile))
+(use-package detached
+  :init (detached-init)
+  :custom ((detached-show-output-on-attach t)))
 
 (use-package detached-consult
   :ensure detached
   :bind ([remap detached-open-session] . detached-consult-session))
-
-(use-package detached-extra
-  :ensure detached
-  :config
-  (deteched-init-embark)
-  (advice-add 'projectile-run-compilation :override #'detached-extra-projectile-run-compilation))
-
-(use-package detached-vterm
-  :ensure detached
-  ;; :hook (vterm-mode . detached-vterm-mode)
-  )
 
 (use-package emms
   :custom

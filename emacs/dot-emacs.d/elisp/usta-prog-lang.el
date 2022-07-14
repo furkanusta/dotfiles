@@ -128,7 +128,7 @@
 (use-package elisp-mode :ensure nil
   :hook (emacs-lip-mode . flycheck-mode))
 
-(use-package lisp
+(use-package lisp :ensure nil
   :hook (lisp-mode . auto-highlight-symbol-mode))
 
 (use-package sly

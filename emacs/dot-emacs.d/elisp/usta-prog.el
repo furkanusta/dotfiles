@@ -109,7 +109,7 @@
 
 (use-package github-review)
 
-(use-package gitignore-mode)
+(use-package git-modes)
 
 (use-package magit-pretty-graph
   :quelpa (magit-pretty-graph :fetcher github :repo "georgek/magit-pretty-graph")
@@ -154,9 +154,9 @@
 
 (use-package flymake)
 
-(use-package flymak-collection)
+(use-package flymake-collection)
 
-(use-package flymak-cursor)
+(use-package flymake-cursor)
 
 (use-package evil-nerd-commenter
   :bind ("M-;" . evilnc-comment-or-uncomment-lines))
@@ -264,6 +264,8 @@
   ("C-c ," . origami-toggle-node)
   ("C-c C-." . origami-close-all-nodes)
   ("C-c C->" . origami-open-all-nodes))
+
+(use-package which-key)
 
 (use-package lsp-mode
   :hook
