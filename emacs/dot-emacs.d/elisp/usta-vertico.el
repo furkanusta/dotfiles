@@ -373,19 +373,26 @@
 
 (use-package citar
   :preface
-  (defun my-citar-open-current-pdf ()
+  (defun my-citar-open-current-resource (files notes)
     "Open REFs of the node at point."
     (interactive)
-    (let ((keys (when-let* ((prop (org-entry-get (point) "ROAM_REFS" t))
+    (if-let ((keys (when-let* ((prop (org-entry-get (point) "ROAM_REFS" t))
                             (refs (when prop (split-string-and-unquote prop)))
                             (oc-cites
                              (seq-map (lambda (ref) (substring ref 7 (- (length ref) 1))) refs)))
-                  oc-cites)))
-      (if keys
-          (progn
-            (other-window 1)
-            (citar-open-library-file keys))
-        (user-error "No ROAM_REFS found"))))
+                  oc-cites))
+             (selected (let* ((actions (bound-and-true-p embark-default-action-overrides))
+                              (embark-default-action-overrides `((t . ,#'citar--open-resource) . ,actions)))
+                         (citar--select-resource keys
+                                                 :files files :notes notes :always-prompt nil))))
+        (progn
+          (when (= 1 (length (window-list)))
+            (split-window-horizontally))
+          (other-window 1)
+          (citar--open-resource (cdr selected) (car selected)))
+      (user-error "No ROAM_REFS found")))
+  (defun my-citar-open-current-note () (interactive) (my-citar-open-current-resource nil t))
+  (defun my-citar-open-current-file () (interactive) (my-citar-open-current-resource t nil))
   :custom
   (citar-bibliography my-bibliographies)
   (citar-open-note-function 'orb-citar-edit-note)
@@ -398,8 +405,10 @@
   (citar-symbol-separator " ")
   :bind
   ("C-c o b" . citar-open)
-  ("C-c o P" . my-citar-open-current-pdf)
-  ("C-c o p" . citar-open-library-file))
+  ("C-c o N" . citar-open-notes)
+  ("C-c o n" . my-citar-open-current-note)
+  ("C-c o p" . my-citar-open-current-file)
+  ("C-c o P" . citar-open-files))
 
 (use-package citar-embark
   :no-require t
@@ -432,6 +441,9 @@
   (add-to-list 'embark-keymap-alist '(citation-key . citar-buffer-map))
   :bind (:map citar-map
               ("M-RET" . my-citar-embark-open-pdf)))
+
+(use-package citar-org-roam
+  :quelpa (citar-org-roam :fetcher github :repo "emacs-citar/citar-org-roam"))
 
 (use-package citar-org
   :quelpa (citar-org :fetcher github :repo "bdarcus/citar" :files ("citar-org.el"))

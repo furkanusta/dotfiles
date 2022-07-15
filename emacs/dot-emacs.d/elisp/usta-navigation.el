@@ -105,11 +105,6 @@
   (bm-buffer-persistence t)
   :hook
   ((after-init . bm-repository-load)
-   (after-save . bm-buffer-save)
-   (vc-before-checkin . bm-buffer-save)
-   (find-file . bm-buffer-restore)
-   (after-revert . bm-buffer-restore)
-   (kill-buffer . bm-buffer-save)
    (kill-emacs . bm-save-all))
   :bind
   ("C-c b n" . bm-next)
