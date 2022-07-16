@@ -44,6 +44,15 @@
       (lambda (buffer result)
         (my-insert-bibtex-entry buffer (biblio-format-bibtex result biblio-bibtex-use-autokey)))
       (current-buffer))))
+  (defun my-update-bib ()
+    (interactive)
+    (let ((buf (current-buffer))
+          (files (f-glob "*.org")))
+      (dolist (file files)
+        (with-current-buffer (find-file file)
+          (message "TANGLE: %s" file)
+          (org-babel-tangle nil nil "bibtex")))
+      (switch-to-buffer buf)))
   (with-eval-after-load 'bibtex
     (defun my-sync-bibtex-org-entry ()
       (interactive)
@@ -419,6 +428,17 @@ With a prefix ARG, remove start location."
 
 (use-package org-roam-bibtex
   :after org-roam org-ref
+  :preface
+  (defun my-org-roam-bibtex-fix-property ()
+    (interactive)
+    (save-excursion
+      (while (> (org-current-level) 2)
+        (org-up-heading-safe))
+      (org-babel-next-src-block)
+      (org-set-property "ROAM_REFS"
+                        (concat "[cite:@"
+                                (buffer-substring (search-forward "{") (1- (search-forward ",")))
+                                "]"))))
   :config (require 'org-ref))
 
 (use-package org-roam-ui

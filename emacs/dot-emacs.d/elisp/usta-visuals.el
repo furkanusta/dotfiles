@@ -33,7 +33,7 @@
   :init (dashboard-setup-startup-hook)
   :config (add-to-list 'dashboard-item-generators  '(scratch . dashboard-insert-scratch))
   :custom
-  (initial-buffer-choice (lambda () (if noninteractive (get-buffer "*dashboard*") nil)))
+  (initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
   (dashboard-center-content t)
   (dashboard-startup-banner 'logo)
   (dashboard-set-heading-icons t)
