@@ -612,4 +612,10 @@ With a prefix ARG, remove start location."
 (use-package org-autolist
   :hook (org-mode . org-autolist-mode))
 
+;; (use-package org-books
+;;   :custom
+;;   (org-books-add-to-top nil)
+;;   (org-books-file-depth 1)
+;;   (org-books-file (concat my-notes-directory "/Books.org")))
+
 (provide 'usta-org)

@@ -283,4 +283,7 @@ Use the filename relative to the current VC root directory."
   (:map goto-address-highlight-keymap
         ("C-c o l" . goto-address-at-point)))
 
+(use-package bookmark
+  :hook (kill-emacs . bookmark-save))
+
 (provide 'usta-builtins)

@@ -30,3 +30,5 @@
 
 [diff]
     colorMoved = default
+[gc]
+	auto = 0

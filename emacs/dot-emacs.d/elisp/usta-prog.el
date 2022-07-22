@@ -346,4 +346,10 @@
   :bind
   ("C-h D" . devdocs-lookup))
 
+(use-package fancy-compilation-mode
+  :hook (compilation-mode . fancy-compilation-mode))
+
+(use-package obvious
+  :quelpa (obvious :fetcher github :repo "alphapapa/obvious.el"))
+
 (provide 'usta-prog)
