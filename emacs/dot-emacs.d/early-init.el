@@ -3,7 +3,6 @@
 (setq gc-cons-threshold 64000000
       gc-cons-percentage 0.8
       package-enable-at-startup nil
-      package-quickstart t
       load-prefer-newer t)
 
 (menu-bar-mode -1)

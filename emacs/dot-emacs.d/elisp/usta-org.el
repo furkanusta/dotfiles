@@ -2,6 +2,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          Org Mode          ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (use-package org
   :hook
   ((org-mode . turn-on-flyspell)
@@ -241,9 +242,6 @@ With a prefix ARG, remove start location."
 
 (use-package org-remark
   :quelpa (org-remark :fetcher github :repo "nobiot/org-remark")
-  ;; :hook (org-mode . org-remark-mode)
-  ;; :custom
-  ;; (org-remark-global-tracking-mode +1)
   :bind
   ("C-c r m" . org-remark-mark)
   (:map org-remark-mode-map
@@ -351,46 +349,14 @@ With a prefix ARG, remove start location."
   (defengine wikipedia "http://www.wikipedia.org/search-redirect.php?language=en&go=Go&search=%s" :keybinding "w")
   (defengine wolfram "http://www.wolframalpha.com/input/?i=%s"))
 
-;; (use-package ob-ipython
-;;   :hook (org-babel-after-execute . org-display-inline-images)
-;;   :config
-;;   (add-to-list 'org-latex-minted-langs '(ipython "python"))
-;;   (org-babel-do-load-languages
-;;    'org-babel-load-languages
-;;    '((ipython . t))))
-
 (use-package org-transclusion
   :quelpa (org-transclusion :fetcher github :repo "nobiot/org-transclusion")
   :custom (org-transclusion-activate-persistent-message nil))
 
 (use-package org-ql)
 
-(use-package org-super-links
-  :quelpa (org-super-links :fetcher github :repo "toshism/org-super-links")
-  :bind (:map org-mode-map
-              ("C-c s l" . org-super-links-link)
-              ("C-c s d" . org-super-links-delete-link)
-              ("C-c s s" . org-super-links-store-link)
-              ("C-c s i" . org-super-links-insert-link)))
-
-(use-package org-super-links-peek
-  :quelpa (org-super-links-peek :fetcher github :repo "toshism/org-super-links-peek")
-  :bind (:map org-mode-map ("C-c s p" . org-super-links-peek-link)))
-
 (use-package org-rich-yank
   :bind (:map org-mode-map ("C-M-y" . org-rich-yank)))
-
-;; (use-package org-link-beautify
-;;   :hook (org-mode . org-link-beautify-mode))
-
-(use-package calfw-org :ensure calfw
-  :custom (cfw:org-overwrite-default-keybinding t)
-  :bind
-  ("C-c o c" . cfw:open-org-calendar)
-  (:map cfw:calendar-mode-map ("<return>" . cfw:org-open-agenda-day)))
-
-(use-package calfw
-  :quelpa (calfw :fetcher github :repo "furkanusta/emacs-calfw"))
 
 (use-package side-notes
   :custom
@@ -471,8 +437,6 @@ With a prefix ARG, remove start location."
   :bind (("C-c o h" . hlt-general)
          ("C-c o H" . hlt-unhighlight-region)))
 
-(use-package ox-gfm)
-
 (use-package ox-pandoc)
 
 (use-package org-pandoc-import
@@ -482,24 +446,6 @@ With a prefix ARG, remove start location."
            :files ("*.el" "filters" "preprocessors")))
 
 (use-package org-web-tools)
-
-(use-package ein)
-
-;; (use-package ob-ein :ensure ein)
-
-(use-package jupyter)
-
-(use-package code-cells
-  :bind
-  (:map code-cells-mode-map
-        ("C-c C-C" . code-cells-eval)
-        ("C-c C-p" . code-cells-backward-cell)
-        ("C-c C-n" . code-cells-forward-cell)))
-
-(use-package ox-ipynb
-  :quelpa (ox-ipynb :fetcher github :repo "jkitchin/ox-ipynb"))
-
-(use-package org-habit :ensure org)
 
 (use-package org-agenda-property
   :custom (org-agenda-property-list '(LOCATION)))
@@ -530,38 +476,9 @@ With a prefix ARG, remove start location."
 
 (use-package ox-hugo)
 
-;; (use-package orgtbl-aggregate)
-;; (use-package orgtbl-join)
-;; ;; (use-package orgtbl-edit)
-;; (use-package mysql-to-org)
-;; (use-package ob-sql-mode)
-;; (use-package ox-timeline)
-;; (use-package org-board)
-;; (use-package org-reverse-datetree)
-
-;; (use-package ob-blockdiag)
-;; (use-package ob-mermaid)
-;; (use-package ob-diagrams)
-;; (use-package ob-napkin)
-;; (use-package ob-reticulate)
-;; (use-package axiom-environment)
-
-;; (use-package org-clock-convenience)
-;; (use-package ox-report)
-
-;; (use-package org-babel-eval-in-repl)
-
 (use-package org-latex-impatient
   :custom
   (org-latex-impatient-tex2svg-bin "/home/eksi/.local/prog/node_modules/mathjax-node-cli/bin/tex2svg"))
-
-(use-package org-time-budgets
-  :custom
-  (org-time-budgets '((:title "Business" :match "+business" :budget "30:00" :blocks (workday week))
-                      (:title "Sideprojects" :match "+personal+project" :budget "14:00" :blocks (day week))
-                      (:title "Practice Music" :match "+music+practice" :budget "2:55" :blocks (nil week))
-                      (:title "Exercise" :match "+exercise" :budget "5:15" :blocks (day))
-                      (:title "Language" :match "+lang" :budget "5:15" :blocks (day week)))))
 
 (use-package org-tanglesync
   :bind
@@ -588,13 +505,7 @@ With a prefix ARG, remove start location."
 (use-package org-clock-reminder
   :custom
   (org-clock-reminder-interval 1200)
-  ;; (setq org-clock-reminder-remind-inactivity 't)
   :config (org-clock-reminder-activate))
-
-;; (use-package ox-timeline)
-;; (use-package org-preview-html)
-;; (use-package org-reveal) ;; org-re-reveal
-;; (use-package ox-pandoc)
 
 (use-package org-elp
   :custom
@@ -603,11 +514,5 @@ With a prefix ARG, remove start location."
 
 (use-package org-autolist
   :hook (org-mode . org-autolist-mode))
-
-;; (use-package org-books
-;;   :custom
-;;   (org-books-add-to-top nil)
-;;   (org-books-file-depth 1)
-;;   (org-books-file (concat my-notes-directory "/Books.org")))
 
 (provide 'usta-org)
