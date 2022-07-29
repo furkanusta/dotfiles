@@ -19,26 +19,6 @@
               ("<M-up>" . drag-stuff-up)
               ("<M-down>" . drag-stuff-down)))
 
-(use-package frame-movement
-  :load-path "elisp/"
-  ;; :quelpa (frame-movement :fetcher github :repo "dfboyd/emacs-frame-movement")
-  :preface
-  (defun move-next-frame-or-window ()
-    (interactive)
-    (if (= (length (window-list)) 1)
-        (frame-movement/select-next-frame 1)
-      (other-window 1)))
-  (defun move-prev-frame-or-window ()
-    (interactive)
-    (if (= (length (window-list)) 1)
-        (frame-movement/select-prev-frame 1)
-      (other-window -11)))
-  :bind
-  ;; ("C-x o" . move-next-frame-or-window)
-  ;; ("C-x O" . move-prev-frame-or-window)
-  ("C-x 5 n" . frame-movement/select-next-frame)
-  ("C-x 5 p" . frame-movement/select-prev-frame))
-
 (use-package hungry-delete
   :custom
   (global-hungry-delete-mode 1)
@@ -91,25 +71,6 @@
   :bind
   ("C-c l o" . link-hint-open-link)
   ("C-c l c" . link-hint-copy-link))
-
-(use-package bm
-  :commands bm-buffer-save-all bm-repository-save
-  :after no-littering
-  :preface (defun bm-save-all ()
-             (progn (bm-buffer-save-all)
-                    (bm-repository-save)))
-  :init (setq bm-restore-repository-on-load t)
-  :custom
-  (bm-cycle-all-buffers t)
-  (bm-repository-file (concat no-littering-var-directory "bm-repository"))
-  (bm-buffer-persistence t)
-  :hook
-  ((after-init . bm-repository-load)
-   (kill-emacs . bm-save-all))
-  :bind
-  ("C-c b n" . bm-next)
-  ("C-c b p" . bm-previous)
-  ("C-c b b" . bm-toggle))
 
 (use-package beacon
   :custom

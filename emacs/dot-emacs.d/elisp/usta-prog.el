@@ -1,4 +1,5 @@
 ;; -*- lexical-binding: t; -*-
+
 (use-package prog-mode :ensure nil
   :preface
   (defun eos/previous-function ()
@@ -30,6 +31,8 @@
   :custom
   (projectile-mode 1)
   (projectile-enable-caching t)
+  (projectile-auto-discover nil)
+  (projectile-globally-ignored-file-suffixes '(".elc" ".pyc" ".o"))
   (projectile-switch-project-action 'my-open-readme)
   (projectile-known-projects-file (concat no-littering-var-directory "projectile-bookmarks.eld"))
   (projectile-sort-order 'recentf)
@@ -113,7 +116,7 @@
 (use-package magit-pretty-graph
   :quelpa (magit-pretty-graph :fetcher github :repo "georgek/magit-pretty-graph")
   :after magit
-  :functions magit-pg-repo
+  :commands magit-pg-repo
   :preface
   (defun magit-pretty-log ()
     (interactive)
@@ -244,7 +247,7 @@
 (use-package yasnippet-snippets)
 
 (use-package yasnippet
-  :custom (yas-global-mode 1)
+  :hook ((prog-mode org-mode) . yas-minor-mode)
   :bind (:map yas-minor-mode-map ("<tab>" . nil)))
 
 (use-package tramp

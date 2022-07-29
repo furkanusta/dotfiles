@@ -284,6 +284,8 @@ Use the filename relative to the current VC root directory."
         ("C-c o l" . goto-address-at-point)))
 
 (use-package bookmark
-  :hook (kill-emacs . bookmark-save))
+  :hook (kill-emacs . bookmark-save)
+  :custom
+  (bookmark-watch-bookmark-file 'silent))
 
 (provide 'usta-builtins)
