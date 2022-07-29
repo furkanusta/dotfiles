@@ -476,9 +476,9 @@
   :bind ("M-r" . vertico-repeat))
 
 (use-package consult-yasnippet
-  :load-path "~/Projects/Contribute/consult-yasnippet/"
   :custom
   (consult-yasnippet-use-thing-at-point t)
+  (consult-yasnippet-always-overwrite-thing-at-point t)
   :bind ("M-i" . consult-yasnippet)
   :config
   (consult-customize consult-yasnippet :preview-key '(:debounce 0.01 any)))
