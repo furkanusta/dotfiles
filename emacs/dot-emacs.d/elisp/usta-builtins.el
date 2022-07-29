@@ -110,7 +110,7 @@ Use the filename relative to the current VC root directory."
    ;; (before-save . delete-trailing-whitespace)
    (after-init . toggle-frame-maximized))
   :preface
-  (defvar my-dark-theme 'monokai)
+  (defvar my-dark-theme 'tangonov)
   (defvar my-light-theme 'leuven)
   (defvar my-active-theme my-dark-theme)
   (defun crm-indicator (args)

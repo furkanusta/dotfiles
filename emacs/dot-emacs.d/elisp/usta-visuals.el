@@ -57,9 +57,14 @@
 
 (use-package diminish)
 
-(use-package monokai-theme
+(use-package tangonov-theme
+  :after custom
   :defer nil
-  :init (load-theme 'monokai t))
+  :init (load-theme 'tangonov t))
+
+;; (use-package monokai-theme
+;;   :defer nil
+;;   :init (load-theme 'monokai t))
 
 (use-package popper
   :commands popper-select-popup-at-bottom

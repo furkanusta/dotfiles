@@ -31,7 +31,7 @@
         (forward-line 1)
         (org-cycle)
         (forward-line 3)
-        (insert "   #+begin_src bibtex\n" bibtex-entry "\n#+end_src")
+        (insert "   #+begin_src bibtex\n" bibtex-entry "\n   #+end_src")
         (org-edit-src-code)
         (org-edit-src-exit)
         (forward-line 2)
@@ -407,6 +407,13 @@ With a prefix ARG, remove start location."
 
 (use-package org-roam
   :init (setq org-roam-v2-ack t)
+  :preface
+  (defun org-roam-node-insert-immediate (arg &rest args)
+    (interactive "P")
+    (let ((args (cons arg args))
+          (org-roam-capture-templates (list (append (car org-roam-capture-templates)
+                                                    '(:immediate-finish t)))))
+      (apply #'org-roam-node-insert args)))
   :custom
   (org-roam-directory my-notes-directory)
   (org-roam-auto-replace-fuzzy-links nil)
@@ -418,6 +425,7 @@ With a prefix ARG, remove start location."
   ("C-c n f" . org-roam-node-find)
   ("C-c n g" . org-roam-graph)
   ("C-c n i" . org-roam-node-insert)
+  ("C-c n I" . org-roam-node-insert-immediate)
   ("C-c n c" . org-roam-capture)
   ;; Dailies
   ("C-c n j" . org-roam-dailies-capture-today)

@@ -46,7 +46,7 @@
   :commands persp-current-buffers
   :preface
   (defvar perspective-skip-ignore-list
-  '("*dashboard*" "*Messages*" "*Warnings*" "*elfeed-search*" "*Fd*" "*compilation*" "*Bufler*"))
+  '("*dashboard*" "*Messages*" "*Warnings*" "*elfeed-search*" "*Fd*" "*compilation*" "*Bufler*" "*Easy-hugo*"))
   (defvar perspective-skip-prefix-list '("magit-"))
   (defvar perspective-skip-ignore-prefix-list
   '("*vterm" "*scratch" "*shell" "*Customize" "*ielm*" "*helpful" "*org" "*ein" "*Org" "*Embark" "*cardboard" "*eww" "*sly"))
@@ -346,7 +346,7 @@
   :bind
   ("C-h D" . devdocs-lookup))
 
-(use-package fancy-compilation-mode
+(use-package fancy-compilation
   :hook (compilation-mode . fancy-compilation-mode))
 
 (use-package obvious
