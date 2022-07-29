@@ -20,8 +20,7 @@
 (use-package projectile
   :commands projectile-project-name projectile-project-root
   :preface (defun my-open-readme ()
-          (let* ((project-name (projectile-project-name))
-                 (project-root (projectile-project-root))
+          (let* ((project-root (projectile-project-root))
                  (project-files (directory-files project-root nil nil t))
                  (readme-files (seq-filter (lambda (file) (string-prefix-p "readme" file t)) project-files)))
             (if readme-files
@@ -50,7 +49,7 @@
   (defvar perspective-skip-prefix-list '("magit-"))
   (defvar perspective-skip-ignore-prefix-list
   '("*vterm" "*scratch" "*shell" "*Customize" "*ielm*" "*helpful" "*org" "*ein" "*Org" "*Embark" "*cardboard" "*eww" "*sly"))
-  (defun perspective-my-skip-buffer-p (window buffer burry-or-kill)
+  (defun perspective-my-skip-buffer-p (_ buffer _)
     (let ((name (buffer-name buffer)))
       (or
        (and
@@ -169,9 +168,11 @@
 
 (use-package vterm
   :commands (vterm-next-prompt vterm-prev-prompt)
+  :defines (vterm-mode-map vterm-copy-mode-map)
   :hook (vterm-mode . set-no-process-query-on-exit)
   :preface
-  (defun vterm-next-prompt () (interactive) (re-search-forward "\\] \\$ " nil 'move))
+  (defun vterm-next-prompt () (interactive)
+         (re-search-forward "\\] \\$ " nil 'move))
   (defun vterm-prev-prompt () (interactive)
          (move-beginning-of-line nil)
          (re-search-backward "\\] .*\\$ " nil 'move)
@@ -204,7 +205,7 @@
 (use-package compile :ensure nil
   :preface
   (make-variable-buffer-local 'my-compilation-start-time)
-  (defun my-compilation-start-hook (proc)
+  (defun my-compilation-start-hook (_)
     (setq my-compilation-start-time (current-time)))
   (defun my-compilation-finish-function (buf why)
     (let* ((elapsed  (time-subtract nil my-compilation-start-time))

@@ -54,7 +54,16 @@
   (bibtex-align-at-equal-sign t)
   (bibtex-dialect 'biblatex))
 
-(use-package biblio)
+(use-package biblio
+  :preface
+  (defun my-insert-bibtex-entry-doi (doi)
+    (interactive (list (read-string "DOI: ")))
+    (biblio-doi-forward-bibtex
+     (biblio-cleanup-doi doi)
+     (apply-partially
+      (lambda (buffer result)
+        (my-insert-bibtex-entry buffer (biblio-format-bibtex result biblio-bibtex-use-autokey)))
+      (current-buffer)))))
 
 (use-package ebib
   :custom

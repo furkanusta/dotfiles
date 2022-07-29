@@ -1,7 +1,8 @@
 ;; -*- lexical-binding: t; -*-
 
 (use-package vertico
-  :defines vertico-mode
+  :demand t
+  :defines vertico-mode actual-vertico-format-candidate
   :quelpa (vertico :fetcher github :repo "minad/vertico" :files ("*.el" "extensions/*.el"))
   :hook ((after-init . vertico-mode)
          (rfn-eshadow-update-overlay . vertico-directory-tidy)
@@ -50,20 +51,6 @@
                                                        #'consult-completion-in-region
                                                      #'completion--in-region)
                                                    args))))
-  :config
-  (advice-add #'vertico--arrange-candidates :around
-              (defun vertico-format-candidates+ (func)
-                (let ((hl-func (or (alist-get (vertico--metadata-get 'category)
-                                              +completion-category-hl-func-overrides)
-                                   #'identity)))
-                  (cl-letf* (((symbol-function 'actual-vertico-format-candidate)
-                              (symbol-function #'vertico--format-candidate))
-                             ((symbol-function #'vertico--format-candidate)
-                              (lambda (cand &rest args)
-                                (apply #'actual-vertico-format-candidate
-                                       (funcall hl-func cand) args))))
-                    (funcall func)))))
-  (add-to-list '+completion-category-hl-func-overrides `(command . ,#'+completion-category-highlight-commands))
   :bind
   (:map vertico-map
         ("M-q" . vertico-quick-insert)
@@ -74,12 +61,14 @@
 
 (use-package vertico-directory
   :ensure vertico
+  :demand t  
   :bind (:map vertico-map
               ("RET" . vertico-directory-enter)
               ("DEL" . vertico-directory-delete-char)
               ("M-DEL" . vertico-directory-delete-word)))
 
 (use-package orderless
+  :demand t  
   :preface
   ;; From doomemacs
   (defun vertico-orderless-dispatch (pattern _index _total)
@@ -114,8 +103,9 @@
   (set-face-attribute 'completions-first-difference nil :inherit nil))
 
 (use-package consult
-  :after projectile
+  :demand t
   :defines projectile-project-root
+  :functions consult-customize
   :hook
   ((completion-list-mode . consult-preview-at-point-mode)
    (minibuffer-setup . consult-initial-narrow))
@@ -215,6 +205,7 @@
   (define-key consult-narrow-map (vconcat consult-narrow-key "?") #'consult-narrow-help))
 
 (use-package consult-dir
+  :demand t  
   :preface
   (defun consult-dir--tramp-docker-hosts ()
     "Get a list of hosts from docker."
@@ -241,6 +232,7 @@
   :bind ("C-x C-d" . consult-dir))
 
 (use-package embark
+  :demand t  
   :after vertico
   :init
   (setq prefix-help-command #'embark-prefix-help-command)
@@ -272,7 +264,6 @@
   (defun embark-act-with-completing-read (&optional arg)
     (interactive "P")
     (let* ((embark-prompter 'embark-completing-read-prompter)
-           (act (propertize "Act" 'face 'highlight))
            (embark-indicators '(embark-minimal-indicator)))
       (embark-act arg)))
   :config
@@ -300,6 +291,7 @@
   :hook (embark-collect-mode . consult-preview-at-point-mode))
 
 (use-package marginalia
+  :demand t  
   :init (marginalia-mode)
   :custom
   (marginalia-align 'center)
@@ -364,101 +356,11 @@
   (add-to-list 'completion-at-point-functions
                (cape-super-capf #'cape-symbol #'cape-keyword #'cape-dabbrev)))
 
-
 (use-package kind-icon
   :after corfu
   :custom
   (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
   :config (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
-
-(use-package citar
-  :preface
-  (defun my-citar-open-current-resource (files notes)
-    "Open REFs of the node at point."
-    (interactive)
-    (if-let ((keys (when-let* ((prop (org-entry-get (point) "ROAM_REFS" t))
-                            (refs (when prop (split-string-and-unquote prop)))
-                            (oc-cites
-                             (seq-map (lambda (ref) (substring ref 7 (- (length ref) 1))) refs)))
-                  oc-cites))
-             (selected (let* ((actions (bound-and-true-p embark-default-action-overrides))
-                              (embark-default-action-overrides `((t . ,#'citar--open-resource) . ,actions)))
-                         (citar--select-resource keys
-                                                 :files files :notes notes :always-prompt nil))))
-        (progn
-          (when (= 1 (length (window-list)))
-            (split-window-horizontally))
-          (other-window 1)
-          (citar--open-resource (cdr selected) (car selected))
-          (when (eq 'file (car selected))
-            (pdf-view-fit-width-to-window)))
-      (user-error "No ROAM_REFS found")))
-  (defun my-citar-open-current-note () (interactive) (my-citar-open-current-resource nil t))
-  (defun my-citar-open-current-file () (interactive) (my-citar-open-current-resource t nil))
-  :custom
-  (citar-bibliography my-bibliographies)
-  (citar-open-note-function 'orb-citar-edit-note)
-  (citar-library-paths (list my-papers-directory))
-  (citar-at-point-function 'embark-act)
-  (citar-symbols
-   `((file ,(all-the-icons-octicon "file-pdf" :face 'all-the-icons-green :v-adjust -0.1) . " ")
-     (note ,(all-the-icons-material "speaker_notes" :face 'all-the-icons-blue :v-adjust -0.3) . " ")
-     (link ,(all-the-icons-octicon "link" :face 'all-the-icons-orange :v-adjust 0.01) . " ")))
-  (citar-symbol-separator " ")
-  :bind
-  ("C-c o b" . citar-open)
-  ("C-c o N" . citar-open-notes)
-  ("C-c o n" . my-citar-open-current-note)
-  ("C-c o p" . my-citar-open-current-file)
-  ("C-c o P" . citar-open-files))
-
-(use-package citar-embark
-  :no-require t
-  :ensure citar
-  :after embark
-  :preface
-  (defvar my-citar-embark-become-map
-    (let ((map (make-sparse-keymap)))
-      (define-key map (kbd "f") 'citar-open-library-files)
-      (define-key map (kbd "x") 'biblio-arxiv-lookup)
-      (define-key map (kbd "c") 'biblio-crossref-lookup)
-      (define-key map (kbd "i") 'biblio-ieee-lookup)
-      (define-key map (kbd "h") 'biblio-hal-lookup)
-      (define-key map (kbd "s") 'biblio-dissemin-lookup)
-      (define-key map (kbd "b") 'biblio-dblp-lookup)
-      (define-key map (kbd "o") 'biblio-doi-insert-bibtex)
-      map)
-    "Citar Embark become keymap for biblio lookup.")
-  (defun my-citar-embark-open-pdf (keys-entries)
-    (interactive (list (citar-select-refs :rebuild-cache current-prefix-arg)))
-    (let* ((entry (car keys-entries))
-           (key (car entry)))
-      (citar-file-open
-       (car
-        (citar-file--files-for-entry key nil citar-library-paths citar-file-extensions)))))
-  :config
-  (add-to-list 'embark-become-keymaps 'my-citar-embark-become-map)
-  (add-to-list 'embark-keymap-alist '(bib-reference . citar-map))
-  (add-to-list 'embark-keymap-alist '(citar-reference . citar-map))
-  (add-to-list 'embark-keymap-alist '(citation-key . citar-buffer-map))
-  :bind (:map citar-map
-              ("M-RET" . my-citar-embark-open-pdf)))
-
-(use-package citar-org-roam
-  :quelpa (citar-org-roam :fetcher github :repo "emacs-citar/citar-org-roam"))
-
-(use-package citar-org
-  :quelpa (citar-org :fetcher github :repo "bdarcus/citar" :files ("citar-org.el"))
-  :after (citar oc)
-  :custom
-  (org-cite-global-bibliography citar-bibliography)
-  (org-cite-insert-processor 'citar)
-  (org-cite-follow-processor 'citar)
-  (org-cite-activate-processor 'citar)
-  (citar-file-note-org-include '(org-id org-roam-ref))
-  :bind (("M-o" . org-open-at-point)
-         (:map org-mode-map ("C-c i c" . org-cite-insert))
-         (:map minibuffer-local-map ("M-b" . citar-insert-preset))))
 
 (use-package consult-flycheck
   :bind

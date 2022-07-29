@@ -59,7 +59,6 @@
 
 (use-package tangonov-theme
   :after custom
-  :defer nil
   :init (load-theme 'tangonov t))
 
 ;; (use-package monokai-theme
@@ -78,7 +77,7 @@
 
 (use-package helpful
   :commands (get-buffers-matching-mode helpful-first-buffer-p helpful-not-first-buffer-p)
-  :preface (defun alist-switch-or-pop (mode buf  &optional alist)
+  :preface (defun alist-switch-or-pop (mode buf  &optional _)
              (if (derived-mode-p mode)
                  (switch-to-buffer buf)
                (progn

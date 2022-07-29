@@ -15,8 +15,7 @@
                       (save-excursion
                         (with-temp-buffer
                           (insert bibtex-entry)
-                          (setq zxc bibtex-entry)
-                          (beginning-of-buffer)
+                          (goto-char (point-min))
                           (let* ((title (substring (cdr (assoc "title" (bibtex-parse-entry))) 1 -1))
                                  (title-single (string-replace "\n" " " title))
                                  (title-squeezed (replace-regexp-in-string " +" " " title-single)))
@@ -36,14 +35,6 @@
         (org-edit-src-exit)
         (forward-line 2)
         (insert "\n"))))
-  (defun my-insert-bibtex-entry-doi (doi)
-    (interactive (list (read-string "DOI: ")))
-    (biblio-doi-forward-bibtex
-     (biblio-cleanup-doi doi)
-     (apply-partially
-      (lambda (buffer result)
-        (my-insert-bibtex-entry buffer (biblio-format-bibtex result biblio-bibtex-use-autokey)))
-      (current-buffer))))
   (defun my-update-bib ()
     (interactive)
     (let ((buf (current-buffer))
@@ -213,7 +204,7 @@
                                                    (not org-noter-insert-note-no-questions)
                                                  org-noter-insert-note-no-questions))
            (org-pdftools-use-isearch-link t)
-           (org-pdftools-use-freestyle-annot t))
+           (org-pdftools-use-freepointer-annot t))
        (org-noter-insert-note (org-noter--get-precise-info)))))
   ;; fix https://github.com/weirdNox/org-noter/pull/93/commits/f8349ae7575e599f375de1be6be2d0d5de4e6cbf
   (defun org-noter-set-start-location (&optional arg)
@@ -312,6 +303,9 @@ With a prefix ARG, remove start location."
 
 (use-package shr-tag-pre-highlight
   :after shr
+  :functions (shr-tag-pre-highlight-fontify
+              shr-tag-pre-highlight--get-lang-mode
+              shr-tag-pre-highlight-guess-language-attr)
   :preface
   (defun shrface-shr-tag-pre-highlight (pre)
     "Highlighting code in PRE."
@@ -324,8 +318,9 @@ With a prefix ARG, remove start location."
            (lang (or (shr-tag-pre-highlight-guess-language-attr pre)
                      (let ((sym (language-detection-string code)))
                        (and sym (symbol-name sym)))))
-           (mode (and lang
-                      (shr-tag-pre-highlight--get-lang-mode lang))))
+           (mode (and lang (shr-tag-pre-highlight--get-lang-mode lang)))
+           (start)
+           (end))
       (shr-ensure-newline)
       (shr-ensure-newline)
       (setq start (point))
@@ -350,7 +345,7 @@ With a prefix ARG, remove start location."
   :custom
   (engine-mode t)
   (engine/browser-function 'eww-browse-url)
-  :preface
+  :init
   (defengine github "https://github.com/search?ref=simplesearch&q=%s")
   (defengine google "https://google.com/search?q=%s" :keybinding "g")
   (defengine wikipedia "http://www.wikipedia.org/search-redirect.php?language=en&go=Go&search=%s" :keybinding "w")
@@ -406,7 +401,6 @@ With a prefix ARG, remove start location."
   :bind ("C-c t n" . side-notes-toggle-notes))
 
 (use-package org-roam
-  :init (setq org-roam-v2-ack t)
   :preface
   (defun org-roam-node-insert-immediate (arg &rest args)
     (interactive "P")
@@ -430,7 +424,6 @@ With a prefix ARG, remove start location."
   ;; Dailies
   ("C-c n j" . org-roam-dailies-capture-today)
   :config
-  (org-roam-setup)
   (add-to-list 'completion-at-point-functions 'org-roam-complete-link-at-point)
   (require 'org-roam-protocol))
 
@@ -536,25 +529,27 @@ With a prefix ARG, remove start location."
 (use-package orgit-forge)
 
 (use-package ox-hugo)
-(use-package orgtbl-aggregate)
-(use-package orgtbl-join)
-;; (use-package orgtbl-edit)
-(use-package mysql-to-org)
-(use-package ob-sql-mode)
-(use-package ox-timeline)
-(use-package org-board)
-(use-package org-reverse-datetree)
 
-(use-package ob-blockdiag)
-(use-package ob-mermaid)
-(use-package ob-diagrams)
-(use-package ob-napkin)
-(use-package ob-reticulate)
-(use-package axiom-environment)
+;; (use-package orgtbl-aggregate)
+;; (use-package orgtbl-join)
+;; ;; (use-package orgtbl-edit)
+;; (use-package mysql-to-org)
+;; (use-package ob-sql-mode)
+;; (use-package ox-timeline)
+;; (use-package org-board)
+;; (use-package org-reverse-datetree)
 
-(use-package org-clock-convenience)
-(use-package ox-report)
-(use-package org-babel-eval-in-repl)
+;; (use-package ob-blockdiag)
+;; (use-package ob-mermaid)
+;; (use-package ob-diagrams)
+;; (use-package ob-napkin)
+;; (use-package ob-reticulate)
+;; (use-package axiom-environment)
+
+;; (use-package org-clock-convenience)
+;; (use-package ox-report)
+
+;; (use-package org-babel-eval-in-repl)
 
 (use-package org-latex-impatient
   :custom
@@ -589,17 +584,6 @@ With a prefix ARG, remove start location."
 
 ;; (use-package math-at-point
 ;;   :quelpa (math-at-point :fetcher github :repo "shankar2k/math-at-point"))
-
-(use-package org-mru-clock
-  :hook (minibuffer-setup . org-mru-clock-embark-minibuffer-hook)
-  :bind
-  (:map org-mode-map
-        ("C-c C-x i" . org-mru-clock-in)
-        ("C-c C-x C-j" . org-mru-clock-select-recent-task))
-  :custom
-  ;; (org-mru-clock-keep-formatting t)
-  ;; (org-mru-clock-predicate org-mru-clock-exclude-done-and-archived)
-  (org-mru-clock-how-many 100))
 
 (use-package org-clock-reminder
   :custom

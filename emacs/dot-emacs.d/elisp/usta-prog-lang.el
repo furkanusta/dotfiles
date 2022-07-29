@@ -133,6 +133,7 @@
 
 (use-package sly
   :config (sly-setup '(sly-fancy))
+  :functions sly-symbol-completion-mode sly-documentation-lookup
   :hook
   ((sly-mode . (lambda () (sly-symbol-completion-mode -1)))
    (sly-mode . smartparens-mode))

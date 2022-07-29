@@ -46,7 +46,7 @@ Use the filename relative to the current VC root directory."
         (exchange-point-and-mark))
     (setq end (line-end-position))
     (let ((region (buffer-substring-no-properties beg end)))
-      (dotimes (i arg)
+      (dotimes (_ arg)
         (goto-char end)
         (newline)
         (insert region)
@@ -55,7 +55,7 @@ Use the filename relative to the current VC root directory."
 
 (defun my-align-comments (beginning end)
   (interactive "*r")
-  (let (indent-tabs-mode align-to-tab-stop)
+  (let ((indent-tabs-mode 'align-to-tab-stop))
     (align-regexp beginning end "\\(\\s-*\\)//")))
 
 (defun kill-other-buffers ()

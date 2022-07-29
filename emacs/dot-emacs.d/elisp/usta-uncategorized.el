@@ -13,19 +13,6 @@
 (use-package alert
   :custom (alert-default-style 'libnotify))
 
-;; (use-package togetherly)
-
-(use-package crdt
-  :commands (crdt-connect crdt-share-buffer)
-  :quelpa (crdt :fetcher git :url "https://code.librehq.com/qhong/crdt.el"))
-
-;; (use-package emacs-everywhere
-;;   :preface (defun disable-modes ()
-;;              (setq hungry-delete-chars-to-skip " \t\r\f\v")
-;;              (beacon-mode -1)
-;;              (toggle-truncate-lines 1))
-;;   :hook (emacs-everywhere-mode . disable-modes))
-
 (use-package backup-walker)
 
 (use-package backups-mode
@@ -37,6 +24,7 @@
 (use-package transpose-mark)
 
 (use-package tiny
+  :functions (tiny-setup-default)
   :config (tiny-setup-default))
 
 (use-package ialign)
@@ -65,17 +53,6 @@
   ("\\.EPUB\\'" . nov-mode)
   :custom
   (nov-text-width nil))
-
-;; (use-package nov-xwidget
-;;   :quelpa (nov-xwidget :fetcher github :repo "chenyanming/nov-xwidget")
-;;   :after nov
-;;   :bind
-;;   (:map xwidget-webkit-mode-map
-;;         ("]" . nov-xwidget-next-document)
-;;         ("[" . nov-xwidget-previous-document)
-;;         ("t" . nov-xwidget-goto-toc))
-;;   (:map nov-mode-map
-;;         ("v" . nov-xwidget-view)))
 
 (use-package flyspell
   :hook ((text-mode org-mode) . flyspell-mode))
@@ -226,18 +203,6 @@
   :ensure detached
   :bind ([remap detached-open-session] . detached-consult-session))
 
-(use-package emms
-  :custom
-  (emms-source-file-default-directory "~/Music/")
-  :config
-  (require 'emms-setup)
-  (emms-all)
-  (emms-default-players)
-  (require 'emms-history)
-  (emms-history-load)
-  :bind
-  ("C-c m p". emms-pause))
-
 (use-package kmacro-x
   :custom
   (kmacro-x-atomic-undo-mode 1)
@@ -249,13 +214,5 @@
   ;; :custom
   ;; (auto-capitalize-words `("I" "English"))
   )
-
-;; Maybe implement the inverse. (Always concealed)
-;; (use-package conceal
-;;   :quelpa (conceal :fetcher github :repo "lepisma/conceal"))
-
-(use-package dwim-shell-command
-  ;; :quelpa (dwim-shell-command :fetcher github :repo "xenodium/dotsies" :files ("emacs/ar/dwim-shell-command.el"))
-  :load-path "elisp/")
 
 (provide 'usta-uncategorized)
