@@ -142,6 +142,7 @@ Use the filename relative to the current VC root directory."
                 read-buffer-completion-ignore-case t
                 font-use-system-font t)
   :custom
+  (initial-major-mode #'fundamental-mode)
   (version-control t)
   (delete-old-versions t)
   (calendar-week-start-day 1)
@@ -189,7 +190,15 @@ Use the filename relative to the current VC root directory."
   ([remap fill-paragraph] . endless/fill-or-unfill)
   (:map prog-mode-map ("<tab>" . indent-for-tab-command)))
 
+(use-package find-file
+  :ensure nil
+  :bind
+  ("C-c p a" . ff-find-other-file-other-window)
+  ("C-c p A" . ff-find-other-file))
+
 (use-package exec-path-from-shell
+  :custom
+  (exec-path-from-shell-arguments nil)
   :hook (after-init . exec-path-from-shell-initialize))
 
 ;; (use-package with-editor

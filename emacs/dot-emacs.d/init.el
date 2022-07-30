@@ -51,12 +51,6 @@
   '((display-buffer-use-some-window display-buffer-pop-up-window)
     (inhibit-same-window . t)))
 
-(set-face-attribute 'default nil
-                    :family "Source Code Pro"
-                    :height 100
-                    :weight 'medium
-                    :width 'normal)
-
 (require 'usta-builtins)
 (require 'usta-dired)
 (require 'usta-elfeed)

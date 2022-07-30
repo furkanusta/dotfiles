@@ -4,28 +4,10 @@
 (use-package transient-dwim
   :bind ("M-=" . transient-dwim-dispatch))
 
-(use-package screenshot
-  :quelpa (screenshot :fetcher github :repo "tecosaur/screenshot")
-  :custom
-  (screenshot-line-numbers t)
-  (screenshot-min-width 100))
-
 (use-package alert
   :custom (alert-default-style 'libnotify))
 
-(use-package backup-walker)
-
-(use-package backups-mode
-  :quelpa (backups-mode :fetcher github :repo "chadbraunduin/backups-mode")
-  :bind (:map backups-minor-mode-keymap ("C-x s B" . list-backups)))
-
-(use-package lively)
-
 (use-package transpose-mark)
-
-(use-package tiny
-  :functions (tiny-setup-default)
-  :config (tiny-setup-default))
 
 (use-package ialign)
 
@@ -42,10 +24,7 @@
   :demand t
   :bind ("C-r" . vr/replace))
 
-
 (use-package literate-calc-mode)
-
-(use-package fountain-mode)
 
 (use-package nov
   :mode
@@ -188,31 +167,6 @@
         ("C-+" . undo-tree-redo)
         ("C-_" . undo-tree-undo)))
 
-(use-package redacted)
-
 (use-package sudo-edit)
-
-(use-package piper
-  :quelpa (piper :fetcher gitlab :repo "howardabrams/emacs-piper"))
-
-(use-package detached
-  :init (detached-init)
-  :custom ((detached-show-output-on-attach t)))
-
-(use-package detached-consult
-  :ensure detached
-  :bind ([remap detached-open-session] . detached-consult-session))
-
-(use-package kmacro-x
-  :custom
-  (kmacro-x-atomic-undo-mode 1)
-  :bind ("C-c k" . kmacro-x-mc-region))
-
-(use-package auto-capitalize
-  :quelpa (auto-capitalize :fetcher github :repo "yuutayamada/auto-capitalize-el")
-  ;; :hook (text-mode . auto-capitalize-mode)
-  ;; :custom
-  ;; (auto-capitalize-words `("I" "English"))
-  )
 
 (provide 'usta-uncategorized)
