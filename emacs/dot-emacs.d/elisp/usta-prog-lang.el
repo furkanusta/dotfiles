@@ -160,8 +160,9 @@
   :hook
   ((prog-mode . smartparens-mode)
    (conf-mode . smartparens-mode)
+   (minibuffer-mode . smartparens-mode)
    (text-mode . smartparens-mode))
-  :init (require 'smartparens-config)
+  :config (require 'smartparens-config)
   :bind (:map smartparens-mode-map
               ("C-c l w" . sp-copy-sexp)
               ("C-c l b" . sp-backward-up-sexp)
