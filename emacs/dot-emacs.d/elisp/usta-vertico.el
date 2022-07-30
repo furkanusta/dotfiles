@@ -104,7 +104,7 @@
 
 (use-package consult
   :demand t
-  :defines projectile-project-root
+  :defines project-root project-current
   :functions consult-customize
   :hook
   ((completion-list-mode . consult-preview-at-point-mode)
@@ -144,7 +144,7 @@
       (consult-ripgrep default-directory (thing-at-point 'symbol))))
   (defun my-consult-ripgrep ()
     (interactive)
-    (consult-ripgrep (or (projectile-project-root) default-directory) (thing-at-point 'symbol)))
+    (consult-ripgrep (or (project-root (projet-current)) default-directory) (thing-at-point 'symbol)))
   :bind
   ;; ("C-c h" . consult-history)
   ;; ("C-c m" . consult-mode-command)
@@ -186,7 +186,6 @@
   :init
   (advice-add #'register-preview :override #'consult-register-window)
   :custom
-  (consult-project-root-function #'projectile-project-root)
   (register-preview-delay 0)
   (register-preview-function #'consult-register-format)
   (xref-show-xrefs-function #'consult-xref)
@@ -297,8 +296,7 @@
   (marginalia-align 'center)
   (marginalia-command-categories
    '((imenu . imenu)
-     (persp-switch-to-buffer . buffer)
-     (projectile-find-file . project-file))))
+     (persp-switch-to-buffer . buffer))))
 
 (use-package all-the-icons-completion
   :hook (marginalia-mode-hook . all-the-icons-completion-marginalia-setup)

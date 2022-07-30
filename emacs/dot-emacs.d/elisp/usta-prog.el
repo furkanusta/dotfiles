@@ -18,30 +18,58 @@
 (use-package highlight-numbers
   :hook (prog-mode . highlight-numbers-mode))
 
-(use-package projectile
-  :commands projectile-project-name projectile-project-root
+(use-package project
+  :ensure nil
   :preface (defun my-open-readme ()
-          (let* ((project-root (projectile-project-root))
-                 (project-files (directory-files project-root nil nil t))
-                 (readme-files (seq-filter (lambda (file) (string-prefix-p "readme" file t)) project-files)))
-            (if readme-files
-                (let ((readme-file (car readme-files)))
-                  (find-file (expand-file-name readme-file project-root)))
-              (find-file (expand-file-name "README.org" project-root)))))
+             (interactive)
+             (let* ((project-root (project-root (project-current)))
+                    (project-files (directory-files project-root nil nil t))
+                    (readme-files (seq-filter (lambda (file) (string-prefix-p "readme" file t)) project-files)))
+               (if readme-files
+                   (let ((readme-file (car readme-files)))
+                     (find-file (expand-file-name readme-file project-root)))
+                 (find-file (expand-file-name "README.org" project-root)))))
   :custom
-  (projectile-mode 1)
-  (projectile-enable-caching t)
-  (projectile-auto-discover nil)
-  (projectile-globally-ignored-file-suffixes '(".elc" ".pyc" ".o"))
-  (projectile-switch-project-action 'my-open-readme)
-  (projectile-known-projects-file (concat no-littering-var-directory "projectile-bookmarks.eld"))
-  (projectile-sort-order 'recentf)
-  (projectile-inedxing-method 'hybrid)
-  (projectile-dynamic-mode-line nil)
-  :bind-keymap ("C-c p" . projectile-command-map))
+  (project-switch-commands 'my-open-readme)
+  :bind-keymap ("C-c p" . project-prefix-map))
 
-(use-package persp-projectile
-  :bind (:map projectile-command-map ("p" . projectile-persp-switch-project)))
+;; Adapted from persp-projectile
+(use-package my-project-persp-bridge
+  :preface
+  (defun my-project-name (project)
+    (interactive (list (project-root (project-current))))
+    (file-name-nondirectory (directory-file-name project)))
+  (defun project-persp-switch-project (project-to-switch)
+  "Switch to a project or perspective we have visited before.
+If the perspective of corresponding project does not exist, this
+function will call `persp-switch' to create one and switch to
+that before `project-switch-project'
+
+Otherwise, this function calls `persp-switch' to switch to an
+existing perspective of the project unless we're already in that
+perspective."
+  (interactive (list (completing-read "Switch to project: " (project-known-project-roots))))
+  (let* ((name (my-project-name project-to-switch))
+         (persp (gethash name (perspectives-hash))))
+    (cond
+     ;; project-specific perspective already exists
+     ((and persp (not (equal persp (persp-curr))))
+      (persp-switch name))
+     ;; persp exists but not match with projectile-name
+     ((and persp (not (equal persp name)))
+      (persp-switch name)
+      (project-switch-project project-to-switch))
+     ;; project-specific perspective doesn't exist
+     ((not persp)
+      (let ((frame (selected-frame)))
+        (persp-switch name)
+        (project-switch-project project-to-switch)
+        ;; Clean up if we switched to a new frame. `helm' for one allows finding
+        ;; files in new frames so this is a real possibility.
+        (when (not (equal frame (selected-frame)))
+          (with-selected-frame frame
+            (persp-kill name))))))))
+  :bind ([remap project-switch-project] . project-persp-switch-project))
 
 (use-package perspective
   :hook (after-init . persp-mode)
@@ -120,7 +148,7 @@
   :preface
   (defun magit-pretty-log ()
     (interactive)
-    (magit-pg-repo (or (projectile-project-root) default-directory))
+    (magit-pg-repo (or (project-root (project-current)) default-directory))
     (with-current-buffer (get-buffer "*magit-prettier-graph*")
       (view-mode +1)))
   :init
@@ -154,26 +182,18 @@
   :after flycheck
   :custom (flycheck-pos-tip-mode 1))
 
-(use-package flymake)
-
-(use-package flymake-collection)
-
-(use-package flymake-cursor)
-
 (use-package evil-nerd-commenter
   :bind ("M-;" . evilnc-comment-or-uncomment-lines))
-
-
-(defun set-no-process-query-on-exit ()
-  (let ((proc (get-buffer-process (current-buffer))))
-    (when (processp proc)
-      (set-process-query-on-exit-flag proc nil))))
 
 (use-package vterm
   :commands (vterm-next-prompt vterm-prev-prompt)
   :defines (vterm-mode-map vterm-copy-mode-map)
   :hook (vterm-mode . set-no-process-query-on-exit)
   :preface
+  (defun set-no-process-query-on-exit ()
+  (let ((proc (get-buffer-process (current-buffer))))
+    (when (processp proc)
+      (set-process-query-on-exit-flag proc nil))))  
   (defun vterm-next-prompt () (interactive)
          (re-search-forward "\\] \\$ " nil 'move))
   (defun vterm-prev-prompt () (interactive)
@@ -346,7 +366,6 @@
 
 (use-package devdocs
   :hook (devdocs-mode . shrface-mode)
-  ;; (python-mode . (lambda () (setq-local devdocs-current-docs '("python~3.9"))))
   :bind
   ("C-h D" . devdocs-lookup))
 

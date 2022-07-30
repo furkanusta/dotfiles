@@ -63,7 +63,7 @@
 (use-package trashed)
 
 (use-package neotree
-  :after projectile
+  :after project
   :custom
   (neo-smart-open t)
   (neo-vc-integration nil)

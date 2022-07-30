@@ -10,33 +10,7 @@
    (org-mode . smartparens-mode))
   :preface
   (defvar org-capture-file (concat my-notes-directory "/Capture.org"))
-  (defun my-insert-bibtex-entry (buffer bibtex-entry)
-    (interactive)
-    (let* ((title (if bibtex-entry
-                      (save-excursion
-                        (with-temp-buffer
-                          (insert bibtex-entry)
-                          (goto-char (point-min))
-                          (let* ((title (substring (cdr (assoc "title" (bibtex-parse-entry))) 1 -1))
-                                 (title-single (string-replace "\n" " " title))
-                                 (title-squeezed (replace-regexp-in-string " +" " " title-single)))
-                            title-squeezed)))
-                    "Title")))
-      (with-current-buffer buffer
-        (if (= 1 (org-current-level))
-            (org-insert-subheading t)
-          (org-insert-heading t))
-        (insert title)
-        (org-id-get-create)
-        (forward-line 1)
-        (org-cycle)
-        (forward-line 3)
-        (insert "   #+begin_src bibtex\n" bibtex-entry "\n   #+end_src")
-        (org-edit-src-code)
-        (org-edit-src-exit)
-        (forward-line 2)
-        (insert "\n"))))
-  (defun my-update-bib ()
+  (defun my-update-all-bibs ()
     (interactive)
     (let ((buf (current-buffer))
           (files (f-glob "*.org")))
@@ -45,23 +19,6 @@
           (message "TANGLE: %s" file)
           (org-babel-tangle nil nil "bibtex")))
       (switch-to-buffer buf)))
-  (with-eval-after-load 'bibtex
-    (defun my-sync-bibtex-org-entry ()
-      (interactive)
-      (save-excursion
-        (call-interactively #'org-next-block)
-        (forward-line 1)
-        (let* ((entry (bibtex-parse-entry))
-               (key (cdr (assoc "=key=" entry)))
-               (title (substring (cdr (assoc "title" entry)) 1 -1))
-               (fixed-title (replace-regexp-in-string " +" " " (string-replace "\n" " " title))))
-          (org-set-property "ROAM_REFS" (format "[cite:@%s]" key))
-          (org-back-to-heading)
-          (forward-char 3)
-          (org-kill-line)
-          (insert fixed-title))
-        (forward-line 1)
-        (org-cycle))))
   :custom
   (org-modules (list 'ol-eww 'org-tempo 'ol-info 'ol-docview 'ol-bibtex 'ol-doi))
   (org-default-notes-file org-capture-file)
@@ -93,6 +50,67 @@
         ("C-c C-." . org-time-stamp-inactive)
         ("DEL" . org-delete-backward-char)
         ("M-q" . nil)))
+
+(use-package my-org-bibtex
+  :no-require t
+  :after (org bibtex)
+  :preface
+  (defun my-sync-bibtex-org-entry ()
+    (interactive)
+    (save-excursion
+      (call-interactively #'org-next-block)
+      (forward-line 1)
+      (let* ((entry (bibtex-parse-entry))
+             (key (cdr (assoc "=key=" entry)))
+             (title (substring (cdr (assoc "title" entry)) 1 -1))
+             (fixed-title (replace-regexp-in-string " +" " " (string-replace "\n" " " title))))
+        (org-set-property "ROAM_REFS" (format "[cite:@%s]" key))
+        (org-back-to-heading)
+        (forward-char 3)
+        (org-kill-line)
+        (insert fixed-title))
+      (forward-line 1)
+      (org-cycle))))
+
+(use-package my-org-biblio
+  :no-require t
+  :after (org biblio)
+  :preface
+  (defun my-insert-bibtex-entry (buffer bibtex-entry)
+    (interactive)
+    (let* ((title (if bibtex-entry
+                      (save-excursion
+                        (with-temp-buffer
+                          (insert bibtex-entry)
+                          (goto-char (point-min))
+                          (let* ((title (substring (cdr (assoc "title" (bibtex-parse-entry))) 1 -1))
+                                 (title-single (string-replace "\n" " " title))
+                                 (title-squeezed (replace-regexp-in-string " +" " " title-single)))
+                            title-squeezed)))
+                    "Title")))
+      (with-current-buffer buffer
+        (if (= 1 (org-current-level))
+            (org-insert-subheading t)
+          (org-insert-heading t))
+        (insert title)
+        (org-id-get-create)
+        (forward-line 1)
+        (org-cycle)
+        (forward-line 3)
+        (insert "   #+begin_src bibtex\n" bibtex-entry "\n   #+end_src")
+        (org-edit-src-code)
+        (org-edit-src-exit)
+        (forward-line 2)
+        (insert "\n"))))
+  (defun my-insert-bibtex-entry-doi (doi)
+    (interactive (list (read-string "DOI: ")))
+    (require 'biblio)
+    (biblio-doi-forward-bibtex
+     (biblio-cleanup-doi doi)
+     (apply-partially
+      (lambda (buffer result)
+        (my-insert-bibtex-entry buffer (biblio-format-bibtex result biblio-bibtex-use-autokey)))
+      (current-buffer)))))
 
 (use-package ob-async)
 

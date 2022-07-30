@@ -2,7 +2,7 @@
 # name: namespace
 # key: ns
 # --
-namespace ${1:`(projectile-project-name)`} {
+namespace ${1:`(my-project-name)`} {
 
           `yas/selected-text`$0
 
