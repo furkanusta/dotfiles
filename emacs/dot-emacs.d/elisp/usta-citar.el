@@ -82,8 +82,6 @@
   (org-cite-follow-processor 'citar)
   (org-cite-activate-processor 'citar)
   (citar-file-note-org-include '(org-id org-roam-ref))
-  :bind (("M-o" . org-open-at-point)
-         (:map org-mode-map ("C-c i c" . org-cite-insert))
-         (:map minibuffer-local-map ("M-b" . citar-insert-preset))))
+  :bind (:map org-mode-map ("C-c i c" . org-cite-insert)))
 
 (provide 'usta-citar)

@@ -9,26 +9,27 @@
          (vertico-mode . minibuffer-vertico-setup)
          (minibuffer-setup . minibuffer-vertico-setup))
   :preface
-  (require 'dired)
-  (defvar +completion-category-hl-func-overrides
-    `((file . ,#'+completion-category-highlight-files))
-    "Alist mapping category to highlight functions.")
+  (defun my-vertico-insert-and-exit ()
+    (interactive)
+    (progn
+      (vertico-insert)
+      (exit-minibuffer)))
+  ;; Customize highlighting based on completion-category
+  ;; Distinguish directories
+  (require 'dired)  
   (defun +completion-category-highlight-files (cand)
     (let ((len (length cand)))
       (when (and (> len 0)
                  (eq (aref cand (1- len)) ?/))
         (add-face-text-property 0 len 'dired-directory 'append cand)))
     cand)
-  (defun my-vertico-insert-and-exit ()
-    (interactive)
-    (progn
-      (vertico-insert)
-      (exit-minibuffer)))
+  ;; Make enabled modes blue
   (defun auto-minor-mode-enabled-p (minor-mode)
     "Return non-nil if MINOR-MODE is enabled in the current buffer."
     (and (memq minor-mode minor-mode-list)
          (symbol-value minor-mode)))
   (defun +completion-category-highlight-commands (cand)
+    (message "HERE: %s" cand)
     (let ((len (length cand)))
       (when (and (> len 0)
                  (with-current-buffer (nth 1 (buffer-list))
@@ -42,6 +43,25 @@
           (if vertico-mode
               #'consult-completion-in-region
             #'completion--in-region)))
+  (defvar +completion-category-hl-func-overrides
+    `((file . ,#'+completion-category-highlight-files)
+      (command . ,#'+completion-category-highlight-commands))
+    "Alist mapping category to highlight functions.")
+  ;; Pre-select previous directory when entering parent directory from within find-file
+  (defvar previous-directory nil
+    "The directory that was just left. It is set when leaving a directory and
+    set back to nil once it is used in the parent directory.")
+  (defun set-previous-directory (&optional N)
+    "Set the directory that was just exited from within find-file."
+    (save-excursion
+      (goto-char (1- (point)))
+      (when (search-backward "/" (minibuffer-prompt-end) t)
+        ;; set parent directory
+        (setq previous-directory (buffer-substring (1+ (point)) (point-max)))
+        ;; set back to nil if not sorting by directories or what was deleted is not a directory
+        (when (not (string-suffix-p "/" previous-directory))
+          (setq previous-directory nil))
+        t)))
   :custom ((vertico-resize 'grow)
            (vertico-count 15)
            (vertico-cycle t)
@@ -51,6 +71,27 @@
                                                        #'consult-completion-in-region
                                                      #'completion--in-region)
                                                    args))))
+  :config
+  (advice-add #'vertico-directory-up :before #'set-previous-directory)
+  (define-advice vertico--update-candidates (:after (&rest _) choose-candidate)
+    "Pick the previous directory rather than the prompt after updating candidates."
+    (cond
+     (previous-directory ; select previous directory
+      (setq vertico--index (or (seq-position vertico--candidates previous-directory)
+                               vertico--index))
+      (setq previous-directory nil))))
+  (advice-add #'vertico--arrange-candidates :around
+            (defun vertico-format-candidates+ (func)
+              (let ((hl-func (or (alist-get (vertico--metadata-get 'category)
+                                            +completion-category-hl-func-overrides)
+                                 #'identity)))
+                (cl-letf* (((symbol-function 'actual-vertico-format-candidate)
+                            (symbol-function #'vertico--format-candidate))
+                           ((symbol-function #'vertico--format-candidate)
+                            (lambda (cand &rest args)
+                              (apply #'actual-vertico-format-candidate
+                                     (funcall hl-func cand) args))))
+                  (funcall func)))))
   :bind
   (:map vertico-map
         ("M-q" . vertico-quick-insert)
@@ -95,7 +136,7 @@
   :custom
   (orderless-matching-styles '(orderless-regexp))
   (orderless-style-dispatchers '(vertico-orderless-dispatch))
-  (completion-styles '(substring orderless basic))
+  (completion-styles '(orderless basic))
   (completion-category-defaults nil)
   (completion-category-overrides '((file (styles . (orderless partial-completion)))))
   ;; (orderless-matching-styles  '(orderless-literal orderless-prefixes))
@@ -144,9 +185,10 @@
       (consult-ripgrep default-directory (thing-at-point 'symbol))))
   (defun my-consult-ripgrep ()
     (interactive)
-    (consult-ripgrep (or (project-root (projet-current)) default-directory) (thing-at-point 'symbol)))
+    (consult-ripgrep (or (project-root (project-current)) default-directory) (thing-at-point 'symbol)))
   :bind
   ;; ("C-c h" . consult-history)
+  ("C-x B" . consult-project-buffer)
   ;; ("C-c m" . consult-mode-command)
   ("M-g b" . consult-bookmark)
   ;; ("C-c k" . consult-kmacro)
