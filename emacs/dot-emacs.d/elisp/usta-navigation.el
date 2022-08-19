@@ -84,6 +84,7 @@
   :custom
   (goggles-pulse t))
 
+
 (use-package ctrlf
   :custom
   (ctrlf-mode 1)
@@ -92,6 +93,23 @@
   (:map ctrlf-minibuffer-mode-map
         ("C-s" . ctrlf-forward-default)
         ("C-r" . ctrlf-backward-default)))
+
+
+(use-package ibuffer-projectile
+  :commands (ibuffer-projectile-set-filter-groups ibuffer-projectile-generate-filter-groups)
+  :init
+  (defun j-ibuffer-projectile-run ()
+    "Set up `ibuffer-projectile'."
+    (ibuffer-projectile-set-filter-groups)
+    (unless (eq ibuffer-sorting-mode 'alphabetic)
+      (ibuffer-do-sort-by-alphabetic)))
+  (add-hook 'ibuffer-sidebar-mode-hook #'j-ibuffer-projectile-run)
+  (add-hook 'ibuffer-hook #'j-ibuffer-projectile-run)
+  :config (setq ibuffer-projectile-prefix "Project: "))
+
+(use-package ibuffer-sidebar
+  :commands (ibuffer-sidebar-toggle-sidebar)
+  :bind ("C-c t b" . ibuffer-sidebar-toggle-sidebar))
 
 (use-package all-the-icons-ibuffer
   :init (all-the-icons-ibuffer-mode 1))

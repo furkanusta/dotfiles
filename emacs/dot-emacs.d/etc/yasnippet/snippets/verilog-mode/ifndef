@@ -10,7 +10,7 @@
                     "_"
                     (file-relative-name
                         buffer-file-name
-                        (project-root (project-current))))))`}
+                        (projectile-project-root)))))`}
 \`define $1
 
 $0
