@@ -54,7 +54,11 @@
   :custom
   (doom-modeline-mode 1)
   (doom-modeline-icon t)
-  (doom-modeline-buffer-encoding nil))
+  (doom-modeline-buffer-encoding 'nondefault)
+  :init
+  (doom-modeline-def-modeline 'main
+    '(bar workspace-name window-number buffer-info remote-host buffer-position word-count selection-info)
+    '(misc-info persp-name grip irc github debug repl lsp indent-info buffer-encoding process vcs checker time)))
 
 (use-package diminish)
 

@@ -22,7 +22,7 @@
   :custom
   (org-modules (list 'ol-eww 'org-tempo 'ol-info 'ol-docview 'ol-bibtex 'ol-doi))
   (org-default-notes-file org-capture-file)
-  (org-startup-folded 'content)
+  ;; (org-startup-folded 'content)
   (org-adapt-indentation t)
   (org-catch-invisible-edits 'show-and-error)
   (org-cycle-separator-lines 0)
@@ -412,7 +412,7 @@ With a prefix ARG, remove start location."
   (require 'org-roam-protocol))
 
 (use-package org-roam-bibtex
-  :after org-roam org-ref
+  :after org-roam
   :preface
   (defun my-org-roam-bibtex-fix-property ()
     (interactive)
@@ -423,8 +423,7 @@ With a prefix ARG, remove start location."
       (org-set-property "ROAM_REFS"
                         (concat "[cite:@"
                                 (buffer-substring (search-forward "{") (1- (search-forward ",")))
-                                "]"))))
-  :config (require 'org-ref))
+                                "]")))))
 
 (use-package org-roam-ui
   :quelpa (org-roam-ui :fetcher github :repo "org-roam/org-roam-ui")

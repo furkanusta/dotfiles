@@ -67,6 +67,7 @@
      ("https://old.reddit.com/r/programming/top.rss?t=week" prog)
      ("https://old.reddit.com/r/selfhosted/top.rss?t=month" prog)
      ("https://old.reddit.com/r/commandline/top.rss?t=month" prog)
+     ("https://old.reddit.com/r/dataisbeautiful/top.rss?t=month" other)
      ;; ("https://old.reddit.com/r/simpleprompts/top.rss?t=week" writing)
      ;; ("https://old.reddit.com/r/promptoftheday/top.rss?t=week" writing)
      ;; ("https://old.reddit.com/r/askhistorians/top.rss?t=month" hist)

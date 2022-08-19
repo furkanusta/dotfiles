@@ -32,3 +32,5 @@
     colorMoved = default
 [gc]
 	auto = 0
+[push]
+	default = current

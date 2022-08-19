@@ -63,6 +63,7 @@
       (define-key map (kbd "o") 'biblio-doi-insert-bibtex)
       map))
   :config
+  (citar-embark-mode)
   (add-to-list 'embark-become-keymaps 'my-citar-embark-become-map)
   (add-to-list 'embark-keymap-alist '(bib-reference . citar-map))
   (add-to-list 'embark-keymap-alist '(citar-reference . citar-map))
@@ -71,7 +72,8 @@
               ("M-RET" . my-citar-embark-open-pdf)))
 
 (use-package citar-org-roam
-  :quelpa (citar-org-roam :fetcher github :repo "emacs-citar/citar-org-roam"))
+  :quelpa (citar-org-roam :fetcher github :repo "emacs-citar/citar-org-roam")
+  :hook (org-roam-mode . citar-org-roam-mode))
 
 (use-package citar-org
   :quelpa (citar-org :fetcher github :repo "bdarcus/citar" :files ("citar-org.el"))

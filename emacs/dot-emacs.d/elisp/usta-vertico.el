@@ -29,7 +29,6 @@
     (and (memq minor-mode minor-mode-list)
          (symbol-value minor-mode)))
   (defun +completion-category-highlight-commands (cand)
-    (message "HERE: %s" cand)
     (let ((len (length cand)))
       (when (and (> len 0)
                  (with-current-buffer (nth 1 (buffer-list))
@@ -185,7 +184,7 @@
       (consult-ripgrep default-directory (thing-at-point 'symbol))))
   (defun my-consult-ripgrep ()
     (interactive)
-    (consult-ripgrep (or (project-root (project-current)) default-directory) (thing-at-point 'symbol)))
+    (consult-ripgrep (and (project-current) (project-root (project-current)) default-directory) (thing-at-point 'symbol)))
   :bind
   ;; ("C-c h" . consult-history)
   ("C-x B" . consult-project-buffer)
