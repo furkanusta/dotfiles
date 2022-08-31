@@ -282,8 +282,8 @@ field that the can be jumped to upon further expansion."
   (defun pyvenv-try-activate ()
     (pyvenv-mode t)
     (if (not pyvenv-virtual-env)
-        (pyvenv-activate (concat (projectile-project-root) "venv"))
-        (pyvenv-activate (concat (projectile-project-root) ".venv")))
+        (pyvenv-activate (concat (project-root (project-current)) "venv"))
+        (pyvenv-activate (concat (project-root (project-current)) ".venv")))
     (if (not pyvenv-virtual-env)
         (pyvenv-activate (read-directory-name "Activate venv: " nil nil nil
 					                          pyvenv-default-virtual-env-name)))))
@@ -293,7 +293,7 @@ field that the can be jumped to upon further expansion."
   (:map python-mode-map
         ("C-c C-i" . pyinspect-inspect-at-point)))
 
-(use-package python-pytest)
+;; (use-package python-pytest) ;; Require projectile
 
 (use-package py-isort
   :hook (before-save . py-isort-before-save))

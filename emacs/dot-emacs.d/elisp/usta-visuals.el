@@ -5,7 +5,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (use-package dashboard
-  :if (or (processp server-process) (= (length command-line-args) 1))
+  :if (processp server-process)
   :hook (dashboard-mode . page-break-lines-mode)
   :commands dashboard-insert-section dashboard-insert-heading dashboard-subseq
   :preface (defun dashboard-insert-scratch (list-size)
@@ -40,8 +40,8 @@
   (dashboard-set-heading-icons t)
   (dashboard-set-file-icons t)
   (dashboard-page-separator "\n\f\n")
-  (dashboard-projects-backend 'projectile)
-  (dashboard-projects-switch-function 'projectile-persp-switch-project)
+  (dashboard-projects-backend 'project-el)
+  (dashboard-projects-switch-function 'project-persp-switch-project)
   (dashboard-items '((scratch . 6)
                      (recents  . 5)
                      (bookmarks . 5)
@@ -65,10 +65,6 @@
 (use-package tangonov-theme
   :after custom
   :init (load-theme 'tangonov t))
-
-;; (use-package monokai-theme
-;;   :defer nil
-;;   :init (load-theme 'monokai t))
 
 (use-package popper
   :commands popper-select-popup-at-bottom
@@ -100,7 +96,6 @@
   :custom (helpful-max-buffers 5))
 
 (use-package window-margin
-;;   :hook (org-mode . window-margin-mode)
   :quelpa (window-margin :fetcher github :repo "aculich/window-margin.el"))
 
 (provide 'usta-visuals)

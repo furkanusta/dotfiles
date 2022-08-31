@@ -5,14 +5,14 @@
 #ifndef ${1:`
         (upcase
             (concat
-                (replace-regexp-in-string " \\|\\-" "_" (projectile-project-name))
+                (replace-regexp-in-string " \\|\\-" "_" (my-project-name))
                 "_"
                 (replace-regexp-in-string
                     "/\\|\\.\\|\\-"
                     "_"
                     (string-remove-prefix "include/" (file-relative-name
                         buffer-file-name
-                            (projectile-project-root))))))`}
+                            (project-root (project-current)))))))`}
 #define $1
 
 $0
