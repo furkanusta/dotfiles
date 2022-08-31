@@ -114,7 +114,10 @@ Use the filename relative to the current VC root directory."
   (defvar my-light-theme 'leuven)
   (defvar my-active-theme my-dark-theme)
   (defun crm-indicator (args)
-    (cons (concat "[CRM] " (car args)) (cdr args)))  
+    (cons (concat "[CRM] " (car args)) (cdr args)))
+  (defun my-previous-window ()
+    (interactive)
+    (other-window -1))
   :init
   (fset 'yes-or-no-p 'y-or-n-p)
   (global-unset-key (kbd "C-x c"))
@@ -187,8 +190,10 @@ Use the filename relative to the current VC root directory."
   ("M-k" . kill-whole-line)
   ("C-x C-f" . find-file-at-point)
   ("RET" . newline-and-indent)
+  ("C-x O" . my-previous-window)
   ([remap fill-paragraph] . endless/fill-or-unfill)
   (:map prog-mode-map ("<tab>" . indent-for-tab-command)))
+
 
 (use-package find-file
   :ensure nil

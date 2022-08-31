@@ -43,8 +43,13 @@
   (org-src-preserve-indentation nil)
   (org-src-tab-acts-natively t)
   (org-yank-adjusted-subtrees t)
+  (org-export-with-todo-keywords nil)
+  (org-export-with-tag nil)
+  (org-latex-listings 'minted)
   (org-todo-keywords '((sequence "TODO" "IN-PROGRESS" "NEXT" "|" "DONE")
                        (sequence "PAUSED" "SCHEDULED" "WAITING" "|" "CANCELLED")))
+  :config
+  (add-to-list 'org-latex-packages-alist '("" "minted"))
   :bind
   (:map org-mode-map
         ("C-c C-." . org-time-stamp-inactive)
@@ -502,8 +507,8 @@ With a prefix ARG, remove start location."
   (( "C-c M-i" . org-tanglesync-process-buffer-interactive)
    ( "C-c M-a" . org-tanglesync-process-buffer-automatic)))
 
-;; (use-package notebook
-;;   :quelpa (notebook :fetcher github :repo "rougier/notebook-mode"))
+(use-package notebook
+  :quelpa (notebook :fetcher github :repo "rougier/notebook-mode"))
 
 ;; (use-package org-view-mode
 ;;   :quelpa (org-view-mode :fetcher github :repo "amno1/org-view-mode"))
@@ -512,6 +517,12 @@ With a prefix ARG, remove start location."
 ;;   :quelpa (org-bib :fetcher github :repo "rougier/org-bib-mode")
 ;;   :custom
 ;;   (org-bib-library-paths my-papers-directory))
+
+;; (use-package org-imenu
+;;   :quelpa (org-imenu :fetcher github :repo "rougier/org-imenu"))
+
+;; (use-package pdf-drop
+;;   :quelpa (pdf-drop :fetcher github :repo "rougier/pdf-drop-mode"))
 
 (use-package orgdiff
   :quelpa (orgdiff :fetcher github :repo "tecosaur/orgdiff"))
@@ -531,5 +542,27 @@ With a prefix ARG, remove start location."
 
 (use-package org-autolist
   :hook (org-mode . org-autolist-mode))
+
+(use-package org-books
+  :custom
+  (org-books-add-to-top nil)
+  (org-books-file-depth 1)
+  (org-books-file (concat my-notes-directory "/Books.org")))
+
+(use-package ein)
+
+(use-package code-cells
+  :config
+  (let ((map code-cells-mode-map))
+      (define-key map "n" (code-cells-speed-key 'code-cells-forward-cell))
+      (define-key map "p" (code-cells-speed-key 'code-cells-backward-cell))
+      (define-key map "e" (code-cells-speed-key 'code-cells-eval))
+      (define-key map "RET" (code-cells-speed-key 'code-cells-eval))
+      (define-key map (kbd "TAB") (code-cells-speed-key 'outline-cycle)))
+  :bind
+  (:map code-cells-mode-map
+        ("C-c n" . code-cells-forward-cell)
+        ("C-c p" . code-cells-backward-cell)
+        ("M-RET" . code-cells-eval)))
 
 (provide 'usta-org)

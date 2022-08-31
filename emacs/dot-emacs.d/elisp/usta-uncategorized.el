@@ -115,6 +115,7 @@
   (:map pdf-view-mode-map
         ("M-w" . pdf-view-kill-ring-save)
         ("o" . pdf-outline)
+        ("O" . pdf-occur)
         ("M-g M-g" . pdf-view-goto-page)
         ("S-SPC" . pdf-view-scroll-down-or-previous-page))
   (:map org-mode-map
@@ -154,18 +155,25 @@
   :hook (pdf-view-mode . pdf-view-restore-mode)
   :custom (pdf-view-restore-filename (concat no-littering-var-directory "pdf-view-restore")))
 
-(use-package undo-tree
+;; (use-package undo-tree
+;;   :custom
+;;   (global-undo-tree-mode t)
+;;   (undo-tree-visualizer-timestamps t)
+;;   (undo-tree-visualizer-diff t)
+;;   (undo-tree-auto-save-history t)
+;;   (undo-tree-enable-undo-in-region t)
+;;   (undo-tree-incompatible-major-modes '(elfeed-search-mode elfeed-entry-mode term-mode vterm-mode fundamental-mode))
+;;   :bind
+;;   (:map undo-tree-map
+;;         ("C-+" . undo-tree-redo)
+;;         ("C-_" . undo-tree-undo)))
+
+(use-package vundo
+  :load-path "elisp/"
+  :demand t
+  :defer nil
   :custom
-  (global-undo-tree-mode t)
-  (undo-tree-visualizer-timestamps t)
-  (undo-tree-visualizer-diff t)
-  (undo-tree-auto-save-history t)
-  (undo-tree-enable-undo-in-region t)
-  (undo-tree-incompatible-major-modes '(elfeed-search-mode elfeed-entry-mode term-mode vterm-mode fundamental-mode))
-  :bind
-  (:map undo-tree-map
-        ("C-+" . undo-tree-redo)
-        ("C-_" . undo-tree-undo)))
+  (vundo-glyph-alist vundo-unicode-symbols))
 
 (use-package sudo-edit)
 

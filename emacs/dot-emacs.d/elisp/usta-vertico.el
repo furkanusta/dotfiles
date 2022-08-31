@@ -224,8 +224,8 @@
         ("M-s e" . consult-isearch)
         ("M-s l" . consult-line)
         ("M-s L" . consult-line-multi))
-  :init
-  (advice-add #'register-preview :override #'consult-register-window)
+  ;; :init
+  ;; (advice-add #'register-preview :override #'consult-register-window)
   :custom
   (consult-project-root-function #'projectile-project-root)
   (register-preview-delay 0)

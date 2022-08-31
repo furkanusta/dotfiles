@@ -161,7 +161,14 @@
               ("M-g M-D" . dogears-sidebar)))
 
 (use-package winner
-  :hook (after-init . winner-mode))
+  :hook (after-init . winner-mode)
+  ;; :hydra
+  ;; (hydra-winner-mode
+  ;;  (global-map "C-c <left>")
+  ;;  "Winner Mode"
+  ;;  ("<left>" winner-undo "winner-undo")
+  ;;  ("<right>" winner-redo "winner-redo"))
+  )
 
 (use-package buffer-expose)
 

@@ -7,15 +7,15 @@
 (use-package cc-mode :ensure nil
   :mode ("\\.h\\'" . c++-mode)
   :custom
-  (c-offsets-alist '((innamespace . 0)
-                     (inline-open 0)
-                     (access-label 0)
-                     (substatement-open . 0)))
   (c-default-style '((java-mode . "java")
                      (awk-mode . "awk")
                      (other . "stroustrup")))
   (c-basic-offset 4)
-  (c-noise-macro-names '("constexpr")))
+  (c-noise-macro-names '("constexpr"))
+  :config
+  (c-set-offset 'innamespace 0)
+  (c-set-offset 'inline-open 0)
+  (c-set-offset 'access-label -4))
 
 (use-package modern-cpp-font-lock
   :hook (c++-mode . modern-c++-font-lock-mode))
@@ -63,7 +63,7 @@
              (ansi-color-apply-on-region (point-min) (point-max))
              (read-only-mode -1))
   :config (add-to-list 'comint-output-filter-functions 'ansi-color-process-output)
-  :custom (ansi-color-for-comint-mode 1))
+  :custom (ansi-color-for-comint-mode t))
 
 (use-package shell
   :after window

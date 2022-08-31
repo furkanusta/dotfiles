@@ -168,6 +168,15 @@
   :defines (vterm-mode-map vterm-copy-mode-map)
   :hook (vterm-mode . set-no-process-query-on-exit)
   :preface
+  (defun vterm-cd-other-buffer ()
+    (interactive)
+    (let* ((buffer (current-buffer))
+          (other-buffer (window-buffer (next-window)))
+          (directory (with-current-buffer other-buffer default-directory))
+          (cmd (concat "cd " directory))
+          )
+      (vterm-send-string cmd t)
+      (vterm-send-return)))  
   (defun set-no-process-query-on-exit ()
     (let ((proc (get-buffer-process (current-buffer))))
       (when (processp proc)
@@ -185,7 +194,9 @@
   :bind
   (:map vterm-mode-map
         ("C-y" . vterm-yank)
-        ("M-y" . vterm-yank-pop))
+        ("M-y" . vterm-yank-pop)
+        ("C-<return>" . vterm-cd-other-buffer)
+        ("C-S-<return>" . vterm-toggle-insert-cd))
   (:map vterm-copy-mode-map
         ("C-<" . vterm-prev-prompt)
         ("C->" . vterm-next-prompt)))
@@ -231,7 +242,8 @@
 
 (use-package repl-toggle
   :custom
-  (rtog/mode-repl-alist (list (cons 'emacs-lisp-mode  #'ielm)
+  (rtog/mode-repl-alist (list (cons 'emacs-lisp-mode #'ielm)
+                              (cons 'python-mode #'python-shell-switch-to-shell)
                               (cons 'tcl-mode #'(lambda () (call-interactively #'inferior-tcl)))))
   (rtog/goto-buffer-fun 'pop-to-buffer)
   :bind ("C-c C-z" . rtog/toggle-repl))
@@ -269,52 +281,52 @@
 
 (use-package which-key)
 
-(use-package lsp-mode
-  :hook
-  ((lsp-completion-mode . my/lsp-mode-setup-completion)
-   (lsp-completion-mode . (lambda ()
-                            (setq-local completion-at-point-functions (list (cape-capf-buster #'lsp-completion-at-point))))))
-  :custom
-  (lsp-completion-provider :none)
-  (lsp-auto-execute-action nil)
-  (lsp-before-save-edits nil)
-  (lsp-keymap-prefix "C-c C-l")
-  (lsp-enable-snippet t)
-  (lsp-enable-xref t)
-  (lsp-enable-imenu t)
-  (lsp-enable-indentation nil)
-  (lsp-enable-file-watchers nil)
-  (lsp-enable-text-document-color nil)
-  (lsp-enable-semantic-highlighting nil)
-  (lsp-enable-on-type-formatting nil)
-  (read-process-output-max (* 2 1024 1024))
-  (lsp-enable-on-type-formatting nil)
-  :preface
-  (defun my/orderless-dispatch-flex-first (_pattern index _total)
-    (and (eq index 0) 'orderless-flex))
-  (defun my/lsp-mode-setup-completion ()
-    (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
-          '(orderless)))
-  :init
-  (add-hook 'orderless-style-dispatchers #'my/orderless-dispatch-flex-first nil 'local)
-  :config
-  (lsp-enable-which-key-integration t))
+;; (use-package lsp-mode
+;;   :hook
+;;   ((lsp-completion-mode . my/lsp-mode-setup-completion)
+;;    (lsp-completion-mode . (lambda ()
+;;                             (setq-local completion-at-point-functions (list (cape-capf-buster #'lsp-completion-at-point))))))
+;;   :custom
+;;   (lsp-completion-provider :none)
+;;   (lsp-auto-execute-action nil)
+;;   (lsp-before-save-edits nil)
+;;   (lsp-keymap-prefix "C-c C-l")
+;;   (lsp-enable-snippet t)
+;;   (lsp-enable-xref t)
+;;   (lsp-enable-imenu t)
+;;   (lsp-enable-indentation nil)
+;;   (lsp-enable-file-watchers nil)
+;;   (lsp-enable-text-document-color nil)
+;;   (lsp-enable-semantic-highlighting nil)
+;;   (lsp-enable-on-type-formatting nil)
+;;   (read-process-output-max (* 2 1024 1024))
+;;   (lsp-enable-on-type-formatting nil)
+;;   :preface
+;;   (defun my/orderless-dispatch-flex-first (_pattern index _total)
+;;     (and (eq index 0) 'orderless-flex))
+;;   (defun my/lsp-mode-setup-completion ()
+;;     (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
+;;           '(orderless)))
+;;   :init
+;;   (add-hook 'orderless-style-dispatchers #'my/orderless-dispatch-flex-first nil 'local)
+;;   :config
+;;   (lsp-enable-which-key-integration t))
 
-(use-package lsp-ui
-  :after lsp
-  :bind
-  (:map lsp-mode-map
-        ("C-c C-l h g" . lsp-ui-doc-show)
-        ("C-c C-l h i" . lsp-ui-sideline-toggle-symbols-info)
-        ("C-c C-l h m" . lsp-ui-imenu)
-        ("C-c t i" . lsp-ui-imenu))
-  (:map lsp-ui-imenu-mode-map
-        ("TAB" . lsp-ui-imenu--next-kind)
-        ("<backtab>" . lsp-ui-imenu--prev-kind)))
+;; (use-package lsp-ui
+;;   :after lsp
+;;   :bind
+;;   (:map lsp-mode-map
+;;         ("C-c C-l h g" . lsp-ui-doc-show)
+;;         ("C-c C-l h i" . lsp-ui-sideline-toggle-symbols-info)
+;;         ("C-c C-l h m" . lsp-ui-imenu)
+;;         ("C-c t i" . lsp-ui-imenu))
+;;   (:map lsp-ui-imenu-mode-map
+;;         ("TAB" . lsp-ui-imenu--next-kind)
+;;         ("<backtab>" . lsp-ui-imenu--prev-kind)))
 
-(use-package dap-mode
-  :custom
-  (dap-auto-configure-features '(sessions locals breakpoints expressions controls tooltip repl)))
+;; (use-package dap-mode
+;;   :custom
+;;   (dap-auto-configure-features '(sessions locals breakpoints expressions controls tooltip repl)))
 
 (use-package gdb-mi
   :custom
@@ -349,9 +361,19 @@
   ("C-h D" . devdocs-lookup))
 
 (use-package fancy-compilation
-  :hook (compilation-mode . fancy-compilation-mode))
+  :hook (compilation-mode . fancy-compilation-mode)
+  :custom
+  (fancy-compilation-override-colors nil))
 
 (use-package obvious
   :quelpa (obvious :fetcher github :repo "alphapapa/obvious.el"))
+
+(use-package eglot
+  :load-path "elisp/")
+
+(use-package eldoc
+  :custom
+  (eldoc-echo-area-prefer-doc-buffer t)
+  (eldoc-idle-delay 1.5))
 
 (provide 'usta-prog)
