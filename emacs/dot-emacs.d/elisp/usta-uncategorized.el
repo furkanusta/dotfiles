@@ -63,6 +63,8 @@
 
 (use-package ace-link
   :bind
+  (:map eww-mode-map
+        ("j" . ace-link))
   ("C-c j l" . ace-link))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -88,7 +90,6 @@
   (add-to-list 'vlf-forbidden-modes-list 'nov-mode))
 
 (use-package pdf-tools
-  :quelpa (pdf-tools :fetcher github :repo "vedang/pdf-tools" :files ("lisp/*" "server/*"))
   :mode ("\\.pdf\\'" . pdf-view-mode)
   :hook ((pdf-view-mode . disable-line-numbers)
          (pdf-view-mode . pdf-sync-minor-mode)
@@ -96,17 +97,6 @@
          (pdf-view-mode . pdf-history-minor-mode)
          (pdf-view-mode . pdf-annot-minor-mode)
          (pdf-view-mode . pdf-view-themed-minor-mode))
-  :preface
-  (defun pdf-move-down-other-frame ()
-    (interactive)
-    (other-window 1)
-    (pdf-view-scroll-up-or-next-page)
-    (other-window 1))
-  (defun pdf-move-up-other-frame ()
-    (interactive)
-    (other-window 1)
-    (pdf-view-scroll-down-or-previous-page)
-    (other-window 1))
   :custom
   (pdf-view-display-size 'fit-page)
   (pdf-annot-activate-created-annotations nil)
@@ -117,7 +107,28 @@
         ("o" . pdf-outline)
         ("O" . pdf-occur)
         ("M-g M-g" . pdf-view-goto-page)
-        ("S-SPC" . pdf-view-scroll-down-or-previous-page))
+        ("S-SPC" . pdf-view-scroll-down-or-previous-page)))
+
+(use-package pdf-org
+  :ensure pdf-tools
+  :no-require t
+  :after (pdf-tools org)
+  :preface
+  (defun pdf-move-down-other-frame ()
+    (interactive)
+    (other-window 1)
+    (if (eq major-mode 'pdf-view-mode)
+        (pdf-view-scroll-up-or-next-page)
+      (scroll-up))
+    (other-window 1))
+  (defun pdf-move-up-other-frame ()
+    (interactive)
+    (other-window 1)
+    (if (eq major-mode 'pdf-view-mode)
+        (pdf-view-scroll-down-or-previous-page)
+      (scroll-down))
+    (other-window 1))
+  :bind
   (:map org-mode-map
         ("C-M-n" . pdf-move-down-other-frame)
         ("C-M-p" . pdf-move-up-other-frame)))
@@ -155,25 +166,12 @@
   :hook (pdf-view-mode . pdf-view-restore-mode)
   :custom (pdf-view-restore-filename (concat no-littering-var-directory "pdf-view-restore")))
 
-;; (use-package undo-tree
-;;   :custom
-;;   (global-undo-tree-mode t)
-;;   (undo-tree-visualizer-timestamps t)
-;;   (undo-tree-visualizer-diff t)
-;;   (undo-tree-auto-save-history t)
-;;   (undo-tree-enable-undo-in-region t)
-;;   (undo-tree-incompatible-major-modes '(elfeed-search-mode elfeed-entry-mode term-mode vterm-mode fundamental-mode))
-;;   :bind
-;;   (:map undo-tree-map
-;;         ("C-+" . undo-tree-redo)
-;;         ("C-_" . undo-tree-undo)))
-
 (use-package vundo
-  :load-path "elisp/"
   :demand t
   :defer nil
   :custom
-  (vundo-glyph-alist vundo-unicode-symbols))
+  (vundo-glyph-alist vundo-unicode-symbols)
+  :bind ("C-x u" . vundo))
 
 (use-package sudo-edit)
 

@@ -13,9 +13,39 @@
   (c-basic-offset 4)
   (c-noise-macro-names '("constexpr"))
   :config
+  (c-add-style
+   "doom" '((c-comment-only-line-offset . 0)
+            (c-hanging-braces-alist (brace-list-open)
+                                    (brace-entry-open)
+                                    (substatement-open after)
+                                    (block-close . c-snug-do-while)
+                                    (arglist-cont-nonempty))
+            (c-cleanup-list brace-else-brace)
+            (c-offsets-alist
+             (knr-argdecl-intro . 0)
+             (substatement-open . 0)
+             (substatement-label . 0)
+             (statement-cont . +)
+             (case-label . +)
+             ;; align args with open brace OR don't indent at all (if open
+             ;; brace is at eolp and close brace is after arg with no trailing
+             ;; comma)
+             (brace-list-intro . 0)
+             (brace-list-close . -)
+             (arglist-intro . +)
+             (arglist-close +cc-lineup-arglist-close 0)
+             ;; don't over-indent lambda blocks
+             (inline-open . 0)
+             (inlambda . 0)
+             ;; indent access keywords +1 level, and properties beneath them
+             ;; another level
+             (access-label . -)
+             (inclass +cc-c++-lineup-inclass +)
+             (label . 0))))
   (c-set-offset 'innamespace 0)
   (c-set-offset 'inline-open 0)
-  (c-set-offset 'access-label -4))
+  (c-set-offset 'access-label -4)
+  (c-toggle-cpp-indent-to-body t))
 
 (use-package modern-cpp-font-lock
   :hook (c++-mode . modern-c++-font-lock-mode))
@@ -31,8 +61,6 @@
 
 (use-package meson-mode)
 
-(use-package dap-lldb :ensure dap-mode)
-
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ;;          Scala          ;;
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -47,10 +75,6 @@
            'minibuffer-complete-word
            'self-insert-command
            minibuffer-local-completion-map))
-
-(use-package lsp-metals
-  :hook  (scala-mode . lsp-deferred)
-  :custom (lsp-metals-treeview-show-when-views-received nil))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;            Shell          ;;
@@ -218,8 +242,11 @@
 (use-package gitlab-ci-mode
   :mode "\\.gitlab-ci\\.yml\\'")
 
-(use-package apheleia
-  :hook (python-mode . apheleia-mode))
+;; (use-package apheleia
+;;   :hook (python-mode . apheleia-mode))
+
+(use-package pet
+  :hook (python-mode . pet-mode))
 
 (use-package format-all)
 
@@ -293,18 +320,15 @@ field that the can be jumped to upon further expansion."
   (:map python-mode-map
         ("C-c C-i" . pyinspect-inspect-at-point)))
 
-;; (use-package python-pytest) ;; Require projectile
-
 (use-package py-isort
   :hook (before-save . py-isort-before-save))
 
-(use-package dap-python :ensure dap-mode)
-
-;; (use-package tox :custom (tox-runner py.test))
-;; (use-package poetry)
-
 (use-package perl :ensure nil
-  :hook (cperl-mode . lsp-deferred)
+  :custom
+  (cperl-indent-level 4)
+  (cperl-indent-parens-as-block t)
+  (cperl-continued-statement-offset 0)
+  (cperl-close-paren-offset -4)
   :mode ("\\.pl\\'" . cperl-mode))
 
 (use-package tcl

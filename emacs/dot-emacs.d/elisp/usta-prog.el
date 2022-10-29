@@ -30,7 +30,7 @@
                      (find-file (expand-file-name readme-file project-root)))
                  (find-file (expand-file-name "README.org" project-root)))))
   :custom
-  (project-switch-commands 'my-open-readme)
+  (project-switch-commands #'my-open-readme)
   :bind-keymap ("C-c p" . project-prefix-map))
 
 ;; Adapted from persp-projectile
@@ -168,13 +168,13 @@ perspective."
   :init (abridge-diff-mode 1))
 
 (use-package flycheck
-  :hook (prog-mode . flycheck-mode)
+  ;; :hook (prog-mode . flycheck-mode)
   :commands flycheck-add-mode
   :custom
   (flycheck-disabled-checkers '(emacs-lisp-checkdoc verilog-verilator))
   (flycheck-emacs-lisp-load-path 'inherit)
   :config
-  (flycheck-add-mode 'proselint 'lsp-mode)
+  ;; (flycheck-add-mode 'proselint 'lsp-mode)
   (flycheck-add-mode 'c/c++-cppcheck 'c++-mode)
   (flycheck-add-mode 'python-mypy 'python-mode))
 
@@ -195,8 +195,7 @@ perspective."
     (let* ((buffer (current-buffer))
           (other-buffer (window-buffer (next-window)))
           (directory (with-current-buffer other-buffer default-directory))
-          (cmd (concat "cd " directory))
-          )
+          (cmd (concat "cd " directory)))
       (vterm-send-string cmd t)
       (vterm-send-return)))  
   (defun set-no-process-query-on-exit ()
@@ -303,53 +302,6 @@ perspective."
 
 (use-package which-key)
 
-;; (use-package lsp-mode
-;;   :hook
-;;   ((lsp-completion-mode . my/lsp-mode-setup-completion)
-;;    (lsp-completion-mode . (lambda ()
-;;                             (setq-local completion-at-point-functions (list (cape-capf-buster #'lsp-completion-at-point))))))
-;;   :custom
-;;   (lsp-completion-provider :none)
-;;   (lsp-auto-execute-action nil)
-;;   (lsp-before-save-edits nil)
-;;   (lsp-keymap-prefix "C-c C-l")
-;;   (lsp-enable-snippet t)
-;;   (lsp-enable-xref t)
-;;   (lsp-enable-imenu t)
-;;   (lsp-enable-indentation nil)
-;;   (lsp-enable-file-watchers nil)
-;;   (lsp-enable-text-document-color nil)
-;;   (lsp-enable-semantic-highlighting nil)
-;;   (lsp-enable-on-type-formatting nil)
-;;   (read-process-output-max (* 2 1024 1024))
-;;   (lsp-enable-on-type-formatting nil)
-;;   :preface
-;;   (defun my/orderless-dispatch-flex-first (_pattern index _total)
-;;     (and (eq index 0) 'orderless-flex))
-;;   (defun my/lsp-mode-setup-completion ()
-;;     (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
-;;           '(orderless)))
-;;   :init
-;;   (add-hook 'orderless-style-dispatchers #'my/orderless-dispatch-flex-first nil 'local)
-;;   :config
-;;   (lsp-enable-which-key-integration t))
-
-;; (use-package lsp-ui
-;;   :after lsp
-;;   :bind
-;;   (:map lsp-mode-map
-;;         ("C-c C-l h g" . lsp-ui-doc-show)
-;;         ("C-c C-l h i" . lsp-ui-sideline-toggle-symbols-info)
-;;         ("C-c C-l h m" . lsp-ui-imenu)
-;;         ("C-c t i" . lsp-ui-imenu))
-;;   (:map lsp-ui-imenu-mode-map
-;;         ("TAB" . lsp-ui-imenu--next-kind)
-;;         ("<backtab>" . lsp-ui-imenu--prev-kind)))
-
-;; (use-package dap-mode
-;;   :custom
-;;   (dap-auto-configure-features '(sessions locals breakpoints expressions controls tooltip repl)))
-
 (use-package gdb-mi
   :custom
   (gdb-many-windows t))
@@ -362,13 +314,13 @@ perspective."
   :bind (:map hs-minor-mode-map
               ("C-c TAB" . hs-toggle-hiding)))
 
-(use-package text-categories
-  :quelpa (text-categories :fetcher github :repo "Dspil/text-categories")
-  :init
-  (defun my-text-categories-filename ()
-    "Return a filename corresponding to the current buffer."
-    (concat no-littering-var-directory "text-categories/" (buffer-name) text-categories-file-suffix))
-  (advice-add 'text-categories-filename :override #'my-text-categories-filename))
+;; (use-package text-categories
+;;   :quelpa (text-categories :fetcher github :repo "Dspil/text-categories")
+;;   :init
+;;   (defun my-text-categories-filename ()
+;;     "Return a filename corresponding to the current buffer."
+;;     (concat no-littering-var-directory "text-categories/" (buffer-name) text-categories-file-suffix))
+;;   (advice-add 'text-categories-filename :override #'my-text-categories-filename))
 
 (use-package subword
   :hook ((yaml-mode conf-mode java-mode js-mode) . subword-mode))
@@ -390,11 +342,25 @@ perspective."
   :quelpa (obvious :fetcher github :repo "alphapapa/obvious.el"))
 
 (use-package eglot
-  :load-path "elisp/")
+  :config
+  (add-to-list 'eglot-server-programs '(python-mode . ("poetry" "run" "pylsp"))))
 
 (use-package eldoc
   :custom
   (eldoc-echo-area-prefer-doc-buffer t)
   (eldoc-idle-delay 1.5))
+
+(use-package project-rootfile
+  :after project
+  :config
+  (add-to-list 'project-rootfile-list "pyproject.toml")
+  (add-to-list 'project-find-functions #'project-rootfile-try-detect))
+
+(use-package makefile-executor
+  :hook (makefile-mode . makefile-executor-mode)
+  :bind
+  (:map project-prefix-map
+        ("x" . makefile-executor-execute-last)
+        ("X" . project-execute-extended-command)))
 
 (provide 'usta-prog)

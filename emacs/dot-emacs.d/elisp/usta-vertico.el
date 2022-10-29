@@ -3,7 +3,6 @@
 (use-package vertico
   :demand t
   :defines vertico-mode actual-vertico-format-candidate
-  :quelpa (vertico :fetcher github :repo "minad/vertico" :files ("*.el" "extensions/*.el"))
   :hook ((after-init . vertico-mode)
          (rfn-eshadow-update-overlay . vertico-directory-tidy)
          (vertico-mode . minibuffer-vertico-setup)
@@ -344,7 +343,6 @@
   :init (all-the-icons-completion-mode))
 
 (use-package corfu
-  :quelpa (corfu :fetcher github :repo "minad/corfu")
   :hook ((prog-mode . corfu-mode)
          (shell-mode . corfu-mode)
          (comint-mode . corfu-mode)
@@ -423,10 +421,5 @@
   :bind ("M-i" . consult-yasnippet)
   :config
   (consult-customize consult-yasnippet :preview-key '(:debounce 0.01 any)))
-
-(use-package consult-lsp
-  :after lsp
-  :config
-  (add-to-list 'consult--initial-narrow-list (cons `(eq this-command #'consult-lsp-symbols) (list ?< ?c))))
 
 (provide 'usta-vertico)
