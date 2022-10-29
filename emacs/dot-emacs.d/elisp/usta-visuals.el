@@ -64,7 +64,14 @@
 
 (use-package tangonov-theme
   :after custom
-  :init (load-theme 'tangonov t))
+  :init (load-theme 'tangonov t)
+  :custom-face
+  ;; Orange, Green, Blue, Red (I was used to this in my previous theme and different order messes my
+  ;; brain)
+  (org-level-1 ((t (:inherit bold :foreground "#FFCA41"))))
+  (org-level-2 ((t (:inherit bold :foreground "#ABDC88"))))
+  (org-level-3 ((t (:inherit bold :foreground "#82AAFF"))))
+  (org-level-4 ((t (:inherit bold :foreground "#FF7B85")))))
 
 (use-package popper
   :commands popper-select-popup-at-bottom
