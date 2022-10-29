@@ -41,19 +41,6 @@ alias ec="emacsclient -t"
 alias mp3-dl="yt-dlp --extract-audio --audio-format=mp3"
 alias mp3-tags="fd -t f -x ffprobe -loglevel error -show_entries format_tags=title,artist -of compact"
 
-function whatsapp {
-    out_file="${2:-out.mp4}"
-    input_file="$1"
-    ffmpeg -i "$input_file" \
-           -c:v libx264 -pix_fmt yuv420p \
-           -profile:v baseline -level 3.0 \
-           -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2" -vb 1024k \
-           -acodec aac -ar 44100 -ac 2\
-           -minrate 1024k -maxrate 1024k -bufsize 1024k \
-           -movflags +faststart \
-           "$out_file";
-}
-
 export PS1='[$(basename $(dirname "$PWD"))/$(basename "$PWD")] $ ';
 
 if [[ -z "${INSIDE_EMACS}" ]]; then
@@ -82,13 +69,9 @@ if [ -f $HOME/.local/prog/vcpkg/scripts/vcpkg_completion.bash ]; then
     source $HOME/.local/prog/vcpkg/scripts/vcpkg_completion.bash
 fi
 
-function wait-pid {
-    pid=$1
-    name=$(ps -o command --no-headers -p "$pid" | awk '{print $1}')
-    tail --pid=$pid -f /dev/null && apprise 'dbus://' -b "$name Done"
-}
-
-
 export RIPGREP_CONFIG_PATH=$XDG_CONFIG_HOME/ripgrep/config
 export CMAKE_GENERATOR=Ninja
+export DOCKER_BUILDKIT=1
 
+export NPM_PACKAGES="$HOME/.local/npm"
+export NODE_PATH="$NPM_PACKAGES/lib/node_modules:$NODE_PATH"

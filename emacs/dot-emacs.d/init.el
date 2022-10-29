@@ -48,7 +48,7 @@
   (display-line-numbers-mode -1))
 
 (defvar use-other-window-alist
-  '((display-buffer-use-some-window display-buffer-pop-up-window)
+  '((display-buffer-same-window display-buffer-pop-up-window)
     (inhibit-same-window . t)))
 
 (require 'usta-builtins)
