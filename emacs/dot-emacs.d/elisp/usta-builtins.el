@@ -9,6 +9,7 @@
 (defvar my-data-directory (or (getenv "EMACS_STORAGE_LOCATION") (expand-file-name "~/Documents")))
 (defvar my-notes-directory (concat my-data-directory "/Notes"))
 (defvar my-papers-directory (concat my-notes-directory "/PDF"))
+(defvar my-paper-directories (list my-papers-directory (concat my-data-directory "/paperless-ngx/media/documents/archive/academic/")))
 (defvar my-bibliography-directory (concat my-notes-directory "/bibs"))
 (defvar my-bibliographies (-filter
                            (lambda (file) (not (s-starts-with? "." (f-filename file))))
@@ -149,7 +150,6 @@ Use the filename relative to the current VC root directory."
   (version-control t)
   (delete-old-versions t)
   (calendar-week-start-day 1)
-  (confirm-nonexistent-file-or-buffer nil)
   (user-mail-address "furkanusta17@gmail.com")
   (save-interprogram-paste-before-kill t)
   (ad-redefinition-action 'accept)
@@ -160,7 +160,6 @@ Use the filename relative to the current VC root directory."
   (emacs-lisp-docstring-fill-column 100)
   (sentence-end-double-space -1)
   (vc-follow-symlinks t)
-  (large-file-warning-threshold (* 1024 1024 1024)) ;; 1GB
   (read-extended-command-predicate #'command-completion-default-include-p)
   (read-file-name-completion-ignore-case t)
   (confirm-kill-processes nil)
@@ -172,6 +171,8 @@ Use the filename relative to the current VC root directory."
   (history-delete-duplicates t)
   (native-comp-async-report-warnings-errors nil)
   (package-native-compile t)
+  (large-file-warning-threshold (* 1024 1024 1024)) ;; 1GB  
+  (confirm-nonexistent-file-or-buffer nil)
   :bind
   ("C-c ." . pop-global-mark)
   ("M-u" . upcase-dwim)
@@ -191,15 +192,17 @@ Use the filename relative to the current VC root directory."
   ("C-x C-f" . find-file-at-point)
   ("RET" . newline-and-indent)
   ("C-x O" . my-previous-window)
+  ("C-_" . undo-only)
+  ("C-+" . undo-redo)
   ([remap fill-paragraph] . endless/fill-or-unfill)
   (:map prog-mode-map ("<tab>" . indent-for-tab-command)))
 
-
-(use-package find-file
-  :ensure nil
+(use-package find-file :ensure nil
+  :demand t
   :bind
-  ("C-c p a" . ff-find-other-file-other-window)
-  ("C-c p A" . ff-find-other-file))
+  (:map project-prefix-map
+        ("a" . ff-find-other-file-other-window)
+        ("A" . ff-find-other-file)))
 
 (use-package exec-path-from-shell
   :custom
@@ -301,5 +304,9 @@ Use the filename relative to the current VC root directory."
   :hook (kill-emacs . bookmark-save)
   :custom
   (bookmark-watch-bookmark-file 'silent))
+
+(use-package repeat
+  :init
+  (repeat-mode t))
 
 (provide 'usta-builtins)

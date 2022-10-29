@@ -3,7 +3,7 @@
   :custom
   (citar-bibliography my-bibliographies)
   (citar-open-note-function 'orb-citar-edit-note)
-  (citar-library-paths (list my-papers-directory))
+  (citar-library-paths my-paper-directories)
   (citar-at-point-function 'embark-act)
   (citar-symbols
    `((file ,(all-the-icons-octicon "file-pdf" :face 'all-the-icons-green :v-adjust -0.1) . " ")

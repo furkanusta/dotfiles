@@ -31,6 +31,7 @@
 (use-package cdlatex
   :hook (LaTeX-mode . cdlatex-mode)
   :custom
+  (cdlatex-use-dollar-to-ensure-math nil)
   (cdlatex-auto-help-delay 0.5))
 
 (use-package auctex-latexmk
@@ -50,7 +51,6 @@
 
 (use-package bibtex
   :custom
-  (bibtex-completion-library-path my-papers-directory)
   (bibtex-align-at-equal-sign t)
   (bibtex-dialect 'biblatex))
 
@@ -76,20 +76,20 @@
            (commit-hash (cdr (car commits))))
       (latexdiff-vc--compile-diff-with-current commit-hash))))
 
-(use-package lsp-latex
-  :hook
-  ((LaTeX-mode . lsp-deferred)
-   (bibtex-mode . lsp-deferred))
-  :custom
-  (lsp-latex-texlab-executable
-   (or (executable-find "texlab")
-       (expand-file-name "~/.local/prog/texlab/target/release/texlab")))
-  (lsp-latex-forward-search-executable "emacsclient")
-  (lsp-latex-forward-search-args '("--eval" "(lsp-latex-forward-search-with-pdf-tools \"%f\" \"%p\" \"%l\")")))
+;; (use-package lsp-latex
+;;   :hook
+;;   ((LaTeX-mode . lsp-deferred)
+;;    (bibtex-mode . lsp-deferred))
+;;   :custom
+;;   (lsp-latex-texlab-executable
+;;    (or (executable-find "texlab")
+;;        (expand-file-name "~/.local/prog/texlab/target/release/texlab")))
+;;   (lsp-latex-forward-search-executable "emacsclient")
+;;   (lsp-latex-forward-search-args '("--eval" "(lsp-latex-forward-search-with-pdf-tools \"%f\" \"%p\" \"%l\")")))
 
-(use-package xenops
-  ;; :hook (LaTeX-mode . xenops-mode)
-  :init (setq xenops-reveal-on-entry t))
+;; (use-package xenops
+;;   ;; :hook (LaTeX-mode . xenops-mode)
+;;   :init (setq xenops-reveal-on-entry t))
 
 ;; (use-package outline
 ;;   :hook (LaTeX-mode . outline-minor-mode)
@@ -149,11 +149,5 @@
                     ;; add accent snippets
                     :cond #'laas-object-on-left-condition
                     "qq" (lambda () (interactive) (laas-wrap-previous-object "sqrt"))))
-
-;; (use-package arxiv-citation
-;;   :quelpa (arxiv-citation :fetcher github :repo "slotthe/arxiv-citation")
-;;   :custom
-;;   (arXiv-citation-library my-papers-directory)
-;;   (arXiv-citation-bibtex-files (list (concat my-bibliography-directory "/Arxiv.bib"))))
 
 (provide 'usta-latex)
