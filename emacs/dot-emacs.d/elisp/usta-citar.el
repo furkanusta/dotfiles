@@ -72,11 +72,10 @@
               ("M-RET" . my-citar-embark-open-pdf)))
 
 (use-package citar-org-roam
-  :quelpa (citar-org-roam :fetcher github :repo "emacs-citar/citar-org-roam")
   :hook (org-roam-mode . citar-org-roam-mode))
 
 (use-package citar-org
-  :quelpa (citar-org :fetcher github :repo "bdarcus/citar" :files ("citar-org.el"))
+  :ensure citar
   :after (citar oc)
   :custom
   (org-cite-global-bibliography citar-bibliography)

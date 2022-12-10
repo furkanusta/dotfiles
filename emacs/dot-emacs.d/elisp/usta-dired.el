@@ -12,6 +12,23 @@
               (process-connection-type nil))
           (start-process "" nil "xdg-open" (file-truename file)))
       nil))
+  (defun dired-find-readme-other-window ()
+    (interactive)
+    (progn
+      (let* ((dir (dired-get-filename))
+             (files-readme (f-glob (concat dir "/readme*")))
+             (files-Readme (f-glob (concat dir "/Readme*")))
+             (files-README (f-glob (concat dir "/README*")))
+             (file-paths (append files-README files-readme files-Readme))
+             ;; (file-paths (seq-map (lambda (file) (concat dir "/" file)) file-names))
+             (files (seq-filter (lambda (file) (f-exists? file)) file-paths))
+             (file (car files)))
+        (if (= 1 (count-windows))
+            (split-window-horizontally))
+        (other-window 1)
+        (dired--find-possibly-alternative-file dir)
+        (when file
+          (find-file file)))))
   (defun dired-open-current-directory-xdg ()
     "Try to run `xdg-open' to open the current directory."
     (interactive)
@@ -33,6 +50,8 @@
   :bind
   ("C-x d" . dired-current-dir)
   (:map dired-mode-map
+        ("o" . dired-find-readme-other-window)
+        ("O" . dired-find-file-other-window)
         ("E" . dired-open-current-directory-xdg)
         ("e" . dired-open-xdg)))
 

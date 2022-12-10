@@ -305,8 +305,8 @@ Use the filename relative to the current VC root directory."
   :custom
   (bookmark-watch-bookmark-file 'silent))
 
-(use-package repeat
-  :init
-  (repeat-mode t))
+;; (use-package repeat
+;;   :init
+;;   (repeat-mode t))
 
 (provide 'usta-builtins)

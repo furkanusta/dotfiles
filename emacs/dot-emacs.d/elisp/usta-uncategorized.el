@@ -175,4 +175,8 @@
 
 (use-package sudo-edit)
 
+(use-package prescient
+  :custom
+  (prescient-persist-mode t))
+
 (provide 'usta-uncategorized)

@@ -363,4 +363,10 @@ perspective."
         ("x" . makefile-executor-execute-last)
         ("X" . project-execute-extended-command)))
 
+(use-package flymake-cursor
+  :hook (flymake-mode . flymake-cursor-mode))
+
+(use-package flymake-diagnostic-at-point
+  :hook (flymake-mode . flymake-diagnostic-at-point-mode))
+
 (provide 'usta-prog)

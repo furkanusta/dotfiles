@@ -106,6 +106,9 @@
               ("DEL" . vertico-directory-delete-char)
               ("M-DEL" . vertico-directory-delete-word)))
 
+(use-package vertico-prescient
+  :hook (vertico-mode . vertico-prescient-mode))
+
 (use-package orderless
   :demand t  
   :preface
@@ -349,6 +352,8 @@
          (cmake-mode . corfu-mode)
          (eshell-mode . corfu-mode))
   :custom
+  (corfu-popinfo-mode t)
+  (corfu-history-mode t)
   (corfu-cycle t)
   (corfu-auto nil)
   (corfu-preselect-first t)
@@ -367,23 +372,11 @@
         ([backtab] . corfu-previous)
         ("C-SPC" . corfu-insert-separator)))
 
+(use-package corfu-prescient
+  :hook (corfu-mode . corfu-prescient-mode))
+
 (use-package savehist
   :hook (after-init . savehist-mode))
-
-(use-package corfu-history
-  :quelpa (corfu-history :fetcher github :repo "minad/corfu" :files ("extensions/corfu-history.el"))
-  :after savehist
-  :hook (corfu-mode . corfu-history-mode)
-  :config (add-to-list 'savehist-additional-variables 'corfu-history--list))
-
-(use-package corfu-doc
-  :if (display-graphic-p)
-  :hook (corfu-mode . corfu-doc-mode))
-
-(use-package corfu-doc-terminal
-  :quelpa (corfu-doc-terminal :fetcher git :url "https://codeberg.org/akib/emacs-corfu-doc-terminal.git")
-  :unless (display-graphic-p)
-  :hook (corfu-mode . corfu-doc-terminal-mode))
 
 ;; Add extensions
 (use-package cape

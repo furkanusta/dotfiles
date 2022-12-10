@@ -5,6 +5,8 @@
       package-enable-at-startup nil
       load-prefer-newer t)
 
+(customize-set-variable 'load-prefer-newer noninteractive)
+
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 (scroll-bar-mode -1)

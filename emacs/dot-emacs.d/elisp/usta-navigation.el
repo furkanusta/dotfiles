@@ -132,9 +132,6 @@
   :custom (resize-window-allow-backgrounds nil))
 
 (use-package dogears
-  :quelpa (dogears :fetcher github :repo "alphapapa/dogears.el"
-                   :files (:defaults (:exclude "helm-dogears.el")))
-  ;; These bindings are optional, of course:
   :bind (:map global-map
               ("M-g d" . dogears-go)
               ("M-g M-b" . dogears-back)

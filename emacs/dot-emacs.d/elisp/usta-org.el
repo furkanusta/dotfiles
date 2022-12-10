@@ -135,11 +135,49 @@
   						    "* TODO %?\n	%a\n  %i\n")
   					       ("j" "Journal" entry (file+headline org-capture-file "Journal")
   						    "* %U\n	 %a\n	 %i")
+                           ("w" "Web site" entry
+                            (file "")
+                            "* %a :website:\n\n%U %?\n\n%:initial" :immediate-finish t)
+                           ;; Ideas??
+                           ;; Habit-Journal (:type table-line)
+                           ;; Pocket
+                           ;; org-web-tools-insert-web-page-as-entry
+                           ;; Snippet
+                           ;; Elfeed
   					       ("p" "Protocol" entry (file+headline org-capture-file "Inbox")
   	    				    "* %?\n	 [[%:link][%:description]]\n	%U\n #+BEGIN_QUOTE\n%i\n#+END_QUOTE\n\n\n")
   	    			       ("L" "Protocol Link" entry (file+headline org-capture-file "Inbox")
   						    "* %?\n	 [[%:link][%:description]]\n	%U")))
   :bind ("C-c c" . org-capture))
+
+
+(use-package org-capture-ref
+  :quelpa (org-capture-ref :repo "yantar92/org-capture-ref" :fetcher github)
+  :config
+  (setq org-capture-templates
+        (append org-capture-templates
+           (doct '(:group "Browser link"
+                          :type entry
+                          :headline "REF"
+ 			              :file org-capture-file
+ 			              :fetch-bibtex (lambda () (org-capture-ref-process-capture)) ; this must run first
+                          :link-type (lambda () (org-capture-ref-get-bibtex-field :type))
+                          :extra (lambda ()
+                                   (if (org-capture-ref-get-bibtex-field :journal)
+					                   (s-join "\n"
+                                               '("- [ ] download and attach pdf"
+						                         "- [ ] [[elisp:org-attach-open][read paper capturing interesting references]]"
+						                         "- [ ] [[elisp:(browse-url (url-encode-url (format \"https://www.semanticscholar.org/search?q=%s\" (org-entry-get nil \"TITLE\"))))][check citing articles]]"
+						                         "- [ ] [[elisp:(browse-url (url-encode-url (format \"https://www.connectedpapers.com/search?q=%s\" (org-entry-get nil \"TITLE\"))))][check related articles]]"
+                                                 "- [ ] check if bibtex entry has missing fields"))
+                                     ""))
+                          :org-entry (lambda () (org-capture-ref-get-org-entry))
+			              :template
+                          ("%{fetch-bibtex}* TODO %?%{space}%{org-entry}"
+                           "%{extra}"
+                           "- Keywords: #%{link-type}")
+			              :children (("Interactive link" :keys "b" :clock-in t :space " " :clock-resume t)
+				                     ("Silent link" :keys "B" :space "" :immediate-finish t)))))))
 
 (use-package org-table :ensure org
   :preface
@@ -282,11 +320,7 @@ With a prefix ARG, remove start location."
   (org-journal-date-format "%A, %d %B")
   (org-journal-file-type 'monthly)
   (org-journal-time-format nil)
-  (org-journal-created-property-timestamp-format "%F")
-  )
-
-(use-package org-super-links
-  :quelpa (org-super-links :fetcher github :repo "toshism/org-super-links"))
+  (org-journal-created-property-timestamp-format "%F"))
 
 (use-package binder
   :custom (binder-default-file-extension "org"))
@@ -431,7 +465,6 @@ With a prefix ARG, remove start location."
                                 "]")))))
 
 (use-package org-roam-ui
-  :quelpa (org-roam-ui :fetcher github :repo "org-roam/org-roam-ui")
   :after org-roam
   :custom
   (org-roam-ui-sync-theme t)
@@ -440,7 +473,6 @@ With a prefix ARG, remove start location."
   (org-roam-ui-open-on-start t))
 
 (use-package org-roam-timestamps
-  :quelpa (org-roam-timestamps :fetcher github :repo "ThomasFKJorna/org-roam-timestamps")
   :hook (org-roam-mode . org-roam-timestamps-mode))
 
 (use-package highlight
@@ -475,11 +507,6 @@ With a prefix ARG, remove start location."
 (use-package org-timeline
   :hook (org-agenda-finalize . org-timeline-insert-timeline))
 
-(use-package org-radiobutton)
-
-(use-package org-clock-budget
-  :quelpa (org-clock-budget :fetcher github :repo "Fuco1/org-clock-budget"))
-
 (use-package org-download
   :hook
   (dired-mode . org-download-enable)
@@ -506,9 +533,6 @@ With a prefix ARG, remove start location."
   :bind
   (( "C-c M-i" . org-tanglesync-process-buffer-interactive)
    ( "C-c M-a" . org-tanglesync-process-buffer-automatic)))
-
-(use-package notebook
-  :quelpa (notebook :fetcher github :repo "rougier/notebook-mode"))
 
 (use-package orgdiff
   :quelpa (orgdiff :fetcher github :repo "tecosaur/orgdiff"))
@@ -553,5 +577,64 @@ With a prefix ARG, remove start location."
 
 (use-package org-auctex
   :quelpa (org-auctex :fetcher github :repo "karthink/org-auctex"))
+
+(use-package org-protocol-capture-html
+  :quelpa (org-protocol-capture-html :fetcher github :repo "alphapapa/org-protocol-capture-html"))
+
+(use-package orca
+  :preface
+  
+  ;; (defun orfu-handle-link-github ()
+  ;;   (let ((link (caar org-stored-links))
+  ;;         (title (cl-cadar org-stored-links)))
+  ;;     (when (string-match orfu-github-project-name link)
+  ;;       (let ((project-name (match-string 1 link))
+  ;;             (parts (split-string title "·")))
+  ;;         (setf (cl-cadar org-stored-links)
+  ;;               (concat (car parts)
+  ;;                       (substring (cadr parts) 7)))
+  ;;         (find-file (orfu-expand "wiki/github.org"))
+  ;;         (goto-char (point-min))
+  ;;         (re-search-forward (concat "^\\*+ +" project-name) nil t)))))
+
+
+  
+  ;; (defun orfu--handle-link-youtube-1 (link)
+  ;;   (setq link (replace-regexp-in-string "time_continue=[0-9]+&" "" link))
+  ;;   (let* ((default-directory "~/Downloads/Videos")
+  ;;          (json (orfu--youtube-json
+  ;;                 (setq orfu--current-cmd
+  ;;                       (format "setsid -w yt-dlp --write-sub -f mp4 --write-info-json %s" link)))))
+  ;;     (find-file (orfu-expand "wiki/youtube.org"))
+  ;;     (zo-goto-headings '("Blogs"))
+  ;;     (org-capture-put
+  ;;      :immediate-finish t
+  ;;      :jump-to-captured t))
+  ;;   t)
+  ;; 
+
+  ;; org-web-tools-insert-web-page-as-entry
+  ;; org-board-new
+  ;; https://github.com/alphapapa/org-protocol-capture-html/blob/master/org-protocol-capture-html.sh
+  
+
+  (defun orfu-handle-link-youtube ()
+    (let ((link (orfu--youtube-link)))
+      (when link
+        (setq orca-link-hook nil)
+        (orfu--handle-link-youtube-1 link))))
+
+  :config
+  (setq orca-handler-list
+        '(
+          (orfu-handle-link-youtube)
+          (orca-handler-project)
+          (orca-handler-match-url "https://www.reddit.com/emacs/" "~/Dropbox/org/wiki/emacs.org" "Reddit")
+          (orca-handler-match-url "https://emacs.stackexchange.com/" "~/Dropbox/org/wiki/emacs.org" "\\* Questions")
+          (orca-handler-current-buffer "\\* Tasks")
+          (orca-handler-file "~/Dropbox/org/ent.org" "\\* Articles"))))
+
+(use-package zotra
+  :quelpa (zotra :fetcher github :repo "mpedramfar/zotra"))
 
 (provide 'usta-org)
