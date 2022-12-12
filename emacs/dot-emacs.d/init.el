@@ -11,18 +11,25 @@
   (package-initialize)
   (package-refresh-contents)
   (package-install 'use-package))
+
 (add-to-list 'load-path (expand-file-name (concat user-emacs-directory "elisp/")))
+
 (require 'use-package)
+
 (unless (package-installed-p 'quelpa)
   (with-temp-buffer
     (url-insert-file-contents "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
     (eval-buffer)
     (quelpa-self-upgrade)))
+
 (unless (package-installed-p 'quelpa-use-package)
   (quelpa '(quelpa-use-package :fetcher git :url "https://github.com/quelpa/quelpa-use-package.git")))
+
 (use-package quelpa             :custom (quelpa-update-melpa-p nil))
 (use-package quelpa-use-package :custom (quelpa-use-package-inhibit-loading-quelpa t))
+
 (use-package use-package-hydra)
+
 (setq use-package-always-defer t)
 ;; (setq-default use-package-always-ensure t)
 
@@ -217,7 +224,7 @@
   ("C-_" . undo-only)
   ("C-+" . undo-redo)
   ([remap fill-paragraph] . endless/fill-or-unfill)
-  (:map prog-mode-map ("<<tab>" . indent-for-tab-command)))
+  (:map prog-mode-map ("<tab>" . indent-for-tab-command)))
 
 (use-package find-file :ensure nil
   :demand t
@@ -247,7 +254,7 @@
       (switch-to-buffer buf)
       (eww-open-in-new-buffer)))
   :bind
-  ("<<f7>" . eww)
+  ("<f7>" . eww)
   (:map eww-mode-map
         ("k" . kill-this-buffer)
         ("M-RET" . eww-open-link-another-frame)))
@@ -309,8 +316,8 @@
               :post (setq my-hydra-switch-buffer-source nil))
    "Switch buffer"
    ("g" (switch-to-buffer my-hydra-switch-buffer-source) "Quit" :exit t)
-   ("<<left>" previous-buffer "previous-buffer")
-   ("<<right>" next-buffer "next-buffer")))
+   ("<left>" previous-buffer "previous-buffer")
+   ("<right>" next-buffer "next-buffer")))
 
 (use-package dired :ensure nil
   :commands dired-get-file-for-visit
@@ -551,18 +558,6 @@
      ("https://blog.jessfraz.com/index.xml" prog other)
      ("http://endlessparentheses.com/atom.xml" emacs)
      ("https://dynomight.net/feed.xml" blog other)
-     ;; Podcast
-     ;; ("https://www.omnycontent.com/d/playlist/5af088d6-01f8-4b3d-b372-acb600f45df6/bfc2b445-eb3b-4241-b228-ad950098be04/fa5fa5d2-e117-4161-8c59-ad95009915be/podcast.rss" mesut)
-     ;; ("https://karnaval.com/programlar/rabarba/rss" mesut)
-     ;; ("https://anchor.fm/s/37c8ef88/podcast/rss")
-     ;; ("https://www.omnycontent.com/d/playlist/5af088d6-01f8-4b3d-b372-acb600f45df6/bfc2b445-eb3b-4241-b228-ad950098be04/fa5fa5d2-e117-4161-8c59-ad95009915be/podcast.rss")
-     ;; ("https://feeds.megaphone.fm/revisionisthistory")
-     ;; ("https://feeds.simplecast.com/BqbsxVfO")
-     ;; ("https://feeds.megaphone.fm/VMP8871377602")
-     ;; ("https://feeds.simplecast.com/EZwoW5Ys")
-     ;; ("https://feeds.megaphone.fm/ep-wswb")
-     ;; ("https://feeds.simplecast.com/dHoohVNH")
-     ;; Elfeed
      ("https://www.youtube.com/feeds/videos.xml?channel_id=UCPZUQqtVDmcjm4NY5FkzqLA" youtube)
      ("https://www.youtube.com/feeds/videos.xml?channel_id=UClJ7gpJ9MRXDnbA8N_5NSKQ" youtube)
      ("https://www.youtube.com/feeds/videos.xml?channel_id=UCsvn_Po0SmunchJYOWpOxMg" youtube)
@@ -645,18 +640,18 @@
 
 (use-package buffer-move
   :bind
-  ("C-c S-<<up>"    . buf-move-up)
-  ("C-c S-<<down>"  . buf-move-down)
-  ("C-c S-<<left>"  . buf-move-left)
-  ("C-c S-<<right>" . buf-move-right))
+  ("C-c S-<up>"    . buf-move-up)
+  ("C-c S-<down>"  . buf-move-down)
+  ("C-c S-<left>"  . buf-move-left)
+  ("C-c S-<right>" . buf-move-right))
 
 (use-package drag-stuff
   :custom (drag-stuff-global-mode t)
   :bind (:map drag-stuff-mode-map
               ("M-N" . drag-stuff-down)
               ("M-P" . drag-stuff-up)
-              ("<<M-up>" . drag-stuff-up)
-              ("<<M-down>" . drag-stuff-down)))
+              ("<M-up>" . drag-stuff-up)
+              ("<M-down>" . drag-stuff-down)))
 
 (use-package hungry-delete
   :custom
@@ -832,7 +827,7 @@
   ("M-'" . consult-register-store)
   ("C-M-#" . consult-register)
   ("M-y" . consult-yank-pop)
-  ("<<help> a" . consult-apropos)
+  ("<help> a" . consult-apropos)
   ("M-g g" . consult-goto-line)
   ("M-g M-g" . consult-goto-line)
   ("C-c SPC" . consult-mark)
@@ -853,7 +848,7 @@
   (xref-show-xrefs-function #'consult-xref)
   (xref-show-definitions-function #'consult-xref)
   (consult-preview-key (kbd "M-."))
-  (consult-narrow-key "<<")
+  (consult-narrow-key "<")
   (consult-ripgrep-args
    "rg --null --line-buffered --color=never --max-columns=1000 --path-separator / --smart-case --no-heading --line-number .")
   :config
@@ -918,7 +913,7 @@
         (apply fn args))))
   (defvar embark-completing-read-prompter-map
     (let ((map (make-sparse-keymap)))
-      (define-key map (kbd "C-<<tab>") 'abort-recursive-edit)
+      (define-key map (kbd "C-<tab>") 'abort-recursive-edit)
       map))
   (defun embark-act-with-completing-read (&optional arg)
     (interactive "P")
@@ -936,7 +931,7 @@
   ("C-." . embark-act)
   ("C-," . embark-dwim)
   (:map vertico-map
-        ("C-<<tab>" . embark-act-with-completing-read)
+        ("C-<tab>" . embark-act-with-completing-read)
         ("C-." . embark-act)
         ("C-," . embark-dwim)
         ("C-:" . embark-export))
@@ -981,7 +976,7 @@
   :config
   (require 'kind-icon)
   :bind
-  ("C-<<tab>" . completion-at-point)
+  ("C-<tab>" . completion-at-point)
   (:map corfu-map
         ("TAB" . corfu-next)
         ([tab] . corfu-next)
@@ -1404,21 +1399,21 @@ perspective."
   (:map vterm-mode-map
         ("C-y" . vterm-yank)
         ("M-y" . vterm-yank-pop)
-        ("C-<<return>" . vterm-cd-other-buffer)
-        ("C-S-<<return>" . vterm-toggle-insert-cd))
+        ("C-<return>" . vterm-cd-other-buffer)
+        ("C-S-<return>" . vterm-toggle-insert-cd))
   (:map vterm-copy-mode-map
-        ("C-<<" . vterm-prev-prompt)
+        ("C-<" . vterm-prev-prompt)
         ("C->" . vterm-next-prompt)))
 
 (use-package vterm-toggle
   :custom (vterm-toggle-cd-auto-create-buffer nil)
   :bind
-  ("<<f8>" . vterm-toggle)
+  ("<f8>" . vterm-toggle)
   (:map vterm-mode-map
-        ("<<f8>" . vterm-toggle)
+        ("<f8>" . vterm-toggle)
         ("C-c C-n"  . vterm-toggle-forward)
         ("C-c C-p"  . vterm-toggle-backward)
-        ("C-<<return>" . vterm-toggle-insert-cd)))
+        ("C-<return>" . vterm-toggle-insert-cd)))
 
 (use-package shx
   :hook (shell-mode . shx-mode))
@@ -1447,7 +1442,7 @@ perspective."
 
 (use-package isend-mode
   :bind
-  ("C-M-<<return>" . isend-send))
+  ("C-M-<return>" . isend-send))
 
 (use-package repl-toggle
   :custom
@@ -1467,7 +1462,7 @@ perspective."
 
 (use-package yasnippet
   :hook ((prog-mode org-mode) . yas-minor-mode)
-  :bind (:map yas-minor-mode-map ("<<tab>" . nil)))
+  :bind (:map yas-minor-mode-map ("<tab>" . nil)))
 
 (use-package tramp
   :commands (tramp-cleanup-all-connections tramp-cleanup-all-buffers)
@@ -1621,11 +1616,11 @@ perspective."
 (use-package shell
   :after window
   :config (add-to-list 'display-buffer-alist (cons "\\*shell\\*" use-other-window-alist))
-  :bind ("C-<<f8>" . shell))
+  :bind ("C-<f8>" . shell))
 
 (use-package eshell
   :config (add-to-list 'display-buffer-alist (cons "\\*eshell\\*" use-other-window-alist))
-  :bind ("M-<<f8>" . eshell))
+  :bind ("M-<f8>" . eshell))
 
 (use-package eshell-syntax-highlighting
   :hook (eshell-mode . eshell-syntax-highlighting-mode))
@@ -2137,14 +2132,14 @@ With a prefix ARG, remove start location."
   :hook (inherit-org-mode . shrface-mode)
   :custom (shrface-href-versatile t)
   :bind (:map shrface-mode-map
-              ("<<tab>" . shrface-outline-cycle)
-              ("C-<<tab>" . org-tab-or-next-heading)
-              ("<<backtab>" . shrface-outline-cycle-buffer)
+              ("<tab>" . shrface-outline-cycle)
+              ("C-<tab>" . org-tab-or-next-heading)
+              ("<backtab>" . shrface-outline-cycle-buffer)
               ("C-c C-n" . shrface-next-headline)
               ("C-c C-p" . shrface-previous-headline)
               ("C-c C-l" . shrface-links-consult)
               ("C-c C-h" . shrface-headline-consult)
-              ("M-<<up>" . org-previous-visible-heading)))
+              ("M-<up>" . org-previous-visible-heading)))
 
 (use-package shr-tag-pre-highlight
   :after shrface
@@ -2682,6 +2677,29 @@ With a prefix ARG, remove start location."
 (use-package prescient
   :custom
   (prescient-persist-mode t))
+
+
+;; TODO
+(use-package laas
+  :hook (LaTeX-mode . laas-mode)
+  :config ; do whatever here
+  (aas-set-snippets 'laas-mode
+                    ;; set condition!
+                    :cond #'texmathp ; expand only while in math
+                    "supp" "\\supp"
+                    "On" "O(n)"
+                    "O1" "O(1)"
+                    "Olog" "O(\\log n)"
+                    "Olon" "O(n \\log n)"
+                    ;; bind to functions!
+                    "Sum" (lambda () (interactive)
+                            (yas-expand-snippet "\\sum_{$1}^{$2} $0"))
+                    "Span" (lambda () (interactive)
+                             (yas-expand-snippet "\\Span($1)$0"))
+                    ;; add accent snippets
+                    :cond #'laas-object-on-left-condition
+                    "qq" (lambda () (interactive) (laas-wrap-previous-object "sqrt"))))
+
 ;;
 ;; UNUSED
 ;;
@@ -2733,6 +2751,7 @@ With a prefix ARG, remove start location."
 ;;           (orca-handler-match-url "https://emacs.stackexchange.com/" "~/Dropbox/org/wiki/emacs.org" "\\* Questions")
 ;;           (orca-handler-current-buffer "\\* Tasks")
 ;;           (orca-handler-file "~/Dropbox/org/ent.org" "\\* Articles"))))
+
 ;; (use-package zotra
 ;;   :quelpa (zotra :fetcher github :repo "mpedramfar/zotra"))
 ;; (use-package origami
@@ -2741,9 +2760,12 @@ With a prefix ARG, remove start location."
 ;;   ("C-c ," . origami-toggle-node)
 ;;   ("C-c C-." . origami-close-all-nodes)
 ;;   ("C-c C->" . origami-open-all-nodes))
+
 ;; (use-package math-at-point
 ;;   :quelpa (math-at-point :fetcher github :repo "shankar2k/math-at-point"))
+
 ;; (use-package org-table-sticky-header)
+
 ;; (use-package org-sticky-header
 ;;   :hook (org-mode . org-sticky-header-mode)
 ;;   :custom
@@ -2753,6 +2775,7 @@ With a prefix ARG, remove start location."
 
 ;; (use-package magic-latex-buffer
 ;;   :hook (LaTeX-mode . magic-latex-buffer))
+
 ;; (use-package lsp-latex
 ;;   :hook
 ;;   ((LaTeX-mode . lsp-deferred)
@@ -2763,16 +2786,20 @@ With a prefix ARG, remove start location."
 ;;        (expand-file-name "~/.local/prog/texlab/target/release/texlab")))
 ;;   (lsp-latex-forward-search-executable "emacsclient")
 ;;   (lsp-latex-forward-search-args '("--eval" "(lsp-latex-forward-search-with-pdf-tools \"%f\" \"%p\" \"%l\")")))
+
 ;; (use-package xenops
 ;;   ;; :hook (LaTeX-mode . xenops-mode)
 ;;   :init (setq xenops-reveal-on-entry t))
+
 ;; (use-package outline
 ;;   :hook (LaTeX-mode . outline-minor-mode)
 ;;   :bind (:map outline-minor-mode-map
 ;;               ("C-c C-n" . )))
+
 ;; (use-package lazytab
 ;;   :quelpa (lazytab :fetcher github :repo "karthink/lazytab"))
 ;; ;; For some reason calctex skips the first element
+
 ;; (use-package calctex
 ;;   :quelpa (calctex :fetcher github :repo "johnbcoughlin/calctex")
 ;;   :hook (calc-mode . calctex-mode)
@@ -2803,44 +2830,28 @@ With a prefix ARG, remove start location."
 ;;     (let ((default-directory (file-name-directory calctex-dvichop-bin)))
 ;;       (call-process "make" nil nil nil))))
 
-;; TODO
-
-(use-package laas
-  :hook (LaTeX-mode . laas-mode)
-  :config ; do whatever here
-  (aas-set-snippets 'laas-mode
-                    ;; set condition!
-                    :cond #'texmathp ; expand only while in math
-                    "supp" "\\supp"
-                    "On" "O(n)"
-                    "O1" "O(1)"
-                    "Olog" "O(\\log n)"
-                    "Olon" "O(n \\log n)"
-                    ;; bind to functions!
-                    "Sum" (lambda () (interactive)
-                            (yas-expand-snippet "\\sum_{$1}^{$2} $0"))
-                    "Span" (lambda () (interactive)
-                             (yas-expand-snippet "\\Span($1)$0"))
-                    ;; add accent snippets
-                    :cond #'laas-object-on-left-condition
-                    "qq" (lambda () (interactive) (laas-wrap-previous-object "sqrt"))))
-
 ;; (use-package pyinspect
 ;;   :bind
 ;;   (:map python-mode-map
 ;;         ("C-c C-i" . pyinspect-inspect-at-point)))
+
 ;; (use-package apheleia
 ;;   :hook (python-mode . apheleia-mode))
+
 ;; (use-package pet
 ;;   :hook (python-mode . pet-mode))
+
 ;; (use-package python-mls
 ;;   :hook
 ;;   (inferior-python-mode . python-mls-mode)
 ;;   (python-mode . python-mls-python-setup))
+
 ;; (use-package blacken
 ;;   :hook (python-mode . blacken-mode)
 ;;   :custom (blacken-line-length 100))
+
 ;; (use-package github-review)
+
 ;; (use-package why-this
 ;;   :config
 ;;   (setq why-this-annotate-heat-map-cold "#203448")
@@ -2848,13 +2859,18 @@ With a prefix ARG, remove start location."
 ;;   :bind
 ;;   ("C-c g b a" . why-this-annotate)
 ;;   ("C-c g b b" . why-this-mode))
+
 ;; (use-package multicolumn)
+
 ;; (use-package repeat
 ;;   :init
 ;;   (repeat-mode t))
+
 ;; (use-package desktop :ensure nil
 ;;   :custom (desktop-save-mode 1)
 ;;   :init (add-to-list 'desktop-modes-not-to-save 'dired-mode))
+
+
 ;; Perl, Ruby, Scala, Go, Rust, Verilog
 ;; Japonca, Diagram, Internet, Elfeed,
 ;; IRC, Mail??,
@@ -2868,3 +2884,78 @@ With a prefix ARG, remove start location."
 ;; sqlite
 ;; Undo-tree??
 ;; flyspell
+
+
+;; TRY
+;; expand-region
+;; mosey
+;; scrollkeeper
+;; topsy
+;; https://github.com/karthink/.emacs.d/blob/e0dd53000e61936a3e9061652e428044b9138c8c/init.el#L2413
+;; https://github.com/karthink/.emacs.d/blob/e0dd53000e61936a3e9061652e428044b9138c8c/lisp/setup-org.el#L102
+;; mwim
+;; smart-region
+;; typo.el
+;; https://melpa.org/#/easy-kill
+;; iedit
+;; https://github.com/mkcms/interactive-align
+;; https://jherrlin.github.io/guitar-theory-training/
+;; https://gitlab.com/dto/mosaic-el
+;; https://gitlab.com/dto/cell-mode
+;; SVG:: https://github.com/konrad1977/emacs
+;; https://github.com/gkowzan/biblio-zotero
+;; shortdoc
+;; https://lifeofpenguin.blogspot.com/2022/01/gnu-emacs-configurable-browser.html
+;; Emacs Everywhere
+;; EAF
+;; savehist
+;; https://old.reddit.com/r/emacs/comments/w9lkzo/lookup_word_under_cursor_browse_synonyms_and/
+;; https://old.reddit.com/r/emacs/comments/x43eie/heres_a_list_of_emacs_keyboard_shortcuts_that_i/
+;; https://old.reddit.com/r/emacs/comments/ielfdb/setting_up_spell_checking_with_multiple/
+;; https://old.reddit.com/r/emacs/comments/jb1im4/hardcore_spell_checking_in_emacs/
+;; spell-fu
+;; https://old.reddit.com/r/emacs/comments/fxs92h/spell_checkers_in_emacs_in_2020/
+;; https://github.com/PillFall/languagetool.el
+;; stumpwm
+;; https://github.com/fritzgrabo/tab-bar-lost-commands
+;; https://github.com/fritzgrabo/tab-bar-groups
+;; https://github.com/ajrosen/tab-bar-buffers
+;; https://github.com/fritzgrabo/tab-bar-echo-area
+;; https://codeberg.org/emacs-weirdware/hyperspace
+;; https://github.com/CIAvash/persp-mode-project-bridge
+;; https://github.com/Bad-ptr/persp-mode.el
+;; https://github.com/Alexander-Miller
+;; https://github.com/nex3/perspective-el
+;; https://github.com/john2x/nameframe
+;; https://depp.brause.cc/eyebrowse/
+;; https://github.com/pashinin/workgroups2
+;; https://github.com/Javyre/winds.el
+;; https://github.com/alphapapa/bufler.el
+;; https://github.com/mclear-tools/tabspaces
+;; https://github.com/mrkkrp/zzz-to-char
+;; https://github.com/cute-jumper/avy-zap
+;; https://github.com/waymondo/ace-jump-zap
+;; https://github.com/winterTTr/ace-jump-mode
+;; https://github.com/tam17aki/ace-isearch
+;; tmux
+;; desktop.el
+;; http://danamlund.dk/emacs/no-easy-keys.html
+;; detached.el
+;; multi-vterm
+;; https://github.com/bling/fzf.el
+;; https://github.com/kljohann/turnip.el
+;; https://github.com/laishulu/emacs-tmux-pane
+;; https://github.com/manuel-uberti/slow-keys
+;; Hydra, Harpoon
+;; https://github.com/emacsorphanage/emamux
+;; https://github.com/abo-abo/lpy
+;; https://github.com/drym-org/symex.el
+;; https://github.com/abo-abo/lispy
+;; https://github.com/Fuco1/smartparens
+;; https://calva.io/paredit/
+;; https://github.com/AmaiKinono/puni
+;; https://github.com/mrkkrp/modalka
+;; https://github.com/meow-edit/meow
+;; https://github.com/jmorag/kakoune.el
+;; https://github.com/jyp/boon
+;; https://github.com/emacsorphanage/god-mode/
