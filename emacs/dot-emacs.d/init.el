@@ -43,6 +43,7 @@
 
 (require 'dash)
 (require 'f)
+
 (defun disable-line-numbers ()
   (display-line-numbers-mode -1))
 
@@ -59,17 +60,18 @@
                            (lambda (file) (not (s-starts-with? "." (f-filename file))))
                            (f-glob "*.bib" my-bibliography-directory)))
 
-(defvar my-dark-theme 'tangonov)
-(defvar my-light-theme 'leuven)
-(defvar my-active-theme my-dark-theme)
 (defun my-switch-theme ()
+  "Switch theme between light and dark theme."
   (interactive)
-  (let ((new-theme (if (eq my-active-theme my-dark-theme) my-light-theme my-dark-theme)))
+  (let ((my-dark-theme 'tangonov)
+        (my-light-theme 'leuven)
+        (current-theme (car custom-enabled-themes)) ;; Assume sinle theme
+        (new-theme (if (eq current-theme my-dark-theme) my-light-theme my-dark-theme)))
     (disable-theme my-active-theme)
-    (load-theme new-theme t)
-    (setq my-active-theme new-theme)))
+    (load-theme new-theme t)))
 
 (defun my-previous-window ()
+  "Previous window."
   (interactive)
   (other-window -1))
 
@@ -1032,12 +1034,12 @@
         ("C-c C-p" . focus-prev-thing)))
 
 (use-package expand-region
+  :custom
+  (expand-region-contract-fast-key "{")
   :bind
-  ("C-c C-}" . er/expand-region)
-  ("C-c } {}" . er/contract-region)
+  ("C-c } }" . er/expand-region)
   ("C-c } d" . er/mark-defun)
-  ("C-c } s" . er/mark-outside-pairs)
-  ("C-c } q" . er/mark-outside-quotes))
+  ("C-c } c" . er/mark-comment))
 
 (use-package goto-last-point
   :config (goto-last-point-mode)
@@ -1281,7 +1283,6 @@ perspective."
           (with-selected-frame frame
             (persp-kill name))))))))
   :bind ([remap project-switch-project] . project-persp-switch-project))
-;; TODO: Reconsider ??
 
 (use-package perspective
   :hook (after-init . persp-mode)
@@ -1506,7 +1507,10 @@ perspective."
 
 (use-package eglot
   :config
-  (add-to-list 'eglot-server-programs '(python-mode . ("poetry" "run" "pylsp"))))
+  (add-to-list 'eglot-server-programs '(python-mode . ("poetry" "run" "pylsp")))
+  (add-to-list 'eglot-server-programs `(tex-mode . ,(eglot-alternatives
+                                                     '(("~/.local/prog/digestif/digestif.sh")
+                                                       ("texlab"))))))
 
 (use-package eldoc
   :custom
@@ -1632,7 +1636,6 @@ perspective."
 (use-package docker)
 
 (use-package docker-tramp)
-;; TODO: FORMAT!!!
 
 (use-package verilog-mode
   :mode
@@ -1709,9 +1712,11 @@ perspective."
   :hook
   (emacs-lisp-mode . elisp-def-mode)
   (ielm-mode . elisp-def-mode))
-;; TODO ??
 
-(use-package refine)
+(use-package refine
+  :bind
+  (:map helpful-mode-map
+        ("e" . refine)))
 
 (use-package eval-sexp-fu
   :bind
@@ -2086,16 +2091,6 @@ With a prefix ARG, remove start location."
   (org-noter-insert-note-no-questions t))
 
 (use-package org-special-block-extras)
-;; (use-package org-remark
-;;   :quelpa (org-remark :fetcher github :repo "nobiot/org-remark")
-;;   :bind
-;;   ("C-c r m" . org-remark-mark)
-;;   (:map org-remark-mode-map
-;;         ("C-c r m" . org-remark-mark)
-;;         ("C-c r o" . org-remark-open)
-;;         ("C-c r k" . org-remark-remove)
-;;         ("C-c r n" . org-remark-next)
-;;         ("C-c r p" . org-remark-prev)))
 
 (use-package org-journal
   :bind ("C-c i j" . org-journal-new-entry)
@@ -2190,12 +2185,10 @@ With a prefix ARG, remove start location."
   (defengine google "https://google.com/search?q=%s" :keybinding "g")
   (defengine wikipedia "http://www.wikipedia.org/search-redirect.php?language=en&go=Go&search=%s" :keybinding "w")
   (defengine wolfram "http://www.wolframalpha.com/input/?i=%s"))
-;; TODO
 
 (use-package org-transclusion
   :quelpa (org-transclusion :fetcher github :repo "nobiot/org-transclusion")
   :custom (org-transclusion-activate-persistent-message nil))
-;; TODO
 
 (use-package org-rich-yank
   :bind (:map org-mode-map ("C-M-y" . org-rich-yank)))
@@ -2294,10 +2287,10 @@ With a prefix ARG, remove start location."
 (use-package orgit-forge)
 
 (use-package ox-hugo)
-;; TODO
 
 (use-package org-latex-impatient
   :custom
+  ;; TODO
   (org-latex-impatient-tex2svg-bin "/home/eksi/.local/prog/node_modules/mathjax-node-cli/bin/tex2svg"))
 
 (use-package org-tanglesync
@@ -2320,14 +2313,12 @@ With a prefix ARG, remove start location."
 
 (use-package org-autolist
   :hook (org-mode . org-autolist-mode))
-;; TODO
 
 (use-package org-books
   :custom
   (org-books-add-to-top nil)
   (org-books-file-depth 1)
   (org-books-file (concat my-notes-directory "/Books.org")))
-;; TODO
 
 (use-package ein)
 
@@ -2341,8 +2332,8 @@ With a prefix ARG, remove start location."
       (define-key map (kbd "TAB") (code-cells-speed-key 'outline-cycle)))
   :bind
   (:map code-cells-mode-map
-        ("C-c n" . code-cells-forward-cell)
-        ("C-c p" . code-cells-backward-cell)
+        ("C-c C-n" . code-cells-forward-cell)
+        ("C-c C-p" . code-cells-backward-cell)
         ("M-RET" . code-cells-eval)))
 
 (use-package org-auctex
@@ -2398,8 +2389,7 @@ With a prefix ARG, remove start location."
         ("C-c o n" . my-citar-open-current-note)
         ("C-c o p" . my-citar-open-current-file)))
 
-;; TODO
-
+;; TODO Expand
 (use-package citar-embark
   :no-require t
   :ensure citar
@@ -2500,16 +2490,6 @@ With a prefix ARG, remove start location."
     (let* ((commits (latexdiff--get-commit-hash-alist))
            (commit-hash (cdr (car commits))))
       (latexdiff-vc--compile-diff-with-current commit-hash))))
-
-;; TODO
-
-(use-package ebib
-  :custom
-  (ebib-preload-bib-files my-bibliographies)
-  (ebib-bibtex-dialect 'biblatex)
-  (ebib-default-directory my-bibliography-directory)
-  (ebib-index-window-size 20)
-  (ebib-bib-search-dirs (list my-bibliography-directory)))
 
 (use-package alert
   :custom (alert-default-style 'libnotify))
@@ -2678,34 +2658,28 @@ With a prefix ARG, remove start location."
   :custom
   (prescient-persist-mode t))
 
-
-;; TODO
-(use-package laas
-  :hook (LaTeX-mode . laas-mode)
-  :config ; do whatever here
-  (aas-set-snippets 'laas-mode
-                    ;; set condition!
-                    :cond #'texmathp ; expand only while in math
-                    "supp" "\\supp"
-                    "On" "O(n)"
-                    "O1" "O(1)"
-                    "Olog" "O(\\log n)"
-                    "Olon" "O(n \\log n)"
-                    ;; bind to functions!
-                    "Sum" (lambda () (interactive)
-                            (yas-expand-snippet "\\sum_{$1}^{$2} $0"))
-                    "Span" (lambda () (interactive)
-                             (yas-expand-snippet "\\Span($1)$0"))
-                    ;; add accent snippets
-                    :cond #'laas-object-on-left-condition
-                    "qq" (lambda () (interactive) (laas-wrap-previous-object "sqrt"))))
-
 ;;
 ;; UNUSED
-;;
-;; (use-package magit-delta
-;;   ;; :hook (magit-mode . magit-delta-mode)
-;;   :custom (magit-delta-default-dark-theme "Monokai Extended Origin"))
+
+;; (use-package laas
+;;   :hook (LaTeX-mode . laas-mode)
+;;   :config ; do whatever here
+;;   (aas-set-snippets 'laas-mode
+;;                     ;; set condition!
+;;                     :cond #'texmathp ; expand only while in math
+;;                     "supp" "\\supp"
+;;                     "On" "O(n)"
+;;                     "O1" "O(1)"
+;;                     "Olog" "O(\\log n)"
+;;                     "Olon" "O(n \\log n)"
+;;                     ;; bind to functions!
+;;                     "Sum" (lambda () (interactive)
+;;                             (yas-expand-snippet "\\sum_{$1}^{$2} $0"))
+;;                     "Span" (lambda () (interactive)
+;;                              (yas-expand-snippet "\\Span($1)$0"))
+;;                     ;; add accent snippets
+;;                     :cond #'laas-object-on-left-condition
+;;                     "qq" (lambda () (interactive) (laas-wrap-previous-object "sqrt"))))
 
 ;; (use-package orca
 ;;   :preface
@@ -2754,208 +2728,35 @@ With a prefix ARG, remove start location."
 
 ;; (use-package zotra
 ;;   :quelpa (zotra :fetcher github :repo "mpedramfar/zotra"))
-;; (use-package origami
-;;   :hook (prog-mode . origami-mode)
-;;   :bind
-;;   ("C-c ," . origami-toggle-node)
-;;   ("C-c C-." . origami-close-all-nodes)
-;;   ("C-c C->" . origami-open-all-nodes))
 
-;; (use-package math-at-point
-;;   :quelpa (math-at-point :fetcher github :repo "shankar2k/math-at-point"))
+(use-package org-sticky-header
+  :hook (org-mode . org-sticky-header-mode)
+  :custom
+  (org-sticky-header-always-show-header t)
+  (org-sticky-header-show-keyword nil)
+  (org-sticky-header-show-priority nil)
+  (org-sticky-header-full-path 'full))
 
-;; (use-package org-table-sticky-header)
+(use-package outline
+  :hook (LaTeX-mode . outline-minor-mode)
+  :bind (:map outline-minor-mode-map
+              ("C-c TAB" . outline-toggle-children)
+              ("C-c o n" . outline-next-heading)
+              ("C-c o p" . outline-previous-heading)))
 
-;; (use-package org-sticky-header
-;;   :hook (org-mode . org-sticky-header-mode)
-;;   :custom
-;;   (org-sticky-header-always-show-header t)
-;;   (org-sticky-header-show-keyword nil)
-;;   (org-sticky-header-full-path 'full))
+(use-package lazytab
+  :quelpa (lazytab :fetcher github :repo "karthink/lazytab"))
 
-;; (use-package magic-latex-buffer
-;;   :hook (LaTeX-mode . magic-latex-buffer))
+(use-package apheleia
+  :hook (python-mode . apheleia-mode))
 
-;; (use-package lsp-latex
-;;   :hook
-;;   ((LaTeX-mode . lsp-deferred)
-;;    (bibtex-mode . lsp-deferred))
-;;   :custom
-;;   (lsp-latex-texlab-executable
-;;    (or (executable-find "texlab")
-;;        (expand-file-name "~/.local/prog/texlab/target/release/texlab")))
-;;   (lsp-latex-forward-search-executable "emacsclient")
-;;   (lsp-latex-forward-search-args '("--eval" "(lsp-latex-forward-search-with-pdf-tools \"%f\" \"%p\" \"%l\")")))
+(use-package desktop :ensure nil
+  :custom (desktop-save-mode 1)
+  :init (add-to-list 'desktop-modes-not-to-save 'dired-mode))
 
-;; (use-package xenops
-;;   ;; :hook (LaTeX-mode . xenops-mode)
-;;   :init (setq xenops-reveal-on-entry t))
-
-;; (use-package outline
-;;   :hook (LaTeX-mode . outline-minor-mode)
-;;   :bind (:map outline-minor-mode-map
-;;               ("C-c C-n" . )))
-
-;; (use-package lazytab
-;;   :quelpa (lazytab :fetcher github :repo "karthink/lazytab"))
-;; ;; For some reason calctex skips the first element
-
-;; (use-package calctex
-;;   :quelpa (calctex :fetcher github :repo "johnbcoughlin/calctex")
-;;   :hook (calc-mode . calctex-mode)
-;;   :config
-;;   (setq calctex-additional-latex-packages "
-;; \\usepackage[usenames]{xcolor}
-;; \\usepackage{soul}
-;; \\usepackage{adjustbox}
-;; \\usepackage{amsmath}
-;; \\usepackage{amssymb}
-;; \\usepackage{siunitx}
-;; \\usepackage{cancel}
-;; \\usepackage{mathtools}
-;; \\usepackage{mathalpha}
-;; \\usepackage{xparse}
-;; \\usepackage{arevmath}"
-;;         calctex-additional-latex-macros (concat calctex-additional-latex-macros "\n\\let\\evalto\\Rightarrow"))
-;;   (defun teco-calctex-fix (orig-fn &rest args)
-;;     (let ((inhibit-message t)
-;;           message-log-max)
-;;       (apply orig-fn args)))
-;;   (advice-add #'teco-calctex-fix :around #'calctex-default-dispatching-render-process)
-;;   (let ((vendor-folder (concat (file-truename quelpa-build-dir) "/calctex/vendor/")))
-;;     (setq calctex-dvichop-sty (concat vendor-folder "texd/dvichop")
-;;           calctex-dvichop-bin (concat vendor-folder "texd/dvichop")))
-;;   (unless (file-exists-p calctex-dvichop-bin)
-;;     (message "CalcTeX: Building dvichop binary")
-;;     (let ((default-directory (file-name-directory calctex-dvichop-bin)))
-;;       (call-process "make" nil nil nil))))
-
-;; (use-package pyinspect
-;;   :bind
-;;   (:map python-mode-map
-;;         ("C-c C-i" . pyinspect-inspect-at-point)))
-
-;; (use-package apheleia
-;;   :hook (python-mode . apheleia-mode))
-
-;; (use-package pet
-;;   :hook (python-mode . pet-mode))
-
-;; (use-package python-mls
-;;   :hook
-;;   (inferior-python-mode . python-mls-mode)
-;;   (python-mode . python-mls-python-setup))
-
-;; (use-package blacken
-;;   :hook (python-mode . blacken-mode)
-;;   :custom (blacken-line-length 100))
-
-;; (use-package github-review)
-
-;; (use-package why-this
-;;   :config
-;;   (setq why-this-annotate-heat-map-cold "#203448")
-;;   (setq why-this-annotate-heat-map-warm "#382f27")
-;;   :bind
-;;   ("C-c g b a" . why-this-annotate)
-;;   ("C-c g b b" . why-this-mode))
-
-;; (use-package multicolumn)
-
-;; (use-package repeat
-;;   :init
-;;   (repeat-mode t))
-
-;; (use-package desktop :ensure nil
-;;   :custom (desktop-save-mode 1)
-;;   :init (add-to-list 'desktop-modes-not-to-save 'dired-mode))
-
-
-;; Perl, Ruby, Scala, Go, Rust, Verilog
-;; Japonca, Diagram, Internet, Elfeed,
-;; IRC, Mail??,
-;; Agenda, Capture
-;; Windows, WSL, Setup-from-scratch
-;; Tramp
 ;; CTAGS, tree-sitter
 ;; Tempel, Yasnippet, Embark
-;; Latex, AUCTEX, Citar, RefTex
-;; Blog, HUGO
-;; sqlite
-;; Undo-tree??
-;; flyspell
-
-
-;; TRY
-;; expand-region
-;; mosey
-;; scrollkeeper
-;; topsy
-;; https://github.com/karthink/.emacs.d/blob/e0dd53000e61936a3e9061652e428044b9138c8c/init.el#L2413
-;; https://github.com/karthink/.emacs.d/blob/e0dd53000e61936a3e9061652e428044b9138c8c/lisp/setup-org.el#L102
-;; mwim
-;; smart-region
-;; typo.el
-;; https://melpa.org/#/easy-kill
-;; iedit
-;; https://github.com/mkcms/interactive-align
-;; https://jherrlin.github.io/guitar-theory-training/
-;; https://gitlab.com/dto/mosaic-el
-;; https://gitlab.com/dto/cell-mode
-;; SVG:: https://github.com/konrad1977/emacs
-;; https://github.com/gkowzan/biblio-zotero
-;; shortdoc
-;; https://lifeofpenguin.blogspot.com/2022/01/gnu-emacs-configurable-browser.html
-;; Emacs Everywhere
-;; EAF
-;; savehist
-;; https://old.reddit.com/r/emacs/comments/w9lkzo/lookup_word_under_cursor_browse_synonyms_and/
-;; https://old.reddit.com/r/emacs/comments/x43eie/heres_a_list_of_emacs_keyboard_shortcuts_that_i/
-;; https://old.reddit.com/r/emacs/comments/ielfdb/setting_up_spell_checking_with_multiple/
-;; https://old.reddit.com/r/emacs/comments/jb1im4/hardcore_spell_checking_in_emacs/
-;; spell-fu
-;; https://old.reddit.com/r/emacs/comments/fxs92h/spell_checkers_in_emacs_in_2020/
-;; https://github.com/PillFall/languagetool.el
-;; stumpwm
-;; https://github.com/fritzgrabo/tab-bar-lost-commands
-;; https://github.com/fritzgrabo/tab-bar-groups
-;; https://github.com/ajrosen/tab-bar-buffers
-;; https://github.com/fritzgrabo/tab-bar-echo-area
-;; https://codeberg.org/emacs-weirdware/hyperspace
-;; https://github.com/CIAvash/persp-mode-project-bridge
-;; https://github.com/Bad-ptr/persp-mode.el
-;; https://github.com/Alexander-Miller
-;; https://github.com/nex3/perspective-el
-;; https://github.com/john2x/nameframe
-;; https://depp.brause.cc/eyebrowse/
-;; https://github.com/pashinin/workgroups2
-;; https://github.com/Javyre/winds.el
-;; https://github.com/alphapapa/bufler.el
-;; https://github.com/mclear-tools/tabspaces
-;; https://github.com/mrkkrp/zzz-to-char
-;; https://github.com/cute-jumper/avy-zap
-;; https://github.com/waymondo/ace-jump-zap
-;; https://github.com/winterTTr/ace-jump-mode
-;; https://github.com/tam17aki/ace-isearch
-;; tmux
-;; desktop.el
-;; http://danamlund.dk/emacs/no-easy-keys.html
 ;; detached.el
-;; multi-vterm
-;; https://github.com/bling/fzf.el
-;; https://github.com/kljohann/turnip.el
-;; https://github.com/laishulu/emacs-tmux-pane
-;; https://github.com/manuel-uberti/slow-keys
-;; Hydra, Harpoon
-;; https://github.com/emacsorphanage/emamux
-;; https://github.com/abo-abo/lpy
-;; https://github.com/drym-org/symex.el
-;; https://github.com/abo-abo/lispy
-;; https://github.com/Fuco1/smartparens
-;; https://calva.io/paredit/
-;; https://github.com/AmaiKinono/puni
-;; https://github.com/mrkkrp/modalka
-;; https://github.com/meow-edit/meow
-;; https://github.com/jmorag/kakoune.el
-;; https://github.com/jyp/boon
-;; https://github.com/emacsorphanage/god-mode/
+
+(provide 'init)
+;;; init.el ends here
