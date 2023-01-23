@@ -1463,7 +1463,10 @@ perspective."
 
 (use-package yasnippet
   :hook ((prog-mode org-mode) . yas-minor-mode)
-  :bind (:map yas-minor-mode-map ("<tab>" . nil)))
+  :bind
+  (:map yas-minor-mode-map
+        ("<tab>" . nil)
+        ("M-i" . yas-expand)))
 
 (use-package tramp
   :commands (tramp-cleanup-all-connections tramp-cleanup-all-buffers)
@@ -2213,7 +2216,8 @@ With a prefix ARG, remove start location."
   (org-roam-directory my-notes-directory)
   (org-roam-auto-replace-fuzzy-links nil)
   (org-roam-capture-templates
-   '(("d" "default" plain "%?" :target  (file+head "%<<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")  :unnarrowed t)
+   '(("d" "Daily" plain "%?" :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")  :unnarrowed t)
+     ("c" "Catch all" entry  :target (file+head "CatchAll.org") "* %^{Note title}\nContext: %a\n%?" :empty-lines-before 1 )
      ("p" "Paper Note" plain "* %^{citekey}" :target (file "Papers.org" "#+title: ${title}"))))
   :bind
   ("C-c n l" . org-roam-buffer-toggle)
@@ -2655,7 +2659,8 @@ With a prefix ARG, remove start location."
 (use-package sudo-edit)
 
 (use-package prescient
-  :custom
+  :config
+  (add-to-list 'delete-frame-functions #'prescient--save)
   (prescient-persist-mode t))
 
 ;;
@@ -2744,8 +2749,8 @@ With a prefix ARG, remove start location."
               ("C-c o n" . outline-next-heading)
               ("C-c o p" . outline-previous-heading)))
 
-(use-package lazytab
-  :quelpa (lazytab :fetcher github :repo "karthink/lazytab"))
+;; (use-package lazytab
+;;   :quelpa (lazytab :fetcher github :repo "karthink/lazytab"))
 
 (use-package apheleia
   :hook (python-mode . apheleia-mode))
