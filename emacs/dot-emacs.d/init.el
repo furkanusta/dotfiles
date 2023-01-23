@@ -203,6 +203,7 @@
   (package-native-compile t)
   (large-file-warning-threshold (* 1024 1024 1024)) ;; 1GB
   (confirm-nonexistent-file-or-buffer nil)
+  (select-enable-primary t)
   (truncate-lines t)
   :bind
   ("C-c ." . pop-global-mark)
@@ -2110,7 +2111,7 @@ With a prefix ARG, remove start location."
 
 (use-package inherit-org
   :quelpa (inherit-org :repo "chenyanming/inherit-org" :fetcher github)
-  :hook ((eww-mode nov-mode info-mode helpful-mode) . inherit-org-mode))
+  :hook ((eww-mode nov-mode info-mode helpful-mode ghelp-page-mode) . inherit-org-mode))
 
 (use-package shrface
   :after org
@@ -2662,6 +2663,9 @@ With a prefix ARG, remove start location."
   :config
   (add-to-list 'delete-frame-functions #'prescient--save)
   (prescient-persist-mode t))
+
+(use-package ghelp
+  :quelpa (ghelp :fetcher github :repo "casouri/ghelp"))
 
 ;;
 ;; UNUSED
