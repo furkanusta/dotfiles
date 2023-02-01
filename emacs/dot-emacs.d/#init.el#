@@ -30,8 +30,8 @@
 
 (use-package use-package-hydra)
 
-;; (setq use-package-always-defer t)
-(setq-default use-package-always-ensure t)
+(setq use-package-always-defer t)
+;; (setq-default use-package-always-ensure t)
 
 (setq custom-file (concat user-emacs-directory "custom.el"))
 (load custom-file)
@@ -2344,11 +2344,11 @@ With a prefix ARG, remove start location."
 (use-package org-autolist
   :hook (org-mode . org-autolist-mode))
 
-;; (use-package org-books
-;;   :custom
-;;   (org-books-add-to-top nil)
-;;   (org-books-file-depth 1)
-;;   (org-books-file (concat my-notes-directory "/Books.org")))
+(use-package org-books
+  :custom
+  (org-books-add-to-top nil)
+  (org-books-file-depth 1)
+  (org-books-file (concat my-notes-directory "/Books.org")))
 
 (use-package ein)
 
@@ -2785,9 +2785,9 @@ With a prefix ARG, remove start location."
 (use-package apheleia
   :hook (python-mode . apheleia-mode))
 
-;; (use-package desktop :ensure nil
-;;   :custom (desktop-save-mode 1)
-;;   :init (add-to-list 'desktop-modes-not-to-save 'dired-mode))
+(use-package desktop :ensure nil
+  :custom (desktop-save-mode 1)
+  :init (add-to-list 'desktop-modes-not-to-save 'dired-mode))
 
 ;; CTAGS, tree-sitter
 ;; Tempel, Yasnippet, Embark
@@ -2833,15 +2833,7 @@ With a prefix ARG, remove start location."
 
 (setq split-height-threshold nil)
 
-;; /ssh:furkanu@xirengips01:/scratch/furkanu/ws/xrdma
-
-;; (use-package verilog-ext
-;;   :quelpa (verilog-ext :fetcher github :repo "gmlarumbe/verilog-ext"))
-
-
-;; (use-package verilog-mode
-;;   :quelpa (verilog-mode :fetcher github :repo "veripool/verilog-mode"))
+;; //ssh:furkanu@xirengips01:/scratch/furkanu/ws/xrdma
 
 (provide 'init)
 ;;; init.el ends here
-
