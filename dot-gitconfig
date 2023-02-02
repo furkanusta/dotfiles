@@ -48,3 +48,13 @@
 
 [color]
 	ui = auto
+
+
+[diff "org"]
+    xfuncname="^\\*+ +(.*)$"
+
+[diff "common-lisp"]
+    xfuncname="^\\((def\\S+\\s+\\S+)"
+
+[diff "elisp"]
+    xfuncname="^\\((((def\\S+)|use-package)\\s+\\S+)"

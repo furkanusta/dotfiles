@@ -30,19 +30,18 @@
 
 (use-package use-package-hydra)
 
-;; (setq use-package-always-defer t)
-(setq-default use-package-always-ensure t)
-
-(setq custom-file (concat user-emacs-directory "custom.el"))
-(load custom-file)
+(setq custom-file null-device)
 ;; Init Done
 
 ;; ;; Debug
 ;; (require 'benchmark-init)
 ;; (add-hook 'after-init-hook 'benchmark-init/deactivate)
 
-(require 'dash)
-(require 'f)
+(use-package dash)
+(use-package f)
+
+;; (setq use-package-always-defer t)
+(setq-default use-package-always-ensure t)
 
 (defun disable-line-numbers ()
   (display-line-numbers-mode -1))
@@ -154,6 +153,8 @@
   (fset 'yes-or-no-p 'y-or-n-p)
   (global-unset-key (kbd "C-x c"))
   (add-to-list 'default-frame-alist '(fullscreen . maximized))
+  (prefer-coding-system 'utf-8)
+  (set-language-environment "UTF-8")
   (setq-default user-full-name "Furkan Usta"
                 delete-by-moving-to-trash t
                 tab-width 4
@@ -203,7 +204,6 @@
   (package-native-compile t)
   (large-file-warning-threshold (* 1024 1024 1024)) ;; 1GB
   (confirm-nonexistent-file-or-buffer nil)
-  (select-enable-primary t)
   (truncate-lines t)
   :bind
   ("C-c ." . pop-global-mark)
@@ -235,11 +235,6 @@
   (:map project-prefix-map
         ("a" . ff-find-other-file-other-window)
         ("A" . ff-find-other-file)))
-
-(use-package exec-path-from-shell
-  :custom
-  (exec-path-from-shell-arguments nil)
-  :hook (after-init . exec-path-from-shell-initialize))
 
 (use-package ediff
   :custom
@@ -597,7 +592,7 @@
 (use-package elfeed-search :ensure elfeed
   :after elfeed
   :defines elfeed-show-entry
-  :commands (pocket-reader-elfeed-search-add-link elfeed-search-selected elfeed-search-untag-all-unread)
+  :commands (pocket-reader-add-link elfeed-search-selected elfeed-search-untag-all-unread)
   :preface
   (defun elfeed-get-show-or-search-entry ()
     (let* ((search-entries (elfeed-search-selected))
@@ -625,17 +620,17 @@
       (eww url)
       (elfeed-search-untag-all-unread)))
   :bind (:map elfeed-search-mode-map
-              ("P" . pocket-reader-elfeed-entry-add-link)
+              ("P" . pocket-reader-add-link)
               ("d" . elfeed-youtube-dl)
               ("e" . elfeed-open-eww)
               ("m" . elfeed-mpv)))
 
 (use-package elfeed-show :ensure elfeed
   :after elfeed
-  :commands (pocket-reader-elfeed-search-add-link)
+  :commands (pocket-reader-add-link)
   :bind (:map elfeed-show-mode-map
               ("q" . +rss/delete-pane)
-              ("P" . pocket-reader-elfeed-search-add-link)))
+              ("P" . pocket-reader-add-link)))
 
 (use-package reddigg
   :defines elfeed-search-mode-map
@@ -872,7 +867,7 @@
   (register-preview-function #'consult-register-format)
   (xref-show-xrefs-function #'consult-xref)
   (xref-show-definitions-function #'consult-xref)
-  (consult-preview-key (kbd "M-."))
+  (consult-preview-key "M-.")
   (consult-narrow-key "<")
   (consult-ripgrep-args
    "rg --null --line-buffered --color=never --max-columns=1000 --path-separator / --smart-case --no-heading --line-number .")
@@ -886,19 +881,11 @@
   (define-key consult-narrow-map (vconcat consult-narrow-key "?") #'consult-narrow-help))
 
 (use-package consult-dir
-  :demand t
+  :after tramp-container
   :preface
   (defun consult-dir--tramp-docker-hosts ()
     "Get a list of hosts from docker."
-    (when (require 'docker-tramp nil t)
-      (let ((hosts)
-            (docker-tramp-use-names t))
-        (dolist (cand (docker-tramp--parse-running-containers))
-          (let ((user (unless (string-empty-p (car cand))
-                        (concat (car cand) "@")))
-                (host (car (cdr cand))))
-            (push (concat "/docker:" user host ":/") hosts)))
-        hosts)))
+    (tramp-container--completion-functions tramp-docker-method))
   (defvar consult-dir--source-tramp-docker
     `(:name     "Docker"
                 :narrow   ?d
@@ -1662,7 +1649,7 @@ perspective."
 
 (use-package docker)
 
-(use-package docker-tramp)
+(use-package tramp-container :ensure nil)
 
 (use-package verilog-mode
   :mode
@@ -2796,6 +2783,11 @@ With a prefix ARG, remove start location."
 (use-package consult-tramp
   :quelpa (consult-tramp :fetcher github :repo "Ladicle/consult-tramp"))
 
+(use-package gnutls
+  :if (memq window-system '(pc w32))
+  :config
+  (add-to-list 'gnutls-trustfiles "C:/PROGRAMS/CRT/*.crt"))
+
 (defun wsl--send-kill-ring ()
   (let* ((process-connection-type nil)
          (data (substring-no-properties (car kill-ring)))
@@ -2836,7 +2828,25 @@ With a prefix ARG, remove start location."
 ;; /ssh:furkanu@xirengips01:/scratch/furkanu/ws/xrdma
 
 ;; (use-package verilog-ext
-;;   :quelpa (verilog-ext :fetcher github :repo "gmlarumbe/verilog-ext"))
+;;   :no-require t
+;;   :quelpa (verilog-ext :fetcher github :repo "gmlarumbe/verilog-ext")
+;;   :init
+;;   (require 'verilog-utils)
+;;   (require 'verilog-editing)
+;;   (require 'verilog-navigation)
+;;   (require 'verilog-typedef)
+;;   (require 'verilog-beautify)
+;;   (require 'verilog-compile)
+;;   (require 'verilog-imenu)
+;;   (require 'verilog-font-lock)
+;;   ;; (require 'verilog-completion)
+
+
+;; ;; (require 'verilog-vhier)
+;; ;; (require 'verilog-lsp)
+;; (require 'verilog-flycheck)
+
+;;   )
 
 
 ;; (use-package verilog-mode
@@ -2844,4 +2854,3 @@ With a prefix ARG, remove start location."
 
 (provide 'init)
 ;;; init.el ends here
-
