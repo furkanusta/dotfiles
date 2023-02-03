@@ -62,11 +62,11 @@
 (defun my-switch-theme ()
   "Switch theme between light and dark theme."
   (interactive)
-  (let ((my-dark-theme 'tangonov)
-        (my-light-theme 'leuven)
-        (current-theme (car custom-enabled-themes)) ;; Assume sinle theme
-        (new-theme (if (eq current-theme my-dark-theme) my-light-theme my-dark-theme)))
-    (disable-theme my-active-theme)
+  (let* ((my-dark-theme 'tangonov)
+         (my-light-theme 'leuven)
+         (current-theme (car custom-enabled-themes)) ;; Assume sinle theme
+         (new-theme (if (eq current-theme my-dark-theme) my-light-theme my-dark-theme)))
+    (disable-theme current-theme)
     (load-theme new-theme t)))
 
 (defun my-previous-window ()
@@ -1672,10 +1672,10 @@ perspective."
   (verilog-indent-level-declaration 4)
   (verilog-indent-level-module 4))
 
-(use-package tree-sitter
-  :hook (tree-sitter-after-on . tree-sitter-hl-mode))
+;; (use-package tree-sitter
+;;   :hook (tree-sitter-after-on . tree-sitter-hl-mode))
 
-(use-package tree-sitter-langs)
+;; (use-package tree-sitter-langs)
 
 (use-package graphviz-dot-mode
   :custom (graphviz-dot-indent-width 4))
