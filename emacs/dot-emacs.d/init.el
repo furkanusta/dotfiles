@@ -40,8 +40,8 @@
 (use-package dash)
 (use-package f)
 
-;; (setq use-package-always-defer t)
-(setq-default use-package-always-ensure t)
+(setq use-package-always-defer t)
+;; (setq-default use-package-always-ensure t)
 
 (defun disable-line-numbers ()
   (display-line-numbers-mode -1))
@@ -261,7 +261,7 @@
 
 (use-package hl-line :ensure nil :custom (global-hl-line-mode t))
 
-(use-package delsel  :ensure nil :custom (delete-selection-mode 1))
+(use-package delsel  :ensure nil :demand t :init (delete-selection-mode 1))
 
 (use-package recentf :ensure nil
   :after no-littering
@@ -1161,10 +1161,11 @@
   (dashboard-page-separator "\n\f\n")
   (dashboard-projects-backend 'project-el)
   (dashboard-projects-switch-function 'project-persp-switch-project)
-  (dashboard-items '((scratch . 6)
+  (dashboard-items '((scratch . 2)
                      (recents  . 5)
                      (bookmarks . 5)
-                     (projects . 5)))
+                     (projects . 5)
+                     (agenda . 5)))
   (dashboard-banner-logo-title "Emacs"))
 
 (use-package all-the-icons)
@@ -1233,7 +1234,7 @@
     (interactive)
     (beginning-of-defun -1))
   :custom
-  (tab-always-indent 'complete)
+  (tab-always-indent t)
   :bind
   (:map prog-mode-map
         ("C-c C-p" . eos/previous-function)
@@ -1671,11 +1672,6 @@ perspective."
   (verilog-indent-level-directive 4)
   (verilog-indent-level-declaration 4)
   (verilog-indent-level-module 4))
-
-;; (use-package tree-sitter
-;;   :hook (tree-sitter-after-on . tree-sitter-hl-mode))
-
-;; (use-package tree-sitter-langs)
 
 (use-package graphviz-dot-mode
   :custom (graphviz-dot-indent-width 4))
@@ -2296,19 +2292,11 @@ With a prefix ARG, remove start location."
   ("C-c C-x c" . org-mru-clock-in)
   ("C-c C-x C-c" . org-mru-clock-select-recent-task))
 
-(use-package org-dashboard
-  :custom (org-dashboard-files (list (concat my-notes-directory "TODO.org"))))
-
 (use-package orgit)
 
 (use-package orgit-forge)
 
 (use-package ox-hugo)
-
-(use-package org-latex-impatient
-  :custom
-  ;; TODO
-  (org-latex-impatient-tex2svg-bin "/home/eksi/.local/prog/node_modules/mathjax-node-cli/bin/tex2svg"))
 
 (use-package org-tanglesync
   :bind
@@ -2788,40 +2776,48 @@ With a prefix ARG, remove start location."
   :config
   (add-to-list 'gnutls-trustfiles "C:/PROGRAMS/CRT/*.crt"))
 
-(defun wsl--send-kill-ring ()
-  (let* ((process-connection-type nil)
-         (data (substring-no-properties (car kill-ring)))
-         (proc (start-process "clip.exe" nil "clip.exe")))
-    (unless proc
-      (signal 'file-error (list "Not found")))
-    (process-send-string proc data)
-    (process-send-eof proc)))
+(use-package treesit-auto
+  :custom
+  (treesit-auto-install t)
+  :init
+  (global-treesit-auto-mode t)
+  (add-to-list 'treesit-auto--language-source-alist '(verilog "https://github.com/tree-sitter/tree-sitter-verilog")))
 
-(defun wsl--get ()
-  (with-output-to-string
-    (let ((coding-system-for-read 'dos)) ;Convert CR->LF.
-      (call-process "powershell.exe" nil t nil "-command" "Get-Clipboard"))))
-
-(defun wsl-copy ()
-  (interactive)
-  (xah-copy-line-or-region)
-  (wsl--send-kill-ring))
-
-(defun wsl-kill-line ()
-  (interactive)
-  (kill-line)
-  (wsl--send-kill-ring))
-
-(defun wsl-yank ()
-  (interactive)
-  (with-temp-buffer
-    (wsl--get)
-    (kill-ring-save (point-min) (point-max)))
-  (yank))
-
-(global-set-key (kbd "M-w") #'wsl-copy)
-(global-set-key (kbd "C-k") #'wsl-kill-line)
-(global-set-key (kbd "C-S-y") #'wsl-yank)
+(use-package emacs-wsl
+  :if (memq window-system '(pc w32))
+  :ensure nil
+  :no-require t
+  :preface
+  (defun wsl--send-kill-ring ()
+    (let* ((process-connection-type nil)
+           (data (substring-no-properties (car kill-ring)))
+           (proc (start-process "clip.exe" nil "clip.exe")))
+      (unless proc
+        (signal 'file-error (list "Not found")))
+      (process-send-string proc data)
+      (process-send-eof proc)))
+  (defun wsl--get ()
+    (with-output-to-string
+      (let ((coding-system-for-read 'dos)) ;Convert CR->LF.
+        (call-process "powershell.exe" nil t nil "-command" "Get-Clipboard"))))
+  (defun wsl-copy ()
+    (interactive)
+    (xah-copy-line-or-region)
+    (wsl--send-kill-ring))
+  (defun wsl-kill-line ()
+    (interactive)
+    (kill-line)
+    (wsl--send-kill-ring))
+  (defun wsl-yank ()
+    (interactive)
+    (with-temp-buffer
+      (wsl--get)
+      (kill-ring-save (point-min) (point-max)))
+    (yank))
+  :bind
+  ("M-w" . xah-copy-line-or-region)
+  ("C-k" . kill-line)
+  ("C-S-y" . wsl-yank))
 
 (setq split-height-threshold nil)
 
@@ -2845,7 +2841,6 @@ With a prefix ARG, remove start location."
 ;; ;; (require 'verilog-vhier)
 ;; ;; (require 'verilog-lsp)
 ;; (require 'verilog-flycheck)
-
 ;;   )
 
 
