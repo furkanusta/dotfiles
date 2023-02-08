@@ -1008,11 +1008,6 @@
   (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
   :config (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
-(use-package consult-flycheck
-  :bind
-  (:map flycheck-mode-map
-        ("C-c c f" . consult-flycheck)))
-
 (use-package consult-flyspell
   :bind
   (:map flyspell-mode-map
@@ -1545,8 +1540,7 @@ perspective."
         ("x" . makefile-executor-execute-last)
         ("X" . project-execute-extended-command)))
 
-(use-package flymake
-  :hook (prog-mode . flymake-mode))
+(use-package flymake)
 
 (use-package flymake-cursor
   :hook (flymake-mode . flymake-cursor-mode))
@@ -2820,32 +2814,6 @@ With a prefix ARG, remove start location."
   ("C-S-y" . wsl-yank))
 
 (setq split-height-threshold nil)
-
-;; /ssh:furkanu@xirengips01:/scratch/furkanu/ws/xrdma
-
-;; (use-package verilog-ext
-;;   :no-require t
-;;   :quelpa (verilog-ext :fetcher github :repo "gmlarumbe/verilog-ext")
-;;   :init
-;;   (require 'verilog-utils)
-;;   (require 'verilog-editing)
-;;   (require 'verilog-navigation)
-;;   (require 'verilog-typedef)
-;;   (require 'verilog-beautify)
-;;   (require 'verilog-compile)
-;;   (require 'verilog-imenu)
-;;   (require 'verilog-font-lock)
-;;   ;; (require 'verilog-completion)
-
-
-;; ;; (require 'verilog-vhier)
-;; ;; (require 'verilog-lsp)
-;; (require 'verilog-flycheck)
-;;   )
-
-
-;; (use-package verilog-mode
-;;   :quelpa (verilog-mode :fetcher github :repo "veripool/verilog-mode"))
 
 (provide 'init)
 ;;; init.el ends here
