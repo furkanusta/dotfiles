@@ -269,7 +269,10 @@
   :custom
   (recentf-mode t)
   (recentf-save-file (concat no-littering-var-directory "recentf"))
-  (recentf-exclude (list no-littering-var-directory "/tmp" no-littering-etc-directory)))
+  (recentf-exclude (list
+                    (expand-file-name no-littering-var-directory)
+                    (expand-file-name no-littering-etc-directory)
+                    no-littering-var-directory "/tmp" no-littering-etc-directory)))
 
 (use-package saveplace :ensure nil
   :hook (server-visit . save-place-find-file-hook)
@@ -2774,8 +2777,11 @@ With a prefix ARG, remove start location."
   :custom
   (treesit-auto-install t)
   :init
-  (global-treesit-auto-mode t)
-  (add-to-list 'treesit-auto--language-source-alist '(verilog "https://github.com/tree-sitter/tree-sitter-verilog")))
+   (add-to-list 'treesit-auto-recipe-list (make-treesit-auto-recipe
+	 :lang 'verilog
+	 :ts-mode 'verilog-ts-mode
+	 :remap '(verilog-mode)
+	 :url "https://github.com/tree-sitter/tree-sitter-verilog")))
 
 (use-package emacs-wsl
   :if (memq window-system '(pc w32))
