@@ -877,7 +877,7 @@
   :config
   (consult-customize
    consult-line-symbol-at-point my-consult-ripgrep my-consult-ripgrep-here
-   consult-ripgrep consult-git-grep consult-grep consult-line
+   consult-ripgrep consult-git-grep consult-grep consult-line consult-flymake
    consult--source-recent-file consult--source-project-recent-file
    consult-bookmark consult-recent-file consult-xref consult--source-bookmark
    :preview-key '(:debounce 0.01 any))
@@ -1817,7 +1817,6 @@ perspective."
    (org-mode . auto-fill-mode)
    (org-mode . smartparens-mode))
   :preface
-  (defvar org-capture-file (concat my-notes-directory "/Capture.org"))
   (defun my-update-all-bibs ()
     (interactive)
     (let ((buf (current-buffer))
@@ -1829,8 +1828,7 @@ perspective."
       (switch-to-buffer buf)))
   :custom
   (org-modules (list 'ol-eww 'org-tempo 'ol-info 'ol-docview 'ol-bibtex 'ol-doi))
-  (org-default-notes-file org-capture-file)
-  ;; (org-startup-folded 'content)
+  (org-default-notes-file (concat my-notes-directory "/Capture.org"))
   (org-adapt-indentation t)
   (org-catch-invisible-edits 'show-and-error)
   (org-cycle-separator-lines 0)
@@ -2665,77 +2663,6 @@ With a prefix ARG, remove start location."
 (use-package ghelp
   :quelpa (ghelp :fetcher github :repo "casouri/ghelp"))
 
-;;
-;; UNUSED
-
-;; (use-package laas
-;;   :hook (LaTeX-mode . laas-mode)
-;;   :config ; do whatever here
-;;   (aas-set-snippets 'laas-mode
-;;                     ;; set condition!
-;;                     :cond #'texmathp ; expand only while in math
-;;                     "supp" "\\supp"
-;;                     "On" "O(n)"
-;;                     "O1" "O(1)"
-;;                     "Olog" "O(\\log n)"
-;;                     "Olon" "O(n \\log n)"
-;;                     ;; bind to functions!
-;;                     "Sum" (lambda () (interactive)
-;;                             (yas-expand-snippet "\\sum_{$1}^{$2} $0"))
-;;                     "Span" (lambda () (interactive)
-;;                              (yas-expand-snippet "\\Span($1)$0"))
-;;                     ;; add accent snippets
-;;                     :cond #'laas-object-on-left-condition
-;;                     "qq" (lambda () (interactive) (laas-wrap-previous-object "sqrt"))))
-
-;; (use-package orca
-;;   :preface
-;;   ;; (defun orfu-handle-link-github ()
-;;   ;;   (let ((link (caar org-stored-links))
-;;   ;;         (title (cl-cadar org-stored-links)))
-;;   ;;     (when (string-match orfu-github-project-name link)
-;;   ;;       (let ((project-name (match-string 1 link))
-;;   ;;             (parts (split-string title "·")))
-;;   ;;         (setf (cl-cadar org-stored-links)
-;;   ;;               (concat (car parts)
-;;   ;;                       (substring (cadr parts) 7)))
-;;   ;;         (find-file (orfu-expand "wiki/github.org"))
-;;   ;;         (goto-char (point-min))
-;;   ;;         (re-search-forward (concat "^\\*+ +" project-name) nil t)))))
-;;   ;; (defun orfu--handle-link-youtube-1 (link)
-;;   ;;   (setq link (replace-regexp-in-string "time_continue=[0-9]+&" "" link))
-;;   ;;   (let* ((default-directory "~/Downloads/Videos")
-;;   ;;          (json (orfu--youtube-json
-;;   ;;                 (setq orfu--current-cmd
-;;   ;;                       (format "setsid -w yt-dlp --write-sub -f mp4 --write-info-json %s" link)))))
-;;   ;;     (find-file (orfu-expand "wiki/youtube.org"))
-;;   ;;     (zo-goto-headings '("Blogs"))
-;;   ;;     (org-capture-put
-;;   ;;      :immediate-finish t
-;;   ;;      :jump-to-captured t))
-;;   ;;   t)
-;;   ;;
-;;   ;; org-web-tools-insert-web-page-as-entry
-;;   ;; org-board-new
-;;   ;; https://github.com/alphapapa/org-protocol-capture-html/blob/master/org-protocol-capture-html.sh
-;;   (defun orfu-handle-link-youtube ()
-;;     (let ((link (orfu--youtube-link)))
-;;       (when link
-;;         (setq orca-link-hook nil)
-;;         (orfu--handle-link-youtube-1 link))))
-;;   :config
-;;   (setq orca-handler-list
-;;         '(
-;;           (orfu-handle-link-youtube)
-;;           (orca-handler-project)
-;;           (orca-handler-match-url "https://www.reddit.com/emacs/" "~/Dropbox/org/wiki/emacs.org" "Reddit")
-;;           (orca-handler-match-url "https://emacs.stackexchange.com/" "~/Dropbox/org/wiki/emacs.org" "\\* Questions")
-;;           (orca-handler-current-buffer "\\* Tasks")
-;;           (orca-handler-file "~/Dropbox/org/ent.org" "\\* Articles"))))
-
-;; (use-package zotra
-;;   :quelpa (zotra :fetcher github :repo "mpedramfar/zotra"))
-
 (use-package org-sticky-header
   :hook (org-mode . org-sticky-header-mode)
   :custom
@@ -2757,11 +2684,6 @@ With a prefix ARG, remove start location."
 (use-package apheleia
   :hook (python-mode . apheleia-mode))
 
-;; (use-package desktop :ensure nil
-;;   :custom (desktop-save-mode 1)
-;;   :init (add-to-list 'desktop-modes-not-to-save 'dired-mode))
-
-;; CTAGS, tree-sitter
 ;; Tempel, Yasnippet, Embark
 ;; detached.el
 
@@ -2784,7 +2706,7 @@ With a prefix ARG, remove start location."
 	 :url "https://github.com/tree-sitter/tree-sitter-verilog")))
 
 (use-package emacs-wsl
-  :if (memq window-system '(pc w32))
+  :if (executable-find "clip.exe")
   :ensure nil
   :no-require t
   :preface
@@ -2815,8 +2737,8 @@ With a prefix ARG, remove start location."
       (kill-ring-save (point-min) (point-max)))
     (yank))
   :bind
-  ("M-w" . xah-copy-line-or-region)
-  ("C-k" . kill-line)
+  ("M-w" . wsl-copy)
+  ("C-k" . wsl-kill-line)
   ("C-S-y" . wsl-yank))
 
 (setq split-height-threshold nil)
