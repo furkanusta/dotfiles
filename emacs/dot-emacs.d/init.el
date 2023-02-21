@@ -101,26 +101,6 @@
   (mapc 'kill-buffer
         (delq (current-buffer) (buffer-list))))
 
-(defun xah-cut-line-or-region ()
-  (interactive)
-  (if current-prefix-arg
-      (progn
-        (kill-new (buffer-string))
-        (delete-region (point-min) (point-max)))
-    (progn (if (use-region-p)
-               (kill-region (region-beginning) (region-end) t)
-             (kill-region (line-beginning-position) (line-beginning-position 2))))))
-
-(defun xah-copy-line-or-region ()
-  (interactive)
-  (let (-p1 -p2)
-    (if (use-region-p)
-        (setq -p1 (region-beginning) -p2 (region-end))
-      (setq -p1 (line-beginning-position) -p2 (line-end-position)))
-    (progn
-      (kill-ring-save -p1 -p2)
-      (message "Text copied"))))
-
 (defun endless/fill-or-unfill ()
   "Like `fill-paragraph', but unfill if used twice."
   (interactive)
@@ -205,6 +185,19 @@
   (large-file-warning-threshold (* 1024 1024 1024)) ;; 1GB
   (confirm-nonexistent-file-or-buffer nil)
   (truncate-lines t)
+  :config
+  (defadvice kill-ring-save (before slick-copy activate compile)
+    "When called interactively with no active region, copy a single line instead."
+    (interactive
+     (if mark-active (list (region-beginning) (region-end))
+       (list (line-beginning-position)
+             (line-beginning-position 2)))))
+  (defadvice kill-region (before slick-cut activate compile)
+    "When called interactively with no active region, kill a single line instead."
+    (interactive
+     (if mark-active (list (region-beginning) (region-end))
+       (list (line-beginning-position)
+             (line-beginning-position 2)))))
   :bind
   ("C-c ." . pop-global-mark)
   ("M-u" . upcase-dwim)
@@ -218,8 +211,8 @@
   ("C-c e r" . eval-region)
   ("C-S-d" . delete-backward-char)
   ("M-D" . backward-kill-word)
-  ("C-w" . xah-cut-line-or-region)
-  ("M-w" . xah-copy-line-or-region)
+  ("C-w" . kill-region)
+  ;; ("M-w" . xah-copy-line-or-region)
   ("M-k" . kill-whole-line)
   ("C-x C-f" . find-file-at-point)
   ("RET" . newline-and-indent)
@@ -333,21 +326,25 @@
       nil))
   (defun dired-find-readme-other-window ()
     (interactive)
-    (progn
-      (let* ((dir (dired-get-filename))
-             (files-readme (f-glob (concat dir "/readme*")))
-             (files-Readme (f-glob (concat dir "/Readme*")))
-             (files-README (f-glob (concat dir "/README*")))
-             (file-paths (append files-README files-readme files-Readme))
-             ;; (file-paths (seq-map (lambda (file) (concat dir "/" file)) file-names))
-             (files (seq-filter (lambda (file) (f-exists? file)) file-paths))
-             (file (car files)))
-        (if (= 1 (count-windows))
-            (split-window-horizontally))
-        (other-window 1)
-        (dired--find-possibly-alternative-file dir)
-        (when file
-          (find-file file)))))
+    (let* ((dir (dired-get-filename))
+           (files-readme (f-glob (concat dir "/readme*")))
+           (files-Readme (f-glob (concat dir "/Readme*")))
+           (files-README (f-glob (concat dir "/README*")))
+           (file-paths (append files-README files-readme files-Readme))
+           (files (seq-filter (lambda (file) (f-exists? file)) file-paths))
+           (file (car files)))
+      (if (= 1 (count-windows))
+          (split-window-horizontally))
+      (other-window 1)
+      (dired--find-possibly-alternative-file dir)
+      (when file
+        (find-file file))))
+  (defun dired-open-file-or-find-readme ()
+    (interactive)
+    (let ((path (dired-get-filename)))
+      (if (file-directory-p path)
+          (dired-find-readme-other-window)
+        (dired-find-readme-other-window))))
   (defun dired-open-current-directory-xdg ()
     "Try to run `xdg-open' to open the current directory."
     (interactive)
@@ -366,10 +363,15 @@
   (dired-recursive-copies 'always)
   (dired-use-ls-dired nil)
   (dired-listing-switches "-aBhlv --group-directories-first --color=never")
+  :config
+  (define-advice dired--find-file (:around (oldfunc ff filename))
+    (if (string= "epub" (f-ext filename))
+        (funcall oldfunc #'(lambda (filename) (nov--find-file filename 0 0)) filename)
+      (funcall oldfunc ff filename)))
   :bind
   ("C-x d" . dired-current-dir)
   (:map dired-mode-map
-        ("o" . dired-find-readme-other-window)
+        ("o" . dired-open-file-or-find-readme)
         ("O" . dired-find-file-other-window)
         ("E" . dired-open-current-directory-xdg)
         ("e" . dired-open-xdg)))
@@ -1221,7 +1223,8 @@
   :custom (helpful-max-buffers 5))
 
 (use-package window-margin
-  :quelpa (window-margin :fetcher github :repo "aculich/window-margin.el"))
+  :quelpa (window-margin :fetcher github :repo "aculich/window-margin.el")
+  :hook (markdown-mode . window-margin-mode))
 
 (use-package prog-mode :ensure nil
   :preface
@@ -1488,7 +1491,7 @@ perspective."
   (tramp-backup-directory-alist backup-directory-alist))
 
 (use-package auto-highlight-symbol
-  :custom (global-auto-highlight-symbol-mode t))
+  :hook (prog-mode . auto-highlight-symbol-mode))
 
 (use-package which-key)
 
@@ -1520,7 +1523,8 @@ perspective."
 
 (use-package eglot
   :config
-  (add-to-list 'eglot-server-programs '(python-mode . ("poetry" "run" "pylsp")))
+  (add-to-list 'eglot-server-programs `(python-ts-mode . ,(cdr (assoc 'python-mode eglot-server-programs))))
+  (add-to-list 'eglot-server-programs `((c-ts-mode c++-ts-mode) . ,(cdr (assoc '(c++-mode c-mode) eglot-server-programs))))
   (add-to-list 'eglot-server-programs `(tex-mode . ,(eglot-alternatives
                                                      '(("~/.local/prog/digestif/digestif.sh")
                                                        ("texlab"))))))
@@ -1735,7 +1739,9 @@ perspective."
    (conf-mode . smartparens-mode)
    (minibuffer-mode . smartparens-mode)
    (text-mode . smartparens-mode))
-  :config (require 'smartparens-config)
+  :config
+  (require 'smartparens-config)
+  (add-to-list 'sp-ignore-modes-list 'web-mode)
   :bind (:map smartparens-mode-map
               ("C-c l w" . sp-copy-sexp)
               ("C-c l b" . sp-backward-up-sexp)
@@ -1753,6 +1759,35 @@ perspective."
               ("C-c l SPC" . sp-select-next-thing)
               ("C-c l C-SPC" . sp-select-next-thing-exchange)
               ("C-c l k" . sp-kill-sexp)))
+
+(use-package web-mode
+  :hook (web-mode . disable-smartparens)
+  :mode "\\.jinja\\'"
+  :init
+  (require 'jinja2-mode)
+  (defun disable-smartparens ()
+    (smartparens-mode -1))
+  ;; (smartparens-mode nil)
+  (defun jinja2-close-tag ()
+  "Close the previously opened template tag. Original one tries to indent, which is broken"
+  (interactive)
+  (let ((open-tag (save-excursion (jinja2-find-open-tag))))
+    (if open-tag
+        (insert
+         (if (string= (car open-tag) "block")
+             (format "{%% end%s%s %%}"
+                     (car open-tag)(nth 1 open-tag))
+           (format "{%% end%s %%}"
+                   (match-string 2))))
+      (error "Nothing to close"))))
+  (defun my-jinja-close-tag ()
+    (interactive)
+    (jinja2-close-tag)
+    (indent-for-tab-command))
+  :bind
+  (:map web-mode-map
+        ("C-c [" . jinja2-insert-tag)
+        ("C-c ]" . my-jinja-close-tag)))
 
 (use-package gitlab-ci-mode :mode "\\.gitlab-ci\\.yml\\'")
 
@@ -1814,7 +1849,6 @@ perspective."
 (use-package org
   :hook
   ((org-mode . turn-on-flyspell)
-   (org-mode . auto-fill-mode)
    (org-mode . smartparens-mode))
   :preface
   (defun my-update-all-bibs ()
@@ -2510,6 +2544,7 @@ With a prefix ARG, remove start location."
 (use-package literate-calc-mode)
 
 (use-package nov
+  :hook (nov-mode . nov-imenu-setup)
   :mode
   ("\\.epub\\'" . nov-mode)
   ("\\.EPUB\\'" . nov-mode)
@@ -2696,14 +2731,15 @@ With a prefix ARG, remove start location."
   (add-to-list 'gnutls-trustfiles "C:/PROGRAMS/CRT/*.crt"))
 
 (use-package treesit-auto
+  :commands make-treesit-auto-recipe
   :custom
   (treesit-auto-install t)
   :init
    (add-to-list 'treesit-auto-recipe-list (make-treesit-auto-recipe
-	 :lang 'verilog
-	 :ts-mode 'verilog-ts-mode
-	 :remap '(verilog-mode)
-	 :url "https://github.com/tree-sitter/tree-sitter-verilog")))
+     :lang 'verilog
+     :ts-mode 'verilog-ts-mode
+     :remap '(verilog-mode)
+     :url "https://github.com/tree-sitter/tree-sitter-verilog")))
 
 (use-package emacs-wsl
   :if (executable-find "clip.exe")
@@ -2737,11 +2773,15 @@ With a prefix ARG, remove start location."
       (kill-ring-save (point-min) (point-max)))
     (yank))
   :bind
-  ("M-w" . wsl-copy)
-  ("C-k" . wsl-kill-line)
+  ("C-k" . kill-line)
   ("C-S-y" . wsl-yank))
 
 (setq split-height-threshold nil)
+
+;; (add-hook 'python-base-mode-hook 'flymake-mode) (setq python-flymake-command '("ruff" "--quiet" "--stdin-filename=stdin" "-")
+;; (add-hook 'eglot-managed-mode-hook
+;;           #'(lambda () (cond ((derived-mode-p 'python-base-mode)
+;;                               (add-hook 'flymake-diagnostic-functions 'python-flymake nil t)))))
 
 (provide 'init)
 ;;; init.el ends here

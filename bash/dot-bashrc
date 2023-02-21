@@ -75,3 +75,4 @@ export DOCKER_BUILDKIT=1
 
 export NPM_PACKAGES="$HOME/.local/npm"
 export NODE_PATH="$NPM_PACKAGES/lib/node_modules:$NODE_PATH"
+export PATH="$PATH:$NPM_PACKAGES/bin"
