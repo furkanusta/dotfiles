@@ -738,7 +738,14 @@
   (defvar previous-directory nil
     "The directory that was just left. It is set when leaving a directory and
     set back to nil once it is used in the parent directory.")
-  (defun set-previous-directory (&optional N)
+  :custom
+  (vertico-resize 'grow)
+  (vertico-count 15)
+  (vertico-cycle t)
+  (vertico-indexed-mode t)
+  (completion-in-region-function #'consult-completion-in-region)
+  :config
+  (define-advice vertico-directory-up (:before (&optional N))
     "Set the directory that was just exited from within find-file."
     (save-excursion
       (goto-char (1- (point)))
@@ -749,14 +756,6 @@
         (when (not (string-suffix-p "/" previous-directory))
           (setq previous-directory nil))
         t)))
-  :custom
-  (vertico-resize 'grow)
-  (vertico-count 15)
-  (vertico-cycle t)
-  (vertico-indexed-mode t)
-  (completion-in-region-function #'consult-completion-in-region)
-  :config
-  (advice-add #'vertico-directory-up :before #'set-previous-directory)
   (define-advice vertico--update-candidates (:after (&rest _) choose-candidate)
     "Pick the previous directory rather than the prompt after updating candidates."
     (cond
@@ -764,18 +763,17 @@
       (setq vertico--index (or (seq-position vertico--candidates previous-directory)
                                vertico--index))
       (setq previous-directory nil))))
-  (advice-add #'vertico--arrange-candidates :around
-            (defun vertico-format-candidates+ (func)
-              (let ((hl-func (or (alist-get (vertico--metadata-get 'category)
-                                            +completion-category-hl-func-overrides)
-                                 #'identity)))
-                (cl-letf* (((symbol-function 'actual-vertico-format-candidate)
-                            (symbol-function #'vertico--format-candidate))
-                           ((symbol-function #'vertico--format-candidate)
-                            (lambda (cand &rest args)
-                              (apply #'actual-vertico-format-candidate
-                                     (funcall hl-func cand) args))))
-                  (funcall func)))))
+  (define-advice vertico--arrange-candidates (:around (func))
+    (let ((hl-func (or (alist-get (vertico--metadata-get 'category)
+                                  +completion-category-hl-func-overrides)
+                       #'identity)))
+      (cl-letf* (((symbol-function 'actual-vertico-format-candidate)
+                  (symbol-function #'vertico--format-candidate))
+                 ((symbol-function #'vertico--format-candidate)
+                  (lambda (cand &rest args)
+                    (apply #'actual-vertico-format-candidate
+                           (funcall hl-func cand) args))))
+        (funcall func))))
   :bind
   (:map vertico-map
         ("M-q" . vertico-quick-insert)
@@ -2758,20 +2756,15 @@ With a prefix ARG, remove start location."
     (with-output-to-string
       (let ((coding-system-for-read 'dos)) ;Convert CR->LF.
         (call-process "powershell.exe" nil t nil "-command" "Get-Clipboard"))))
-  (defun wsl-copy ()
-    (interactive)
-    (xah-copy-line-or-region)
-    (wsl--send-kill-ring))
-  (defun wsl-kill-line ()
-    (interactive)
-    (kill-line)
-    (wsl--send-kill-ring))
   (defun wsl-yank ()
     (interactive)
     (with-temp-buffer
       (wsl--get)
       (kill-ring-save (point-min) (point-max)))
     (yank))
+  :config
+  (advice-add #'kill-line :after #'wsl--send-kill-ring)
+  (advice-add #'kill-ring-save :after #'wsl--send-kill-ring)
   :bind
   ("C-k" . kill-line)
   ("C-S-y" . wsl-yank))
