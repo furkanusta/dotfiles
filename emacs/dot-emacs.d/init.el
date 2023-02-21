@@ -303,6 +303,8 @@
   :ensure nil
   :preface
   (defvar my-hydra-switch-buffer-source nil)
+  :custom
+  (split-height-threshold nil)
   :hydra
   (hydra-switch-buffer
    (ctl-x-map nil
@@ -2769,7 +2771,8 @@ With a prefix ARG, remove start location."
   ("C-k" . kill-line)
   ("C-S-y" . wsl-yank))
 
-(setq split-height-threshold nil)
+(use-package verilog-ts-mode
+  :quelpa (verilog-ts-mode :fetcher "github" :repo "gmlarumbe/verilog-ext" :files ("verilog-ts-mode.el")))
 
 ;; (add-hook 'python-base-mode-hook 'flymake-mode) (setq python-flymake-command '("ruff" "--quiet" "--stdin-filename=stdin" "-")
 ;; (add-hook 'eglot-managed-mode-hook
