@@ -744,7 +744,7 @@
   (vertico-resize 'grow)
   (vertico-count 15)
   (vertico-cycle t)
-  (vertico-indexed-mode t)
+  ;; (vertico-indexed-mode t)
   (completion-in-region-function #'consult-completion-in-region)
   :config
   (define-advice vertico-directory-up (:before (&optional N))
@@ -1972,6 +1972,8 @@ perspective."
   :bind (:map org-mode-map ("C-c i l" . org-cliplink)))
 
 (use-package org-capture :ensure org
+  :preface
+  (defvar org-capture-file (concat my-notes-directory "/Capture.org"))
   :custom
   (org-capture-templates '(("t" "TODO" entry (file+headline org-capture-file "Tasks")
   						    "* TODO %?\n	%a\n  %i\n")
@@ -1993,32 +1995,33 @@ perspective."
   :bind ("C-c C-c" . org-capture))
 
 (use-package org-capture-ref
+  :after org
   :quelpa (org-capture-ref :repo "yantar92/org-capture-ref" :fetcher github)
   :config
-  (setq org-capture-templates
-        (append org-capture-templates
-           (doct '(:group "Browser link"
-                          :type entry
-                          :headline "REF"
- 			              :file org-capture-file
- 			              :fetch-bibtex (lambda () (org-capture-ref-process-capture)) ; this must run first
-                          :link-type (lambda () (org-capture-ref-get-bibtex-field :type))
-                          :extra (lambda ()
-                                   (if (org-capture-ref-get-bibtex-field :journal)
-					                   (s-join "\n"
-                                               '("- [ ] download and attach pdf"
-						                         "- [ ] [[elisp:org-attach-open][read paper capturing interesting references]]"
-						                         "- [ ] [[elisp:(browse-url (url-encode-url (format \"https://www.semanticscholar.org/search?q=%s\" (org-entry-get nil \"TITLE\"))))][check citing articles]]"
-						                         "- [ ] [[elisp:(browse-url (url-encode-url (format \"https://www.connectedpapers.com/search?q=%s\" (org-entry-get nil \"TITLE\"))))][check related articles]]"
-                                                 "- [ ] check if bibtex entry has missing fields"))
-                                     ""))
-                          :org-entry (lambda () (org-capture-ref-get-org-entry))
-			              :template
-                          ("%{fetch-bibtex}* TODO %?%{space}%{org-entry}"
-                           "%{extra}"
-                           "- Keywords: #%{link-type}")
-			              :children (("Interactive link" :keys "b" :clock-in t :space " " :clock-resume t)
-				                     ("Silent link" :keys "B" :space "" :immediate-finish t)))))))
+  ;; (add-to-list 'org-capture-templates
+  ;;          (doct '(:group "Browser link"
+  ;;                         :type entry
+  ;;                         :headline "REF"
+  ;;   		              :file org-capture-file
+  ;;   		              :fetch-bibtex (lambda () (org-capture-ref-process-capture)) ; this must run first
+  ;;                         :link-type (lambda () (org-capture-ref-get-bibtex-field :type))
+  ;;                         :extra (lambda ()
+  ;;                                  (if (org-capture-ref-get-bibtex-field :journal)
+  ;;   				                   (s-join "\n"
+  ;;                                              '("- [ ] download and attach pdf"
+  ;;   					                         "- [ ] [[elisp:org-attach-open][read paper capturing interesting references]]"
+  ;;   					                         "- [ ] [[elisp:(browse-url (url-encode-url (format \"https://www.semanticscholar.org/search?q=%s\" (org-entry-get nil \"TITLE\"))))][check citing articles]]"
+  ;;   					                         "- [ ] [[elisp:(browse-url (url-encode-url (format \"https://www.connectedpapers.com/search?q=%s\" (org-entry-get nil \"TITLE\"))))][check related articles]]"
+  ;;                                                "- [ ] check if bibtex entry has missing fields"))
+  ;;                                    ""))
+  ;;                         :org-entry (lambda () (org-capture-ref-get-org-entry))
+  ;;   		              :template
+  ;;                         ("%{fetch-bibtex}* TODO %?%{space}%{org-entry}"
+  ;;                          "%{extra}"
+  ;;                          "- Keywords: #%{link-type}")
+  ;;   		              :children (("Interactive link" :keys "b" :clock-in t :space " " :clock-resume t)
+  ;;   			                     ("Silent link" :keys "B" :space "" :immediate-finish t))))))
+  )
 
 (use-package org-table :ensure org
   :preface
@@ -2321,9 +2324,9 @@ With a prefix ARG, remove start location."
   ("C-c C-x c" . org-mru-clock-in)
   ("C-c C-x C-c" . org-mru-clock-select-recent-task))
 
-(use-package orgit)
-
-(use-package orgit-forge)
+;; (use-package orgit)
+;;
+;; (use-package orgit-forge)
 
 (use-package ox-hugo)
 
@@ -2338,7 +2341,7 @@ With a prefix ARG, remove start location."
 (use-package org-clock-reminder
   :custom
   (org-clock-reminder-interval 1200)
-  :config (org-clock-reminder-activate))
+  (org-clock-reminder-mode t))
 
 (use-package org-elp
   :custom
@@ -2744,11 +2747,12 @@ With a prefix ARG, remove start location."
 (use-package emacs-wsl
   :if (executable-find "clip.exe")
   :ensure nil
+  :demand t
   :no-require t
   :preface
-  (defun wsl--send-kill-ring ()
+  (defun wsl--send-kill-ring (beg end &optional region)
     (let* ((process-connection-type nil)
-           (data (substring-no-properties (car kill-ring)))
+           (data (buffer-substring beg end))
            (proc (start-process "clip.exe" nil "clip.exe")))
       (unless proc
         (signal 'file-error (list "Not found")))
@@ -2764,14 +2768,15 @@ With a prefix ARG, remove start location."
       (wsl--get)
       (kill-ring-save (point-min) (point-max)))
     (yank))
-  :config
+  :init
   (advice-add #'kill-line :after #'wsl--send-kill-ring)
   (advice-add #'kill-ring-save :after #'wsl--send-kill-ring)
   :bind
   ("C-k" . kill-line)
-  ("C-S-y" . wsl-yank))
+  ("C-M-y" . wsl-yank))
 
 (use-package verilog-ts-mode
+  :after verilog-mode
   :quelpa (verilog-ts-mode :fetcher "github" :repo "gmlarumbe/verilog-ext" :files ("verilog-ts-mode.el")))
 
 ;; (add-hook 'python-base-mode-hook 'flymake-mode) (setq python-flymake-command '("ruff" "--quiet" "--stdin-filename=stdin" "-")
