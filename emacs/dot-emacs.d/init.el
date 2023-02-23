@@ -2750,9 +2750,9 @@ With a prefix ARG, remove start location."
   :demand t
   :no-require t
   :preface
-  (defun wsl--send-kill-ring (beg end &optional region)
+  (defun wsl--send-kill-ring (&rest args)
     (let* ((process-connection-type nil)
-           (data (buffer-substring beg end))
+           (data (substring-no-properties (car kill-ring)))
            (proc (start-process "clip.exe" nil "clip.exe")))
       (unless proc
         (signal 'file-error (list "Not found")))
