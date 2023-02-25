@@ -649,13 +649,11 @@
                      (consult--join-regexps re 'extended))
                opts)
               hl))))
-
   (defun consult-fd (&optional dir initial)
     (interactive "P")
     (let* ((prompt-dir (consult--directory-prompt "Fd" dir))
            (default-directory (cdr prompt-dir)))
       (find-file (consult--find (car prompt-dir) #'consult--fd-builder initial))))
-
   (defun consult-line-symbol-at-point ()
     (interactive)
     (consult-line (thing-at-point 'symbol)))
@@ -846,8 +844,6 @@
          (cmake-mode . corfu-mode)
          (eshell-mode . corfu-mode))
   :custom
-  (corfu-popinfo-mode t)
-  (corfu-history-mode t)
   (corfu-cycle t)
   (corfu-auto nil)
   (corfu-preselect-first t)
@@ -866,11 +862,25 @@
         ([backtab] . corfu-previous)
         ("C-SPC" . corfu-insert-separator)))
 
+(use-package corfu-history
+  :hook (corfu-mode . corfu-history-mode))
+
+(use-package corfu-popupinfo
+  :hook (corfu-mode . corfu-popupinfo-mode)
+  :custom
+  (corfu-popupinfo-delay 0.5))
+
+(use-)
+(use-package cape-yasnippet
+  :vc (:fetcher github :repo "elken/cape-yasnippet"))
+
 (use-package cape
   :init
+  (require 'cape-yasnippet)
   (add-to-list 'completion-at-point-functions #'cape-file)
   (add-to-list 'completion-at-point-functions
-               (cape-super-capf #'cape-symbol #'cape-keyword #'cape-dabbrev)))
+               (cape-super-capf #'cape-symbol #'cape-keyword #'cape-dabbrev #'cape-yasnippet)))
+
 
 (use-package kind-icon
   :after corfu
@@ -1355,6 +1365,9 @@ perspective."
 
 (use-package which-key)
 
+;; TODO: https://github.com/weirdNox/emacs-gdb
+;; dap-mode
+;; realgud
 (use-package gdb-mi
   :custom
   (gdb-many-windows t))
@@ -1665,6 +1678,9 @@ perspective."
    ((executable-find "python3")
     (setq python-shell-interpreter "python3"))
    (t (setq python-shell-interpreter "python"))))
+
+(use-package pet
+  :hook (python-mode . pet-mode))
 
 (use-package pyvenv
   :hook
@@ -2567,7 +2583,6 @@ With a prefix ARG, remove start location."
 (use-package apheleia
   :hook (python-mode . apheleia-mode))
 
-;; Tempel, Yasnippet, Embark
 ;; detached.el
 
 (use-package consult-tramp
@@ -2628,31 +2643,6 @@ With a prefix ARG, remove start location."
 ;; (add-hook 'eglot-managed-mode-hook
 ;;           #'(lambda () (cond ((derived-mode-p 'python-base-mode)
 ;;                               (add-hook 'flymake-diagnostic-functions 'python-flymake nil t)))))
-
-(use-package tempel
-  :custom
-  (tempel-path (list
-                (concat no-littering-etc-directory "tempel/*/*.eld")
-                (concat no-littering-etc-directory "tempel/*.eld")))
-  :preface
-  ;; Setup completion at point
-  (defun tempel-setup-capf ()
-    ;; Add the Tempel Capf to `completion-at-point-functions'.
-    ;; `tempel-expand' only triggers on exact matches. Alternatively use
-    ;; `tempel-complete' if you want to see all matches, but then you
-    ;; should also configure `tempel-trigger-prefix', such that Tempel
-    ;; does not trigger too often when you don't expect it. NOTE: We add
-    ;; `tempel-expand' *before* the main programming mode Capf, such
-    ;; that it will be tried first.
-    (setq-local completion-at-point-functions
-                (append (butlast completion-at-point-functions) (list #'tempel-expand t)))
-    )
-  :hook
-  (prog-mode . tempel-setup-capf)
-  (text-mode . tempel-setup-capf)
-  :bind
-  (:map tempel-map
-        ("<tab>" . tempel-next)))
 
 (provide 'init)
 ;;; init.el ends here
