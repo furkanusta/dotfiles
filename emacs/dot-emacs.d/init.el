@@ -16,17 +16,9 @@
 
 (require 'use-package)
 
-(unless (package-installed-p 'quelpa)
-  (with-temp-buffer
-    (url-insert-file-contents "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
-    (eval-buffer)
-    (quelpa-self-upgrade)))
-
-(unless (package-installed-p 'quelpa-use-package)
-  (quelpa '(quelpa-use-package :fetcher git :url "https://github.com/quelpa/quelpa-use-package.git")))
-
-(use-package quelpa             :custom (quelpa-update-melpa-p nil))
-(use-package quelpa-use-package :custom (quelpa-use-package-inhibit-loading-quelpa t))
+(unless (package-installed-p 'vc-use-package)
+  (package-vc-install "https://github.com/slotThe/vc-use-package"))
+(require 'vc-use-package)
 
 (use-package use-package-hydra)
 
@@ -1093,7 +1085,7 @@
   :custom (helpful-max-buffers 5))
 
 (use-package window-margin
-  :quelpa (window-margin :fetcher github :repo "aculich/window-margin.el")
+  :vc (:fetcher github :repo "aculich/window-margin.el")
   :hook (markdown-mode . window-margin-mode))
 
 (use-package prog-mode :ensure nil
@@ -1225,7 +1217,7 @@ perspective."
 (use-package git-modes)
 
 (use-package magit-pretty-graph
-  :quelpa (magit-pretty-graph :fetcher github :repo "georgek/magit-pretty-graph")
+  :vc (:fetcher github :repo "georgek/magit-pretty-graph")
   :after magit
   :commands magit-pg-repo
   :preface
@@ -1387,7 +1379,7 @@ perspective."
   (fancy-compilation-override-colors nil))
 
 (use-package obvious
-  :quelpa (obvious :fetcher github :repo "alphapapa/obvious.el"))
+  :vc (:fetcher github :repo "alphapapa/obvious.el"))
 
 (use-package eglot
   :config
@@ -1865,7 +1857,7 @@ perspective."
 
 ;; (use-package org-capture-ref
 ;;   :after org
-;;   :quelpa (org-capture-ref :repo "yantar92/org-capture-ref" :fetcher github)
+;;   :vc (:repo "yantar92/org-capture-ref" :fetcher github)
 ;;   :config
 ;;   ;; (add-to-list 'org-capture-templates
 ;;   ;;          (doct '(:group "Browser link"
@@ -1947,7 +1939,7 @@ perspective."
   :hook (org-mode . toc-org-mode))
 
 (use-package org-pretty-table
-  :quelpa (org-pretty-table :fetcher github :repo "Fuco1/org-pretty-table")
+  :vc (:fetcher github :repo "Fuco1/org-pretty-table")
   :hook (org-mode . org-pretty-table-mode))
 
 (use-package bibtex-completion
@@ -1993,7 +1985,7 @@ With a prefix ARG, remove start location."
     (add-hook 'pdf-annot-activate-handler-functions #'org-noter-pdftools-jump-to-note)))
 
 (use-package org-noter
-  :quelpa (org-noter :fetcher github :repo "furkanusta/org-noter")
+  :vc (:fetcher github :repo "furkanusta/org-noter")
   :custom
   (org-noter-notes-search-path (list my-notes-directory))
   (org-noter-always-create-frame nil)
@@ -2019,7 +2011,7 @@ With a prefix ARG, remove start location."
   :custom (binder-default-file-extension "org"))
 
 (use-package inherit-org
-  :quelpa (inherit-org :repo "chenyanming/inherit-org" :fetcher github)
+  :vc (:repo "chenyanming/inherit-org" :fetcher github)
   :hook ((eww-mode nov-mode info-mode helpful-mode ghelp-page-mode) . inherit-org-mode))
 
 (use-package shrface
@@ -2100,7 +2092,7 @@ With a prefix ARG, remove start location."
   (defengine wolfram "http://www.wolframalpha.com/input/?i=%s"))
 
 (use-package org-transclusion
-  :quelpa (org-transclusion :fetcher github :repo "nobiot/org-transclusion")
+  :vc (:fetcher github :repo "nobiot/org-transclusion")
   :custom (org-transclusion-activate-persistent-message nil))
 
 (use-package org-rich-yank
@@ -2170,10 +2162,7 @@ With a prefix ARG, remove start location."
 ;; (use-package ox-pandoc)
 
 (use-package org-pandoc-import
-  :quelpa (org-pandoc-import
-           :fetcher github
-           :repo "tecosaur/org-pandoc-import"
-           :files ("*.el" "filters" "preprocessors")))
+  :vc (:fetcher github :repo "tecosaur/org-pandoc-import"))
 
 (use-package org-web-tools)
 
@@ -2205,7 +2194,7 @@ With a prefix ARG, remove start location."
   ( "C-c M-a" . org-tanglesync-process-buffer-automatic))
 
 (use-package orgdiff
-  :quelpa (orgdiff :fetcher github :repo "tecosaur/orgdiff"))
+  :vc (:fetcher github :repo "tecosaur/orgdiff"))
 
 (use-package org-clock-reminder
   :custom
@@ -2243,10 +2232,10 @@ With a prefix ARG, remove start location."
         ("M-RET" . code-cells-eval)))
 
 (use-package org-auctex
-  :quelpa (org-auctex :fetcher github :repo "karthink/org-auctex"))
+  :vc (:fetcher github :repo "karthink/org-auctex"))
 
 (use-package org-protocol-capture-html
-  :quelpa (org-protocol-capture-html :fetcher github :repo "alphapapa/org-protocol-capture-html"))
+  :vc (:fetcher github :repo "alphapapa/org-protocol-capture-html"))
 
 (use-package citar
   :custom
@@ -2555,7 +2544,7 @@ With a prefix ARG, remove start location."
 (use-package sudo-edit)
 
 (use-package ghelp
-  :quelpa (ghelp :fetcher github :repo "casouri/ghelp"))
+  :vc (:fetcher github :repo "casouri/ghelp"))
 
 (use-package org-sticky-header
   :hook (org-mode . org-sticky-header-mode)
@@ -2573,7 +2562,7 @@ With a prefix ARG, remove start location."
               ("C-c o p" . outline-previous-heading)))
 
 ;; (use-package lazytab
-;;   :quelpa (lazytab :fetcher github :repo "karthink/lazytab"))
+;;   :vc (:fetcher github :repo "karthink/lazytab"))
 
 (use-package apheleia
   :hook (python-mode . apheleia-mode))
@@ -2582,7 +2571,7 @@ With a prefix ARG, remove start location."
 ;; detached.el
 
 (use-package consult-tramp
-  :quelpa (consult-tramp :fetcher github :repo "Ladicle/consult-tramp"))
+  :vc (:fetcher github :repo "Ladicle/consult-tramp"))
 
 (use-package gnutls
   :if (memq window-system '(pc w32))
@@ -2631,9 +2620,9 @@ With a prefix ARG, remove start location."
   ("C-k" . kill-line)
   ("C-M-y" . wsl-yank))
 
-(use-package verilog-ts-mode
-  :after verilog-mode
-  :quelpa (verilog-ts-mode :fetcher "github" :repo "gmlarumbe/verilog-ext" :files ("verilog-ts-mode.el")))
+;; (use-package verilog-ts-mode
+;;   :after verilog-mode
+;;   :vc (:fetcher "github" :repo "gmlarumbe/verilog-ext" :files ("verilog-ts-mode.el")))
 
 ;; (add-hook 'python-base-mode-hook 'flymake-mode) (setq python-flymake-command '("ruff" "--quiet" "--stdin-filename=stdin" "-")
 ;; (add-hook 'eglot-managed-mode-hook
