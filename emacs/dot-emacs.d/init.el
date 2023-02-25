@@ -366,9 +366,13 @@
   (dired-use-ls-dired nil)
   (dired-listing-switches "-aBhlv --group-directories-first --color=never")
   :config
+  (defun my--find-nov-buffer (filename)
+    (if-let (nov-buffer (seq-filter #'(lambda (buffer) (with-current-buffer buffer (string= filename nov-file-name))) (buffer-list)))
+        (switch-to-buffer (car nov-buffer))
+      (nov--find-file filename 0 0)))
   (define-advice dired--find-file (:around (oldfunc ff filename))
     (if (string= "epub" (f-ext filename))
-        (funcall oldfunc #'(lambda (filename) (nov--find-file filename 0 0)) filename)
+        (funcall oldfunc #'my--find-nov-buffer filename)
       (funcall oldfunc ff filename)))
   :bind
   ("C-x d" . dired-current-dir)
@@ -378,23 +382,12 @@
         ("E" . dired-open-current-directory-xdg)
         ("e" . dired-open-xdg)))
 
+(use-package dired)
+
 (use-package dired-hide-dotfiles
   :hook (dired-mode . dired-hide-dotfiles-mode)
   :bind (:map dired-mode-map
               ("H" . dired-hide-dotfiles-mode)))
-
-(use-package fd-dired
-  :preface
-  (defvar fd-dired-current-args-history nil)
-  (defun fd-dired-current ()
-    (interactive)
-    (fd-dired default-directory (read-string "Run fd (with args and search): " ""
-                                             '(fd-dired-current-args-history . 1))))
-  :bind
-  ("C-c H f" . fd-dired-current)
-  (:map dired-mode-map
-        ("f" . fd-dired-current)
-        ("F" . fd-dired)))
 
 (use-package trashed)
 
@@ -413,44 +406,14 @@
 (use-package dired-async :ensure async
   :hook (dired-mode . dired-async-mode))
 
-(use-package neotree
-  :after project
+(use-package dired-sidebar
   :custom
-  (neo-smart-open t)
-  (neo-vc-integration nil)
-  (neo-theme 'icons)
-  :hook (neotree-mode . disable-line-numbers)
-  :bind ("C-c t d" . neotree-toggle))
+  (dired-sidebar-close-sidebar-on-file-open t)
+  :bind ("C-c t d" . dired-sidebar-toggle-sidebar))
 
-(use-package treemacs
-  :commands treemacs-resize-icons treemacs-is-file-git-ignored?
-  :hook
-  (treemacs-mode . disable-line-numbers)
-  (treemacs-mode . treemacs-filewatch-mode)
-  (treemacs-mode . treemacs-fringe-indicator-mode)
-  (treemacs-mode . treemacs-follow-mode)
+(use-package dired-quick-sort
   :config
-  (treemacs-resize-icons 20)
-  (add-to-list 'treemacs-pre-file-insert-predicates #'treemacs-is-file-git-ignored?)
-  :bind (("C-c t t"   . treemacs)
-         ("C-c t B"   . treemacs-bookmark)
-         ("C-c t C-f" . treemacs-find-file))
-  :custom
-  (treemacs-position 'right)
-  (treemacs-width 50))
-
-(use-package treemacs-all-the-icons :after treemacs
-  :config (treemacs-load-theme "all-the-icons"))
-
-(use-package treemacs-magit
-  :after treemacs magit)
-
-(use-package lsp-treemacs
-  :hook (treemacs-mode . lsp-treemacs-sync-mode))
-
-(use-package treemacs-perspective
-  :commands treemacs-set-scope-type
-  :config (treemacs-set-scope-type 'Perspectives))
+  (dired-quick-sort-setup))
 
 (use-package elfeed
   :hook ((elfeed-new-entry . ime-elfeed-podcast-tagger))
@@ -466,135 +429,13 @@
       (delete-window window)
       (when (buffer-live-p buf) (kill-buffer buf))))
   :custom
-  (elfeed-feeds
-   '(("http://research.swtch.com/feeds/posts/default" other)
-     ("http://bitbashing.io/feed.xml" other)
-     ("http://preshing.com/feed" other)
-     ("http://danluu.com/atom.xml" other)
-     ("http://tenderlovemaking.com/atom.xml" other)
-     ("http://feeds.feedburner.com/codinghorror/" other)
-     ("http://www.snarky.ca/feed" other)
-     ("http://blog.regehr.org/feed" cpp)
-     ("https://www.joelonsoftware.com/feed/" prog)
-     ("https://blog.paranoidcoding.com/atom.xml" prog)
-     ("http://matt.might.net/articles/feed.rss" prog)
-     ("https://blog.stephenmarz.com/feed/" prog)
-     ("https://web.eecs.utk.edu/~azh/blog/feed.rss" prog)
-     ("https://thume.ca/atom.xml" prog)
-     ("https://blog.acolyer.org/feed/" prog)
-     ;; ("https://www.johndcook.com/blog/feed/" math)
-     ("https://benhoyt.com/writings/rss.xml" prog)
-     ("https://lemire.me/blog/feed/" prog)
-     ("https://notes.eatonphil.com/rss.xml" prog)
-     ("https://www.hillelwayne.com/index.xml" prog)
-     ("https://blog.acolyer.org/feed/" other)
-     ("https://randomascii.wordpress.com/feed/" other)
-     ("http://planet.gnome.org/rss20.xml" gnome)
-     ("http://arne-mertz.de/feed/" cpp)
-     ("http://zipcpu.com/" fpga)
-     ("https://code-cartoons.com/feed" other)
-     ("https://eli.thegreenplace.net/feeds/all.atom.xml" cpp)
-     ("https://www.evanjones.ca/index.rss" other)
-     ("https://jvns.ca/atom.xml" other)
-     ("https://aphyr.com/posts.atom" other)
-     ("https://brooker.co.za/blog/rss.xml" other)
-     ("https://rachelbythebay.com/w/atom.xml" other)
-     ("https://mrale.ph/feed.xml" other)
-     ("https://research.swtch.com/" other)
-     ("http://aras-p.info/atom.xml" other)
-     ("https://www.adriancourreges.com/atom.xml" prog)
-     ("https://what-if.xkcd.com/feed.atom" xkcd)
-     ("http://xkcd.com/rss.xml" xkcd)
-     ("https://esoteric.codes/rss" other)
-     ("http://irreal.org/blog/?feed=rss2" emacs)
-     ("https://drewdevault.com/feed.xml" other)
-     ("https://jacobian.org/index.xml" other)
-     ("https://old.reddit.com/r/cpp/top.rss?t=week" cpp)
-     ("https://old.reddit.com/r/emacs/top.rss?t=week" emacs)
-     ("https://old.reddit.com/r/orgmode/top.rss?t=week" emacs)
-     ("https://old.reddit.com/r/python/top.rss?t=month" python)
-     ("https://old.reddit.com/r/fpga/top.rss?t=month" fpga)
-     ("https://old.reddit.com/r/ruby/top.rss?t=month" ruby)
-     ("https://old.reddit.com/r/java/top.rss?t=month" java)
-     ("https://old.reddit.com/r/linux/top.rss?t=month" linux)
-     ("https://old.reddit.com/r/programming/top.rss?t=week" prog)
-     ("https://old.reddit.com/r/selfhosted/top.rss?t=month" prog)
-     ("https://old.reddit.com/r/commandline/top.rss?t=month" prog)
-     ("https://old.reddit.com/r/dataisbeautiful/top.rss?t=month" other)
-     ;; ("https://old.reddit.com/r/simpleprompts/top.rss?t=week" writing)
-     ;; ("https://old.reddit.com/r/promptoftheday/top.rss?t=week" writing)
-     ;; ("https://old.reddit.com/r/askhistorians/top.rss?t=month" hist)
-     ;; ("https://old.reddit.com/r/badhistory/top.rss?t=month" hist)
-     ("https://dave.cheney.net/feed/atom" go)
-     ("https://blog.theincredibleholk.org/atom.xml" prog)
-     ("https://ferd.ca/feed.rss" prog)
-     ("https://benjamincongdon.me/blog/feed.xml" blog)
-     ("https://erikbern.com/index.xml" blog)
-     ("https://www.benkuhn.net/index.xml" blog)
-     ("https://rjlipton.wpcomstaging.com/feed/" blog)
-     ("http://journal.stuffwithstuff.com/rss.xml" prog)
-     ("https://thephd.dev/feed.xml" prog cpp)
-     ("https://knowingless.com/feed/" blog)
-     ("https://gwern.substack.com/feed/" blog)
-     ("https://aella.substack.com/feed/" blog)
-     ("https://www.brendangregg.com/blog/rss.xml" blog)
-     ("https://blog.acolyer.org/feed/" prog)
-     ("https://blog.trailofbits.com/feed/" prog)
-     ("https://www.justinobeirne.com/new-items-feed?format=rss" prog)
-     ("https://zserge.com/rss.xml" prog)
-     ("http://blog.cleancoder.com/atom.xml" prog)
-     ("https://blog.nelhage.com/atom.xml" prog)
-     ("https://matklad.github.io/feed.xml" prog)
-     ("http://samsaffron.com/posts.rss" prog)
-     ("https://fasterthanli.me/index.xml" prog)
-     ("https://dragan.rocks/feed.xml" prog)
-     ("https://blog.reverberate.org/feed.xml" prog)
-     ("https://guzey.substack.com/feed/" blog)
-     ("https://www.darkcoding.net/feed/" prog)
-     ("https://bernsteinbear.com/feed.xml" prog)
-     ("https://www.adriancourreges.com/atom.xml" prog)
-     ("https://simoncoenen.com/feed.xml" prog)
-     ("https://zipcpu.com/feed.xml" prog fpga)
-     ("https://xania.org/feed.atom" prog cpp)
-     ("https://emacsredux.com/atom.xml" prog emacs)
-     ("https://ciechanow.ski/atom.xml" prog other)
-     ("http://journal.stuffwithstuff.com/rss.xml" prog other)
-     ("https://mtlynch.io/posts/index.xml" prog other)
-     ("https://blog.jessfraz.com/index.xml" prog other)
-     ("http://endlessparentheses.com/atom.xml" emacs)
-     ("https://dynomight.net/feed.xml" blog other)
-     ("https://howardism.org/index.xml" emacs)
-     ("https://with-emacs.com/rss.xml" emacs)
-     ("https://planet.emacslife.com/atom.xml" emacs)
-     ("https://sachachua.com/blog/category/emacs-news/feed/" emacs)
-     ("http://www.masteringemacs.org/feed/" emacs)
-     ("https://xenodium.com/rss.xml" emacs)
-     ("http://pragmaticemacs.com/feed/" emacs)
-     ("http://emacs-fu.blogspot.com/feeds/posts/default" emacs)
-     ("http://emacsredux.com/atom.xml" emacs)
-     ("http://nullprogram.com/feed/" emacs)
-     ("http://kitchingroup.cheme.cmu.edu/blog/feed/atom" emacs)
-     ("https://irreal.org/blog/?feed=rss2" emacs)
-     ("https://oremacs.com/atom.xml" emacs)
-     ("https://tsdh.org/rss.xml" emacs)
-     ("https://emacstil.com/feed.xml" emacs)
-     ("https://lepisma.xyz/atom.xml" emacs)
-     ("https://olddeuteronomy.github.io/index.xml" emacs)
-     ("https://cestlaz.github.io/rss.xml" emacs)
-     ("http://phdcomics.com/gradfeed.php" other)
-     ("http://feeds.feedburner.com/InformationIsBeautiful" other)
-     ("http://endlessparentheses.com/atom.xml" emacs)
-     ("http://emacshorrors.com/feed.atom" emacs)
-     ("https://www.youtube.com/feeds/videos.xml?channel_id=UCPZUQqtVDmcjm4NY5FkzqLA" youtube)
-     ("https://www.youtube.com/feeds/videos.xml?channel_id=UClJ7gpJ9MRXDnbA8N_5NSKQ" youtube)
-     ("https://www.youtube.com/feeds/videos.xml?channel_id=UCsvn_Po0SmunchJYOWpOxMg" youtube)
-     ("https://www.youtube.com/feeds/videos.xml?channel_id=UCCpTaib_e5C6Q95qwazq8OA" youtube)
-     ("https://www.youtube.com/feeds/videos.xml?channel_id=UCO-_F5ZEUhy0oKrSa69DLMw" youtube)
-     ("https://www.youtube.com/feeds/videos.xml?channel_id=UCdakEeTJHMPz9MdejLKDRhg" youtube)
-     ("https://www.youtube.com/feeds/videos.xml?channel_id=UC2eEGT06FrWFU6VBnPOR9lg" youtube)))
   (elfeed-show-entry-switch #'pop-to-buffer)
   (elfeed-show-entry-delete #'+rss/delete-pane)
   (elfeed-search-title-max-width 100))
+
+(use-package elfeed-org
+  :after elfeed
+  :init (elfeed-org))
 
 (use-package elfeed-search :ensure elfeed
   :after elfeed
@@ -792,9 +633,6 @@
               ("DEL" . vertico-directory-delete-char)
               ("M-DEL" . vertico-directory-delete-word)))
 
-(use-package vertico-prescient
-  :hook (vertico-mode . vertico-prescient-mode))
-
 (use-package consult
   :demand t
   :defines project-root project-current
@@ -813,17 +651,19 @@
     (pcase-let* ((`(,arg . ,opts) (consult--command-split input))
                  (`(,re . ,hl) (funcall consult--regexp-compiler arg 'extended t)))
       (when re
-        (list :command (append
-                        (list consult--fd-command
-                              "--color=never" "--full-path"
-                              (consult--join-regexps re 'extended))
-                        opts)
-              :highlight hl))))
+        (cons (append
+               (list consult--fd-command
+                     "--color=never" "--full-path"
+                     (consult--join-regexps re 'extended))
+               opts)
+              hl))))
+
   (defun consult-fd (&optional dir initial)
     (interactive "P")
     (let* ((prompt-dir (consult--directory-prompt "Fd" dir))
            (default-directory (cdr prompt-dir)))
       (find-file (consult--find (car prompt-dir) #'consult--fd-builder initial))))
+
   (defun consult-line-symbol-at-point ()
     (interactive)
     (consult-line (thing-at-point 'symbol)))
@@ -886,11 +726,11 @@
   (define-key consult-narrow-map (vconcat consult-narrow-key "?") #'consult-narrow-help))
 
 (use-package consult-dir
-  :after tramp-container
   :preface
   (defun consult-dir--tramp-docker-hosts ()
     "Get a list of hosts from docker."
-    (tramp-container--completion-functions tramp-docker-method))
+    (require 'tramp-container)
+    (tramp-container--completion-function tramp-docker-method))
   (defvar consult-dir--source-tramp-docker
     `(:name     "Docker"
                 :narrow   ?d
@@ -903,6 +743,39 @@
   (add-to-list 'consult-dir-sources 'consult-dir--source-tramp-docker t)
   (add-to-list 'consult-dir-sources 'consult-dir--source-tramp-ssh t)
   :bind ("C-c c d" . consult-dir))
+
+(use-package orderless
+  :demand t
+  :preface
+  ;; From doomemacs
+  (defun vertico-orderless-dispatch (pattern _index _total)
+    (cond
+     ;; Ensure $ works with Consult commands, which add disambiguation suffixes
+     ((string-suffix-p "$" pattern)
+      `(orderless-regexp . ,(concat (substring pattern 0 -1) "[\x200000-\x300000]*$")))
+     ;; Ignore single !
+     ((string= "!" pattern) `(orderless-literal . ""))
+     ;; Without literal
+     ((string-prefix-p "!" pattern) `(orderless-without-literal . ,(substring pattern 1)))
+     ;; Character folding
+     ((string-prefix-p "%" pattern) `(char-fold-to-regexp . ,(substring pattern 1)))
+     ((string-suffix-p "%" pattern) `(char-fold-to-regexp . ,(substring pattern 0 -1)))
+     ;; Initialism matching
+     ((string-prefix-p "`" pattern) `(orderless-initialism . ,(substring pattern 1)))
+     ((string-suffix-p "`" pattern) `(orderless-initialism . ,(substring pattern 0 -1)))
+     ;; Literal matching
+     ((string-prefix-p "=" pattern) `(orderless-literal . ,(substring pattern 1)))
+     ((string-suffix-p "=" pattern) `(orderless-literal . ,(substring pattern 0 -1)))
+     ;; Flex matching
+     ((string-prefix-p "~" pattern) `(orderless-flex . ,(substring pattern 1)))
+     ((string-suffix-p "~" pattern) `(orderless-flex . ,(substring pattern 0 -1)))))
+  :custom
+  (orderless-style-dispatchers '(vertico-orderless-dispatch))
+  (completion-styles '(orderless basic))
+  (completion-category-defaults nil)
+  (completion-category-overrides '((file (styles . (orderless partial-completion)))))
+  :config
+  (set-face-attribute 'completions-first-difference nil :inherit nil))
 
 (use-package embark
   :demand t
@@ -1017,9 +890,6 @@
   :bind
   (:map flyspell-mode-map
         ("C-c c s" . consult-flyspell)))
-
-(use-package corfu-prescient
-  :hook (corfu-mode . corfu-prescient-mode))
 
 (use-package savehist
   :hook (after-init . savehist-mode))
@@ -1334,9 +1204,10 @@ perspective."
   (magit-repository-directories (list (cons (file-truename "~/Projects") 1))))
 
 (use-package magit-todos
-  :config
+  :init
   (let ((inhibit-message t))
     (magit-todos-mode 1))
+  :config
   (transient-append-suffix 'magit-status-jump '(0 0 -1)
     '("T " "Todos" magit-todos-jump-to-todos)))
 
@@ -1447,16 +1318,13 @@ perspective."
         (save-excursion (goto-char (point-max)) (insert msg))
         (alert (format "Emacs: %s at %s" why (buffer-name buf)))
         (message "Compilation %s: %s" (string-trim-right why) msg))))
-  :hook
-  (compilation-start . my-compilation-start-hook)
+  :hook   (compilation-start . my-compilation-start-hook)
   :custom (compilation-scroll-output t)
-  :config
-  (add-hook 'compilation-finish-functions #'my-compilation-finish-function)
+  :config (add-hook 'compilation-finish-functions #'my-compilation-finish-function)
   :bind ("C-c C-r" . recompile))
 
 (use-package isend-mode
-  :bind
-  ("C-M-<return>" . isend-send))
+  :bind ("C-M-<return>" . isend-send))
 
 (use-package repl-toggle
   :custom
@@ -1969,6 +1837,7 @@ perspective."
   :hook (org-mode . org-fragtog-mode))
 
 (use-package org-cliplink
+  :after org
   :bind (:map org-mode-map ("C-c i l" . org-cliplink)))
 
 (use-package org-capture :ensure org
@@ -1994,34 +1863,34 @@ perspective."
   						    "* %?\n	 [[%:link][%:description]]\n	%U")))
   :bind ("C-c C-c" . org-capture))
 
-(use-package org-capture-ref
-  :after org
-  :quelpa (org-capture-ref :repo "yantar92/org-capture-ref" :fetcher github)
-  :config
-  ;; (add-to-list 'org-capture-templates
-  ;;          (doct '(:group "Browser link"
-  ;;                         :type entry
-  ;;                         :headline "REF"
-  ;;   		              :file org-capture-file
-  ;;   		              :fetch-bibtex (lambda () (org-capture-ref-process-capture)) ; this must run first
-  ;;                         :link-type (lambda () (org-capture-ref-get-bibtex-field :type))
-  ;;                         :extra (lambda ()
-  ;;                                  (if (org-capture-ref-get-bibtex-field :journal)
-  ;;   				                   (s-join "\n"
-  ;;                                              '("- [ ] download and attach pdf"
-  ;;   					                         "- [ ] [[elisp:org-attach-open][read paper capturing interesting references]]"
-  ;;   					                         "- [ ] [[elisp:(browse-url (url-encode-url (format \"https://www.semanticscholar.org/search?q=%s\" (org-entry-get nil \"TITLE\"))))][check citing articles]]"
-  ;;   					                         "- [ ] [[elisp:(browse-url (url-encode-url (format \"https://www.connectedpapers.com/search?q=%s\" (org-entry-get nil \"TITLE\"))))][check related articles]]"
-  ;;                                                "- [ ] check if bibtex entry has missing fields"))
-  ;;                                    ""))
-  ;;                         :org-entry (lambda () (org-capture-ref-get-org-entry))
-  ;;   		              :template
-  ;;                         ("%{fetch-bibtex}* TODO %?%{space}%{org-entry}"
-  ;;                          "%{extra}"
-  ;;                          "- Keywords: #%{link-type}")
-  ;;   		              :children (("Interactive link" :keys "b" :clock-in t :space " " :clock-resume t)
-  ;;   			                     ("Silent link" :keys "B" :space "" :immediate-finish t))))))
-  )
+;; (use-package org-capture-ref
+;;   :after org
+;;   :quelpa (org-capture-ref :repo "yantar92/org-capture-ref" :fetcher github)
+;;   :config
+;;   ;; (add-to-list 'org-capture-templates
+;;   ;;          (doct '(:group "Browser link"
+;;   ;;                         :type entry
+;;   ;;                         :headline "REF"
+;;   ;;   		              :file org-capture-file
+;;   ;;   		              :fetch-bibtex (lambda () (org-capture-ref-process-capture)) ; this must run first
+;;   ;;                         :link-type (lambda () (org-capture-ref-get-bibtex-field :type))
+;;   ;;                         :extra (lambda ()
+;;   ;;                                  (if (org-capture-ref-get-bibtex-field :journal)
+;;   ;;   				                   (s-join "\n"
+;;   ;;                                              '("- [ ] download and attach pdf"
+;;   ;;   					                         "- [ ] [[elisp:org-attach-open][read paper capturing interesting references]]"
+;;   ;;   					                         "- [ ] [[elisp:(browse-url (url-encode-url (format \"https://www.semanticscholar.org/search?q=%s\" (org-entry-get nil \"TITLE\"))))][check citing articles]]"
+;;   ;;   					                         "- [ ] [[elisp:(browse-url (url-encode-url (format \"https://www.connectedpapers.com/search?q=%s\" (org-entry-get nil \"TITLE\"))))][check related articles]]"
+;;   ;;                                                "- [ ] check if bibtex entry has missing fields"))
+;;   ;;                                    ""))
+;;   ;;                         :org-entry (lambda () (org-capture-ref-get-org-entry))
+;;   ;;   		              :template
+;;   ;;                         ("%{fetch-bibtex}* TODO %?%{space}%{org-entry}"
+;;   ;;                          "%{extra}"
+;;   ;;                          "- Keywords: #%{link-type}")
+;;   ;;   		              :children (("Interactive link" :keys "b" :clock-in t :space " " :clock-resume t)
+;;   ;;   			                     ("Silent link" :keys "B" :space "" :immediate-finish t))))))
+;;   )
 
 (use-package org-table :ensure org
   :preface
@@ -2298,7 +2167,7 @@ With a prefix ARG, remove start location."
 (use-package org-roam-timestamps
   :hook (org-roam-mode . org-roam-timestamps-mode))
 
-(use-package ox-pandoc)
+;; (use-package ox-pandoc)
 
 (use-package org-pandoc-import
   :quelpa (org-pandoc-import
@@ -2578,15 +2447,7 @@ With a prefix ARG, remove start location."
 (use-package xref)
 
 (use-package ace-jump-mode
-  :bind
-  ("C-c j j" . ace-jump-mode)
-  ("C-c j c" . ace-jump-char-mode))
-
-(use-package ace-link
-  :bind
-  (:map eww-mode-map
-        ("j" . ace-link))
-  ("C-c j l" . ace-link))
+  :bind ("C-c j j" . ace-jump-mode))
 
 (use-package image-mode
   :ensure nil
@@ -2693,11 +2554,6 @@ With a prefix ARG, remove start location."
 
 (use-package sudo-edit)
 
-(use-package prescient
-  :config
-  (add-to-list 'delete-frame-functions #'prescient--save)
-  (prescient-persist-mode t))
-
 (use-package ghelp
   :quelpa (ghelp :fetcher github :repo "casouri/ghelp"))
 
@@ -2783,6 +2639,31 @@ With a prefix ARG, remove start location."
 ;; (add-hook 'eglot-managed-mode-hook
 ;;           #'(lambda () (cond ((derived-mode-p 'python-base-mode)
 ;;                               (add-hook 'flymake-diagnostic-functions 'python-flymake nil t)))))
+
+(use-package tempel
+  :custom
+  (tempel-path (list
+                (concat no-littering-etc-directory "tempel/*/*.eld")
+                (concat no-littering-etc-directory "tempel/*.eld")))
+  :preface
+  ;; Setup completion at point
+  (defun tempel-setup-capf ()
+    ;; Add the Tempel Capf to `completion-at-point-functions'.
+    ;; `tempel-expand' only triggers on exact matches. Alternatively use
+    ;; `tempel-complete' if you want to see all matches, but then you
+    ;; should also configure `tempel-trigger-prefix', such that Tempel
+    ;; does not trigger too often when you don't expect it. NOTE: We add
+    ;; `tempel-expand' *before* the main programming mode Capf, such
+    ;; that it will be tried first.
+    (setq-local completion-at-point-functions
+                (append (butlast completion-at-point-functions) (list #'tempel-expand t)))
+    )
+  :hook
+  (prog-mode . tempel-setup-capf)
+  (text-mode . tempel-setup-capf)
+  :bind
+  (:map tempel-map
+        ("<tab>" . tempel-next)))
 
 (provide 'init)
 ;;; init.el ends here
