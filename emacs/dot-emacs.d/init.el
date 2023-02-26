@@ -1194,16 +1194,9 @@ perspective."
   (magit-blame-echo-style 'headings)
   (magit-repository-directories (list (cons (file-truename "~/Projects") 1))))
 
-(use-package magit-todos
-  :init
-  (let ((inhibit-message t))
-    (magit-todos-mode 1))
-  :config
-  (transient-append-suffix 'magit-status-jump '(0 0 -1)
-    '("T " "Todos" magit-todos-jump-to-todos)))
+(use-package magit-todos :custom (magit-todos-mode 1))
 
-(use-package git-link
-  :custom (git-link-use-commit t))
+(use-package git-link :custom (git-link-use-commit t))
 
 (use-package git-timemachine)
 

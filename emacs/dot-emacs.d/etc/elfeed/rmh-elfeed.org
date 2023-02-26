@@ -1,4 +1,4 @@
-* Blogs                                                              :elfeed:
+* Blogs                                                              :elfeed:programming:
 ** CPP :cpp:
 *** [[http://blog.regehr.org/feed][Regehr]]
 *** [[http://arne-mertz.de/feed/][Simplify C++!]]
@@ -39,6 +39,7 @@
 *** [[https://ciechanow.ski/atom.xml][Bartosz Ciechanowski]]
 *** [[https://mtlynch.io/posts/index.xml][mtlynch]]
 *** [[https://blog.jessfraz.com/index.xml][Ramblings from Jessie]]
+*** [[https://queue.acm.org/rss/feeds/queuecontent.xml][/ACM Queue]]
 * Image :elfeed:image:
 ** [[https://what-if.xkcd.com/feed.atom][what if?]]
 ** [[http://xkcd.com/rss.xml][xkcd]]
@@ -81,6 +82,9 @@
 ** [[http://zipcpu.com][ZipCPU]] :reddit:
 ** [[https://old.reddit.com/r/fpga/top.rss?t=month][/r/FPGA]]
 ** [[https://bitsbytesgates.com/atom.xml][Bits, Bytes, and Gates]]
+** [[https://projectf.io/index.xml][Project F]]
+** [[https://c65gs.blogspot.com/feeds/posts/default][C65]]
+** [[https://fpgacoding.com/feed/][FPGA Coding]]
 * Reddit                                                               :elfeed:reddit:
 ** Programming                                                         :prog:
 ** [[https://old.reddit.com/r/cpp/top.rss?t=week][top scoring links : cpp]]
