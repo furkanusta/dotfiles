@@ -122,7 +122,6 @@
    (before-save . delete-trailing-whitespace)
    (after-init . toggle-frame-maximized))
   :init
-  (fset 'yes-or-no-p 'y-or-n-p)
   (global-unset-key (kbd "C-x c"))
   (add-to-list 'default-frame-alist '(fullscreen . maximized))
   (prefer-coding-system 'utf-8)
@@ -149,6 +148,7 @@
                 read-buffer-completion-ignore-case t
                 font-use-system-font t)
   :custom
+  (use-short-answers t)
   (initial-major-mode #'fundamental-mode)
   (version-control t)
   (delete-old-versions t)
@@ -762,6 +762,7 @@
   :custom
   (orderless-style-dispatchers '(vertico-orderless-dispatch))
   (completion-styles '(orderless basic))
+  (completion-ignore-case t)
   (completion-category-defaults nil)
   (completion-category-overrides '((file (styles . (orderless partial-completion)))))
   :config
@@ -773,17 +774,6 @@
   :init   (setq prefix-help-command #'embark-prefix-help-command)
   :custom (embark-indicators '(embark-verbose-indicator))
   :preface
-  (defun sudo-find-file (file)
-    "Open FILE as root."
-    (interactive "FOpen file as root: ")
-    (when (file-writable-p file)
-      (user-error "File is user writeable, aborting sudo"))
-    (find-file (if (file-remote-p file)
-                   (concat "/" (file-remote-p file 'method) ":"
-                           (file-remote-p file 'user) "@" (file-remote-p file 'host)
-                           "|sudo:root@"
-                           (file-remote-p file 'host) ":" (file-remote-p file 'localname))
-                 (concat "/sudo:root@localhost:" file))))
   (defun with-minibuffer-keymap (keymap)
     (lambda (fn &rest args)
       (minibuffer-with-setup-hook
@@ -817,7 +807,7 @@
         ("C-:" . embark-export))
   (:map embark-file-map
         ("L" . vlf)
-        ("S" . sudo-find-file)))
+        ("S" . sudo-edit-find-file)))
 
 (use-package embark-consult
   :after (embark consult)
@@ -870,7 +860,6 @@
   :custom
   (corfu-popupinfo-delay 0.5))
 
-(use-)
 (use-package cape-yasnippet
   :vc (:fetcher github :repo "elken/cape-yasnippet"))
 
