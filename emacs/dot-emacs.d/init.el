@@ -374,8 +374,6 @@
         ("E" . dired-open-current-directory-xdg)
         ("e" . dired-open-xdg)))
 
-(use-package dired)
-
 (use-package dired-hide-dotfiles
   :hook (dired-mode . dired-hide-dotfiles-mode)
   :bind (:map dired-mode-map
@@ -853,9 +851,11 @@
         ("C-SPC" . corfu-insert-separator)))
 
 (use-package corfu-history
+  :ensure corfu
   :hook (corfu-mode . corfu-history-mode))
 
 (use-package corfu-popupinfo
+  :ensure corfu
   :hook (corfu-mode . corfu-popupinfo-mode)
   :custom
   (corfu-popupinfo-delay 0.5))
@@ -988,29 +988,30 @@
   :if (processp server-process)
   :hook (dashboard-mode . page-break-lines-mode)
   :commands dashboard-insert-section dashboard-insert-heading dashboard-subseq
-  :preface (defun dashboard-insert-scratch (list-size)
-             (dashboard-insert-section
-              "Shortcuts:"
-              '("*scratch*" "*elfeed*" "init.el" "*vterm*" "Data Folder" "Home")
-              list-size
-              "Scratch"
-              "s"
-              `(lambda (&rest ignore)
-                 (cond
-                  ((string= "*scratch*" ,el) (switch-to-buffer "*scratch*"))
-                  ((string= "init.el" ,el) (find-file user-init-file))
-                  ((string= "Data Folder" ,el) (find-file my-data-directory))
-                  ((string= "*vterm*" ,el) (multi-vterm))
-                  ((string= "*elfeed*" ,el)
-                   (progn
-                     (if (get-buffer "*elfeed-search*")
-                         (switch-to-buffer "*elfeed-search*")
-                       (progn
-                         (elfeed)
-                         (elfeed-search-fetch nil)))))
-                  ((string= "Home" ,el) (dired (expand-file-name "~/")))
-                  (t (message "%s" ,el))))
-              (format "%s" el)))
+  :preface
+  (defun dashboard-insert-scratch (list-size)
+    (dashboard-insert-section
+     "Shortcuts:"
+     '("*scratch*" "*elfeed*" "init.el" "*vterm*" "Data Folder" "Home")
+     list-size
+     "Scratch"
+     "s"
+     `(lambda (&rest ignore)
+        (cond
+         ((string= "*scratch*" ,el) (switch-to-buffer "*scratch*"))
+         ((string= "init.el" ,el) (find-file user-init-file))
+         ((string= "Data Folder" ,el) (find-file my-data-directory))
+         ((string= "*vterm*" ,el) (multi-vterm))
+         ((string= "*elfeed*" ,el)
+          (progn
+            (if (get-buffer "*elfeed-search*")
+                (switch-to-buffer "*elfeed-search*")
+              (progn
+                (elfeed)
+                (elfeed-search-fetch nil)))))
+         ((string= "Home" ,el) (dired (expand-file-name "~/")))
+         (t (message "%s" ,el))))
+     (format "%s" el)))
   :init (dashboard-setup-startup-hook)
   :config (add-to-list 'dashboard-item-generators  '(scratch . dashboard-insert-scratch))
   :custom
@@ -1262,8 +1263,10 @@ perspective."
          (re-search-forward "\\] \\$ " nil 'move))
   :config
   (add-to-list 'display-buffer-alist (cons "\\*vterm" use-other-window-alist))
+  (add-to-list 'vterm-tramp-shells '("ssh" "/bin/bash"))
   :custom
   (vterm-copy-exclude-prompt t)
+  (vterm-shell (getenv "SHELL"))
   :bind
   (:map vterm-mode-map
         ("C-y" . vterm-yank)
@@ -1340,6 +1343,8 @@ perspective."
             (tramp-cleanup-all-connections)
             (tramp-cleanup-all-buffers))
   :custom
+  (tramp-default-method "ssh")
+  (tramp-encoding-shell (getenv "SHELL"))
   (tramp-backup-directory-alist backup-directory-alist))
 
 (use-package auto-highlight-symbol
@@ -2610,12 +2615,21 @@ With a prefix ARG, remove start location."
       (wsl--get)
       (kill-ring-save (point-min) (point-max)))
     (yank))
+  :custom
+  (select-enable-clipboard nil)
   :init
   (advice-add #'kill-line :after #'wsl--send-kill-ring)
   (advice-add #'kill-ring-save :after #'wsl--send-kill-ring)
   :bind
   ("C-k" . kill-line)
   ("C-M-y" . wsl-yank))
+
+;; (use-package jenkins
+;;   :custom
+;;   (jenkins-url "http://xcoengvm229093.xilinx.com:8080/")
+;;   (jenkins-api-token (auth-source-pick-first-password :host "xcoengvm229093"))
+;;   (jenkins-username "furkanu")
+;;   (jenkins-viewname "xrdma"))
 
 ;; (use-package verilog-ts-mode
 ;;   :after verilog-mode
@@ -2628,3 +2642,4 @@ With a prefix ARG, remove start location."
 
 (provide 'init)
 ;;; init.el ends here
+;; //ssh:furkanu@xirengips01:~/

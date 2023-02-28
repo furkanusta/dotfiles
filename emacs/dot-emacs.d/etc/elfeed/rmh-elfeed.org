@@ -96,7 +96,7 @@
 ** [[https://old.reddit.com/r/programming/top.rss?t=week][top scoring links : programming]]
 ** [[https://old.reddit.com/r/selfhosted/top.rss?t=month][top scoring links : selfhosted]]
 ** [[https://old.reddit.com/r/commandline/top.rss?t=month][top scoring links : commandline]]
-** Other    :ignore:hum:
+** Other                                                         :ignore:
 ** [[https://old.reddit.com/r/dataisbeautiful/top.rss?t=month][top scoring links : dataisbeautiful]]
 ** [[https://old.reddit.com/r/simpleprompts/top.rss?t=week][top scoring links : SimplePrompts]]
 ** [[https://old.reddit.com/r/promptoftheday/top.rss?t=week][top scoring links : promptoftheday]]
