@@ -418,6 +418,17 @@
            (window (get-buffer-window buf)))
       (delete-window window)
       (when (buffer-live-p buf) (kill-buffer buf))))
+  (defun elfeed-copy-link-at-point ()
+    (interactive)
+    (let* ((search-entries (elfeed-search-selected))
+           (search-entry (when search-entries (car search-entries)))
+           (elfeed-entry (or elfeed-show-entry search-entry))
+           (url (elfeed-entry-link elfeed-entry)))
+      ;; For wsl hooks to work
+      (with-temp-buffer
+        (insert url)
+        (kill-ring-save (point-min) (point-max)))
+      (elfeed-search-untag-all-unread)))
   :custom
   (elfeed-show-entry-switch #'pop-to-buffer)
   (elfeed-show-entry-delete #'+rss/delete-pane)
@@ -459,6 +470,7 @@
       (elfeed-search-untag-all-unread)))
   :bind (:map elfeed-search-mode-map
               ("P" . pocket-reader-add-link)
+              ("M-w" . elfeed-copy-link-at-point)
               ("d" . elfeed-youtube-dl)
               ("e" . elfeed-open-eww)
               ("m" . elfeed-mpv)))
@@ -468,6 +480,7 @@
   :commands (pocket-reader-add-link)
   :bind (:map elfeed-show-mode-map
               ("q" . +rss/delete-pane)
+              ("M-w" . elfeed-copy-link-at-point)
               ("P" . pocket-reader-add-link)))
 
 (use-package reddigg
