@@ -295,8 +295,6 @@
   :ensure nil
   :preface
   (defvar my-hydra-switch-buffer-source nil)
-  :custom
-  (split-height-threshold nil)
   :hydra
   (hydra-switch-buffer
    (ctl-x-map nil
@@ -359,6 +357,7 @@
   (dired-listing-switches "-aBhlv --group-directories-first --color=never")
   :config
   (defun my--find-nov-buffer (filename)
+    (require 'nov)
     (if-let (nov-buffer (seq-filter #'(lambda (buffer) (with-current-buffer buffer (string= filename nov-file-name))) (buffer-list)))
         (switch-to-buffer (car nov-buffer))
       (nov--find-file filename 0 0)))
@@ -1120,7 +1119,6 @@
   :custom
   (project-switch-commands #'my-open-readme)
   :bind-keymap ("C-c p" . project-prefix-map))
-;; Adapted from persp-projectile
 
 (use-package my-project-persp-bridge
   :ensure nil
@@ -1128,6 +1126,10 @@
   (defun my-project-name (project)
     (interactive (list (project-root (project-current))))
     (file-name-nondirectory (directory-file-name project)))
+  (defun my-project-other-known-project-roots ()
+    (let ((roots (project-known-project-roots))
+          (current (project-root (project-current))))
+      (delete current roots)))
   (defun project-persp-switch-project (project-to-switch)
   "Switch to a project or perspective we have visited before.
 If the perspective of corresponding project does not exist, this
@@ -1136,7 +1138,7 @@ that before `project-switch-project'
 Otherwise, this function calls `persp-switch' to switch to an
 existing perspective of the project unless we're already in that
 perspective."
-  (interactive (list (completing-read "Switch to project: " (project-known-project-roots))))
+  (interactive (list (completing-read "Switch to project: " (my-project-other-known-project-roots))))
   (let* ((name (my-project-name project-to-switch))
          (persp (gethash name (perspectives-hash))))
     (cond
@@ -2544,10 +2546,18 @@ With a prefix ARG, remove start location."
   (vundo-glyph-alist vundo-unicode-symbols)
   :bind ("C-x u" . vundo))
 
+(use-package undo-fu-session
+  :custom
+  (undo-fu-session-global-mode t))
+
 (use-package sudo-edit)
 
-(use-package ghelp
-  :vc (:fetcher github :repo "casouri/ghelp"))
+
+;; (use-package ghelp
+;;   :vc (:fetcher github :repo "casouri/ghelp")
+;;   :custom
+;;   (ghelp-enable-header-line nil)
+;;   :bind ("C-h h" . ghelp-describe))
 
 (use-package org-sticky-header
   :hook (org-mode . org-sticky-header-mode)
@@ -2617,6 +2627,7 @@ With a prefix ARG, remove start location."
     (yank))
   :custom
   (select-enable-clipboard nil)
+  (split-height-threshold nil)
   :init
   (advice-add #'kill-line :after #'wsl--send-kill-ring)
   (advice-add #'kill-ring-save :after #'wsl--send-kill-ring)
@@ -2624,12 +2635,9 @@ With a prefix ARG, remove start location."
   ("C-k" . kill-line)
   ("C-M-y" . wsl-yank))
 
-;; (use-package jenkins
+;; (use-package rustic
 ;;   :custom
-;;   (jenkins-url "http://xcoengvm229093.xilinx.com:8080/")
-;;   (jenkins-api-token (auth-source-pick-first-password :host "xcoengvm229093"))
-;;   (jenkins-username "furkanu")
-;;   (jenkins-viewname "xrdma"))
+;;   (rustic-lsp-client 'eglot))
 
 ;; (use-package verilog-ts-mode
 ;;   :after verilog-mode
