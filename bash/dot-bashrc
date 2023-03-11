@@ -41,10 +41,10 @@ alias ec="emacsclient -t"
 alias mp3-dl="yt-dlp --extract-audio --audio-format=mp3"
 alias mp3-tags="fd -t f -x ffprobe -loglevel error -show_entries format_tags=title,artist -of compact"
 
-export PS1='[$(basename $(dirname "$PWD"))/$(basename "$PWD")] $ ';
+export PS1='[$(basename "$(dirname "$PWD")")/$(basename "$PWD")] $ ';
 
 if [[ -z "${INSIDE_EMACS}" ]]; then
-    export PS1='[$(basename $(dirname "$PWD"))/$(basename "$PWD")] \[\e[0;31m$\e[0m\] ';
+    export PS1='[$(basename "$(dirname "$PWD")")/$(basename "$PWD")] \[\e[0;31m$\e[0m\] ';
 fi
 
 # bind does not work inside emacs
