@@ -1,5 +1,9 @@
 ;;; -*- lexical-binding: t -*-
 ;; Initialization
+(setq custom-file (concat user-emacs-directory "custom.el"))
+(when (file-exists-p custom-file)
+  (load custom-file))
+
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 (package-initialize)
@@ -22,7 +26,6 @@
 
 (use-package use-package-hydra)
 
-(setq custom-file null-device)
 ;; Init Done
 
 ;; ;; Debug
@@ -32,6 +35,7 @@
 (use-package dash)
 (use-package f)
 
+;; (setq use-package-compute-statistics t)
 (setq use-package-always-defer t)
 ;; (setq-default use-package-always-ensure t)
 
@@ -215,7 +219,6 @@
   (:map prog-mode-map ("<tab>" . indent-for-tab-command)))
 
 (use-package find-file :ensure nil
-  :demand t
   :bind
   (:map project-prefix-map
         ("a" . ff-find-other-file-other-window)
@@ -281,10 +284,8 @@
 (use-package so-long)
 
 (use-package goto-addr
-  :custom (global-goto-address-mode t)
-  :bind
-  (:map goto-address-highlight-keymap
-        ("C-c o l" . goto-address-at-point)))
+  :hook (org-mode . goto-address-mode)
+  :bind ("C-c o l" . goto-address-at-point))
 
 (use-package bookmark
   :hook (kill-emacs . bookmark-save)
@@ -768,7 +769,8 @@
 (use-package embark
   :demand t
   :after vertico
-  :init   (setq prefix-help-command #'embark-prefix-help-command)
+  :init
+  (setq prefix-help-command #'embark-prefix-help-command)
   :custom (embark-indicators '(embark-verbose-indicator))
   :preface
   (defun with-minibuffer-keymap (keymap)
@@ -821,7 +823,6 @@
      (persp-switch-to-buffer . buffer))))
 
 (use-package all-the-icons-completion
-  :hook (marginalia-mode-hook . all-the-icons-completion-marginalia-setup)
   :init (all-the-icons-completion-mode))
 
 (use-package corfu
@@ -860,15 +861,15 @@
   (corfu-popupinfo-delay 0.5))
 
 (use-package cape-yasnippet
-  :vc (:fetcher github :repo "elken/cape-yasnippet"))
+  :vc (:fetcher github :repo "elken/cape-yasnippet")
+  :init
+  (add-to-list 'completion-at-point-functions #'cape-yasnippet))
 
 (use-package cape
   :init
-  (require 'cape-yasnippet)
   (add-to-list 'completion-at-point-functions #'cape-file)
   (add-to-list 'completion-at-point-functions
-               (cape-super-capf #'cape-symbol #'cape-keyword #'cape-dabbrev #'cape-yasnippet)))
-
+               (cape-super-capf #'cape-symbol #'cape-keyword #'cape-dabbrev)))
 
 (use-package kind-icon
   :after corfu
@@ -977,7 +978,7 @@
 
 (use-package bufler :bind ("C-x C-b" . bufler))
 
-(use-package all-the-icons-ibuffer :init (all-the-icons-ibuffer-mode 1))
+(use-package all-the-icons-ibuffer :hook (ibuffer-mode . all-the-icons-ibuffer-mode))
 
 (use-package dogears
   :custom (dogears-mode t)
@@ -1197,7 +1198,8 @@ perspective."
   (magit-blame-echo-style 'headings)
   (magit-repository-directories (list (cons (file-truename "~/Projects") 1))))
 
-(use-package magit-todos :custom (magit-todos-mode 1))
+(use-package magit-todos
+  :hook (magit-mode . magit-todos-mode))
 
 (use-package git-link :custom (git-link-use-commit t))
 
@@ -1625,7 +1627,7 @@ perspective."
 (use-package web-mode
   :hook (web-mode . disable-smartparens)
   :mode "\\.jinja\\'"
-  :init
+  :config
   (require 'jinja2-mode)
   (defun disable-smartparens ()
     (smartparens-mode -1))
@@ -2088,7 +2090,7 @@ With a prefix ARG, remove start location."
 
 (use-package engine-mode
   :custom
-  (engine-mode t)
+  ;; (engine-mode t)
   (engine/browser-function 'eww-browse-url)
   :init
   (defengine github "https://github.com/search?ref=simplesearch&q=%s")
@@ -2592,9 +2594,8 @@ With a prefix ARG, remove start location."
 
 (use-package treesit-auto
   :commands make-treesit-auto-recipe
-  :custom
-  (treesit-auto-install t)
-  :init
+  :custom (treesit-auto-install t)
+  :config
    (add-to-list 'treesit-auto-recipe-list (make-treesit-auto-recipe
      :lang 'verilog
      :ts-mode 'verilog-ts-mode
