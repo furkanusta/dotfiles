@@ -87,21 +87,21 @@
 ** [[https://fpgacoding.com/feed/][FPGA Coding]]
 * Reddit                                                               :elfeed:reddit:
 ** Programming                                                         :prog:
-** [[https://old.reddit.com/r/cpp/top.rss?t=week][top scoring links : cpp]]
-** [[https://old.reddit.com/r/orgmode/top.rss?t=week][top scoring links : orgmode]]
-** [[https://old.reddit.com/r/python/top.rss?t=month][top scoring links : Python]]
-** [[https://old.reddit.com/r/ruby/top.rss?t=month][top scoring links : ruby]]
-** [[https://old.reddit.com/r/java/top.rss?t=month][top scoring links : java]]
-** [[https://old.reddit.com/r/linux/top.rss?t=month][top scoring links : linux]]
-** [[https://old.reddit.com/r/programming/top.rss?t=week][top scoring links : programming]]
-** [[https://old.reddit.com/r/selfhosted/top.rss?t=month][top scoring links : selfhosted]]
-** [[https://old.reddit.com/r/commandline/top.rss?t=month][top scoring links : commandline]]
+** [[https://old.reddit.com/r/cpp/top.rss?t=week][/r/cpp]]
+** [[https://old.reddit.com/r/orgmode/top.rss?t=week][/r/orgmode]]
+** [[https://old.reddit.com/r/python/top.rss?t=month][/r/Python]]
+** [[https://old.reddit.com/r/ruby/top.rss?t=month][/r/ruby]]
+** [[https://old.reddit.com/r/java/top.rss?t=month][/r/java]]
+** [[https://old.reddit.com/r/linux/top.rss?t=month][/r/linux]]
+** [[https://old.reddit.com/r/programming/top.rss?t=week][/r/programming]]
+** [[https://old.reddit.com/r/selfhosted/top.rss?t=month][/r/selfhosted]]
+** [[https://old.reddit.com/r/commandline/top.rss?t=month][/r/commandline]]
 ** Other                                                         :ignore:
-** [[https://old.reddit.com/r/dataisbeautiful/top.rss?t=month][top scoring links : dataisbeautiful]]
-** [[https://old.reddit.com/r/simpleprompts/top.rss?t=week][top scoring links : SimplePrompts]]
-** [[https://old.reddit.com/r/promptoftheday/top.rss?t=week][top scoring links : promptoftheday]]
-** [[https://old.reddit.com/r/askhistorians/top.rss?t=month][top scoring links : AskHistorians]]
-** [[https://old.reddit.com/r/badhistory/top.rss?t=month][top scoring links : badhistory]]
+** [[https://old.reddit.com/r/dataisbeautiful/top.rss?t=month][/r/dataisbeautiful]] :ignore:
+** [[https://old.reddit.com/r/simpleprompts/top.rss?t=week][/r/SimplePrompts]] :ignore:
+** [[https://old.reddit.com/r/promptoftheday/top.rss?t=week][/r/promptoftheday]] :ignore:
+** [[https://old.reddit.com/r/askhistorians/top.rss?t=month][/r/AskHistorians]] :ignore:
+** [[https://old.reddit.com/r/badhistory/top.rss?t=month][/r/badhistory]] :ignore:
 * Uncategorized                                        :elfeed:uncategorized:
 ** [[http://research.swtch.com/feeds/posts/default][research!rsc]]
 ** [[http://bitbashing.io/feed.xml][Bit Bashing]]
@@ -132,3 +132,19 @@
 ** [[https://www.darkcoding.net/feed/][Graham King]]
 ** [[https://dynomight.net/feed.xml][DYNOMIGHT]]
 ** [[http://feeds.feedburner.com/InformationIsBeautiful][Information is Beautiful]]
+* Magazine                                                      :elfeed:blog:
+** [[https://www.thenewatlantis.com/feed][New Atlantis]]
+** [[https://harpers.org/feed/][Harpers]]
+** [[https://www.nplusonemag.com/feed/][N+1]]
+** [[https://api.quantamagazine.org/feed/][Quanta]]
+** [[https://www.noemamag.com/feed/][Noema Magazine]]
+** [[https://aeon.co/feed][Aeon]]
+** [[https://nautil.us/feed/][Nautilus]]
+** [[https://thepointmag.com/feed/][The Point Magazine]]
+** [[https://asteriskmag.com/feed][Asterisk Magazine]]
+** [[https://www.symmetrymagazine.org/feed][Symmetry Magazine]]
+** [[https://www.laphamsquarterly.org/rss.xml][Lapham's Quarterly]]
+** [[http://www.newyorker.com/feed/magazine/rss][New Yorker]]
+** [[https://feeds.feedburner.com/brainpickings/rss][Marginalian]]
+** [[https://reallifemag.com/feed/][Reallifemag]]
+** [[https://psyche.co/][Psyche]]
