@@ -194,6 +194,7 @@
      (if mark-active (list (region-beginning) (region-end))
        (list (line-beginning-position)
              (line-beginning-position 2)))))
+  (add-to-list 'exec-path "~/.local/bin")
   :bind
   ("C-c ." . pop-global-mark)
   ("M-u" . upcase-dwim)
@@ -1305,7 +1306,7 @@ perspective."
         ("C-<return>" . vterm-toggle-insert-cd)))
 
 (use-package shx
-  :hook (shell-mode . shx-mode))
+  :hook (comint-mode . shx-mode))
 
 (use-package compile :ensure nil
   :preface
@@ -2238,6 +2239,7 @@ With a prefix ARG, remove start location."
 (use-package ein)
 
 (use-package code-cells
+  :hook (python-mode . code-cells-mode-maybe)
   :config
   (let ((map code-cells-mode-map))
       (define-key map "n" (code-cells-speed-key 'code-cells-forward-cell))
@@ -2250,6 +2252,9 @@ With a prefix ARG, remove start location."
         ("C-c C-n" . code-cells-forward-cell)
         ("C-c C-p" . code-cells-backward-cell)
         ("M-RET" . code-cells-eval)))
+
+(use-package comint-mime
+  :hook (inferior-python-mode . comint-mime-setup))
 
 (use-package org-auctex
   :vc (:fetcher github :repo "karthink/org-auctex"))
