@@ -38,7 +38,7 @@ alias cat=bat
 alias pip3-install="pip3 install --user"
 
 alias ec="emacsclient -t"
-alias mp3-dl="yt-dlp --extract-audio --audio-format=mp3"
+alias mp3-dl="yt-dlp --extract-audio"
 alias mp3-tags="fd -t f -x ffprobe -loglevel error -show_entries format_tags=title,artist -of compact"
 
 export PS1='[$(basename "$(dirname "$PWD")")/$(basename "$PWD")] $ ';

@@ -145,6 +145,5 @@
 ** [[https://www.symmetrymagazine.org/feed][Symmetry Magazine]]
 ** [[https://www.laphamsquarterly.org/rss.xml][Lapham's Quarterly]]
 ** [[http://www.newyorker.com/feed/magazine/rss][New Yorker]]
-** [[https://feeds.feedburner.com/brainpickings/rss][Marginalian]]
 ** [[https://reallifemag.com/feed/][Reallifemag]]
 ** [[https://psyche.co/][Psyche]]
