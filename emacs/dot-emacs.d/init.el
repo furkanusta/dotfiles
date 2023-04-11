@@ -1100,7 +1100,11 @@
 
 (use-package window-margin
   :vc (:fetcher github :repo "aculich/window-margin.el")
-  :hook (markdown-mode . window-margin-mode))
+  :preface
+  (defun maybe-window-margin-mode ()
+    (when (> (length (window-list)) 1)
+      (window-margin-mode t)))
+  :hook (markdown-mode . maybe-window-margin-mode))
 
 (use-package prog-mode :ensure nil
   :preface
@@ -2612,7 +2616,9 @@ With a prefix ARG, remove start location."
 
 (use-package treesit-auto
   :commands make-treesit-auto-recipe
-  :custom (treesit-auto-install t)
+  :custom
+  (treesit-auto-install t)
+  (global-treesit-auto-mode t)
   :config
    (add-to-list 'treesit-auto-recipe-list (make-treesit-auto-recipe
      :lang 'verilog
@@ -2658,9 +2664,13 @@ With a prefix ARG, remove start location."
 ;;   :custom
 ;;   (rustic-lsp-client 'eglot))
 
-;; (use-package verilog-ts-mode
-;;   :after verilog-mode
-;;   :vc (:fetcher "github" :repo "gmlarumbe/verilog-ext" :files ("verilog-ts-mode.el")))
+(use-package verilog-ext)
+
+(use-package verilog-ts-mode
+  :vc (:fetcher "github" :repo "gmlarumbe/verilog-ext"))
+
+(use-package tree-sitter-ident
+  :hook (verilog-ts-mode . tree-sitter-indent-mode))
 
 ;; (add-hook 'python-base-mode-hook 'flymake-mode) (setq python-flymake-command '("ruff" "--quiet" "--stdin-filename=stdin" "-")
 ;; (add-hook 'eglot-managed-mode-hook
