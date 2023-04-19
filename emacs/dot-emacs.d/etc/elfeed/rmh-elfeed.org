@@ -5,6 +5,7 @@
 *** [[https://eli.thegreenplace.net/feeds/all.atom.xml][Eli Bendersky]]
 *** [[https://thephd.dev/feed.xml][The Pasture]]
 *** [[https://xania.org/feed.atom][Matt Godbolt’s blog]]
+*** [[https://awesomekling.github.io/feed.xml][Andreas Kling]]
 ** Linux :linux:
 *** [[http://planet.gnome.org/rss20.xml][Planet GNOME]] :gnome:
 ** Uncategorized                                                      :other:

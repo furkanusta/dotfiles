@@ -891,11 +891,6 @@
   (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
   :config (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
-(use-package consult-flyspell
-  :bind
-  (:map flyspell-mode-map
-        ("C-c c s" . consult-flyspell)))
-
 (use-package savehist
   :hook (after-init . savehist-mode))
 
@@ -1732,9 +1727,7 @@ perspective."
 (use-package rake)
 
 (use-package org
-  :hook
-  ((org-mode . turn-on-flyspell)
-   (org-mode . smartparens-mode))
+  :hook (org-mode . smartparens-mode)
   :preface
   (defun my-update-all-bibs ()
     (interactive)
@@ -2371,7 +2364,6 @@ With a prefix ARG, remove start location."
 (use-package latex :ensure auctex
   :mode ("\\.tex\\'" . latex-mode)
   :hook ((LaTeX-mode . TeX-source-correlate-mode)
-         (LaTeX-mode . flyspell-mode)
          (LaTeX-mode . TeX-PDF-mode))
   :custom (LaTeX-electric-left-right-brace t))
 
@@ -2441,17 +2433,10 @@ With a prefix ARG, remove start location."
   :custom
   (nov-text-width nil))
 
-(use-package flyspell
-  :hook ((text-mode org-mode) . flyspell-mode))
-
-(use-package flyspell-correct
-  :after flyspell
+(use-package jinx
+  :hook (emacs-startup . global-jinx-mode)
   :bind
-  ("C-c $" . flyspell-correct-wrapper)
-  ("C-;" . flyspell-correct-at-point)
-  (:map flyspell-mode-map
-        ("C-;" . flyspell-correct-at-point)
-        ("C-c $" . flyspell-correct-wrapper)))
+  ([remap ispell-word] . jinx-correct))
 
 (use-package wgrep
   :custom (wgrep-auto-save-buffer t))
