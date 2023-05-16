@@ -195,6 +195,7 @@
        (list (line-beginning-position)
              (line-beginning-position 2)))))
   (add-to-list 'exec-path "~/.local/bin")
+  (add-to-list 'delete-frame-functions #'recentf-save-list)
   :bind
   ("C-c ." . pop-global-mark)
   ("M-u" . upcase-dwim)
@@ -1243,7 +1244,8 @@ perspective."
   :custom (copy-as-format-default "github"))
 
 (use-package diff-hl
-  :hook (find-file . diff-hl-mode))
+  :hook (find-file . diff-hl-mode)
+  :custom (diff-hl-disable-on-remote t))
 
 (use-package hl-todo
   :custom (global-hl-todo-mode 1))
@@ -1359,6 +1361,7 @@ perspective."
             (interactive)
             (tramp-cleanup-all-connections)
             (tramp-cleanup-all-buffers))
+  (add-to-list 'tramp-remote-path "~/.local/bin")
   :custom
   (tramp-default-method "ssh")
   (tramp-encoding-shell (getenv "SHELL"))
@@ -1683,8 +1686,8 @@ perspective."
     (setq python-shell-interpreter "python3"))
    (t (setq python-shell-interpreter "python"))))
 
-(use-package pet
-  :hook (python-mode . pet-mode))
+;; (use-package pet
+;;   :hook (python-mode . pet-mode))
 
 (use-package pyvenv
   :hook
@@ -1710,7 +1713,9 @@ perspective."
   :custom
   (tcl-application "tclsh"))
 
-(use-package ruby-mode)
+(use-package ruby-mode
+  :mode ("\\.dj\\'" . ruby-mode))
+
 ;; (use-package enh-ruby-mode)
 ;; (use-package rspec)
 ;; (use-package minitest)
@@ -2003,7 +2008,6 @@ With a prefix ARG, remove start location."
     (add-hook 'pdf-annot-activate-handler-functions #'org-noter-pdftools-jump-to-note)))
 
 (use-package org-noter
-  :vc (:fetcher github :repo "furkanusta/org-noter")
   :custom
   (org-noter-notes-search-path (list my-notes-directory))
   (org-noter-always-create-frame nil)
@@ -2645,16 +2649,22 @@ With a prefix ARG, remove start location."
   ("C-k" . kill-line)
   ("C-M-y" . wsl-yank))
 
+ ;; (setq remote-file-name-inhibit-locks t)
+(use-package vc
+  :custom
+  (vc-handled-backends nil))
+
 ;; (use-package rustic
 ;;   :custom
 ;;   (rustic-lsp-client 'eglot))
 
-(use-package verilog-ext)
+;; (use-package verilog-ext)
 
 (use-package verilog-ts-mode
+  :after verilog
   :vc (:fetcher "github" :repo "gmlarumbe/verilog-ext"))
 
-(use-package tree-sitter-ident
+(use-package tree-sitter-indent
   :hook (verilog-ts-mode . tree-sitter-indent-mode))
 
 ;; (add-hook 'python-base-mode-hook 'flymake-mode) (setq python-flymake-command '("ruff" "--quiet" "--stdin-filename=stdin" "-")
