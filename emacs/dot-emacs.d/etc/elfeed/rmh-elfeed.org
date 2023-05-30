@@ -134,6 +134,8 @@
 ** [[https://dynomight.net/feed.xml][DYNOMIGHT]]
 ** [[http://feeds.feedburner.com/InformationIsBeautiful][Information is Beautiful]]
 * Magazine                                                      :elfeed:blog:
+** [[https://poems.com/feed/][Poetry Daily]]
+* Old Magazine :blog:
 ** [[https://www.thenewatlantis.com/feed][New Atlantis]]
 ** [[https://harpers.org/feed/][Harpers]]
 ** [[https://www.nplusonemag.com/feed/][N+1]]

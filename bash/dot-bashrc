@@ -30,7 +30,7 @@ export PATH="$PATH:$CARGO_HOME/bin"
 export TEXMFHOME="$LOCAL_PATH/prog/texmf"
 export XDG_CONFIG_HOME=$HOME/.config
 
-export GEM_HOME="$(ruby -e 'puts Gem.user_dir')"
+export GEM_HOME="$(ruby -e 'puts Gem.user_dir' 2>/dev/null)"
 export PATH="$PATH:$GEM_HOME/bin"
 
 alias ls=exa
@@ -78,3 +78,5 @@ export NODE_PATH="$NPM_PACKAGES/lib/node_modules:$NODE_PATH"
 export PATH="$PATH:$NPM_PACKAGES/bin"
 
 export USE_BAZEL_VERSION=6.0.0
+
+export MAMBA_ROOT_PREFIX=$HOME/.micromamba

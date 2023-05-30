@@ -126,6 +126,7 @@
    (before-save . delete-trailing-whitespace)
    (after-init . toggle-frame-maximized))
   :init
+  (setq backup-directory-alist (list (cons "." (concat no-littering-var-directory "backup/"))))
   (global-unset-key (kbd "C-x c"))
   (add-to-list 'default-frame-alist '(fullscreen . maximized))
   (prefer-coding-system 'utf-8)
@@ -752,34 +753,14 @@
   :preface
   ;; From doomemacs
   (defun vertico-orderless-dispatch (pattern _index _total)
-    (cond
-     ;; Ensure $ works with Consult commands, which add disambiguation suffixes
-     ((string-suffix-p "$" pattern)
-      `(orderless-regexp . ,(concat (substring pattern 0 -1) "[\x200000-\x300000]*$")))
-     ;; Ignore single !
-     ((string= "!" pattern) `(orderless-literal . ""))
-     ;; Without literal
-     ((string-prefix-p "!" pattern) `(orderless-without-literal . ,(substring pattern 1)))
-     ;; Character folding
-     ((string-prefix-p "%" pattern) `(char-fold-to-regexp . ,(substring pattern 1)))
-     ((string-suffix-p "%" pattern) `(char-fold-to-regexp . ,(substring pattern 0 -1)))
-     ;; Initialism matching
-     ((string-prefix-p "`" pattern) `(orderless-initialism . ,(substring pattern 1)))
-     ((string-suffix-p "`" pattern) `(orderless-initialism . ,(substring pattern 0 -1)))
-     ;; Literal matching
-     ((string-prefix-p "=" pattern) `(orderless-literal . ,(substring pattern 1)))
-     ((string-suffix-p "=" pattern) `(orderless-literal . ,(substring pattern 0 -1)))
-     ;; Flex matching
-     ((string-prefix-p "~" pattern) `(orderless-flex . ,(substring pattern 1)))
-     ((string-suffix-p "~" pattern) `(orderless-flex . ,(substring pattern 0 -1)))))
+    (cond ((string-prefix-p "!" pattern) `(orderless-without-literal . ,(substring pattern 1)))))
   :custom
   (orderless-style-dispatchers '(vertico-orderless-dispatch))
   (completion-styles '(orderless basic))
   (completion-ignore-case t)
   (completion-category-defaults nil)
   (completion-category-overrides '((file (styles . (orderless partial-completion)))))
-  :config
-  (set-face-attribute 'completions-first-difference nil :inherit nil))
+  :config (set-face-attribute 'completions-first-difference nil :inherit nil))
 
 (use-package embark
   :demand t
@@ -1049,8 +1030,8 @@
   (doom-modeline-buffer-encoding 'nondefault)
   :init
   (doom-modeline-def-modeline 'main
-    '(bar workspace-name window-number buffer-info remote-host buffer-position word-count selection-info)
-    '(misc-info persp-name grip irc github debug repl lsp indent-info buffer-encoding process vcs checker time)))
+    '(bar workspace-name window-number buffer-info remote-host buffer-position word-count)
+    '(misc-info persp-name grip irc github debug repl lsp indent-info process vcs checker time)))
 
 (use-package diminish)
 
