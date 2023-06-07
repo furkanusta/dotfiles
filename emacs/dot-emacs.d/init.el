@@ -202,8 +202,8 @@
   ("M-u" . upcase-dwim)
   ("M-l" . downcase-dwim)
   ("M-c" . capitalize-dwim)
-  ("M-n" . scroll-up-in-place)
-  ("M-p" . scroll-down-in-place)
+  ;; ("M-n" . scroll-up-in-place)
+  ;; ("M-p" . scroll-down-in-place)
   ("C-M-;" . my-align-comments)
   ("C-c k b" . kill-other-buffers)
   ("C-c d" . duplicate-line-or-region)
@@ -795,6 +795,8 @@
   :bind
   ("C-." . embark-act)
   ("C-," . embark-dwim)
+  ("M-n" . embark-next-symbol)
+  ("M-p" . embark-previous-symbol)
   (:map vertico-map
         ("C-<tab>" . embark-act-with-completing-read)
         ("C-." . embark-act)
@@ -2623,7 +2625,7 @@ With a prefix ARG, remove start location."
   :custom
   (select-enable-clipboard nil)
   (split-height-threshold nil)
-  :init
+  :config
   (advice-add #'kill-line :after #'wsl--send-kill-ring)
   (advice-add #'kill-ring-save :after #'wsl--send-kill-ring)
   :bind
@@ -2633,7 +2635,7 @@ With a prefix ARG, remove start location."
  ;; (setq remote-file-name-inhibit-locks t)
 (use-package vc
   :custom
-  (vc-handled-backends nil))
+  (vc-handled-backends '(Git)))
 
 ;; (use-package rustic
 ;;   :custom
