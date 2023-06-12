@@ -24,6 +24,7 @@ export PERL5LIB="$PERL_LOCAL_LIB_ROOT/lib/perl5";
 export PERL_MB_OPT="--install_base '$PERL_LOCAL_LIB_ROOT'";
 export PERL_MM_OPT="INSTALL_BASE='$PERL_LOCAL_LIB_ROOT'";
 export LC_ALL="en_US.UTF-8"
+export XDG_DATA_DIRS="/usr/local/share:/usr/share"
 export XDG_DATA_DIRS="$XDG_DATA_DIRS:/var/lib/flatpak/exports/share:$LOCAL_PATH/share/flatpak/exports/share"
 export CARGO_HOME="$HOME/.cargo"
 export PATH="$PATH:$CARGO_HOME/bin"
@@ -80,3 +81,20 @@ export PATH="$PATH:$NPM_PACKAGES/bin"
 export USE_BAZEL_VERSION=6.0.0
 
 export MAMBA_ROOT_PREFIX=$HOME/.micromamba
+
+z() {
+  local file
+  local pattern
+  pattern=$(echo $@ | sed 's/ /.*/g')
+  file="$(fd -t d | rg $pattern | fzf -0 -1)"
+  if [[ -n $file ]]; then
+     if [[ -d $file ]]; then
+        cd -- $file
+     else
+        cd -- ${file:h}
+     fi
+  fi
+}
+
+export MANPAGER="sh -c 'col -bx | bat -l man -p'"
+export LS_COLORS="$(vivid generate molokai)"

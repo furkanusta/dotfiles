@@ -257,6 +257,7 @@
 (use-package recentf :ensure nil
   :after no-littering
   :defines recentf-exclude
+  :init (no-littering-theme-backups)
   :custom
   (recentf-mode t)
   (recentf-save-file (concat no-littering-var-directory "recentf"))
@@ -1167,7 +1168,7 @@ perspective."
   '("*dashboard*" "*Messages*" "*Warnings*" "*elfeed-search*" "*Fd*" "*compilation*" "*Bufler*" "*Easy-hugo*"))
   (defvar perspective-skip-prefix-list '("magit-"))
   (defvar perspective-skip-ignore-prefix-list
-  '("*vterm" "*scratch" "*shell" "*Customize" "*ielm*" "*helpful" "*org" "*ein" "*Org" "*Embark" "*cardboard" "*eww" "*sly"))
+  '("*vterm" "*eat*" "*scratch" "*shell" "*Customize" "*ielm*" "*helpful" "*org" "*ein" "*Org" "*Embark" "*cardboard" "*eww" "*sly"))
   (defun perspective-my-skip-buffer-p (_ buffer _)
     (let ((name (buffer-name buffer)))
       (or
@@ -1532,6 +1533,7 @@ perspective."
   (verilog-cexp-indent 4)
   (verilog-indent-begin-after-if nil)
   (verilog-indent-level 4)
+  (verilog-indent-lists nil)
   (verilog-indent-level-behavioral 4)
   (verilog-indent-level-directive 4)
   (verilog-indent-level-declaration 4)
@@ -1703,14 +1705,14 @@ perspective."
 ;; (use-package rspec)
 ;; (use-package minitest)
 
-(use-package yard-mode
-  :hook (ruby-mode . yard-mode))
+;; (use-package yard-mode
+;;   :hook (ruby-mode . yard-mode))
 
-(use-package inf-ruby
-  :hook (ruby-mode . inf-ruby-minor-mode))
+;; (use-package inf-ruby
+;;   :hook (ruby-mode . inf-ruby-minor-mode))
 
-(use-package rubocop
-  :hook (ruby-mode . rubocop-mode))
+;; (use-package rubocop
+;;   :hook (ruby-mode . rubocop-mode))
 
 (use-package rake)
 
