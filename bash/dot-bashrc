@@ -96,6 +96,8 @@ export MAMBA_ROOT_PREFIX=$HOME/.micromamba
 #   fi
 # }
 
+eval "$(zoxide init bash)"
+
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 export LS_COLORS="$(vivid generate molokai)"
 export LM_LICENSE_FILE=$LOCAL_PATH/prog/intelFPGA_pro/license-2.dat
