@@ -82,19 +82,23 @@ export USE_BAZEL_VERSION=6.0.0
 
 export MAMBA_ROOT_PREFIX=$HOME/.micromamba
 
-z() {
-  local file
-  local pattern
-  pattern=$(echo $@ | sed 's/ /.*/g')
-  file="$(fd -t d | rg $pattern | fzf -0 -1)"
-  if [[ -n $file ]]; then
-     if [[ -d $file ]]; then
-        cd -- $file
-     else
-        cd -- ${file:h}
-     fi
-  fi
-}
+# z() {
+#   local file
+#   local pattern
+#   pattern=$(echo $@ | sed 's/ /.*/g')
+#   file="$(fd -t d | rg $pattern | fzf -0 -1)"
+#   if [[ -n $file ]]; then
+#      if [[ -d $file ]]; then
+#         cd -- $file
+#      else
+#         cd -- ${file:h}
+#      fi
+#   fi
+# }
 
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 export LS_COLORS="$(vivid generate molokai)"
+export LM_LICENSE_FILE=$LOCAL_PATH/prog/intelFPGA_pro/license-2.dat
+
+export PATH="$PATH:$LOCAL_PATH/prog/intelFPGA_pro/23.1/questa_fse/bin"
+export PATH="$PATH:$LOCAL_PATH/prog/Vivado/2023.1/bin"
