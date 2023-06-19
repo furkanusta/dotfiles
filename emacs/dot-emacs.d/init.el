@@ -733,6 +733,7 @@
   (consult-ripgrep-args
    "rg --null --line-buffered --color=never --max-columns=1000 --path-separator / --smart-case --no-heading --line-number")
   :config
+  (add-to-list 'consult-buffer-filter "^\\\*")
   (consult-customize
    consult-line-symbol-at-point my-consult-ripgrep my-consult-ripgrep-here
    consult-ripgrep consult-git-grep consult-grep consult-line consult-flymake
@@ -1413,6 +1414,7 @@ perspective."
 (use-package project-rootfile
   :config
   (add-to-list 'project-rootfile-list "pyproject.toml")
+  (add-to-list 'project-rootfile-list ".project")
   (add-to-list 'project-find-functions #'project-rootfile-try-detect))
 
 (use-package makefile-executor
