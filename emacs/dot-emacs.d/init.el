@@ -196,7 +196,8 @@
        (list (line-beginning-position)
              (line-beginning-position 2)))))
   (add-to-list 'exec-path "~/.local/bin")
-  (add-to-list 'delete-frame-functions #'recentf-save-list)
+  (add-to-list 'delete-frame-functions #'(lambda (frame_) (recentf-save-list)))
+  (add-to-list 'delete-frame-functions #'(lambda (frame_) (bookmark-save)))
   :bind
   ("C-c ." . pop-global-mark)
   ("M-u" . upcase-dwim)
@@ -1078,13 +1079,16 @@
   ("C-h h" . helpful-at-point)
   :custom (helpful-max-buffers 5))
 
-(use-package window-margin
-  :vc (:fetcher github :repo "aculich/window-margin.el")
-  :preface
-  (defun maybe-window-margin-mode ()
-    (when (> (length (window-list)) 1)
-      (window-margin-mode t)))
-  :hook (markdown-mode . maybe-window-margin-mode))
+;; (use-package window-margin
+;;   :vc (:fetcher github :repo "aculich/window-margin.el")
+;;   :custom
+;;   (window-margin-width 0.5)
+;;   :preface
+;;   (defun maybe-window-margin-mode ()
+;;     (when (> (length (window-list)) 1)
+;;       (let ((window-margin-width 0.5))
+;;         (window-margin-mode t))))
+;;   :hook (markdown-mode . maybe-window-margin-mode))
 
 (use-package prog-mode :ensure nil
   :preface
@@ -1717,7 +1721,9 @@ perspective."
 (use-package rake)
 
 (use-package org
-  :hook (org-mode . smartparens-mode)
+  :hook
+  (org-mode . smartparens-mode)
+  (org-babel-after-execute . org-redisplay-inline-images)
   :preface
   (defun my-update-all-bibs ()
     (interactive)
@@ -1738,7 +1744,7 @@ perspective."
   (org-fontify-quote-and-verse-blocks t)
   (org-fontify-done-headline t)
   (org-fontify-whole-heading-line t)
-  (org-hide-emphasis-markers t)
+  (org-hide-emphasis-markers nil)
   (org-hide-leading-stars t)
   (org-imenu-depth 2)
   (org-indent-indentation-per-level 1)
@@ -2098,6 +2104,12 @@ With a prefix ARG, remove start location."
   (defengine wikipedia "http://www.wikipedia.org/search-redirect.php?language=en&go=Go&search=%s" :keybinding "w")
   (defengine wolfram "http://www.wolframalpha.com/input/?i=%s"))
 
+(use-package svg-tag-mode
+  :vc (:fetcher github :repo "rougier/svg-tag-mode"))
+
+(use-package notebook
+  :vc (:fetcher github :repo "rougier/notebook-mode"))
+
 (use-package org-transclusion
   :vc (:fetcher github :repo "nobiot/org-transclusion")
   :custom (org-transclusion-activate-persistent-message nil))
@@ -2397,6 +2409,11 @@ With a prefix ARG, remove start location."
            (commit-hash (cdr (car commits))))
       (latexdiff-vc--compile-diff-with-current commit-hash))))
 
+;; (use-package xenops
+;;   :hook
+;;   (latex-mode . xenops-mode)
+;;   (LaTeX-mode . xenops-mode))
+
 (use-package alert
   :custom (alert-default-style 'libnotify))
 
@@ -2657,6 +2674,13 @@ With a prefix ARG, remove start location."
 ;;           #'(lambda () (cond ((derived-mode-p 'python-base-mode)
 ;;                               (add-hook 'flymake-diagnostic-functions 'python-flymake nil t)))))
 
+(use-package plantuml
+  :custom
+  (plantuml-default-exec-mode 'jar)
+  (plantuml-jar-path "/usr/share/java/plantuml.jar")
+  (org-plantuml-jar-path plantuml-jar-path))
+
 (provide 'init)
 ;;; init.el ends here
 ;; //ssh:furkanu@xirengips01:~/
+(put 'narrow-to-region 'disabled nil)
