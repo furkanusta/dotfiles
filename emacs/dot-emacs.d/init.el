@@ -187,8 +187,7 @@
     "When called interactively with no active region, copy a single line instead."
     (interactive
      (if mark-active (list (region-beginning) (region-end))
-       (list (line-beginning-position)
-             (line-beginning-position 2)))))
+       (list (line-beginning-position) (line-beginning-position 2)))))
   (defadvice kill-region (before slick-cut activate compile)
     "When called interactively with no active region, kill a single line instead."
     (interactive
@@ -378,6 +377,9 @@
         ("O" . dired-find-file-other-window)
         ("E" . dired-open-current-directory-xdg)
         ("e" . dired-open-xdg)))
+
+(use-package wdired
+  :hook (wdired-mode . highlight-changes-mode))
 
 (use-package dired-hide-dotfiles
   :hook (dired-mode . dired-hide-dotfiles-mode)
@@ -1810,9 +1812,7 @@ perspective."
                             title-squeezed)))
                     "Title")))
       (with-current-buffer buffer
-        (if (= 1 (org-current-level))
-            (org-insert-subheading t)
-          (org-insert-heading t))
+        (org-insert-heading t)
         (insert title)
         (org-id-get-create)
         (forward-line 1)
