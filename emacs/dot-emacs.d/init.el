@@ -18,8 +18,6 @@
 
 (add-to-list 'load-path (expand-file-name (concat user-emacs-directory "elisp/")))
 
-(require 'use-package)
-
 (unless (package-installed-p 'vc-use-package)
   (package-vc-install "https://github.com/slotThe/vc-use-package"))
 (require 'vc-use-package)
@@ -723,7 +721,7 @@
   (consult-preview-key "M-.")
   (consult-narrow-key "<")
   (consult-ripgrep-args
-   "rg --null --line-buffered --color=never --max-columns=1000 --path-separator / --smart-case --no-heading --line-number .")
+   "rg --null --line-buffered --color=never --max-columns=1000 --path-separator / --smart-case --no-heading --line-number")
   :config
   (consult-customize
    consult-line-symbol-at-point my-consult-ripgrep my-consult-ripgrep-here
@@ -828,12 +826,8 @@
   :init (all-the-icons-completion-mode))
 
 (use-package corfu
-  :hook ((prog-mode . corfu-mode)
-         (shell-mode . corfu-mode)
-         (comint-mode . corfu-mode)
-         (cmake-mode . corfu-mode)
-         (eshell-mode . corfu-mode))
   :custom
+  (global-corfu-mode t)
   (corfu-cycle t)
   (corfu-auto nil)
   (corfu-preselect-first t)
@@ -862,10 +856,10 @@
   :custom
   (corfu-popupinfo-delay 0.5))
 
-(use-package cape-yasnippet
-  :vc (:fetcher github :repo "elken/cape-yasnippet")
+(use-package yasnippet-capf
+  :vc (:fetcher github :repo "elken/yasnippet-capf")
   :init
-  (add-to-list 'completion-at-point-functions #'cape-yasnippet))
+  (add-to-list 'completion-at-point-functions #'yasnippet-capf))
 
 (use-package cape
   :init
@@ -1296,8 +1290,8 @@ perspective."
         ("C-c C-p"  . vterm-toggle-backward)
         ("C-<return>" . vterm-toggle-insert-cd)))
 
-(use-package shx
-  :hook (comint-mode . shx-mode))
+;; (use-package shx
+;;   :hook (comint-mode . shx-mode))
 
 (use-package compile :ensure nil
   :preface
@@ -1999,13 +1993,19 @@ With a prefix ARG, remove start location."
     (add-hook 'pdf-annot-activate-handler-functions #'org-noter-pdftools-jump-to-note)))
 
 (use-package org-noter
+  :preface
+  (defun my-org-noter-document-property-hook (prop)
+    (when prop
+      (concat my-papers-directory "/" (substring prop 1) ".pdf")))
   :custom
+  (org-noter-property-doc-file "ROAM_REFS")
+  (org-noter-parse-document-property-hook #'my-org-noter-document-property-hook)
   (org-noter-notes-search-path (list my-notes-directory))
   (org-noter-always-create-frame nil)
   (org-noter-doc-split-fraction (cons 0.7  0.3))
-  (org-noter-kill-frame-at-session-end nil)
-  (org-noter-default-notes-file-names (list "Notes.org"))
-  (org-noter-auto-save-last-location t)
+  (org-noter-default-notes-file-names (list "Notes.org" "Papers.org"))
+  ;; (org-noter-kill-frame-at-session-end nil)
+  ;; (org-noter-auto-save-last-location t)
   (org-noter-insert-note-no-questions t))
 
 (use-package org-special-block-extras)
@@ -2153,19 +2153,7 @@ With a prefix ARG, remove start location."
   (add-to-list 'completion-at-point-functions 'org-roam-complete-link-at-point)
   (require 'org-roam-protocol))
 
-(use-package org-roam-bibtex
-  :after org-roam
-  :preface
-  (defun my-org-roam-bibtex-fix-property ()
-    (interactive)
-    (save-excursion
-      (while (> (org-current-level) 2)
-        (org-up-heading-safe))
-      (org-babel-next-src-block)
-      (org-set-property "ROAM_REFS"
-                        (concat "[cite:@"
-                                (buffer-substring (search-forward "{") (1- (search-forward ",")))
-                                "]")))))
+(use-package org-roam-bibtex :after org-roam)
 
 (use-package org-roam-ui
   :after org-roam
@@ -2261,16 +2249,47 @@ With a prefix ARG, remove start location."
   :vc (:fetcher github :repo "alphapapa/org-protocol-capture-html"))
 
 (use-package citar
+  :preface
+  (defvar citar-indicator-files-icons
+    (citar-indicator-create
+     :symbol (all-the-icons-faicon "file-pdf-o" :face 'all-the-icons-green :v-adjust -0.1)
+     :function #'citar-has-files
+     :padding "  " ; need this because the default padding is too low for these icons
+     :tag "has:files"))
+
+  (defvar citar-indicator-links-icons
+    (citar-indicator-create
+     :symbol (all-the-icons-octicon "link" :face 'all-the-icons-orange :v-adjust 0.01)
+     :function #'citar-has-links
+     :padding "  "
+     :tag "has:links"))
+
+  (defvar citar-indicator-notes-icons
+    (citar-indicator-create
+     :symbol (all-the-icons-material "speaker_notes" :face 'all-the-icons-blue :v-adjust -0.3)
+     :function #'citar-has-notes
+     :padding "  "
+     :tag "has:notes"))
+
+  (defvar citar-indicator-cited-icons
+    (citar-indicator-create
+     :symbol (all-the-icons-faicon "circle-o" :face 'all-the-icon-green)
+     :function #'citar-is-cited
+     :padding "  "
+     :tag "is:cited"))
+
   :custom
   (citar-bibliography my-bibliographies)
   (citar-open-note-function 'orb-citar-edit-note)
   (citar-library-paths my-paper-directories)
   (citar-at-point-function 'embark-act)
-  (citar-symbols
-   `((file ,(all-the-icons-octicon "file-pdf" :face 'all-the-icons-green :v-adjust -0.1) . " ")
-     (note ,(all-the-icons-material "speaker_notes" :face 'all-the-icons-blue :v-adjust -0.3) . " ")
-     (link ,(all-the-icons-octicon "link" :face 'all-the-icons-orange :v-adjust 0.01) . " ")))
   (citar-symbol-separator " ")
+  :config
+  (setq citar-indicators (list citar-indicator-files-icons
+                               citar-indicator-links-icons
+                               citar-indicator-notes-icons
+                               citar-indicator-cited-icons))
+  (add-to-list 'completion-at-point-functions 'citar-capf)
   :bind
   ("C-c o b" . citar-open)
   ("C-c o N" . citar-open-notes)
@@ -2281,38 +2300,105 @@ With a prefix ARG, remove start location."
   :no-require t
   :after org
   :init
+  (require 'org-roam-bibtex)
   (require 'citar)
   (defun my-citar-open-current-resource (files notes)
     "Open REFs of the node at point."
     (interactive)
-    (if-let ((keys (when-let* ((prop (org-entry-get (point) "ROAM_REFS" t))
-                            (refs (when prop (split-string-and-unquote prop)))
-                            (oc-cites
-                             (seq-map (lambda (ref) (substring ref 7 (- (length ref) 1))) refs)))
-                  oc-cites))
-             (selected (let* ((actions (bound-and-true-p embark-default-action-overrides))
-                              (embark-default-action-overrides `((t . ,#'citar--open-resource) . ,actions)))
-                         (citar--select-resource keys :files files :notes notes))))
+    (when-let* ((key (orb-get-node-citekey nil 'assert))
+                (selected (citar--select-resource key :files files :notes notes)))
+      (progn
+        (when (= 1 (length (window-list)))
+          (split-window-horizontally))
+        (other-window 1)
+        (citar--open-resource (cdr selected) (car selected))
+        (when (eq 'file (car selected))
+          (pdf-view-fit-width-to-window)))))
+  (defun sci-hub-download-url (doi)
+    "Get url to the pdf from SCI-HUB"
+    (when-let* ((doi)
+                (url (concat "https://sci-hub.se/" doi)))
+      (with-current-buffer (url-retrieve-synchronously url)
+        (goto-char (point-min))
+        (setq *asd* (buffer-string))
+        (when (search-forward-regexp "\\(https:\\)?//\\([^.]+.\\)?sci-hub.se/.+download=true" nil t)
+          (let* ((url (match-string 0))
+                 (https-url (if (string-match "https:" url) url (concat "https:" url))))
+            https-url)))))
+  (defun arxiv-download-url (entry)
+    "Get url to the pdf from ArXiv"
+    (when
+      (or
+       (string= "arxiv" (downcase (or (bibtex-completion-get-value "journal" entry) "")))
+       (string= "arxiv" (downcase (or (bibtex-completion-get-value "archiveprefix" entry) ""))))
+      (message "ARXIV: %s" entry)
+      (let* ((volume (bibtex-completion-get-value "volume" entry))
+             (eprint (bibtex-completion-get-value "eprint" entry))
+             (arxiv-id (or volume eprint))
+             (id (string-remove-prefix "abs/" arxiv-id))
+             (url (concat "https://arxiv.org/pdf/" id ".pdf")))
+        url)))
+  (defun semantic-scholar-download-url (doi)
+    "Get url to the pdf from ArXiv"
+    (when-let* ((doi)
+                (url (format "https://api.semanticscholar.org/graph/v1/paper/DOI:%s?fields=isOpenAccess,openAccessPdf" doi))
+                (data (with-current-buffer (url-retrieve-synchronously url) (json-parse-buffer)))
+                (is-openAccess (gethash "isOpenAccess" data))
+                (url (gethash "url" (gethash "openAccessPdf" data))))
+      url))
+  (defun my-download-pdf (&optional key open-file)
+    (interactive "P")
+    (let* ((key (or key (orb-get-node-citekey nil 'assert)))
+                (entry (bibtex-completion-get-entry key))
+                (bibtex-doi (bibtex-completion-get-value "doi" entry))
+                (doi (when bibtex-doi (replace-regexp-in-string "https?://\\(dx.\\)?.doi.org/" "" bibtex-doi)))
+                (pdf-url (or (bibtex-completion-get-value "pdf-url" entry)
+                             (arxiv-download-url entry)
+                             (semantic-scholar-download-url doi)
+                             (sci-hub-download-url doi)))
+                (pdf-file (concat my-papers-directory "/" key ".pdf")))
+      ;; now get file if needed.
+      (message "FOUND: %s" pdf-url)
+      (unless (file-exists-p pdf-file)
+        (url-copy-file pdf-url pdf-file))
+      (when open-file
+        (org-open-file pdf-file))))
+
+
+  (defvar ex/citar-library-backup-path (concat no-littering-var-directory "backup/citar"))
+
+  (defun ex/citar-update-pdf-metadata (citekey)
+    (interactive (list (citar-select-ref)))
+    (citar--check-configuration 'citar-library-paths)
+    (unless citar-library-paths
+      (user-error "Make sure `citar-library-paths' is non-nil"))
+    (let* ((files (gethash cite-key (citar-get-files cite-key))))
+      (unless files
+        (user-error (format "There are no PDF files associated with %s" citekey)))
+      (let ((file (or (unless (cdr files) (car files)) (completing-read "Please select a PDF file: " files)))
+            (title (citar-get-value 'title citekey))
+            (author (cond ((citar-get-value 'author citekey)
+                           (citar-get-value 'author citekey))
+                          ((citar-get-value 'editor citekey)
+                           (concat (citar-get-value 'editor citekey) " (ed.)")))))
         (progn
-          (when (= 1 (length (window-list)))
-            (split-window-horizontally))
-          (other-window 1)
-          (citar--open-resource (cdr selected) (car selected))
-          (when (eq 'file (car selected))
-            (pdf-view-fit-width-to-window)))
-      (user-error "No ROAM_REFS found")))
+          (copy-file file ex/bib-library-backup-path 1)
+          (call-process-shell-command
+           (concat "exiftool -overwrite_original_in_place -Title='" title "' -Author='" author "' " file))))))
+
   (defun my-citar-open-current-note () (interactive) (my-citar-open-current-resource nil t))
   (defun my-citar-open-current-file () (interactive) (my-citar-open-current-resource t nil))
   :bind
   (:map org-mode-map
+        ("C-c o d" . my-download-pdf)
         ("C-c o n" . my-citar-open-current-note)
         ("C-c o p" . my-citar-open-current-file)))
 
 ;; TODO Expand
 (use-package citar-embark
-  :no-require t
+  :no-require
   :ensure citar
-  :after embark
+  :after citar embark
   :preface
   (defvar my-citar-embark-become-map
     (let ((map (make-sparse-keymap)))
@@ -2335,7 +2421,21 @@ With a prefix ARG, remove start location."
               ("M-RET" . my-citar-embark-open-pdf)))
 
 (use-package citar-org-roam
-  :hook (org-roam-mode . citar-org-roam-mode))
+  :hook (org-roam-mode . citar-org-roam-mode)
+  :preface
+  (defun my-add-roam-ref ()
+    (interactive)
+    (progn
+      (search-forward "begin_src")
+      (forward-line)
+      (let* ((text (buffer-substring (line-beginning-position) (line-end-position)))
+             (drop-keyword (replace-regexp-in-string ".*{" "" text))
+             (key (substring drop-keyword 0 -1))
+             (roam-ref (format "@%s" key)))
+        (org-roam-property-add "ROAM_REFS" roam-ref))
+      (org-forward-heading-same-level 1)))
+  :custom
+  (citar-org-roam-note-title-template "${title}"))
 
 (use-package citar-org
   :ensure citar
@@ -2441,8 +2541,30 @@ With a prefix ARG, remove start location."
 
 (use-package jinx
   :hook (emacs-startup . global-jinx-mode)
+  :preface
+  (defun jinx-select-first ()
+    "Correct nearest misspelled word."
+    (interactive "*")
+    (save-excursion
+      (jinx--correct-guard
+       (when-let* ((start (car (jinx--bounds-of-word)))
+                   (end (cdr (jinx--bounds-of-word)))
+                   (word (buffer-substring-no-properties start end))
+                   (corrections (jinx--correct-suggestions word))
+                   (correction (car corrections)))
+         (unless (string= word correction)
+           (goto-char end)
+           (insert-before-markers correction)
+           (delete-region start end))))))
+  (defun my-jinx-select-first (&optional arg)
+    (interactive "P")
+    (if arg
+        (jinx-correct-nearest)
+      (jinx-select-first)))
   :bind
-  ([remap ispell-word] . jinx-correct))
+  (:map jinx-mode-map
+        ("C-M-i" . my-jinx-select-first)
+        ([remap ispell-word] . jinx-correct)))
 
 (use-package wgrep
   :custom (wgrep-auto-save-buffer t))
@@ -2664,7 +2786,7 @@ With a prefix ARG, remove start location."
 
 (use-package verilog-ts-mode
   :after verilog
-  :vc (:fetcher "github" :repo "gmlarumbe/verilog-ext"))
+  :vc (:fetcher "github" :repo "gmlarumbe/verilog-ts-mode"))
 
 (use-package tree-sitter-indent
   :hook (verilog-ts-mode . tree-sitter-indent-mode))
@@ -2680,7 +2802,14 @@ With a prefix ARG, remove start location."
   (plantuml-jar-path "/usr/share/java/plantuml.jar")
   (org-plantuml-jar-path plantuml-jar-path))
 
+
+;; (use-package pdf-drop-mode
+;;   :vc (:fetcher "github" :repo "rougier/pdf-drop-mode"))
+
+
+
 (provide 'init)
 ;;; init.el ends here
 ;; //ssh:furkanu@xirengips01:~/
 (put 'narrow-to-region 'disabled nil)
+(put 'downcase-region 'disabled nil)
