@@ -1,6 +1,12 @@
 # -*- mode: shell-script; -*-
 # .bashrc
 # Source global definitions
+
+if [ -n "$BASHRC_USER_SOURCED" ]; then
+    return 0;
+fi
+
+BASHRC_USER_SORUCED="Y"
 if [ -f /etc/bashrc ]; then
 	. /etc/bashrc
 fi
@@ -82,20 +88,6 @@ export USE_BAZEL_VERSION=6.0.0
 
 export MAMBA_ROOT_PREFIX=$HOME/.micromamba
 
-# z() {
-#   local file
-#   local pattern
-#   pattern=$(echo $@ | sed 's/ /.*/g')
-#   file="$(fd -t d | rg $pattern | fzf -0 -1)"
-#   if [[ -n $file ]]; then
-#      if [[ -d $file ]]; then
-#         cd -- $file
-#      else
-#         cd -- ${file:h}
-#      fi
-#   fi
-# }
-
 eval "$(zoxide init bash)"
 
 export MANROFFOPT='-c'
@@ -114,4 +106,25 @@ pdf-k2opt() {
         mv "${i%.pdf}_k2opt.pdf" "../K2OPT/$i"
     done
     popd
+}
+
+podman-copy-image-storage() {
+    IMAGE=$1
+    podman save --format oci-archive -o _temp.tar $IMAGE
+    podman rmi $IMAGE
+    podman --root /media/Disk/Prog/docker-images/ load -i _temp.tar
+}
+
+function frg {
+    result=`rg --ignore-case --color=always --line-number --no-heading "$@" |
+      fzf --ansi \
+          --color 'hl:-1:underline,hl+:-1:underline:reverse' \
+          --delimiter ':' \
+          --preview "bat --color=always {1} --theme='Solarized (light)' --highlight-line {2}" \
+          --preview-window 'up,60%,border-bottom,+{2}+3/3,~3,wrap'`
+    file="${result%%:*}"
+    linenumber=`echo "${result}" | cut -d: -f2`
+    if [ ! -z "$file" ]; then
+        $EDITOR +"${linenumber}" "$file"
+    fi
 }

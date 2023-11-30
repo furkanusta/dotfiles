@@ -348,6 +348,16 @@
               (process-connection-type nil))
           (start-process "" nil "xdg-open" (file-truename file)))
       nil))
+  (defun my-dired-pdf-title ()
+  (interactive)
+  (when-let* ((file (dired-file-name-at-point))
+         (path (expand-file-name file))
+         (text-quoting-style 'straight)
+         (command (format "exiftool '%s' | grep Title | awk '{print substr($0, index($0, \":\") + 2)}'" path))
+         (output (shell-command-to-string command))
+         (title (string-trim output)))
+    (kill-new title)
+    (message title)))
   (defun dired-current-dir ()
     (interactive)
     (dired default-directory))
@@ -865,7 +875,7 @@
   :init
   (add-to-list 'completion-at-point-functions #'cape-file)
   (add-to-list 'completion-at-point-functions
-               (cape-super-capf #'cape-symbol #'cape-keyword #'cape-dabbrev)))
+               (cape-super-capf #'eglot-completion-at-point #'cape-symbol #'cape-keyword #'cape-dabbrev)))
 
 (use-package kind-icon
   :after corfu
@@ -922,6 +932,7 @@
   (beacon-blink-when-point-moves-vertically 20)
   (beacon-blink-when-buffer-changes nil)
   (beacon-blink-when-window-changes nil)
+  (beacon-blink-when-window-scrolls nil)
   (beacon-mode 1))
 
 (use-package goggles
@@ -1388,6 +1399,7 @@ perspective."
 (use-package eglot
   :config
   (add-to-list 'eglot-server-programs `(python-ts-mode . ,(cdr (assoc 'python-mode eglot-server-programs))))
+  (add-to-list 'eglot-server-programs `(ruby-ts-mode "solargraph" "socket" "--port" :autoport))
   (add-to-list 'eglot-server-programs `((c-ts-mode c++-ts-mode) . ,(cdr (assoc '(c++-mode c-mode) eglot-server-programs))))
   (add-to-list 'eglot-server-programs `(tex-mode . ,(eglot-alternatives
                                                      '(("~/.local/prog/digestif/digestif.sh")
@@ -1399,7 +1411,6 @@ perspective."
   (eldoc-idle-delay 1.5))
 
 (use-package project-rootfile
-  :after project
   :config
   (add-to-list 'project-rootfile-list "pyproject.toml")
   (add-to-list 'project-find-functions #'project-rootfile-try-detect))
@@ -2289,11 +2300,7 @@ With a prefix ARG, remove start location."
                                citar-indicator-links-icons
                                citar-indicator-notes-icons
                                citar-indicator-cited-icons))
-  (add-to-list 'completion-at-point-functions 'citar-capf)
-  :bind
-  ("C-c o b" . citar-open)
-  ("C-c o N" . citar-open-notes)
-  ("C-c o P" . citar-open-files))
+  (add-to-list 'completion-at-point-functions 'citar-capf))
 
 (use-package my-citar-org
   :ensure nil
@@ -2363,10 +2370,8 @@ With a prefix ARG, remove start location."
         (url-copy-file pdf-url pdf-file))
       (when open-file
         (org-open-file pdf-file))))
-
-
-  (defvar ex/citar-library-backup-path (concat no-littering-var-directory "backup/citar"))
-
+  (defvar ex/citar-library-backup-path
+    (concat no-littering-var-directory "backup/citar"))
   (defun ex/citar-update-pdf-metadata (citekey)
     (interactive (list (citar-select-ref)))
     (citar--check-configuration 'citar-library-paths)
