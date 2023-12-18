@@ -219,6 +219,19 @@
   ([remap fill-paragraph] . endless/fill-or-unfill)
   (:map prog-mode-map ("<tab>" . indent-for-tab-command)))
 
+(use-package files
+  :ensure nil
+  :preface
+  (defun my-color-log-files ()
+    (when (string= (file-name-extension (buffer-file-name)) "log")
+      (ansi-color-apply-on-region (point-min) (point-max) t)))
+  :hook
+  (find-file . my-color-log-files))
+
+(use-package desktop
+  :custom
+  (desktop-buffers-not-to-save "^$"))
+
 (use-package find-file :ensure nil
   :bind
   (:map project-prefix-map
@@ -298,6 +311,10 @@
   :ensure nil
   :preface
   (defvar my-hydra-switch-buffer-source nil)
+  (defun hide-titlebar-when-maximized (frame)
+    (if (eq 'maximized (alist-get 'fullscreen (frame-parameters frame)))
+        (set-frame-parameter frame 'undecorated t)
+      (set-frame-parameter frame 'undecorated nil)))
   :hydra
   (hydra-switch-buffer
    (ctl-x-map nil
@@ -306,7 +323,9 @@
    "Switch buffer"
    ("g" (switch-to-buffer my-hydra-switch-buffer-source) "Quit" :exit t)
    ("<left>" previous-buffer "previous-buffer")
-   ("<right>" next-buffer "next-buffer")))
+   ("<right>" next-buffer "next-buffer"))
+  :init
+  (add-hook 'window-size-change-functions 'hide-titlebar-when-maximized))
 
 (use-package dired :ensure nil
   :commands dired-get-file-for-visit
@@ -543,6 +562,8 @@
   :custom
   (global-hungry-delete-mode 1)
   (hungry-delete-join-reluctantly t)
+  :config
+  (add-to-list 'hungry-delete-except-modes 'multiple-cursors-mode)
   :bind
   ([remap delete-char] . hungry-delete-forward)
   ([remap delete-forward-char] . hungry-delete-forward)
@@ -732,8 +753,8 @@
   (consult-narrow-key "<")
   (consult-ripgrep-args
    "rg --null --line-buffered --color=never --max-columns=1000 --path-separator / --smart-case --no-heading --line-number")
-  :config
-  (add-to-list 'consult-buffer-filter "^\\\*")
+  ;; :config
+  ;; (add-to-list 'consult-buffer-filter "^\\\*")
   (consult-customize
    consult-line-symbol-at-point my-consult-ripgrep my-consult-ripgrep-here
    consult-ripgrep consult-git-grep consult-grep consult-line consult-flymake
@@ -876,7 +897,7 @@
   :init
   (add-to-list 'completion-at-point-functions #'cape-file)
   (add-to-list 'completion-at-point-functions
-               (cape-super-capf #'eglot-completion-at-point #'cape-symbol #'cape-keyword #'cape-dabbrev)))
+               (cape-capf-super #'eglot-completion-at-point #'cape-symbol #'cape-keyword #'cape-dabbrev)))
 
 (use-package kind-icon
   :after corfu
@@ -1359,6 +1380,7 @@ perspective."
             (tramp-cleanup-all-buffers))
   (add-to-list 'tramp-remote-path "~/.local/bin")
   :custom
+  (remote-file-name-inhibit-locks t)
   (tramp-default-method "ssh")
   (tramp-encoding-shell (getenv "SHELL"))
   (tramp-backup-directory-alist backup-directory-alist))
@@ -2696,13 +2718,6 @@ With a prefix ARG, remove start location."
 
 (use-package sudo-edit)
 
-
-;; (use-package ghelp
-;;   :vc (:fetcher github :repo "casouri/ghelp")
-;;   :custom
-;;   (ghelp-enable-header-line nil)
-;;   :bind ("C-h h" . ghelp-describe))
-
 (use-package org-sticky-header
   :hook (org-mode . org-sticky-header-mode)
   :custom
@@ -2718,11 +2733,12 @@ With a prefix ARG, remove start location."
               ("C-c o n" . outline-next-heading)
               ("C-c o p" . outline-previous-heading)))
 
-;; (use-package lazytab
-;;   :vc (:fetcher github :repo "karthink/lazytab"))
-
 (use-package apheleia
-  :hook (python-mode . apheleia-mode))
+  :hook
+  (python-mode . apheleia-mode)
+  ;; (verilog-ext-mode . apheleia-mode)
+  :custom
+  (apheleia-remote-algorithm 'local))
 
 ;; detached.el
 
@@ -2780,28 +2796,34 @@ With a prefix ARG, remove start location."
   ("C-k" . kill-line)
   ("C-M-y" . wsl-yank))
 
- ;; (setq remote-file-name-inhibit-locks t)
 (use-package vc
   :custom
   (vc-handled-backends '(Git)))
 
-;; (use-package rustic
-;;   :custom
-;;   (rustic-lsp-client 'eglot))
+(use-package verilog-ext
+  ;; :hook (verilog-mode . verilog-ext-mode)
+  :config
+  ;; (verilog-ext-mode-setup)
+  (setq verilog-ext-feature-list (remove 'block-end-comments verilog-ext-feature-list))
+  :bind
+  (:map verilog-ext-mode-map
+        ("C-<tab>" . company-complete)))
 
-;; (use-package verilog-ext)
+(use-package citre
+  :hook (verilog-ext-mode . citre-mode)
+  :bind
+  (:map citre-mode-map
+        ("C-c C-l j" . citre-jump)))
 
 (use-package verilog-ts-mode
   :after verilog
-  :vc (:fetcher "github" :repo "gmlarumbe/verilog-ts-mode"))
+  :vc (:fetcher "github" :repo "gmlarumbe/verilog-ext"))
 
 (use-package tree-sitter-indent
   :hook (verilog-ts-mode . tree-sitter-indent-mode))
 
-;; (add-hook 'python-base-mode-hook 'flymake-mode) (setq python-flymake-command '("ruff" "--quiet" "--stdin-filename=stdin" "-")
-;; (add-hook 'eglot-managed-mode-hook
-;;           #'(lambda () (cond ((derived-mode-p 'python-base-mode)
-;;                               (add-hook 'flymake-diagnostic-functions 'python-flymake nil t)))))
+(use-package eat)
+
 
 (use-package plantuml
   :custom

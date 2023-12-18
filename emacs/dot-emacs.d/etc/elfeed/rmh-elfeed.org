@@ -48,13 +48,9 @@
 ** [[http://phdcomics.com/gradfeed.php][PHD Comics]]
 * Youtube                                                            :elfeed:youtube:
 ** [[https://www.youtube.com/feeds/videos.xml?channel_id=UCPZUQqtVDmcjm4NY5FkzqLA][Rousseau]]
-** [[https://www.youtube.com/feeds/videos.xml?channel_id=UClJ7gpJ9MRXDnbA8N_5NSKQ][Mesut Süre İle İlişki Testi]]
 ** [[https://www.youtube.com/feeds/videos.xml?channel_id=UCsvn_Po0SmunchJYOWpOxMg][videogamedunkey]]
 ** [[https://www.youtube.com/feeds/videos.xml?channel_id=UCCpTaib_e5C6Q95qwazq8OA][Anatolian Rock Revival Project]]
-** [[https://www.youtube.com/feeds/videos.xml?channel_id=UCO-_F5ZEUhy0oKrSa69DLMw][140journos]]
-** [[https://www.youtube.com/feeds/videos.xml?channel_id=UCdakEeTJHMPz9MdejLKDRhg][Çimen Show]]
 ** [[https://www.youtube.com/feeds/videos.xml?channel_id=UC2eEGT06FrWFU6VBnPOR9lg][Girlfriend Reviews]]
-** [[https://www.youtube.com/feeds/videos.xml?channel_id=UC3Xu0FQeizzXhUtthFjFs8g][Deniz Bağdaş]]
 * Emacs                                                               :elfeed:emacs:
 ** [[http://endlessparentheses.com/atom.xml][Endless Parentheses]]
 ** [[https://protesilaos.com/feeds/][Prot]]
