@@ -8,6 +8,9 @@
 :concurrent_downloads: 8
 gem: "--user-install --document=yri"
 
+install: --no-rdoc --no-ri
+update: --no-rdoc --no-ri
+
 # Local Variables:
 # mode: yaml
 # End:

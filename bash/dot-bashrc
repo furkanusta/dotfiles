@@ -24,24 +24,14 @@ export LOCAL_PATH=$HOME/.local
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/lib:/usr/local/lib64/"
 export ALTERNATE_EDITOR=""
 export EDITOR='emacsclient -nw'
-export PERL_LOCAL_LIB_ROOT="$LOCAL_PATH/perl";
-export PATH="$PATH:$LOCAL_PATH/bin:$HOME/bin:$PERL_LOCAL_LIB_ROOT/bin";
-export PERL5LIB="$PERL_LOCAL_LIB_ROOT/lib/perl5";
-export PERL_MB_OPT="--install_base '$PERL_LOCAL_LIB_ROOT'";
-export PERL_MM_OPT="INSTALL_BASE='$PERL_LOCAL_LIB_ROOT'";
+
 export LC_ALL="en_US.UTF-8"
 export XDG_DATA_DIRS="/usr/local/share:/usr/share"
 export XDG_DATA_DIRS="$XDG_DATA_DIRS:/var/lib/flatpak/exports/share:$LOCAL_PATH/share/flatpak/exports/share"
-export CARGO_HOME="$HOME/.cargo"
-export PATH="$PATH:$CARGO_HOME/bin"
 export XDG_CONFIG_HOME=$HOME/.config
-
-export GEM_HOME="$(ruby -e 'puts Gem.user_dir' 2>/dev/null)"
-export PATH="$PATH:$GEM_HOME/bin"
 
 alias ls=exa
 alias cat=bat
-alias pip3-install="pip3 install --user"
 
 alias ec="emacsclient -t"
 alias mp3-dl="yt-dlp --extract-audio"
@@ -72,21 +62,11 @@ if [ -f .bash_env_local ]; then
     source .bash_env_local
 fi
 
-if [ -f $HOME/.local/prog/vcpkg/scripts/vcpkg_completion.bash ]; then
-    source $HOME/.local/prog/vcpkg/scripts/vcpkg_completion.bash
-fi
-
 export RIPGREP_CONFIG_PATH=$XDG_CONFIG_HOME/ripgrep/config
 export CMAKE_GENERATOR=Ninja
 export DOCKER_BUILDKIT=1
 
-export NPM_PACKAGES="$HOME/.local/npm"
-export NODE_PATH="$NPM_PACKAGES/lib/node_modules:$NODE_PATH"
-export PATH="$PATH:$NPM_PACKAGES/bin"
-
 export USE_BAZEL_VERSION=6.0.0
-
-export MAMBA_ROOT_PREFIX=$HOME/.micromamba
 
 eval "$(zoxide init bash)"
 
@@ -130,3 +110,4 @@ function frg {
 }
 
 export TERM=xterm-256color
+eval "$(direnv hook bash)"
