@@ -10,6 +10,7 @@
 *** [[http://planet.gnome.org/rss20.xml][Planet GNOME]] :gnome:
 ** Uncategorized                                                      :other:
 *** [[https://www.joelonsoftware.com/feed/][Joel on Software]]
+*** [[https://www.cs.cornell.edu/~asampson/blog.xml][Adrian Sampson]]
 *** [[https://blog.paranoidcoding.com/atom.xml][Jared Parsons]]
 *** [[http://matt.might.net/articles/feed.rss][Matt Might]]
 *** [[https://blog.stephenmarz.com/feed/][Stephen Marz]]

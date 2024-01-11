@@ -128,3 +128,5 @@ function frg {
         $EDITOR +"${linenumber}" "$file"
     fi
 }
+
+export TERM=xterm-256color

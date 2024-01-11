@@ -753,7 +753,7 @@
   (consult-narrow-key "<")
   (consult-ripgrep-args
    "rg --null --line-buffered --color=never --max-columns=1000 --path-separator / --smart-case --no-heading --line-number")
-  ;; :config
+  :config
   ;; (add-to-list 'consult-buffer-filter "^\\\*")
   (consult-customize
    consult-line-symbol-at-point my-consult-ripgrep my-consult-ripgrep-here
@@ -1689,7 +1689,7 @@ perspective."
         ("C-c [" . jinja2-insert-tag)
         ("C-c ]" . my-jinja-close-tag)))
 
-(use-package gitlab-ci-mode :mode "\\.gitlab-ci\\.yml\\'")
+;; (use-package gitlab-ci-mode :mode "\\.gitlab-ci\\.yml\\'")
 
 (use-package format-all)
 

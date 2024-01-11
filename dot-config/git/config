@@ -15,6 +15,20 @@
 [init]
 	defaultBranch = master
 
+[diff]
+    colorMoved = default
+
+[color]
+	ui = auto
+
+[diff "org"]
+    xfuncname="^\\*+ +(.*)$"
+
+[diff "common-lisp"]
+    xfuncname="^\\((def\\S+\\s+\\S+)"
+
+[diff "elisp"]
+    xfuncname="^\\((((def\\S+)|use-package)\\s+\\S+)"
 
 #[core]
 #    pager = delta
@@ -22,15 +36,14 @@
 #[interactive]
 #    diffFilter = delta --color-only
 
+# [pager]
+#     diff = delta
+#     log = delta
+#     reflog = delta
+#     show = delta
+
 [delta]
     navigate = true  # use n and N to move between diff sections
 
 [merge]
     conflictstyle = diff3
-
-[diff]
-    colorMoved = default
-[gc]
-	auto = 0
-[push]
-	default = current
