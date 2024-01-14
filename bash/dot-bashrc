@@ -7,74 +7,51 @@ if [ -n "$BASHRC_USER_SOURCED" ]; then
 fi
 
 BASHRC_USER_SORUCED="Y"
-if [ -f /etc/bashrc ]; then
-	. /etc/bashrc
-fi
+[ -f /etc/bashrc ] && . /etc/bashrc
 
 shopt -s histappend
 set -o noclobber
 shopt -s cmdhist
 
 export HISTCONTROL=ignoreboth:erasedups
-export HISTSIZE=100000                   # big big history
-export HISTFILESIZE=100000               # big big history
+export HISTSIZE=100000
+export HISTFILESIZE=100000
 export HISTTIMEFORMAT='%F %T '
-
-export LOCAL_PATH=$HOME/.local
-export PATH="$LOCAL_PATH/bin:$PATH"
-
-export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/lib:/usr/local/lib64/"
 export ALTERNATE_EDITOR=""
 export EDITOR='emacsclient -nw'
+export CMAKE_GENERATOR=Ninja
+export DOCKER_BUILDKIT=1
+export MANROFFOPT='-c'
+export MANPAGER="sh -c 'col -bx | bat -l man -p'"
+export USE_BAZEL_VERSION=6.0.0
+export PS1='[$(basename "$(dirname "$PWD")")/$(basename "$PWD")] $ ';
+export TERM=xterm-256color
 
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/lib:/usr/local/lib64/"
+export LOCAL_PATH=$HOME/.local
+export PATH="$LOCAL_PATH/bin:$PATH"
 export LC_ALL="en_US.UTF-8"
 export XDG_DATA_DIRS="/usr/local/share:/usr/share"
 export XDG_DATA_DIRS="$XDG_DATA_DIRS:/var/lib/flatpak/exports/share:$LOCAL_PATH/share/flatpak/exports/share"
 export XDG_CONFIG_HOME=$HOME/.config
+export RIPGREP_CONFIG_PATH=$XDG_CONFIG_HOME/ripgrep/config
+export FZF_DEFAULT_OPTS='-e'
 
 alias ls=exa
 alias cat=bat
-
 alias ec="emacsclient -t"
 alias mp3-dl="yt-dlp --extract-audio"
 alias mp3-tags="fd -t f -x ffprobe -loglevel error -show_entries format_tags=title,artist -of compact"
 
-export PS1='[$(basename "$(dirname "$PWD")")/$(basename "$PWD")] $ ';
-
-if [[ -z "${INSIDE_EMACS}" ]]; then
-    export PS1='[$(basename "$(dirname "$PWD")")/$(basename "$PWD")] \[\e[0;31m$\e[0m\] ';
-fi
-
-export FZF_DEFAULT_OPTS='-e'
+[[ -z "${INSIDE_EMACS}" ]] && source $XDG_CONFIG_HOME/vterm/emacs-vterm.sh
+[[ -z "${INSIDE_EMACS}" ]] && export PS1='[$(basename "$(dirname "$PWD")")/$(basename "$PWD")] \[\e[0;31m$\e[0m\] ';
 # bind does not work inside emacs
-if [[ "$TERM" != "dumb" ]]; then
-    source $XDG_CONFIG_HOME/fzf/completion.bash
-    source $XDG_CONFIG_HOME/fzf/key-bindings.bash
-fi
+[[ -z "${INSIDE_EMACS}" ]] && source $XDG_CONFIG_HOME/fzf/completion.bash
+[[ -z "${INSIDE_EMACS}" ]] &&  source $XDG_CONFIG_HOME/fzf/key-bindings.bash
 
-if [ -f .bash_functions ]; then
-    source .bash_functions
-fi
-
-if [[ "$INSIDE_EMACS" = 'vterm' ]] ; then
-	source $XDG_CONFIG_HOME/vterm/emacs-vterm.sh
-fi
-
-if [ -f .bash_env_local ]; then
-    source .bash_env_local
-fi
-
-export RIPGREP_CONFIG_PATH=$XDG_CONFIG_HOME/ripgrep/config
-export CMAKE_GENERATOR=Ninja
-export DOCKER_BUILDKIT=1
-
-export USE_BAZEL_VERSION=6.0.0
+[ -f .bash_functions ] && source .bash_functions
+[ -f .bash_env_local ] && source .bash_env_local
 
 eval "$(zoxide init bash)"
-
-export MANROFFOPT='-c'
-export MANPAGER="sh -c 'col -bx | bat -l man -p'"
-export LS_COLORS="$(vivid generate molokai)"
-
-export TERM=xterm-256color
 eval "$(direnv hook bash)"
+export LS_COLORS="$(vivid generate molokai)"
