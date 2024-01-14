@@ -155,7 +155,6 @@
   (initial-major-mode #'fundamental-mode)
   (version-control t)
   (delete-old-versions t)
-  (calendar-week-start-day 1)
   (user-mail-address "furkanusta17@gmail.com")
   (save-interprogram-paste-before-kill t)
   (ad-redefinition-action 'accept)
@@ -231,6 +230,11 @@
 (use-package desktop
   :custom
   (desktop-buffers-not-to-save "^$"))
+
+(use-package calendar :ensure nil
+  :custom
+  (calendar-week-start-day 1)
+  (calendar-date-style 'iso))
 
 (use-package find-file :ensure nil
   :bind

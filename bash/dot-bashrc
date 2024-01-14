@@ -21,6 +21,8 @@ export HISTFILESIZE=100000               # big big history
 export HISTTIMEFORMAT='%F %T '
 
 export LOCAL_PATH=$HOME/.local
+export PATH="$LOCAL_PATH/bin:$PATH"
+
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/lib:/usr/local/lib64/"
 export ALTERNATE_EDITOR=""
 export EDITOR='emacsclient -nw'
@@ -73,41 +75,6 @@ eval "$(zoxide init bash)"
 export MANROFFOPT='-c'
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 export LS_COLORS="$(vivid generate molokai)"
-
-pdf-k2opt() {
-    dir="${1:-PDF}"
-    mkdir K2OPT;
-    mkdir -p $dir/Converted
-    pushd $dir
-    for i in *.pdf; do
-        echo "$i"
-        echo | k2pdfopt -w 758 -h 1024 -odpi 212 -fc- "$i";
-        mv "$i" Converted/
-        mv "${i%.pdf}_k2opt.pdf" "../K2OPT/$i"
-    done
-    popd
-}
-
-podman-copy-image-storage() {
-    IMAGE=$1
-    podman save --format oci-archive -o _temp.tar $IMAGE
-    podman rmi $IMAGE
-    podman --root /media/Disk/Prog/docker-images/ load -i _temp.tar
-}
-
-function frg {
-    result=`rg --ignore-case --color=always --line-number --no-heading "$@" |
-      fzf --ansi \
-          --color 'hl:-1:underline,hl+:-1:underline:reverse' \
-          --delimiter ':' \
-          --preview "bat --color=always {1} --theme='Solarized (light)' --highlight-line {2}" \
-          --preview-window 'up,60%,border-bottom,+{2}+3/3,~3,wrap'`
-    file="${result%%:*}"
-    linenumber=`echo "${result}" | cut -d: -f2`
-    if [ ! -z "$file" ]; then
-        $EDITOR +"${linenumber}" "$file"
-    fi
-}
 
 export TERM=xterm-256color
 eval "$(direnv hook bash)"
