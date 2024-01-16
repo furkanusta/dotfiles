@@ -718,9 +718,9 @@
       (consult-ripgrep default-directory (thing-at-point 'symbol))))
   (defun my-consult-ripgrep ()
     (interactive)
-    (consult-ripgrep (and (project-current)
-                          (project-root (project-current))
-                          default-directory)
+    (consult-ripgrep (if (project-current)
+                         (project-root (project-current))
+                       default-directory)
                      (thing-at-point 'symbol)))
   :bind
   ("C-x B" . consult-project-buffer)
