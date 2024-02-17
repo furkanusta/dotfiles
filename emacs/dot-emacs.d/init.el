@@ -10,17 +10,10 @@
 
 (require 'server)
 (unless (server-running-p) (server-start))
-(unless (and (fboundp 'package-installed-p)
-             (package-installed-p 'use-package))
-  (package-initialize)
-  (package-refresh-contents)
-  (package-install 'use-package))
 
 (add-to-list 'load-path (expand-file-name (concat user-emacs-directory "elisp/")))
 
-(unless (package-installed-p 'vc-use-package)
-  (package-vc-install "https://github.com/slotThe/vc-use-package"))
-(require 'vc-use-package)
+(require 'use-package)
 
 (use-package use-package-hydra)
 
@@ -179,18 +172,13 @@
   (large-file-warning-threshold (* 1024 1024 1024)) ;; 1GB
   (confirm-nonexistent-file-or-buffer nil)
   (truncate-lines t)
+  :preface
+  (defun my-mark-line (beg end &optional region)
+    (if mark-active (list (region-beginning) (region-end))
+       (list (line-beginning-position) (line-beginning-position 2))))
   :config
-  (defadvice kill-ring-save (before slick-copy activate compile)
-    "When called interactively with no active region, copy a single line instead."
-    (interactive
-     (if mark-active (list (region-beginning) (region-end))
-       (list (line-beginning-position) (line-beginning-position 2)))))
-  (defadvice kill-region (before slick-cut activate compile)
-    "When called interactively with no active region, kill a single line instead."
-    (interactive
-     (if mark-active (list (region-beginning) (region-end))
-       (list (line-beginning-position)
-             (line-beginning-position 2)))))
+  (advice-add 'kill-ring-save :before #'my-mark-line)
+  (advice-add 'kill-region :before #'my-mark-line)
   (add-to-list 'exec-path "~/.local/bin")
   (add-to-list 'delete-frame-functions #'(lambda (frame_) (recentf-save-list)))
   (add-to-list 'delete-frame-functions #'(lambda (frame_) (bookmark-save)))
@@ -893,7 +881,7 @@
   (corfu-popupinfo-delay 0.5))
 
 (use-package yasnippet-capf
-  :vc (:fetcher github :repo "elken/yasnippet-capf")
+  :vc (:rev :newest :url "https://github.com/elken/yasnippet-capf")
   :init
   (add-to-list 'completion-at-point-functions #'yasnippet-capf))
 
@@ -1074,6 +1062,7 @@
 
 (use-package tangonov-theme
   :after custom
+  :defer nil
   :init (load-theme 'tangonov t)
   :custom-face
   ;; Orange, Green, Blue, Red (I was used to this in my previous theme and different order messes my
@@ -1113,7 +1102,7 @@
   :custom (helpful-max-buffers 5))
 
 ;; (use-package window-margin
-;;   :vc (:fetcher github :repo "aculich/window-margin.el")
+;;   :vc (:rev :newest :url "https://github.com/aculich/window-margin.el")
 ;;   :custom
 ;;   (window-margin-width 0.5)
 ;;   :preface
@@ -1249,7 +1238,7 @@ perspective."
 (use-package git-modes)
 
 (use-package magit-pretty-graph
-  :vc (:fetcher github :repo "georgek/magit-pretty-graph")
+  :vc (:rev :newest :url "https://github.com/georgek/magit-pretty-graph")
   :after magit
   :commands magit-pg-repo
   :preface
@@ -1421,7 +1410,7 @@ perspective."
   (fancy-compilation-override-colors nil))
 
 (use-package obvious
-  :vc (:fetcher github :repo "alphapapa/obvious.el"))
+  :vc (:rev :newest :url "https://github.com/alphapapa/obvious.el"))
 
 (use-package eglot
   :config
@@ -1805,6 +1794,12 @@ perspective."
         ("DEL" . org-delete-backward-char)
         ("M-q" . nil)))
 
+(use-package org-id
+  :ensure nil
+  :custom
+  (org-id-link-to-org-use-id t)
+  )
+
 (use-package my-org-bibtex
   :ensure nil
   :no-require t
@@ -1986,7 +1981,7 @@ perspective."
   :hook (org-mode . toc-org-mode))
 
 (use-package org-pretty-table
-  :vc (:fetcher github :repo "Fuco1/org-pretty-table")
+  :vc (:rev :newest :url "https://github.com/Fuco1/org-pretty-table")
   :hook (org-mode . org-pretty-table-mode))
 
 (use-package bibtex-completion
@@ -2063,7 +2058,7 @@ With a prefix ARG, remove start location."
   :custom (binder-default-file-extension "org"))
 
 (use-package inherit-org
-  :vc (:repo "chenyanming/inherit-org" :fetcher github)
+  :vc (:rev newset :url "https://github.com/chenyanming/inherit-org")
   :hook ((eww-mode nov-mode info-mode helpful-mode ghelp-page-mode) . inherit-org-mode))
 
 (use-package shrface
@@ -2144,13 +2139,13 @@ With a prefix ARG, remove start location."
   (defengine wolfram "http://www.wolframalpha.com/input/?i=%s"))
 
 (use-package svg-tag-mode
-  :vc (:fetcher github :repo "rougier/svg-tag-mode"))
+  :vc (:rev :newest :url "https://github.com/rougier/svg-tag-mode"))
 
 (use-package notebook
-  :vc (:fetcher github :repo "rougier/notebook-mode"))
+  :vc (:rev :newest :url "https://github.com/rougier/notebook-mode"))
 
 (use-package org-transclusion
-  :vc (:fetcher github :repo "nobiot/org-transclusion")
+  :vc (:rev :newest :url "https://github.com/nobiot/org-transclusion")
   :custom (org-transclusion-activate-persistent-message nil))
 
 (use-package org-rich-yank
@@ -2164,51 +2159,51 @@ With a prefix ARG, remove start location."
   (side-notes-secondary-file "README.org")
   :bind ("C-c t n" . side-notes-toggle-notes))
 
-(use-package org-roam
-  :preface
-  (defun org-roam-node-insert-immediate (arg &rest args)
-    (interactive "P")
-    (let ((args (cons arg args))
-          (org-roam-capture-templates (list (append (car org-roam-capture-templates)
-                                                    '(:immediate-finish t)))))
-      (apply #'org-roam-node-insert args)))
-  :custom
-  (org-roam-directory my-notes-directory)
-  (org-roam-auto-replace-fuzzy-links nil)
-  (org-roam-capture-templates
-   '(("d" "Daily" plain "%?" :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")  :unnarrowed t)
-     ("c" "Catch all" entry  :target (file+head "CatchAll.org") "* %^{Note title}\nContext: %a\n%?" :empty-lines-before 1 )
-     ("p" "Paper Note" plain "* %^{citekey}" :target (file "Papers.org" "#+title: ${title}"))))
-  :bind
-  ("C-c n l" . org-roam-buffer-toggle)
-  ("C-c n f" . org-roam-node-find)
-  ("C-c n g" . org-roam-graph)
-  ("C-c n i" . org-roam-node-insert)
-  ("C-c n I" . org-roam-node-insert-immediate)
-  ("C-c n c" . org-roam-capture)
-  ;; Dailies
-  ("C-c n j" . org-roam-dailies-capture-today)
-  :config
-  (add-to-list 'completion-at-point-functions 'org-roam-complete-link-at-point)
-  (require 'org-roam-protocol))
+;; (use-package org-roam
+;;   :preface
+;;   (defun org-roam-node-insert-immediate (arg &rest args)
+;;     (interactive "P")
+;;     (let ((args (cons arg args))
+;;           (org-roam-capture-templates (list (append (car org-roam-capture-templates)
+;;                                                     '(:immediate-finish t)))))
+;;       (apply #'org-roam-node-insert args)))
+;;   :custom
+;;   (org-roam-directory my-notes-directory)
+;;   (org-roam-auto-replace-fuzzy-links nil)
+;;   (org-roam-capture-templates
+;;    '(("d" "Daily" plain "%?" :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")  :unnarrowed t)
+;;      ("c" "Catch all" entry  :target (file+head "CatchAll.org") "* %^{Note title}\nContext: %a\n%?" :empty-lines-before 1 )
+;;      ("p" "Paper Note" plain "* %^{citekey}" :target (file "Papers.org" "#+title: ${title}"))))
+;;   :bind
+;;   ("C-c n l" . org-roam-buffer-toggle)
+;;   ("C-c n f" . org-roam-node-find)
+;;   ("C-c n g" . org-roam-graph)
+;;   ("C-c n i" . org-roam-node-insert)
+;;   ("C-c n I" . org-roam-node-insert-immediate)
+;;   ("C-c n c" . org-roam-capture)
+;;   ;; Dailies
+;;   ("C-c n j" . org-roam-dailies-capture-today)
+;;   :config
+;;   (add-to-list 'completion-at-point-functions 'org-roam-complete-link-at-point)
+;;   (require 'org-roam-protocol))
 
-(use-package org-roam-bibtex :after org-roam)
+;; (use-package org-roam-bibtex :after org-roam)
 
-(use-package org-roam-ui
-  :after org-roam
-  :custom
-  (org-roam-ui-sync-theme t)
-  (org-roam-ui-follow t)
-  (org-roam-ui-update-on-save t)
-  (org-roam-ui-open-on-start t))
+;; (use-package org-roam-ui
+;;   :after org-roam
+;;   :custom
+;;   (org-roam-ui-sync-theme t)
+;;   (org-roam-ui-follow t)
+;;   (org-roam-ui-update-on-save t)
+;;   (org-roam-ui-open-on-start t))
 
-(use-package org-roam-timestamps
-  :hook (org-roam-mode . org-roam-timestamps-mode))
+;; (use-package org-roam-timestamps
+;;   :hook (org-roam-mode . org-roam-timestamps-mode))
 
 ;; (use-package ox-pandoc)
 
 (use-package org-pandoc-import
-  :vc (:fetcher github :repo "tecosaur/org-pandoc-import"))
+  :vc (:rev :newest :url "https://github.com/tecosaur/org-pandoc-import"))
 
 (use-package org-web-tools)
 
@@ -2240,7 +2235,7 @@ With a prefix ARG, remove start location."
   ( "C-c M-a" . org-tanglesync-process-buffer-automatic))
 
 (use-package orgdiff
-  :vc (:fetcher github :repo "tecosaur/orgdiff"))
+  :vc (:rev :newest :url "https://github.com/tecosaur/orgdiff"))
 
 (use-package org-clock-reminder
   :custom
@@ -2282,10 +2277,10 @@ With a prefix ARG, remove start location."
   :hook (inferior-python-mode . comint-mime-setup))
 
 (use-package org-auctex
-  :vc (:fetcher github :repo "karthink/org-auctex"))
+  :vc (:rev :newest :url "https://github.com/karthink/org-auctex"))
 
 (use-package org-protocol-capture-html
-  :vc (:fetcher github :repo "alphapapa/org-protocol-capture-html"))
+  :vc (:rev :newest :url "https://github.com/alphapapa/org-protocol-capture-html"))
 
 (use-package citar
   :preface
@@ -2747,7 +2742,7 @@ With a prefix ARG, remove start location."
 ;; detached.el
 
 (use-package consult-tramp
-  :vc (:fetcher github :repo "Ladicle/consult-tramp"))
+  :vc (:rev :newest :url "https://github.com/Ladicle/consult-tramp"))
 
 (use-package gnutls
   :if (memq window-system '(pc w32))
@@ -2821,7 +2816,7 @@ With a prefix ARG, remove start location."
 
 (use-package verilog-ts-mode
   :after verilog
-  :vc (:fetcher "github" :repo "gmlarumbe/verilog-ext"))
+  :vc (:rev :newest :url "https://github.com/gmlarumbe/verilog-ext"))
 
 (use-package tree-sitter-indent
   :hook (verilog-ts-mode . tree-sitter-indent-mode))
@@ -2835,10 +2830,14 @@ With a prefix ARG, remove start location."
   (plantuml-jar-path "/usr/share/java/plantuml.jar")
   (org-plantuml-jar-path plantuml-jar-path))
 
-
-;; (use-package pdf-drop-mode
-;;   :vc (:fetcher "github" :repo "rougier/pdf-drop-mode"))
-
+(use-package org-super-links
+  :vc (:rev :newest :url "https://github.com/toshism/org-super-links" :branch "develop" :main-file "org-super-links.el")
+  :bind (("C-c s s" . org-super-links-link)
+         ("C-c s l" . org-super-links-store-link)
+         ("C-c s d" . org-super-links-delete-link)
+         ("C-c s i" . org-super-links-insert-link))
+  :custom
+  (org-super-links-link-prefix 'org-super-links-link-prefix-timestamp))
 
 
 (provide 'init)

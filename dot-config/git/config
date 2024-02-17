@@ -1,22 +1,33 @@
 [user]
 	name = Furkan Usta
 	email = furkanusta17@gmail.com
+
 [github]
 	user = furkanusta
+
 [commit]
 	gpgsign = false
+
+[rebase]
+	autostash=true
+
+[push]
+	default=current
+
 [pull]
 	rebase = true
-	ff = only
+
 [url "https://invent.kde.org/"]
 	insteadOf = kde:
+
 [url "ssh://git@invent.kde.org/"]
 	pushInsteadOf = kde:
-[init]
-	defaultBranch = master
 
 [diff]
     colorMoved = default
+	algorithm=histogram
+	colorMovedWS=allow-indentation-change
+# colorMovedWS=ignore-all-space
 
 [color]
 	ui = auto
@@ -46,4 +57,4 @@
     navigate = true  # use n and N to move between diff sections
 
 [merge]
-    conflictstyle = diff3
+    conflictstyle = zdiff3
