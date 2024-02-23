@@ -1,34 +1,27 @@
 ;;; -*- lexical-binding: t -*-
 ;; Initialization
 (setq custom-file (concat user-emacs-directory "custom.el"))
-(when (file-exists-p custom-file)
-  (load custom-file))
+;; (when (file-exists-p custom-file)
+;;   (load custom-file))
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 (package-initialize)
 
 (require 'server)
-(unless (server-running-p) (server-start))
+;; (unless (server-running-p) (server-start))
 
 (add-to-list 'load-path (expand-file-name (concat user-emacs-directory "elisp/")))
 
-(require 'use-package)
-
-(use-package use-package-hydra)
-
-;; Init Done
-
-;; ;; Debug
-;; (require 'benchmark-init)
-;; (add-hook 'after-init-hook 'benchmark-init/deactivate)
-
-(use-package dash)
-(use-package f)
-
-;; (setq use-package-compute-statistics t)
+(setq use-package-enable-imenu-support t)
+(setq use-package-compute-statistics t)
 (setq use-package-always-defer t)
 ;; (setq-default use-package-always-ensure t)
+
+(require 'use-package)
+(require 'use-package-hydra)
+(require 'dash)
+(require 'f)
 
 (defun disable-line-numbers ()
   (display-line-numbers-mode -1))
@@ -270,7 +263,6 @@
                     no-littering-var-directory "/tmp" no-littering-etc-directory)))
 
 (use-package saveplace :ensure nil
-  :hook (server-visit . save-place-find-file-hook)
   :custom (save-place-mode 1))
 
 (use-package uniquify
@@ -898,7 +890,10 @@
   :config (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
 (use-package savehist
-  :hook (after-init . savehist-mode))
+  :custom
+  (savehist-mode t)
+  :config
+  (add-to-list 'delete-frame-functions #'(lambda (frame_) (savehist-autosave))))
 
 (use-package vertico-repeat :ensure vertico
   :after vertico
@@ -1062,7 +1057,7 @@
 
 (use-package tangonov-theme
   :after custom
-  :defer nil
+  :demand t
   :init (load-theme 'tangonov t)
   :custom-face
   ;; Orange, Green, Blue, Red (I was used to this in my previous theme and different order messes my
@@ -1546,9 +1541,6 @@ perspective."
 (use-package tramp-container :ensure nil)
 
 (use-package verilog-mode
-  :mode
-  ("\\.v\\'" . verilog-mode)
-  ("\\.sv\\'" . verilog-mode)
   :custom
   ;; (verilog-auto-inst-sort t)
   (verilog-library-directories '("." "../sim" "../rtl"))
@@ -2537,11 +2529,6 @@ With a prefix ARG, remove start location."
            (commit-hash (cdr (car commits))))
       (latexdiff-vc--compile-diff-with-current commit-hash))))
 
-;; (use-package xenops
-;;   :hook
-;;   (latex-mode . xenops-mode)
-;;   (LaTeX-mode . xenops-mode))
-
 (use-package alert
   :custom (alert-default-style 'libnotify))
 
@@ -2706,7 +2693,6 @@ With a prefix ARG, remove start location."
 
 (use-package vundo
   :demand t
-  :defer nil
   :custom
   (vundo-glyph-alist vundo-unicode-symbols)
   :bind ("C-x u" . vundo))
@@ -2824,7 +2810,7 @@ With a prefix ARG, remove start location."
 (use-package eat)
 
 
-(use-package plantuml
+(use-package plantuml-mode
   :custom
   (plantuml-default-exec-mode 'jar)
   (plantuml-jar-path "/usr/share/java/plantuml.jar")
@@ -2841,6 +2827,7 @@ With a prefix ARG, remove start location."
 
 
 (provide 'init)
+
 ;;; init.el ends here
 ;; //ssh:furkanu@xirengips01:~/
 (put 'narrow-to-region 'disabled nil)
