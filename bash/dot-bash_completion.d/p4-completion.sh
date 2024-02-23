@@ -56,7 +56,7 @@ _upvar() {
 
 
 # Assign variables one scope above the caller
-# Usage: local varname [varname ...] && 
+# Usage: local varname [varname ...] &&
 #        _upvars [-v varname value] | [-aN varname [value ...]] ...
 # Available OPTIONS:
 #     -aN  Assign next N values to varname as array
@@ -79,7 +79,7 @@ _upvars() {
                     "${FUNCNAME[0]}: \`$1': invalid number specifier" 1>&2
                     return 1; }
                 # Assign array of -aN elements
-                [[ "$2" ]] && unset -v "$2" && eval $2=\(\"\${@:3:${1#-a}}\"\) && 
+                [[ "$2" ]] && unset -v "$2" && eval $2=\(\"\${@:3:${1#-a}}\"\) &&
                 shift $((${1#-a} + 2)) || { echo "bash: ${FUNCNAME[0]}:"\
                     "\`$1${2+ }$2': missing argument(s)" 1>&2; return 1; }
                 ;;
@@ -114,7 +114,7 @@ __reassemble_comp_words_by_ref() {
         # Exclude only those characters, which were really included
         exclude="${1//[^$COMP_WORDBREAKS]}"
     fi
-        
+
     # Default to cword unchanged
     eval $3=$COMP_CWORD
     # Are characters excluded which were former included?
@@ -125,8 +125,8 @@ __reassemble_comp_words_by_ref() {
             # Is current word not word 0 (the command itself) and is word not
             # empty and is word made up of just word separator characters to be
             # excluded?
-            while [[ $i -gt 0 && ${COMP_WORDS[$i]} && 
-                ${COMP_WORDS[$i]//[^$exclude]} == ${COMP_WORDS[$i]} 
+            while [[ $i -gt 0 && ${COMP_WORDS[$i]} &&
+                ${COMP_WORDS[$i]//[^$exclude]} == ${COMP_WORDS[$i]}
             ]]; do
                 [ $j -ge 2 ] && ((j--))
                 # Append word separator to current word
@@ -196,7 +196,7 @@ __get_cword_at_cursor_by_ref() {
         cur2=${cur:0:$index}
     fi
 
-    local "$2" "$3" "$4" && 
+    local "$2" "$3" "$4" &&
         _upvars -a${#words[@]} $2 "${words[@]}" -v $3 "$cword" -v $4 "$cur2"
 }
 
@@ -215,7 +215,7 @@ __get_cword_at_cursor_by_ref() {
 #     cword       Return cword via $cword
 #
 # Available OPTIONS:
-#     -n EXCLUDE  Characters out of $COMP_WORDBREAKS which should NOT be 
+#     -n EXCLUDE  Characters out of $COMP_WORDBREAKS which should NOT be
 #                 considered word breaks. This is useful for things like scp
 #                 where we want to return host:path and not only path, so we
 #                 would pass the colon (:) as -n option in this case.  Bash-3
@@ -245,7 +245,7 @@ _get_comp_words_by_ref()
             w) vwords=$OPTARG ;;
         esac
     done
-    while [[ $# -ge $OPTIND ]]; do 
+    while [[ $# -ge $OPTIND ]]; do
         case ${!OPTIND} in
             cur)   vcur=cur ;;
             prev)  vprev=prev ;;
@@ -261,7 +261,7 @@ _get_comp_words_by_ref()
 
     [[ $vcur   ]] && { upvars+=("$vcur"  ); upargs+=(-v $vcur   "$cur"  ); }
     [[ $vcword ]] && { upvars+=("$vcword"); upargs+=(-v $vcword "$cword"); }
-    [[ $vprev  ]] && { upvars+=("$vprev" ); upargs+=(-v $vprev 
+    [[ $vprev  ]] && { upvars+=("$vprev" ); upargs+=(-v $vprev
         "${words[cword - 1]}"); }
     [[ $vwords ]] && { upvars+=("$vwords"); upargs+=(-a${#words[@]} $vwords
         "${words[@]}"); }
@@ -289,7 +289,7 @@ __p4_complete() {
 }
 
 __p4_filenames() {
-    COMPREPLY=( $(compgen -f ${cur}) )
+    COMPREPLY=()
 }
 
 __p4_directories() {
@@ -1419,7 +1419,7 @@ _p4_logout() {
     esac
 }
 
-# merge -- Merge one set of files into another 
+# merge -- Merge one set of files into another
 #
 # p4 merge [options] [-F] [--from stream] [toFile][revRange]
 # p4 merge [options] fromFile[revRange] toFile
