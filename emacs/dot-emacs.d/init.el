@@ -19,9 +19,8 @@
 ;; (setq-default use-package-always-ensure t)
 
 (require 'use-package)
-(require 'use-package-hydra)
-(require 'dash)
-(require 'f)
+(use-package dash :demand t)
+(use-package f :demand t)
 
 (defun disable-line-numbers ()
   (display-line-numbers-mode -1))
@@ -294,20 +293,10 @@
 (use-package window
   :ensure nil
   :preface
-  (defvar my-hydra-switch-buffer-source nil)
   (defun hide-titlebar-when-maximized (frame)
     (if (eq 'maximized (alist-get 'fullscreen (frame-parameters frame)))
         (set-frame-parameter frame 'undecorated t)
       (set-frame-parameter frame 'undecorated nil)))
-  :hydra
-  (hydra-switch-buffer
-   (ctl-x-map nil
-              :pre (setq my-hydra-switch-buffer-source (or my-hydra-switch-buffer-source (current-buffer)))
-              :post (setq my-hydra-switch-buffer-source nil))
-   "Switch buffer"
-   ("g" (switch-to-buffer my-hydra-switch-buffer-source) "Quit" :exit t)
-   ("<left>" previous-buffer "previous-buffer")
-   ("<right>" next-buffer "next-buffer"))
   :init
   (add-hook 'window-size-change-functions 'hide-titlebar-when-maximized))
 
@@ -419,10 +408,6 @@
   (dired-sidebar-close-sidebar-on-file-open t)
   :bind ("C-c t d" . dired-sidebar-toggle-sidebar))
 
-(use-package dired-quick-sort
-  :config
-  (dired-quick-sort-setup))
-
 (use-package elfeed
   :hook ((elfeed-new-entry . ime-elfeed-podcast-tagger))
   :preface
@@ -501,31 +486,7 @@
               ("M-w" . elfeed-copy-link-at-point)
               ("P" . pocket-reader-add-link)))
 
-(use-package reddigg
-  :defines elfeed-search-mode-map
-  :commands promise-finally
-  :after elfeed-search
-  :preface (defun elfeed-open-reddit ()
-             (interactive)
-             (require 'promise-finally)
-             (let* ((entry (elfeed-get-show-or-search-entry))
-                    (url (elfeed-entry-link entry))
-                    (existing-buffer (get-buffer "*reddigg-comments*")))
-               (progn
-                 (when existing-buffer
-                   (kill-buffer existing-buffer))
-                 (elfeed-search-untag-all-unread)
-                 (promise-finally (reddigg-view-comments url)
-                                  (lambda ()
-                                    (pop-to-buffer "*reddigg-comments*")
-                                    (use-local-map (copy-keymap org-mode-map))
-                                    (local-set-key "q" #'+rss/delete-pane)
-                                    (read-only-mode +1))))))
-  :bind (:map elfeed-search-mode-map ("R" . elfeed-open-reddit)))
-
 (use-package feed-discovery)
-
-(use-package pocket-reader)
 
 (use-package buffer-move
   :bind
@@ -552,18 +513,6 @@
   ([remap delete-char] . hungry-delete-forward)
   ([remap delete-forward-char] . hungry-delete-forward)
   ([remap delete-backward-char] . hungry-delete-backward))
-
-(use-package writeroom-mode
-  :defines display-line-numbers-mode
-  :functions display-line-numbers-mode
-  :preface (defun toggle-line-numbers () (display-line-numbers-mode (or (not display-line-numbers-mode) 0)))
-  :custom
-  (writeroom-width 120)
-  (writeroom-mode-line nil)
-  (writeroom-fullscreen-effect 'maximized)
-  :bind
-  (:map writeroom-mode-map
-        ("C-c o w" . writeroom-mode)))
 
 (use-package vertico
   :demand t
@@ -926,11 +875,6 @@
   :config (goto-last-point-mode)
   :bind ("C-x j p" . goto-last-point))
 
-(use-package goto-chg
-  :bind
-  ("C-x j c" . goto-last-change)
-  ("C-x j C" . goto-last-change-reverse))
-
 (use-package link-hint
   :bind
   ("C-c l o" . link-hint-open-link)
@@ -960,9 +904,6 @@
 
 (use-package zygospore
   :bind ("C-x 1" . zygospore-toggle-delete-other-windows))
-
-(use-package goto-line-preview
-  :bind ([remap goto-line] . goto-line-preview))
 
 (use-package fill-column-indicator
   :hook (prog-mode . fci-mode))
@@ -996,7 +937,7 @@
   :bind ("M-g M-l" . dogears-go))
 
 (use-package dashboard
-  :if (processp server-process)
+  ;; :if (processp server-process)
   :hook (dashboard-mode . page-break-lines-mode)
   :commands dashboard-insert-section dashboard-insert-heading dashboard-subseq
   :preface
@@ -1051,7 +992,7 @@
   :init
   (doom-modeline-def-modeline 'main
     '(bar workspace-name window-number buffer-info remote-host buffer-position word-count)
-    '(misc-info persp-name grip irc github debug repl lsp indent-info process vcs checker time)))
+    '(misc-info persp-name grip irc github debug repl lsp indent-info process vcs check time)))
 
 (use-package diminish)
 
@@ -1095,17 +1036,6 @@
   ("C-h k" . helpful-key)
   ("C-h h" . helpful-at-point)
   :custom (helpful-max-buffers 5))
-
-;; (use-package window-margin
-;;   :vc (:rev :newest :url "https://github.com/aculich/window-margin.el")
-;;   :custom
-;;   (window-margin-width 0.5)
-;;   :preface
-;;   (defun maybe-window-margin-mode ()
-;;     (when (> (length (window-list)) 1)
-;;       (let ((window-margin-width 0.5))
-;;         (window-margin-mode t))))
-;;   :hook (markdown-mode . maybe-window-margin-mode))
 
 (use-package prog-mode :ensure nil
   :preface
@@ -1248,10 +1178,6 @@ perspective."
 (use-package copy-as-format
   :custom (copy-as-format-default "github"))
 
-(use-package diff-hl
-  :hook (find-file . diff-hl-mode)
-  :custom (diff-hl-disable-on-remote t))
-
 (use-package hl-todo
   :custom (global-hl-todo-mode 1))
 
@@ -1310,9 +1236,6 @@ perspective."
         ("C-c C-n"  . vterm-toggle-forward)
         ("C-c C-p"  . vterm-toggle-backward)
         ("C-<return>" . vterm-toggle-insert-cd)))
-
-;; (use-package shx
-;;   :hook (comint-mode . shx-mode))
 
 (use-package compile :ensure nil
   :preface
@@ -1378,9 +1301,6 @@ perspective."
 
 (use-package which-key)
 
-;; TODO: https://github.com/weirdNox/emacs-gdb
-;; dap-mode
-;; realgud
 (use-package gdb-mi
   :custom
   (gdb-many-windows t))
@@ -1405,7 +1325,9 @@ perspective."
   (fancy-compilation-override-colors nil))
 
 (use-package obvious
-  :vc (:rev :newest :url "https://github.com/alphapapa/obvious.el"))
+  :vc (:rev :newest :url "https://github.com/alphapapa/obvious.el")
+  :bind
+  ("C-c v o" . obvious-mode))
 
 (use-package eglot
   :config
@@ -1500,16 +1422,6 @@ perspective."
 
 (use-package meson-mode)
 
-(use-package scala-mode
-  :interpreter ("scala" . scala-mode)
-  :mode ("\\.sc\\'" . scala-mode))
-
-(use-package sbt-mode
-  :commands sbt-start sbt-command
-  :custom (sbt:program-options '("-Dsbt.supershell=false"))
-  :config
-  (substitute-key-definition 'minibuffer-complete-word 'self-insert-command minibuffer-local-completion-map))
-
 (use-package ansi-color
   :commands ansi-color-apply-on-region
   :hook (compilation-filter . colorize-compilation-buffer)
@@ -1519,15 +1431,6 @@ perspective."
              (read-only-mode -1))
   :config (add-to-list 'comint-output-filter-functions 'ansi-color-process-output)
   :custom (ansi-color-for-comint-mode t))
-
-(use-package shell
-  :after window
-  :config (add-to-list 'display-buffer-alist (cons "\\*shell\\*" use-other-window-alist))
-  :bind ("C-<f8>" . shell))
-
-(use-package eshell
-  :config (add-to-list 'display-buffer-alist (cons "\\*eshell\\*" use-other-window-alist))
-  :bind ("M-<f8>" . eshell))
 
 (use-package eshell-syntax-highlighting
   :hook (eshell-mode . eshell-syntax-highlighting-mode))
@@ -1674,8 +1577,6 @@ perspective."
         ("C-c [" . jinja2-insert-tag)
         ("C-c ]" . my-jinja-close-tag)))
 
-;; (use-package gitlab-ci-mode :mode "\\.gitlab-ci\\.yml\\'")
-
 (use-package format-all)
 
 (use-package python
@@ -1691,21 +1592,6 @@ perspective."
     (setq python-shell-interpreter "python3"))
    (t (setq python-shell-interpreter "python"))))
 
-;; (use-package pet
-;;   :hook (python-mode . pet-mode))
-
-(use-package pyvenv
-  :hook
-  (python-mode . pyvenv-try-activate)
-  (pyvenv-post-activate . (lambda () (pyvenv-restart-python)))
-  :preface
-  (defun pyvenv-try-activate ()
-    (pyvenv-mode t)
-    (pyvenv-activate (concat (project-root (project-current))))))
-
-(use-package py-isort
-  :hook (before-save . py-isort-before-save))
-
 (use-package perl :ensure nil
   :custom
   (cperl-indent-level 4)
@@ -1720,21 +1606,6 @@ perspective."
 
 (use-package ruby-mode
   :mode ("\\.dj\\'" . ruby-mode))
-
-;; (use-package enh-ruby-mode)
-;; (use-package rspec)
-;; (use-package minitest)
-
-;; (use-package yard-mode
-;;   :hook (ruby-mode . yard-mode))
-
-;; (use-package inf-ruby
-;;   :hook (ruby-mode . inf-ruby-minor-mode))
-
-;; (use-package rubocop
-;;   :hook (ruby-mode . rubocop-mode))
-
-(use-package rake)
 
 (use-package org
   :hook
@@ -1789,8 +1660,7 @@ perspective."
 (use-package org-id
   :ensure nil
   :custom
-  (org-id-link-to-org-use-id t)
-  )
+  (org-id-link-to-org-use-id t))
 
 (use-package my-org-bibtex
   :ensure nil
@@ -1889,34 +1759,34 @@ perspective."
   						    "* %?\n	 [[%:link][%:description]]\n	%U")))
   :bind ("C-c C-c" . org-capture))
 
-;; (use-package org-capture-ref
-;;   :after org
-;;   :vc (:repo "yantar92/org-capture-ref" :fetcher github)
-;;   :config
-;;   ;; (add-to-list 'org-capture-templates
-;;   ;;          (doct '(:group "Browser link"
-;;   ;;                         :type entry
-;;   ;;                         :headline "REF"
-;;   ;;   		              :file org-capture-file
-;;   ;;   		              :fetch-bibtex (lambda () (org-capture-ref-process-capture)) ; this must run first
-;;   ;;                         :link-type (lambda () (org-capture-ref-get-bibtex-field :type))
-;;   ;;                         :extra (lambda ()
-;;   ;;                                  (if (org-capture-ref-get-bibtex-field :journal)
-;;   ;;   				                   (s-join "\n"
-;;   ;;                                              '("- [ ] download and attach pdf"
-;;   ;;   					                         "- [ ] [[elisp:org-attach-open][read paper capturing interesting references]]"
-;;   ;;   					                         "- [ ] [[elisp:(browse-url (url-encode-url (format \"https://www.semanticscholar.org/search?q=%s\" (org-entry-get nil \"TITLE\"))))][check citing articles]]"
-;;   ;;   					                         "- [ ] [[elisp:(browse-url (url-encode-url (format \"https://www.connectedpapers.com/search?q=%s\" (org-entry-get nil \"TITLE\"))))][check related articles]]"
-;;   ;;                                                "- [ ] check if bibtex entry has missing fields"))
-;;   ;;                                    ""))
-;;   ;;                         :org-entry (lambda () (org-capture-ref-get-org-entry))
-;;   ;;   		              :template
-;;   ;;                         ("%{fetch-bibtex}* TODO %?%{space}%{org-entry}"
-;;   ;;                          "%{extra}"
-;;   ;;                          "- Keywords: #%{link-type}")
-;;   ;;   		              :children (("Interactive link" :keys "b" :clock-in t :space " " :clock-resume t)
-;;   ;;   			                     ("Silent link" :keys "B" :space "" :immediate-finish t))))))
-;;   )
+(use-package org-capture-ref
+  :after org
+  :vc (:repo "yantar92/org-capture-ref" :fetcher github)
+  :config
+  ;; (add-to-list 'org-capture-templates
+  ;;          (doct '(:group "Browser link"
+  ;;                         :type entry
+  ;;                         :headline "REF"
+  ;;   		              :file org-capture-file
+  ;;   		              :fetch-bibtex (lambda () (org-capture-ref-process-capture)) ; this must run first
+  ;;                         :link-type (lambda () (org-capture-ref-get-bibtex-field :type))
+  ;;                         :extra (lambda ()
+  ;;                                  (if (org-capture-ref-get-bibtex-field :journal)
+  ;;   				                   (s-join "\n"
+  ;;                                              '("- [ ] download and attach pdf"
+  ;;   					                         "- [ ] [[elisp:org-attach-open][read paper capturing interesting references]]"
+  ;;   					                         "- [ ] [[elisp:(browse-url (url-encode-url (format \"https://www.semanticscholar.org/search?q=%s\" (org-entry-get nil \"TITLE\"))))][check citing articles]]"
+  ;;   					                         "- [ ] [[elisp:(browse-url (url-encode-url (format \"https://www.connectedpapers.com/search?q=%s\" (org-entry-get nil \"TITLE\"))))][check related articles]]"
+  ;;                                                "- [ ] check if bibtex entry has missing fields"))
+  ;;                                    ""))
+  ;;                         :org-entry (lambda () (org-capture-ref-get-org-entry))
+  ;;   		              :template
+  ;;                         ("%{fetch-bibtex}* TODO %?%{space}%{org-entry}"
+  ;;                          "%{extra}"
+  ;;                          "- Keywords: #%{link-type}")
+  ;;   		              :children (("Interactive link" :keys "b" :clock-in t :space " " :clock-resume t)
+  ;;   			                     ("Silent link" :keys "B" :space "" :immediate-finish t))))))
+  )
 
 (use-package org-table :ensure org
   :preface
@@ -2151,47 +2021,6 @@ With a prefix ARG, remove start location."
   (side-notes-secondary-file "README.org")
   :bind ("C-c t n" . side-notes-toggle-notes))
 
-;; (use-package org-roam
-;;   :preface
-;;   (defun org-roam-node-insert-immediate (arg &rest args)
-;;     (interactive "P")
-;;     (let ((args (cons arg args))
-;;           (org-roam-capture-templates (list (append (car org-roam-capture-templates)
-;;                                                     '(:immediate-finish t)))))
-;;       (apply #'org-roam-node-insert args)))
-;;   :custom
-;;   (org-roam-directory my-notes-directory)
-;;   (org-roam-auto-replace-fuzzy-links nil)
-;;   (org-roam-capture-templates
-;;    '(("d" "Daily" plain "%?" :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")  :unnarrowed t)
-;;      ("c" "Catch all" entry  :target (file+head "CatchAll.org") "* %^{Note title}\nContext: %a\n%?" :empty-lines-before 1 )
-;;      ("p" "Paper Note" plain "* %^{citekey}" :target (file "Papers.org" "#+title: ${title}"))))
-;;   :bind
-;;   ("C-c n l" . org-roam-buffer-toggle)
-;;   ("C-c n f" . org-roam-node-find)
-;;   ("C-c n g" . org-roam-graph)
-;;   ("C-c n i" . org-roam-node-insert)
-;;   ("C-c n I" . org-roam-node-insert-immediate)
-;;   ("C-c n c" . org-roam-capture)
-;;   ;; Dailies
-;;   ("C-c n j" . org-roam-dailies-capture-today)
-;;   :config
-;;   (add-to-list 'completion-at-point-functions 'org-roam-complete-link-at-point)
-;;   (require 'org-roam-protocol))
-
-;; (use-package org-roam-bibtex :after org-roam)
-
-;; (use-package org-roam-ui
-;;   :after org-roam
-;;   :custom
-;;   (org-roam-ui-sync-theme t)
-;;   (org-roam-ui-follow t)
-;;   (org-roam-ui-update-on-save t)
-;;   (org-roam-ui-open-on-start t))
-
-;; (use-package org-roam-timestamps
-;;   :hook (org-roam-mode . org-roam-timestamps-mode))
-
 ;; (use-package ox-pandoc)
 
 (use-package org-pandoc-import
@@ -2209,15 +2038,6 @@ With a prefix ARG, remove start location."
   :hook
   (dired-mode . org-download-enable)
   (org-mode . org-download-enable))
-
-(use-package org-mru-clock
-  :bind
-  ("C-c C-x c" . org-mru-clock-in)
-  ("C-c C-x C-c" . org-mru-clock-select-recent-task))
-
-;; (use-package orgit)
-;;
-;; (use-package orgit-forge)
 
 (use-package ox-hugo)
 
@@ -2241,12 +2061,6 @@ With a prefix ARG, remove start location."
 
 (use-package org-autolist
   :hook (org-mode . org-autolist-mode))
-
-;; (use-package org-books
-;;   :custom
-;;   (org-books-add-to-top nil)
-;;   (org-books-file-depth 1)
-;;   (org-books-file (concat my-notes-directory "/Books.org")))
 
 (use-package ein)
 
