@@ -2597,7 +2597,9 @@ With a prefix ARG, remove start location."
 
 (use-package vc
   :custom
-  (vc-handled-backends '(Git)))
+  (vc-handled-backends '(Git))
+  :init
+  (remove-hook 'find-file-hooks 'vc-find-file-hook))
 
 (use-package verilog-ext
   ;; :hook (verilog-mode . verilog-ext-mode)
