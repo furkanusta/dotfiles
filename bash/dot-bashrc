@@ -24,6 +24,7 @@ export DOCKER_BUILDKIT=1
 export MANROFFOPT='-c'
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 export USE_BAZEL_VERSION=6.0.0
+export PS1='[$(basename "$(dirname "$PWD")")/$(basename "$PWD")] $ ';
 
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/lib:/usr/local/lib64/"
 export LOCAL_PATH=$HOME/.local
@@ -41,7 +42,7 @@ alias ec="emacsclient -t"
 alias mp3-dl="yt-dlp --extract-audio"
 alias mp3-tags="fd -t f -x ffprobe -loglevel error -show_entries format_tags=title,artist -of compact"
 
-[[ -z "${INSIDE_EMACS}" ]] && source $XDG_CONFIG_HOME/vterm/emacs-vterm.sh
+[[ -n "${INSIDE_EMACS}" ]] && source $XDG_CONFIG_HOME/vterm/emacs-vterm.sh
 [[ -z "${INSIDE_EMACS}" ]] && export PS1='[$(basename "$(dirname "$PWD")")/$(basename "$PWD")] \[\e[0;31m$\e[0m\] ';
 # bind does not work inside emacs
 [[ -z "${INSIDE_EMACS}" ]] && source $XDG_CONFIG_HOME/fzf/completion.bash
