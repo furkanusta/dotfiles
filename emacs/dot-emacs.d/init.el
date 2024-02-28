@@ -1761,7 +1761,7 @@ perspective."
 
 (use-package org-capture-ref
   :after org
-  :vc (:repo "yantar92/org-capture-ref" :fetcher github)
+  :vc (:rev :newest :url "https://github.com/yantar92/org-capture-ref")
   :config
   ;; (add-to-list 'org-capture-templates
   ;;          (doct '(:group "Browser link"
@@ -1920,7 +1920,7 @@ With a prefix ARG, remove start location."
   :custom (binder-default-file-extension "org"))
 
 (use-package inherit-org
-  :vc (:rev newset :url "https://github.com/chenyanming/inherit-org")
+  :vc (:rev :newset :url "https://github.com/chenyanming/inherit-org")
   :hook ((eww-mode nov-mode info-mode helpful-mode ghelp-page-mode) . inherit-org-mode))
 
 (use-package shrface
