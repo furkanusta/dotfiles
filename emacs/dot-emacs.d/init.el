@@ -1,8 +1,8 @@
 ;;; -*- lexical-binding: t -*-
 ;; Initialization
 (setq custom-file (concat user-emacs-directory "custom.el"))
-;; (when (file-exists-p custom-file)
-;;   (load custom-file))
+(when (file-exists-p custom-file)
+  (load custom-file))
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
@@ -222,6 +222,10 @@
         ("a" . ff-find-other-file-other-window)
         ("A" . ff-find-other-file)))
 
+(use-package url :ensure nil
+  :custom
+  (url-user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"))
+
 (use-package ediff
   :custom
   (ediff-window-setup-function 'ediff-setup-windows-plain)
@@ -380,6 +384,10 @@
 
 (use-package wdired
   :hook (wdired-mode . highlight-changes-mode))
+
+(use-package dired-x
+  :custom
+  (dired-omit-mode 1))
 
 (use-package dired-hide-dotfiles
   :hook (dired-mode . dired-hide-dotfiles-mode)
@@ -937,7 +945,7 @@
   :bind ("M-g M-l" . dogears-go))
 
 (use-package dashboard
-  ;; :if (processp server-process)
+  :if (processp server-process)
   :hook (dashboard-mode . page-break-lines-mode)
   :commands dashboard-insert-section dashboard-insert-heading dashboard-subseq
   :preface
@@ -1622,7 +1630,7 @@ perspective."
           (org-babel-tangle nil nil "bibtex")))
       (switch-to-buffer buf)))
   :custom
-  (org-modules (list 'ol-eww 'org-tempo 'ol-info 'ol-docview 'ol-bibtex 'ol-doi))
+  (org-modules (list 'ol-eww 'org-tempo 'ol-info 'ol-docview 'ol-bibtex 'ol-doi 'org-habit))
   (org-default-notes-file (concat my-notes-directory "/Capture.org"))
   (org-adapt-indentation t)
   (org-catch-invisible-edits 'show-and-error)
@@ -1647,8 +1655,9 @@ perspective."
   (org-export-with-todo-keywords t)
   (org-export-with-tag nil)
   (org-latex-listings 'minted)
-  (org-todo-keywords '((sequence "TODO" "IN-PROGRESS" "NEXT" "|" "DONE")
-                       (sequence "PAUSED" "SCHEDULED" "WAITING" "|" "CANCELLED")))
+  (org-log-done 'nil) ;; clock-out already records timestamps ??
+  (org-todo-keywords '((sequence "TODO" "IN-PROGRESS" "|" "DONE")
+                       (sequence "PAUSED" "SCHEDULED" "WAITING" "NEXT" "|" "CANCELLED")))
   :config
   (add-to-list 'org-latex-packages-alist '("" "minted"))
   :bind
@@ -1819,10 +1828,47 @@ perspective."
   (org-refile-allow-creating-parent-nodes 'confirm))
 
 (use-package org-clock :ensure org
+  :preface
+  (defun my-org-clock-out-habit (current-state)
+    (if (string= (org-entry-get nil "STYLE") "habit")
+        "DONE"
+      current-state))
+  :config
+  (org-clock-persistence-insinuate)
   :custom
+  (org-clock-persist t)
   (org-clock-out-remove-zero-time-clocks t)
   (org-clock-report-include-clocking-task t)
-  (org-clock-out-when-done t))
+  (org-clock-out-when-done t)
+  (org-clock-in-switch-to-state "IN-PROGRESS")
+  (org-clock-out-switch-to-state #'my-org-clock-out-habit)
+  :bind
+  (:map org-mode-map
+        ("C-c C-x i" . org-clock-in)))
+
+(use-package org-clock-reminder
+  :custom
+  (org-clock-reminder-inactive-notifications-p t)
+  (org-clock-reminder-interval 45)
+  (org-clock-reminder-mode t))
+
+;; (use-package org-habit-stats
+;;   :vc (:rev :newest :url "https://github.com/ml729/org-habit-stats")
+;;   )
+
+
+(use-package consult-org-clock
+  :vc (:rev :newest :url "https://github.com/overideal/consult-org-clock")
+  :bind
+  ("C-c C-x i" . consult-org-clock)
+  ("C-c C-x s" . consult-org-clock-goto))
+
+(use-package org-mru-clock
+  :hook (minibuffer-setup . org-mru-clock-embark-minibuffer-hook)
+  :bind
+  ("C-c C-x i" . org-mru-clock-in)
+  ("C-c C-x s" . org-mru-select-recent-task))
+
 
 (use-package org-appear
   :custom
@@ -1921,7 +1967,7 @@ With a prefix ARG, remove start location."
 
 (use-package inherit-org
   :vc (:rev :newset :url "https://github.com/chenyanming/inherit-org")
-  :hook ((eww-mode nov-mode info-mode helpful-mode ghelp-page-mode) . inherit-org-mode))
+  :hook ((info-mode helpful-mode ghelp-page-mode) . inherit-org-mode))
 
 (use-package shrface
   :after org
@@ -2048,11 +2094,6 @@ With a prefix ARG, remove start location."
 
 (use-package orgdiff
   :vc (:rev :newest :url "https://github.com/tecosaur/orgdiff"))
-
-(use-package org-clock-reminder
-  :custom
-  (org-clock-reminder-interval 1200)
-  (org-clock-reminder-mode t))
 
 (use-package org-elp
   :custom
@@ -2406,8 +2447,16 @@ With a prefix ARG, remove start location."
 
 (use-package xref)
 
-(use-package ace-jump-mode
-  :bind ("C-c j j" . ace-jump-mode))
+
+(use-package avy
+  :bind
+  ("C-c j j" . avy-goto-char-timer)
+  ("C-c j c" . avy-goto-char)
+  ("C-c j r" . avy-resume)
+  :config
+  (add-to-list 'ahs-disabled-commands 'avy-goto-char)
+  (add-to-list 'ahs-disabled-commands 'avy-goto-char-timer))
+
 
 (use-package image-mode
   :ensure nil
