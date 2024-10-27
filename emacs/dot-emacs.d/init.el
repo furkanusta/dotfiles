@@ -164,18 +164,18 @@
   (large-file-warning-threshold (* 1024 1024 1024)) ;; 1GB
   (confirm-nonexistent-file-or-buffer nil)
   (truncate-lines t)
+  (mark-even-if-inactive nil)
   :preface
   (defun my-mark-line (beg end &optional region)
     (if mark-active (list (region-beginning) (region-end))
        (list (line-beginning-position) (line-beginning-position 2))))
   :config
-  (advice-add 'kill-ring-save :before #'my-mark-line)
-  (advice-add 'kill-region :before #'my-mark-line)
-  (add-to-list 'exec-path "~/.local/bin")
+  ;; (advice-add 'kill-ring-save :before #'my-mark-line)
+  ;; (advice-add 'kill-region :before #'my-mark-line)
+  (add-to-list 'exec-path (f-expand "~/.local/bin"))
   (add-to-list 'delete-frame-functions #'(lambda (frame_) (recentf-save-list)))
   (add-to-list 'delete-frame-functions #'(lambda (frame_) (bookmark-save)))
   :bind
-  ("C-c ." . pop-global-mark)
   ("M-u" . upcase-dwim)
   ("M-l" . downcase-dwim)
   ("M-c" . capitalize-dwim)
@@ -188,7 +188,6 @@
   ("C-S-d" . delete-backward-char)
   ("M-D" . backward-kill-word)
   ("C-w" . kill-region)
-  ;; ("M-w" . xah-copy-line-or-region)
   ("M-k" . kill-whole-line)
   ("C-x C-f" . find-file-at-point)
   ("RET" . newline-and-indent)
@@ -416,6 +415,16 @@
   (dired-sidebar-close-sidebar-on-file-open t)
   :bind ("C-c t d" . dired-sidebar-toggle-sidebar))
 
+(use-package casual-dired
+  :bind
+  ("C-x C-? d" . casual-dired-tmenu)
+  (:map dired-mode-map
+        ("?" . casual-dired-tmenu)))
+
+(use-package casual-bookmarks
+  :bind
+  ("C-x C-? b" . casual-bookmarks-tmenu))
+
 (use-package elfeed
   :hook ((elfeed-new-entry . ime-elfeed-podcast-tagger))
   :preface
@@ -637,11 +646,6 @@
                      (consult--join-regexps re 'extended))
                opts)
               hl))))
-  (defun consult-fd (&optional dir initial)
-    (interactive "P")
-    (let* ((prompt-dir (consult--directory-prompt "Fd" dir))
-           (default-directory (caddr prompt-dir)))
-      (find-file (consult--find "FD: " #'consult--fd-builder initial))))
   (defun consult-line-symbol-at-point ()
     (interactive)
     (consult-line (thing-at-point 'symbol)))
@@ -894,7 +898,10 @@
   (beacon-blink-when-buffer-changes nil)
   (beacon-blink-when-window-changes nil)
   (beacon-blink-when-window-scrolls nil)
-  (beacon-mode 1))
+  (beacon-mode 1)
+  :config
+  (add-to-list 'beacon-dont-blink-major-modes 'nov-mode)
+  (add-to-list 'beacon-dont-blink-major-modes 'pdf-view-mode))
 
 (use-package goggles
   :hook (prog-mode . goggles-mode)
@@ -945,7 +952,7 @@
   :bind ("M-g M-l" . dogears-go))
 
 (use-package dashboard
-  :if (processp server-process)
+  :if (daemonp)
   :hook (dashboard-mode . page-break-lines-mode)
   :commands dashboard-insert-section dashboard-insert-heading dashboard-subseq
   :preface
@@ -1067,85 +1074,33 @@
   :ensure nil
   :preface (defun my-open-readme ()
              (interactive)
-             (let* ((project-root (project-root (project-current)))
-                    (project-files (directory-files project-root nil nil t))
-                    (readme-files (seq-filter (lambda (file) (string-prefix-p "readme" file t)) project-files)))
-               (if readme-files
-                   (let ((readme-file (car readme-files)))
-                     (find-file (expand-file-name readme-file project-root)))
-                 (find-file (expand-file-name "README.org" project-root)))))
+             (let* ((project-root (project-root (project-current t)))
+                     (project-files (directory-files project-root nil nil t))
+                     (readme-files (seq-filter (lambda (file) (string-prefix-p "readme" file t)) project-files)))
+                (if readme-files
+                    (let ((readme-file (car readme-files)))
+                      (find-file (expand-file-name readme-file project-root)))
+                  (dired-current-dir))))
   :custom
   (project-switch-commands #'my-open-readme)
   :bind-keymap ("C-c p" . project-prefix-map))
 
-(use-package my-project-persp-bridge
-  :ensure nil
-  :preface
-  (defun my-project-name (project)
-    (interactive (list (project-root (project-current))))
-    (file-name-nondirectory (directory-file-name project)))
-  (defun my-project-other-known-project-roots ()
-    (let ((roots (project-known-project-roots))
-          (current (project-root (project-current))))
-      (delete current roots)))
-  (defun project-persp-switch-project (project-to-switch)
-  "Switch to a project or perspective we have visited before.
-If the perspective of corresponding project does not exist, this
-function will call `persp-switch' to create one and switch to
-that before `project-switch-project'
-Otherwise, this function calls `persp-switch' to switch to an
-existing perspective of the project unless we're already in that
-perspective."
-  (interactive (list (completing-read "Switch to project: " (my-project-other-known-project-roots))))
-  (let* ((name (my-project-name project-to-switch))
-         (persp (gethash name (perspectives-hash))))
-    (cond
-     ;; project-specific perspective already exists
-     ((and persp (not (equal persp (persp-curr))))
-      (persp-switch name))
-     ;; persp exists but not match with projectile-name
-     ((and persp (not (equal persp name)))
-      (persp-switch name)
-      (project-switch-project project-to-switch))
-     ;; project-specific perspective doesn't exist
-     ((not persp)
-      (let ((frame (selected-frame)))
-        (persp-switch name)
-        (project-switch-project project-to-switch)
-        ;; Clean up if we switched to a new frame. `helm' for one allows finding
-        ;; files in new frames so this is a real possibility.
-        (when (not (equal frame (selected-frame)))
-          (with-selected-frame frame
-            (persp-kill name))))))))
-  :bind ([remap project-switch-project] . project-persp-switch-project))
-
-(use-package perspective
+(use-package persp-mode
   :hook (after-init . persp-mode)
-  :commands persp-current-buffers
-  :preface
-  (defvar perspective-skip-ignore-list
-  '("*dashboard*" "*Messages*" "*Warnings*" "*elfeed-search*" "*Fd*" "*compilation*" "*Bufler*" "*Easy-hugo*"))
-  (defvar perspective-skip-prefix-list '("magit-"))
-  (defvar perspective-skip-ignore-prefix-list
-  '("*vterm" "*eat*" "*scratch" "*shell" "*Customize" "*ielm*" "*helpful" "*org" "*ein" "*Org" "*Embark" "*cardboard" "*eww" "*sly"))
-  (defun perspective-my-skip-buffer-p (_ buffer _)
-    (let ((name (buffer-name buffer)))
-      (or
-       (and
-        (char-equal ?* (seq-elt name 0))
-        (not (seq-contains-p perspective-skip-ignore-list name))
-        (cl-every
-         (lambda (x) x)
-         (mapcar (lambda (pref) (not (string-prefix-p pref name))) perspective-skip-ignore-prefix-list)))
-       (cl-some
-        (lambda (x) x)
-        (mapcar (lambda (pref) (string-prefix-p pref name)) perspective-skip-prefix-list))
-       (not (seq-contains-p (persp-current-buffers) buffer)))))
   :custom
-  (persp-mode-prefix-key (kbd "C-c w"))
-  (persp-modestring-short t)
-  ;; (persp-initial-frame-name ".dotfiles")
-  (switch-to-prev-buffer-skip #'perspective-my-skip-buffer-p))
+  (persp-autokill-persp-when-removed-last-buffer 'kill)
+  (persp-keymap-prefix (kbd "C-c w"))
+  :bind
+  (:map persp-key-map
+        ("c" . persp-kill)))
+
+(use-package persp-mode-project-bridge
+  :hook
+  (persp-mode-project-bridge-mode . (lambda ()
+                                      (if persp-mode-project-bridge-mode
+                                          (persp-mode-project-bridge-find-perspectives-for-all-buffers)
+                                        (persp-mode-project-bridge-kill-perspectives))))
+  (persp-mode . persp-mode-project-bridge-mode))
 
 (use-package magit
   :bind ("C-c g s" . magit-status)
@@ -1344,7 +1299,13 @@ perspective."
   (add-to-list 'eglot-server-programs `((c-ts-mode c++-ts-mode) . ,(cdr (assoc '(c++-mode c-mode) eglot-server-programs))))
   (add-to-list 'eglot-server-programs `(tex-mode . ,(eglot-alternatives
                                                      '(("~/.local/prog/digestif/digestif.sh")
-                                                       ("texlab"))))))
+                                                       ("texlab")))))
+  (setf (plist-get eglot-events-buffer-config :size) 0))
+
+(use-package eglot-booster
+  :vc (:rev :newest :url "https://github.com/jdtsmith/eglot-booster")
+  :after eglot
+  :config (eglot-booster-mode))
 
 (use-package eldoc
   :custom
@@ -1352,9 +1313,11 @@ perspective."
   (eldoc-idle-delay 1.5))
 
 (use-package project-rootfile
+  :after project
   :config
   (add-to-list 'project-rootfile-list "pyproject.toml")
   (add-to-list 'project-rootfile-list ".project")
+  (add-to-list 'project-rootfile-list ".github")
   (add-to-list 'project-find-functions #'project-rootfile-try-detect))
 
 (use-package makefile-executor
@@ -1626,7 +1589,6 @@ perspective."
           (files (f-glob "*.org")))
       (dolist (file files)
         (with-current-buffer (find-file file)
-          (message "TANGLE: %s" file)
           (org-babel-tangle nil nil "bibtex")))
       (switch-to-buffer buf)))
   :custom
@@ -1731,6 +1693,10 @@ perspective."
       (lambda (buffer result)
         (my-insert-bibtex-entry buffer (biblio-format-bibtex result biblio-bibtex-use-autokey)))
       (current-buffer)))))
+
+(use-package corg
+  :vc (:rev :newest :url "https://github.com/isamert/corg.el")
+  :hook (org-mode . corg-setup))
 
 (use-package ob-async)
 
@@ -1859,12 +1825,13 @@ perspective."
 
 (use-package consult-org-clock
   :vc (:rev :newest :url "https://github.com/overideal/consult-org-clock")
+  :after org-mode
   :bind
   ("C-c C-x i" . consult-org-clock)
   ("C-c C-x s" . consult-org-clock-goto))
 
 (use-package org-mru-clock
-  :hook (minibuffer-setup . org-mru-clock-embark-minibuffer-hook)
+  ;; :hook (minibuffer-setup . org-mru-clock-embark-minibuffer-hook)
   :bind
   ("C-c C-x i" . org-mru-clock-in)
   ("C-c C-x s" . org-mru-select-recent-task))
@@ -1965,9 +1932,9 @@ With a prefix ARG, remove start location."
 (use-package binder
   :custom (binder-default-file-extension "org"))
 
-(use-package inherit-org
-  :vc (:rev :newset :url "https://github.com/chenyanming/inherit-org")
-  :hook ((info-mode helpful-mode ghelp-page-mode) . inherit-org-mode))
+;; (use-package inherit-org
+;;   :vc (:rev :newset :url "https://github.com/chenyanming/inherit-org")
+;;   :hook ((info-mode helpful-mode ghelp-page-mode) . inherit-org-mode))
 
 (use-package shrface
   :after org
@@ -2208,7 +2175,6 @@ With a prefix ARG, remove start location."
       (or
        (string= "arxiv" (downcase (or (bibtex-completion-get-value "journal" entry) "")))
        (string= "arxiv" (downcase (or (bibtex-completion-get-value "archiveprefix" entry) ""))))
-      (message "ARXIV: %s" entry)
       (let* ((volume (bibtex-completion-get-value "volume" entry))
              (eprint (bibtex-completion-get-value "eprint" entry))
              (arxiv-id (or volume eprint))
@@ -2235,7 +2201,6 @@ With a prefix ARG, remove start location."
                              (sci-hub-download-url doi)))
                 (pdf-file (concat my-papers-directory "/" key ".pdf")))
       ;; now get file if needed.
-      (message "FOUND: %s" pdf-url)
       (unless (file-exists-p pdf-file)
         (url-copy-file pdf-url pdf-file))
       (when open-file
@@ -2681,19 +2646,29 @@ With a prefix ARG, remove start location."
   (plantuml-jar-path "/usr/share/java/plantuml.jar")
   (org-plantuml-jar-path plantuml-jar-path))
 
-(use-package org-super-links
-  :vc (:rev :newest :url "https://github.com/toshism/org-super-links" :branch "develop" :main-file "org-super-links.el")
-  :bind (("C-c s s" . org-super-links-link)
-         ("C-c s l" . org-super-links-store-link)
-         ("C-c s d" . org-super-links-delete-link)
-         ("C-c s i" . org-super-links-insert-link))
+;; (use-package org-super-links
+;;   :vc (:rev :newest :url "https://github.com/toshism/org-super-links" :branch "develop" :main-file "org-super-links.el")
+;;   :bind (("C-c s s" . org-super-links-link)
+;;          ("C-c s l" . org-super-links-store-link)
+;;          ("C-c s d" . org-super-links-delete-link)
+;;          ("C-c s i" . org-super-links-insert-link))
+;;   :custom
+;;   (org-super-links-link-prefix 'org-super-links-link-prefix-timestamp))
+
+;; (use-package org-node
+;;   :after org
+;;   :config (org-node-cache-mode)
+;;   :bind
+;;   (:map org-mode-map
+;;         ("C-c n f" . org-node-find)
+;;         ("C-c n i" . org-node-insert-link) ))
+
+(use-package whole-line-or-region
+  :hook (org-mode . whole-line-or-region-local-mode) ;; For some reason org-mode overrides global
   :custom
-  (org-super-links-link-prefix 'org-super-links-link-prefix-timestamp))
+  (whole-line-or-region-global-mode t))
 
 
 (provide 'init)
 
 ;;; init.el ends here
-;; //ssh:furkanu@xirengips01:~/
-(put 'narrow-to-region 'disabled nil)
-(put 'downcase-region 'disabled nil)

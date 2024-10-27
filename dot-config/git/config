@@ -17,6 +17,11 @@
 [pull]
 	rebase = true
 
+[alias]
+	pr = "!f() { git fetch origin pull/$1/head:PR_$1; }; f"
+	add-no-ws = "!f() { git diff --no-color -U0 --ignore-all-space $1 | git apply --cached --ignore-whitespace --unidiff-zero }; f"
+
+
 [url "https://invent.kde.org/"]
 	insteadOf = kde:
 
@@ -60,3 +65,5 @@
     conflictstyle = zdiff3
 [init]
 	defaultBranch = main
+[submodule]
+	recurse = true
