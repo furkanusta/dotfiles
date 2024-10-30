@@ -194,6 +194,7 @@
   ("C-x O" . my-previous-window)
   ("C-_" . undo-only)
   ("C-+" . undo-redo)
+  ("C-x C-." . pop-to-mark-command)
   ([remap fill-paragraph] . endless/fill-or-unfill)
   (:map prog-mode-map ("<tab>" . indent-for-tab-command)))
 
@@ -361,8 +362,8 @@
   (dired-dwim-target t)
   (dired-create-destination-dirs 'ask)
   (dired-recursive-copies 'always)
-  (dired-use-ls-dired nil)
-  (dired-listing-switches "-aBhlv --group-directories-first --color=never")
+  (dired-use-ls-dired t)
+  (dired-listing-switches "-aBhl --group-directories-first --color=never --dired")
   :config
   (defun my--find-nov-buffer (filename)
     (require 'nov)
@@ -664,19 +665,16 @@
                        default-directory)
                      (thing-at-point 'symbol)))
   :bind
-  ("C-x B" . consult-project-buffer)
-  ("M-g b" . consult-bookmark)
-  ("C-x M-:" . consult-complex-command)
+  ("M-y" . consult-yank-pop)
+  ("M-g g" . consult-goto-line)
+  ("M-g M-g" . consult-goto-line)
   ("C-x b" . consult-buffer)
   ("C-x 4 b" . consult-buffer-other-window)
   ("C-x 5 b" . consult-buffer-other-frame)
-  ("M-#" . consult-register-load)
-  ("M-'" . consult-register-store)
-  ("C-M-#" . consult-register)
-  ("M-y" . consult-yank-pop)
-  ("<help> a" . consult-apropos)
-  ("M-g g" . consult-goto-line)
-  ("M-g M-g" . consult-goto-line)
+  ("C-c b" . consult-bookmark)
+  ("C-c M-:" . consult-complex-command)
+  ("C-c r s" . consult-register-store)
+  ("C-c r r" . consult-register)
   ("C-c SPC" . consult-mark)
   ("C-c C-SPC" . consult-global-mark)
   ("C-c c c" . consult-compile-error)
@@ -943,13 +941,7 @@
   (imenu-list-size 0.15)
   :bind ("C-c t i" . imenu-list-smart-toggle))
 
-(use-package bufler :bind ("C-x C-b" . bufler))
-
 (use-package all-the-icons-ibuffer :hook (ibuffer-mode . all-the-icons-ibuffer-mode))
-
-(use-package dogears
-  :custom (dogears-mode t)
-  :bind ("M-g M-l" . dogears-go))
 
 (use-package dashboard
   :if (daemonp)
@@ -1090,6 +1082,11 @@
   :custom
   (persp-autokill-persp-when-removed-last-buffer 'kill)
   (persp-keymap-prefix (kbd "C-c w"))
+  (persp-init-frame-behvaiour nil)
+  (persp-autokill-buffer-on-remove 'weak)
+  (persp-nil-hidden t)
+  (persp-reset-windows-on-nil-window-conf nil)
+  (persp-auto-resume-time -1)
   :bind
   (:map persp-key-map
         ("c" . persp-kill)))
@@ -1313,6 +1310,7 @@
   (eldoc-idle-delay 1.5))
 
 (use-package project-rootfile
+  :defer nil
   :after project
   :config
   (add-to-list 'project-rootfile-list "pyproject.toml")

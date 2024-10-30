@@ -15,7 +15,7 @@ shopt -s cmdhist
 
 export HISTCONTROL=ignoreboth:erasedups
 export HISTSIZE=100000
-export HISTFILESIZE=100000
+unset  HISTFILESIZE
 export HISTTIMEFORMAT='%F %T '
 export ALTERNATE_EDITOR=""
 export EDITOR='emacsclient -nw'
@@ -54,3 +54,6 @@ alias mp3-tags="fd -t f -x ffprobe -loglevel error -show_entries format_tags=tit
 eval "$(zoxide init bash)"
 eval "$(direnv hook bash)"
 export LS_COLORS="$(vivid generate molokai)"
+export CMAKE_EXPORT_COMPILE_COMMANDS=1
+
+export QSYS_ROOTDIR="/home/eksi/intelFPGA_lite/23.1std/quartus/sopc_builder/bin"
