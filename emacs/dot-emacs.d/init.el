@@ -38,6 +38,30 @@
                            (lambda (file) (not (s-starts-with? "." (f-filename file))))
                            (f-glob "*.bib" my-bibliography-directory)))
 
+(defun prot/keyboard-quit-dwim ()
+  "Do-What-I-Mean behaviour for a general `keyboard-quit'.
+
+The generic `keyboard-quit' does not do the expected thing when
+the minibuffer is open.  Whereas we want it to close the
+minibuffer, even without explicitly focusing it.
+
+The DWIM behaviour of this command is as follows:
+
+- When the region is active, disable it.
+- When a minibuffer is open, but not focused, close the minibuffer.
+- When the Completions buffer is selected, close it.
+- In every other case use the regular `keyboard-quit'."
+  (interactive)
+  (cond
+   ((region-active-p)
+    (keyboard-quit))
+   ((derived-mode-p 'completion-list-mode)
+    (delete-completion-window))
+   ((> (minibuffer-depth) 0)
+    (abort-recursive-edit))
+   (t
+    (keyboard-quit))))
+
 (defun my-switch-theme ()
   "Switch theme between light and dark theme."
   (interactive)
@@ -195,6 +219,7 @@
   ("C-_" . undo-only)
   ("C-+" . undo-redo)
   ("C-x C-." . pop-to-mark-command)
+  ("C-g" . prot/keyboard-quit-dwim)
   ([remap fill-paragraph] . endless/fill-or-unfill)
   (:map prog-mode-map ("<tab>" . indent-for-tab-command)))
 
@@ -1017,7 +1042,7 @@
 
 (use-package popper
   :commands popper-select-popup-at-bottom
-  :bind (("C-\\"   . popper-toggle-latest)
+  :bind (("C-\\"   . popper-toggle)
          ("M-\\"   . popper-cycle)
          ("C-M-\\"   . popper-toggle-type))
   :custom
@@ -1714,52 +1739,17 @@
   (defvar org-capture-file (concat my-notes-directory "/Capture.org"))
   :custom
   (org-capture-templates '(("t" "TODO" entry (file+headline org-capture-file "Tasks")
-  						    "* TODO %?\n	%a\n  %i\n")
-  					       ("j" "Journal" entry (file+headline org-capture-file "Journal")
-  						    "* %U\n	 %a\n	 %i")
+						    "* TODO %?\n	%a\n  %i\n")
+					       ("j" "Journal" entry (file+headline org-capture-file "Journal")
+						    "* %U\n	 %a\n	 %i")
                            ("w" "Web site" entry
                             (file "")
                             "* %a :website:\n\n%U %?\n\n%:initial" :immediate-finish t)
-                           ;; Ideas??
-                           ;; Habit-Journal (:type table-line)
-                           ;; Pocket
-                           ;; org-web-tools-insert-web-page-as-entry
-                           ;; Snippet
-                           ;; Elfeed
-  					       ("p" "Protocol" entry (file+headline org-capture-file "Inbox")
-  	    				    "* %?\n	 [[%:link][%:description]]\n	%U\n #+BEGIN_QUOTE\n%i\n#+END_QUOTE\n\n\n")
-  	    			       ("L" "Protocol Link" entry (file+headline org-capture-file "Inbox")
-  						    "* %?\n	 [[%:link][%:description]]\n	%U")))
+					       ("p" "Protocol" entry (file+headline org-capture-file "Inbox")
+	    				    "* %?\n	 [[%:link][%:description]]\n	%U\n #+BEGIN_QUOTE\n%i\n#+END_QUOTE\n\n\n")
+	    			       ("L" "Protocol Link" entry (file+headline org-capture-file "Inbox")
+						    "* %?\n	 [[%:link][%:description]]\n	%U")))
   :bind ("C-c C-c" . org-capture))
-
-(use-package org-capture-ref
-  :after org
-  :vc (:rev :newest :url "https://github.com/yantar92/org-capture-ref")
-  :config
-  ;; (add-to-list 'org-capture-templates
-  ;;          (doct '(:group "Browser link"
-  ;;                         :type entry
-  ;;                         :headline "REF"
-  ;;   		              :file org-capture-file
-  ;;   		              :fetch-bibtex (lambda () (org-capture-ref-process-capture)) ; this must run first
-  ;;                         :link-type (lambda () (org-capture-ref-get-bibtex-field :type))
-  ;;                         :extra (lambda ()
-  ;;                                  (if (org-capture-ref-get-bibtex-field :journal)
-  ;;   				                   (s-join "\n"
-  ;;                                              '("- [ ] download and attach pdf"
-  ;;   					                         "- [ ] [[elisp:org-attach-open][read paper capturing interesting references]]"
-  ;;   					                         "- [ ] [[elisp:(browse-url (url-encode-url (format \"https://www.semanticscholar.org/search?q=%s\" (org-entry-get nil \"TITLE\"))))][check citing articles]]"
-  ;;   					                         "- [ ] [[elisp:(browse-url (url-encode-url (format \"https://www.connectedpapers.com/search?q=%s\" (org-entry-get nil \"TITLE\"))))][check related articles]]"
-  ;;                                                "- [ ] check if bibtex entry has missing fields"))
-  ;;                                    ""))
-  ;;                         :org-entry (lambda () (org-capture-ref-get-org-entry))
-  ;;   		              :template
-  ;;                         ("%{fetch-bibtex}* TODO %?%{space}%{org-entry}"
-  ;;                          "%{extra}"
-  ;;                          "- Keywords: #%{link-type}")
-  ;;   		              :children (("Interactive link" :keys "b" :clock-in t :space " " :clock-resume t)
-  ;;   			                     ("Silent link" :keys "B" :space "" :immediate-finish t))))))
-  )
 
 (use-package org-table :ensure org
   :preface
@@ -2420,6 +2410,9 @@ With a prefix ARG, remove start location."
   (add-to-list 'ahs-disabled-commands 'avy-goto-char)
   (add-to-list 'ahs-disabled-commands 'avy-goto-char-timer))
 
+(use-package ace-link
+  :bind
+  ("C-c j l" . ace-link))
 
 (use-package image-mode
   :ensure nil
@@ -2636,7 +2629,6 @@ With a prefix ARG, remove start location."
   :hook (verilog-ts-mode . tree-sitter-indent-mode))
 
 (use-package eat)
-
 
 (use-package plantuml-mode
   :custom
