@@ -68,6 +68,9 @@ The DWIM behaviour of this command is as follows:
 ;; WSL: WSL1 has "-Microsoft", WSL2 has "-microsoft-standard"
 (defvar my-running-under-wsl (string-match "-[Mm]icrosoft" operating-system-release))
 
+
+(defvar my-dark-theme 'tangonov)
+(defvar my-light-theme 'ef-kassio)
 (defun my-switch-theme ()
   "Switch theme between light and dark theme."
   (interactive)
@@ -944,6 +947,7 @@ The DWIM behaviour of this command is as follows:
   (beacon-mode 1)
   :config
   (add-to-list 'beacon-dont-blink-major-modes 'nov-mode)
+  (add-to-list 'beacon-dont-blink-major-modes 'vterm-mode)
   (add-to-list 'beacon-dont-blink-major-modes 'pdf-view-mode))
 
 (use-package goggles
@@ -1056,13 +1060,13 @@ The DWIM behaviour of this command is as follows:
 
 (use-package diminish)
 
-(use-package ef-themes)
+(use-package ef-themes
+  :init (load-theme 'ef-kassio t))
 
 (use-package tangonov-theme
   ;; :after (custom org-faces)
   :demand t
-  ;; :init (load-theme 'tangonov t)
-  :config
+  :custom-face
   ;; Orange, Green, Blue, Red (I was used to this in my previous theme and different order messes my
   ;; brain)
   (custom-set-faces
@@ -1542,9 +1546,6 @@ The DWIM behaviour of this command is as follows:
 
 (use-package highlight-function-calls
   :hook (emacs-lisp-mode . highlight-function-calls-mode))
-
-(use-package easy-escape
-  :hook (emacs-lisp-mode . easy-escape-minor-mode))
 
 (use-package comment-or-uncomment-sexp
   :bind ("C-M-;" . comment-or-uncomment-sexp))
@@ -2213,7 +2214,8 @@ Prioritize entries without NOPDF tag."
                                citar-indicator-cited-icons))
   (add-to-list 'completion-at-point-functions 'citar-capf))
 
-(use-package my-citar-org :ensure nil
+(use-package my-citar-org
+  :ensure nil
   :no-require t
   :after org
   :init
@@ -2693,8 +2695,6 @@ Prioritize entries without NOPDF tag."
 (use-package tree-sitter-indent
   :hook (verilog-ts-mode . tree-sitter-indent-mode))
 
-(use-package eat)
-
 (use-package plantuml-mode
   :custom
   (plantuml-default-exec-mode 'jar)
@@ -2761,8 +2761,22 @@ If no such buffer exists, call the `gptel` function."
         ("C-c ?" . gptel-menu)
         ("C-?" . gptel-menu)))
 
+(defun my-switch-file-in-other-project (prev)
+  (interactive "p")
+  (let* ((projects '("amd_asic_src" "asic2" "asic3" "asic4" "asic5" "asic6"))
+         (volume-root "/scpx:atletx7:/proj/vulcano_src0/furkanu/")
+         (file-project (substring buffer-file-name
+                                  (length volume-root)
+                                  (string-search "/" buffer-file-name (1+ (length volume-root)))))
+         (curr-project (-elem-index file-project projects))
+         (next-project (nth (% (+ (if (= 4 prev) -1 1) curr-project (length projects)) (length projects)) projects))
+         (real-next-project (if (= 16 prev) (completing-read "Select project" projects nil t) next-project))
+         (other-filename (string-replace file-project real-next-project buffer-file-name)))
+    (find-file other-filename)))
+
 (provide 'init)
 ;;; init.el ends here
 ;; //ssh:furkanu@xirengips01:~/
 (put 'narrow-to-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
+(put 'list-timers 'disabled nil)
