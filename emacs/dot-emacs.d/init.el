@@ -32,8 +32,10 @@
 (defvar my-data-directory (or (getenv "EMACS_STORAGE_LOCATION") (expand-file-name "~/Documents")))
 (defvar my-notes-directory (concat my-data-directory "/Notes"))
 (defvar my-papers-directory (concat my-notes-directory "/PDF"))
-(defvar my-paper-directories (list my-papers-directory (concat my-data-directory "/paperless-ngx/media/documents/archive/academic/")))
 (defvar my-bibliography-directory (concat my-notes-directory "/bibs"))
+(defvar my-notes (-filter
+                  (lambda (file) (not (s-starts-with? "." (f-filename file))))
+                  (f-glob "*.org" my-notes-directory)))
 (defvar my-bibliographies (-filter
                            (lambda (file) (not (s-starts-with? "." (f-filename file))))
                            (f-glob "*.bib" my-bibliography-directory)))
@@ -1046,10 +1048,11 @@ The DWIM behaviour of this command is as follows:
   (doom-modeline-mode 1)
   (doom-modeline-icon t)
   (doom-modeline-buffer-encoding 'nondefault)
+  (doom-modeline-project-name t)
   :init
   (doom-modeline-def-modeline 'main
-    '(bar workspace-name window-number buffer-info remote-host buffer-position word-count)
-    '(misc-info persp-name grip irc github debug repl lsp indent-info process vcs time)))
+  '(bar workspace-name window-number buffer-info remote-host buffer-position)
+  '(compilation misc-info project-name persp-name github debug repl lsp major-mode process vcs check time)))
 
 (use-package diminish)
 
@@ -1127,16 +1130,26 @@ The DWIM behaviour of this command is as follows:
   (project-switch-commands #'my-open-readme)
   :bind-keymap ("C-c p" . project-prefix-map))
 
+(use-package projection
+  :after project
+  :bind
+  (:map project-prefix-map
+        ("F" . projection-find-other-file)))
+
 (use-package persp-mode
   ;; :hook (after-init . persp-mode)
   :custom
   (persp-autokill-persp-when-removed-last-buffer 'kill)
   (persp-keymap-prefix (kbd "C-c w"))
   (persp-init-frame-behvaiour nil)
-  (persp-autokill-buffer-on-remove 'weak)
+  (persp-autokill-buffer-on-remove 'kill-weak)
   (persp-nil-hidden t)
   (persp-reset-windows-on-nil-window-conf nil)
+  (persp-remove-buffer-from-nil-persp-behaviour nil)
+  (persp-kill-foreign-buffer-behaviour nil)
   (persp-auto-resume-time -1)
+  :config
+  (add-to-list 'window-persistent-parameters '(winner-ring . t))
   :bind
   (:map persp-key-map
         ("c" . persp-kill)))
@@ -1389,7 +1402,7 @@ The DWIM behaviour of this command is as follows:
   (add-to-list 'project-rootfile-list "pyproject.toml")
   (add-to-list 'project-rootfile-list ".project")
   (add-to-list 'project-rootfile-list ".github")
-  (add-to-list 'project-find-functions #'project-rootfile-try-detect))
+  (push 'project-find-functions #'project-rootfile-try-detect))
 
 (use-package makefile-executor
   :hook (makefile-mode . makefile-executor-mode)
@@ -1741,33 +1754,6 @@ If not, add the tag NOPDF; if found, remove the NOPDF tag."
            (if (file-exists-p pdf-path)
                (org-toggle-tag "NOPDF" 'off)
              (org-toggle-tag "NOPDF" 'on)))))))
-
-
-  (defun my/select-random-todo-with-roam-refs (arg)
-    "Select a random TODO with ROAM_REFS.
-With prefix ARG (C-u), let the user select a file from `org-agenda-files` to randomize within;
-otherwise, use all agenda files."
-    (interactive "P")
-    (let* ((all-files (org-agenda-files))
-           (selected-files (if arg
-                               (list (completing-read "Select file: " all-files))
-                             all-files))
-           (candidates ()))
-      (dolist (file selected-files)
-        (with-current-buffer (find-file-noselect file)
-          (org-map-entries
-           (lambda ()
-             (when (and (org-get-todo-state) (org-entry-get (point) "ROAM_REFS"))
-               (push (point-marker) candidates))) "")))
-      (if candidates
-          (let ((selected (seq-random-elt candidates)))
-            (switch-to-buffer (marker-buffer selected))
-            (goto-char (marker-position selected))
-            (message "Jumped to random TODO with ROAM_REFS"))
-        (message "No matching TODOs with ROAM_REFS found."))))
-
-
-
   (defun my/select-random-todo-with-roam-refs (arg)
     "Select a TODO with ROAM_REFS.
 With C-u, let user pick a file from `org-agenda-files` (show only filenames).
@@ -1807,9 +1793,52 @@ Prioritize entries without NOPDF tag."
                           (seq-random-elt candidates))))
           (progn
             (switch-to-buffer (marker-buffer chosen))
-            (goto-char (marker-position chosen))
+            (delete-other-windows)
+            (org-back-to-heading t)
+            (recenter-top-bottom 0)
+            (my-citar-open-current-file)
             (message "Jumped to TODO with ROAM_REFS"))
-        (message "No matching TODOs with ROAM_REFS found.")))))
+        (message "No matching TODOs with ROAM_REFS found."))))
+
+;; (defun my-org-goto-or-create-notes-heading ()
+;;   "Go to the 'Notes' subheading in the current Org entry.
+;; If it doesn't exist, create it at the end of the entry."
+;;   (interactive)
+;;   (let ((notes-heading-found nil)
+;;         (original-pos (point)))
+;;     ;; Save the current view/outline state
+;;     (save-excursion
+;;       (save-restriction
+;;         ;; Narrow to the current entry if inside one, otherwise work on the whole buffer
+;;         (if (org-before-first-heading-p)
+;;             (goto-char (point-min)) ; Start from the beginning if not in an entry
+;;           (org-back-to-heading t)) ; Go to the start of the current entry
+
+;;         ;; Search for the "Notes" heading within the current scope (entry or buffer)
+;;         (when (re-search-forward "^\\*+ Notes$" nil t)
+;;           ;; If found, move to the end of the heading's content
+;;           (goto-char (match-end 0)) ; Move to the end of the heading line
+;;           (org-end-of-subtree t)    ; Move to the end of the subtree
+;;           (setq notes-heading-found t))))
+
+;;     ;; If the "Notes" heading was found, we are already at its end due to save-excursion
+;;     (if notes-heading-found
+;;         (message "Jumped to 'Notes' heading.")
+;;       ;; If not found, create it
+;;       (progn
+;;         (goto-char (point-max)) ; Go to the end of the buffer
+;;         ;; Find the end of the current entry or the buffer
+;;         (if (org-before-first-heading-p)
+;;             (goto-char (point-max)) ; If no headings, just go to end
+;;           (org-back-to-heading t)
+;;           (org-end-of-subtree t)) ; Go to the end of the current entry's subtree
+
+;;         (insert "\n* Notes\n") ; Insert the new heading
+;;         (org-cycle)           ; Ensure it's visible if outline is collapsed
+;;         (org-end-of-subtree t) ; Move to the end of the newly created heading
+;;         (message "Created and jumped to 'Notes' heading.")))))
+
+)
 
 
   (use-package my-org-biblio
@@ -1985,58 +2014,10 @@ Prioritize entries without NOPDF tag."
   (bibtex-completion-bibliography my-bibliographies)
   (bibtex-completion-notes-path my-notes-directory)
   (bibtex-completion-additional-search-fields '(keywords))
-  (bibtex-completion-library-path my-paper-directories))
+  (bibtex-completion-library-path (list my-papers-directory)))
 
 (use-package org-pdftools
   :hook (org-mode . org-pdftools-setup-link))
-
-(use-package org-noter-pdftools
-  :after org-noter
-  :preface
-  (defun org-noter-pdftools-insert-precise-note (&optional toggle-no-questions)
-    (interactive "P")
-    (org-noter--with-valid-session
-     (let ((org-noter-insert-note-no-questions (if toggle-no-questions
-                                                   (not org-noter-insert-note-no-questions)
-                                                 org-noter-insert-note-no-questions))
-           (org-pdftools-use-isearch-link t)
-           (org-pdftools-use-freepointer-annot t))
-       (org-noter-insert-note (org-noter--get-precise-info)))))
-  ;; fix https://github.com/weirdNox/org-noter/pull/93/commits/f8349ae7575e599f375de1be6be2d0d5de4e6cbf
-  (defun org-noter-set-start-location (&optional arg)
-    "When opening a session with this document, go to the current location.
-With a prefix ARG, remove start location."
-    (interactive "P")
-    (org-noter--with-valid-session
-     (let ((inhibit-read-only t)
-           (ast (org-noter--parse-root))
-           (location (org-noter--doc-approx-location (when (called-interactively-p 'any) 'interactive))))
-       (with-current-buffer (org-noter--session-notes-buffer session)
-         (org-with-wide-buffer
-          (goto-char (org-element-property :begin ast))
-          (if arg
-              (org-entry-delete nil org-noter-property-note-location)
-            (org-entry-put nil org-noter-property-note-location
-                           (org-noter--pretty-print-location location))))))))
-  :config
-  (with-eval-after-load 'pdf-annot
-    (add-hook 'pdf-annot-activate-handler-functions #'org-noter-pdftools-jump-to-note)))
-
-(use-package org-noter
-  :preface
-  (defun my-org-noter-document-property-hook (prop)
-    (when prop
-      (concat my-papers-directory "/" (substring prop 1) ".pdf")))
-  :custom
-  (org-noter-property-doc-file "ROAM_REFS")
-  (org-noter-parse-document-property-hook #'my-org-noter-document-property-hook)
-  (org-noter-notes-search-path (list my-notes-directory))
-  (org-noter-always-create-frame nil)
-  (org-noter-doc-split-fraction (cons 0.7  0.3))
-  (org-noter-default-notes-file-names (list "Notes.org" "Papers.org"))
-  ;; (org-noter-kill-frame-at-session-end nil)
-  ;; (org-noter-auto-save-last-location t)
-  (org-noter-insert-note-no-questions t))
 
 (use-package org-special-block-extras)
 
@@ -2243,7 +2224,7 @@ With a prefix ARG, remove start location."
   :custom
   (citar-bibliography my-bibliographies)
   ;; (citar-open-note-function 'orb-citar-edit-note)
-  (citar-library-paths my-paper-directories)
+  (citar-library-paths (list my-papers-directory))
   (citar-at-point-function 'embark-act)
   (citar-symbol-separator " ")
   :config
@@ -2261,7 +2242,7 @@ With a prefix ARG, remove start location."
   (defun my-citar-open-current-resource (files notes)
     "Open REFs of the node at point."
     (interactive)
-    (when-let* ((key (orb-get-node-citekey nil 'assert))
+    (when-let* ((key (substring (org-entry-get (point) "ROAM_REFS") 1))
                 (selected (citar--select-resource key :files files :notes notes)))
       (progn
         (when (= 1 (length (window-list)))
@@ -2542,6 +2523,32 @@ With a prefix ARG, remove start location."
          (pdf-view-mode . pdf-history-minor-mode)
          (pdf-view-mode . pdf-annot-minor-mode)
          (pdf-view-mode . pdf-view-themed-minor-mode))
+  :preface
+  (defun my-open-citar-note ()
+    (interactive)
+    ;; (require 'citar)
+    (let* ((key (file-name-sans-extension (file-name-nondirectory (buffer-file-name))))
+           (note (car (gethash key (citar-get-notes key)))))
+    (citar-open-note note)
+    (my-create-or-goto-notes)))
+  (defun my-create-or-goto-notes ()
+  "Return all subheadings under the current heading."
+  (interactive)
+  (let* ((heading (-non-nil (org-map-entries (lambda ()
+                                             (when (string= (org-get-heading t t t t) "Notes")
+                                               (point)))
+                                           nil 'tree))))
+    (if heading
+        (progn
+          (goto-char (car heading))
+          (org-end-of-subtree t t)
+          (previous-line))
+      (progn
+        (org-insert-heading-respect-content)
+        (org-demote)
+        (insert "Notes")
+        (org-return)
+        (call-interactively (global-key-binding (kbd "TAB")))))))
   :custom
   (pdf-view-display-size 'fit-page)
   (pdf-annot-activate-created-annotations nil)
@@ -2552,6 +2559,7 @@ With a prefix ARG, remove start location."
         ("o" . pdf-outline)
         ("O" . pdf-occur)
         ("M-g M-g" . pdf-view-goto-page)
+        ("i" . my-open-citar-note)
         ("S-SPC" . pdf-view-scroll-down-or-previous-page)))
 
 (use-package my-pdf-org
@@ -2577,33 +2585,6 @@ With a prefix ARG, remove start location."
   (:map org-mode-map
         ("C-M-n" . pdf-move-down-other-frame)
         ("C-M-p" . pdf-move-up-other-frame)))
-
-(use-package pdf-tools-note :ensure nil
-  :no-require t
-  :after (org-noter pdf-tools)
-  :defines org-noter-insert-note
-  :preface
-  (defun my-org-noter-insert-and-highlight ()
-    (interactive)
-    (progn
-      (when (pdf-view-active-region-p)
-        (pdf-annot-add-highlight-markup-annotation (pdf-view-active-region t)))
-      (org-noter-insert-note nil)))
-  (defun my-org-noter-insert-precise-and-highlight ()
-    (interactive)
-    (progn
-      (when (pdf-view-active-region-p)
-        (pdf-annot-add-highlight-markup-annotation (pdf-view-active-region nil)))
-      (org-noter-insert-precise-note)
-      (when (pdf-view-active-region-p)
-        (pdf-view-active-region t))))
-  :bind
-  (:map pdf-view-mode-map
-        ("i" . my-org-noter-insert-and-highlight)
-        ("M-i" . my-org-noter-insert-precise-and-highlight))
-  (:map org-noter-doc-mode-map
-        ("i" . my-org-noter-insert-and-highlight)
-        ("M-i" . my-org-noter-insert-precise-and-highlight)))
 
 (use-package pdf-view-restore
   :after pdf-tools
@@ -2704,9 +2685,7 @@ With a prefix ARG, remove start location."
 (use-package vc
   :custom
   (vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)" vc-ignore-dir-regexp tramp-file-name-regexp))
-  (vc-handled-backends '())
-  :init
-  (remove-hook 'find-file-hooks 'vc-find-file-hook))
+  (vc-handled-backends '(Git)))
 
 (use-package verilog-ext
   ;; :hook (verilog-mode . verilog-ext-mode)
