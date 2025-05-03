@@ -1,8 +1,8 @@
 ;;; -*- lexical-binding: t -*-
 ;; Initialization
 (setq custom-file (concat user-emacs-directory "custom.el"))
-(when (file-exists-p custom-file)
-  (load custom-file))
+;; (when (file-exists-p custom-file)
+;;   (load custom-file))
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
@@ -15,8 +15,8 @@
 
 (setq use-package-enable-imenu-support t)
 (setq use-package-compute-statistics t)
-(setq use-package-always-defer t)
-;; (setq-default use-package-always-ensure t)
+;; (setq use-package-always-defer t)
+(setq-default use-package-always-ensure t)
 
 (require 'use-package)
 (use-package dash :demand t)
@@ -67,7 +67,7 @@ The DWIM behaviour of this command is as follows:
   (interactive)
   (let* ((my-dark-theme 'tangonov)
          (my-light-theme 'leuven)
-         (current-theme (car custom-enabled-themes)) ;; Assume sinle theme
+         (current-theme (car custom-enabled-themes)) ;; Assume single theme
          (new-theme (if (eq current-theme my-dark-theme) my-light-theme my-dark-theme)))
     (disable-theme current-theme)
     (load-theme new-theme t)))
@@ -138,6 +138,7 @@ The DWIM behaviour of this command is as follows:
   (add-to-list 'default-frame-alist '(fullscreen . maximized))
   (prefer-coding-system 'utf-8)
   (set-language-environment "UTF-8")
+  (load-theme 'tangonov t)
   (setq-default user-full-name "Furkan Usta"
                 delete-by-moving-to-trash t
                 tab-width 4
@@ -187,8 +188,8 @@ The DWIM behaviour of this command is as follows:
   (package-native-compile t)
   (large-file-warning-threshold (* 1024 1024 1024)) ;; 1GB
   (confirm-nonexistent-file-or-buffer nil)
-  (truncate-lines t)
   (mark-even-if-inactive nil)
+  (global-visual-line-mode t)
   :preface
   (defun my-mark-line (beg end &optional region)
     (if mark-active (list (region-beginning) (region-end))
@@ -274,7 +275,7 @@ The DWIM behaviour of this command is as follows:
 
 (use-package paren   :ensure nil :custom (show-paren-mode 1))
 
-(use-package hl-line :ensure nil :custom (global-hl-line-mode t))
+;; (use-package hl-line :ensure nil :custom (global-hl-line-mode t))
 
 (use-package delsel  :ensure nil :demand t :init (delete-selection-mode 1))
 
@@ -392,7 +393,7 @@ The DWIM behaviour of this command is as follows:
   :config
   (defun my--find-nov-buffer (filename)
     (require 'nov)
-    (if-let (nov-buffer (seq-filter #'(lambda (buffer) (with-current-buffer buffer (string= filename nov-file-name))) (buffer-list)))
+    (if-let* ((nov-buffer (seq-filter #'(lambda (buffer) (with-current-buffer buffer (string= filename nov-file-name))) (buffer-list))))
         (switch-to-buffer (car nov-buffer))
       (nov--find-file filename 0 0)))
   (define-advice dired--find-file (:around (oldfunc ff filename))
@@ -411,6 +412,7 @@ The DWIM behaviour of this command is as follows:
   :hook (wdired-mode . highlight-changes-mode))
 
 (use-package dired-x
+  :ensure nil
   :custom
   (dired-omit-mode 1))
 
@@ -846,6 +848,25 @@ The DWIM behaviour of this command is as follows:
         ([backtab] . corfu-previous)
         ("C-SPC" . corfu-insert-separator)))
 
+(use-package corfu-candidate-overlay
+  :after corfu
+  :config
+  (corfu-candidate-overlay-mode +1)
+  :preface
+  (defun my-insert-corfu-or-tab ()
+    (interactive)
+    (if (and corfu-candidate-overlay--overlay
+             (overlayp corfu-candidate-overlay--overlay)
+             (corfu-candidate-overlay-at-word-boundary-p)
+             (not (string= (corfu-candidate-overlay--get-overlay-property  'after-string) "")))
+        (corfu-candidate-overlay-complete-at-point)
+      (indent-for-tab-command)))
+  :bind
+  ("C-<iso-lefttab>" . corfu-candidate-overlay-complete-at-point)
+  ;; (:map prog-mode-map
+  ;;       ("<tab>" . my-insert-corfu-or-tab))
+  )
+
 (use-package corfu-history
   :ensure corfu
   :hook (corfu-mode . corfu-history-mode))
@@ -864,8 +885,7 @@ The DWIM behaviour of this command is as follows:
 (use-package cape
   :init
   (add-to-list 'completion-at-point-functions #'cape-file)
-  (add-to-list 'completion-at-point-functions
-               (cape-capf-super #'eglot-completion-at-point #'cape-symbol #'cape-keyword #'cape-dabbrev)))
+  (add-to-list 'completion-at-point-functions #'cape-keyword))
 
 (use-package kind-icon
   :after corfu
@@ -943,8 +963,8 @@ The DWIM behaviour of this command is as follows:
 (use-package zygospore
   :bind ("C-x 1" . zygospore-toggle-delete-other-windows))
 
-(use-package fill-column-indicator
-  :hook (prog-mode . fci-mode))
+;; (use-package fill-column-indicator
+;;   :hook (prog-mode . fci-mode))
 
 (use-package beginend
   :config (beginend-global-mode))
@@ -1029,16 +1049,17 @@ The DWIM behaviour of this command is as follows:
 (use-package diminish)
 
 (use-package tangonov-theme
-  :after custom
+  ;; :after (custom org-faces)
   :demand t
-  :init (load-theme 'tangonov t)
-  :custom-face
+  ;; :init (load-theme 'tangonov t)
+  :config
   ;; Orange, Green, Blue, Red (I was used to this in my previous theme and different order messes my
   ;; brain)
-  (org-level-1 ((t (:inherit bold :foreground "#FFCA41"))))
-  (org-level-2 ((t (:inherit bold :foreground "#ABDC88"))))
-  (org-level-3 ((t (:inherit bold :foreground "#82AAFF"))))
-  (org-level-4 ((t (:inherit bold :foreground "#FF7B85")))))
+  (custom-set-faces
+   '(org-level-1 ((t (:inherit bold :foreground "#FFCA41"))))
+   '(org-level-2 ((t (:inherit bold :foreground "#ABDC88"))))
+   '(org-level-3 ((t (:inherit bold :foreground "#82AAFF"))))
+   '(org-level-4 ((t (:inherit bold :foreground "#FF7B85"))))))
 
 (use-package popper
   :commands popper-select-popup-at-bottom
@@ -1103,7 +1124,7 @@ The DWIM behaviour of this command is as follows:
   :bind-keymap ("C-c p" . project-prefix-map))
 
 (use-package persp-mode
-  :hook (after-init . persp-mode)
+  ;; :hook (after-init . persp-mode)
   :custom
   (persp-autokill-persp-when-removed-last-buffer 'kill)
   (persp-keymap-prefix (kbd "C-c w"))
@@ -1315,6 +1336,8 @@ The DWIM behaviour of this command is as follows:
   ("C-c v o" . obvious-mode))
 
 (use-package eglot
+  ;; :hook
+  ;; (prog-mode . eglot-ensure)
   :config
   (add-to-list 'eglot-server-programs `(python-ts-mode . ,(cdr (assoc 'python-mode eglot-server-programs))))
   (add-to-list 'eglot-server-programs `(ruby-ts-mode "solargraph" "socket" "--port" :autoport))
@@ -1322,7 +1345,15 @@ The DWIM behaviour of this command is as follows:
   (add-to-list 'eglot-server-programs `(tex-mode . ,(eglot-alternatives
                                                      '(("~/.local/prog/digestif/digestif.sh")
                                                        ("texlab")))))
-  (setf (plist-get eglot-events-buffer-config :size) 0))
+  (add-to-list 'completion-at-point-functions #'eglot-completion-at-point)
+  (setf (plist-get eglot-events-buffer-config :size) 0)
+  :bind
+  (:map eglot-mode-map)
+  ("M-/" . eglot-find-declaration))
+
+(use-package breadcrumb
+  :hook
+  (lsp-mode . breadcrumb-mode))
 
 (use-package eglot-booster
   :vc (:rev :newest :url "https://github.com/jdtsmith/eglot-booster")
@@ -1464,31 +1495,6 @@ The DWIM behaviour of this command is as follows:
 (use-package lisp :ensure nil
   :hook (lisp-mode . auto-highlight-symbol-mode))
 
-(use-package sly
-  :config (sly-setup '(sly-fancy))
-  :functions sly-symbol-completion-mode sly-documentation-lookup
-  :hook
-  ((sly-mode . (lambda () (sly-symbol-completion-mode -1)))
-   (sly-mode . smartparens-mode))
-  :preface
-  (defun my-sly-lookup ()
-    (interactive)
-    (let ((browse-url-browser-function 'eww-browse-url))
-      (sly-documentation-lookup)))
-  :custom
-  (inferior-lisp-program "sbcl")
-  (sly-symbol-completion-mode -1)
-  (sly-kill-without-query-p t)
-  (sly-command-switch-to-existing-lisp 'always)
-  :bind
-  (:map sly-mode-map ("C-h D" . my-sly-lookup)))
-
-(use-package sly-quicklisp)
-
-(use-package sly-repl-ansi-color
-  :after sly
-  :init (add-to-list 'sly-contribs 'sly-repl-ansi-color))
-
 (use-package lisp-extra-font-lock
   :hook (emacs-lisp-mode . lisp-extra-font-lock-mode))
 
@@ -1573,6 +1579,9 @@ The DWIM behaviour of this command is as follows:
 
 (use-package format-all)
 
+(use-package js
+  :custom (js-indent-level 2))
+
 (use-package python
   :custom
   (python-indent-guess-indent-offset-verbose nil)
@@ -1645,6 +1654,8 @@ The DWIM behaviour of this command is as follows:
                        (sequence "PAUSED" "SCHEDULED" "WAITING" "NEXT" "|" "CANCELLED")))
   :config
   (add-to-list 'org-latex-packages-alist '("" "minted"))
+  :custom-face
+  (org-cite-key ((t (:foreground "light blue" :slant italic))))
   :bind
   (:map org-mode-map
         ("C-c C-." . org-time-stamp-inactive)
@@ -1661,24 +1672,119 @@ The DWIM behaviour of this command is as follows:
   :no-require t
   :after (org bibtex)
   :preface
-  (defun my-sync-bibtex-org-entry ()
+  (defun my/set-roam-refs-from-bibtex-in-buffer ()
+    "Iterate over top and second-level headings in buffer,
+and process each for BibTeX keys."
     (interactive)
-    (save-excursion
-      (call-interactively #'org-next-block)
-      (forward-line 1)
-      (let* ((entry (bibtex-parse-entry))
-             (key (cdr (assoc "=key=" entry)))
-             (title (substring (cdr (assoc "title" entry)) 1 -1))
-             (fixed-title (replace-regexp-in-string " +" " " (string-replace "\n" " " title))))
-        (org-set-property "ROAM_REFS" (format "[cite:@%s]" key))
-        (org-back-to-heading)
-        (forward-char 3)
-        (org-kill-line)
-        (insert fixed-title))
-      (forward-line 1)
-      (org-cycle))))
+    (org-map-entries
+     (lambda ()
+       (save-excursion
+         (org-back-to-heading t)
+         (org-id-get-create)
+         (let* ((headline (org-element-at-point))
+                (section (org-element-property :contents-begin headline))
+                (end (org-element-property :contents-end headline))
+                (bibtex-keys '()))
+           (when (and section end)
+             (save-restriction
+               (narrow-to-region section end)
+               (goto-char section)
+               (while (re-search-forward "^ *#\\+begin_src bibtex" nil t)
+                 (let* ((element (org-element-at-point))
+                        (value (org-element-property :value element))
+                        (lines (split-string value "\n" t))
+                        (first-line (car lines)))
+                   (when (and first-line (string-match "@\\w+{\\([^,]+\\)," first-line))
+                     (push (concat "@" (match-string 1 first-line)) bibtex-keys)))))
+             (when bibtex-keys
+               (let ((refs (string-join (reverse bibtex-keys) " ")))
+                 (org-set-property "ROAM_REFS" refs)))))))))
+  (defun my/tag-headings-without-pdf ()
+    "For top and second-level Org headings with ROAM_REFS property,
+check if corresponding PDF exists in `my-papers-directory`.
+If not, add the tag NOPDF; if found, remove the NOPDF tag."
+    (interactive)
+    (org-map-entries
+     (lambda ()
+       (when-let ((roam-ref (org-entry-get (point) "ROAM_REFS")))
+         (let* ((bibtex-key (substring roam-ref 1))
+                (pdf-path (expand-file-name (concat bibtex-key ".pdf") my-papers-directory))
+                (tags (org-get-tags)))
+           (if (file-exists-p pdf-path)
+               (org-toggle-tag "NOPDF" 'off)
+             (org-toggle-tag "NOPDF" 'on)))))))
 
-(use-package my-org-biblio
+
+  (defun my/select-random-todo-with-roam-refs (arg)
+    "Select a random TODO with ROAM_REFS.
+With prefix ARG (C-u), let the user select a file from `org-agenda-files` to randomize within;
+otherwise, use all agenda files."
+    (interactive "P")
+    (let* ((all-files (org-agenda-files))
+           (selected-files (if arg
+                               (list (completing-read "Select file: " all-files))
+                             all-files))
+           (candidates ()))
+      (dolist (file selected-files)
+        (with-current-buffer (find-file-noselect file)
+          (org-map-entries
+           (lambda ()
+             (when (and (org-get-todo-state) (org-entry-get (point) "ROAM_REFS"))
+               (push (point-marker) candidates))) "")))
+      (if candidates
+          (let ((selected (seq-random-elt candidates)))
+            (switch-to-buffer (marker-buffer selected))
+            (goto-char (marker-position selected))
+            (message "Jumped to random TODO with ROAM_REFS"))
+        (message "No matching TODOs with ROAM_REFS found."))))
+
+
+
+  (defun my/select-random-todo-with-roam-refs (arg)
+    "Select a TODO with ROAM_REFS.
+With C-u, let user pick a file from `org-agenda-files` (show only filenames).
+With C-u C-u, list all matching entries and let user select.
+Prioritize entries without NOPDF tag."
+    (interactive "P")
+    (let* ((all-files (org-agenda-files))
+           (display-files (mapcar #'file-name-nondirectory all-files))
+           (selected-files (cond
+                            ((equal arg '(4)) ; C-u
+                             (let* ((chosen (completing-read "Select file: " display-files))
+                                    (full-path (seq-find (lambda (f) (string-suffix-p chosen f)) all-files)))
+                               (list full-path)))
+                            (t all-files)))
+           (candidates-haspdf ())
+           (candidates-nopdf ()))
+      (dolist (file selected-files)
+        (with-current-buffer (find-file-noselect file)
+          (org-map-entries
+           (lambda ()
+             (when (and (org-get-todo-state) (org-entry-get (point) "ROAM_REFS"))
+               (if (member "NOPDF" (org-get-tags))
+                   (push (point-marker) candidates-nopdf)
+                 (push (point-marker) candidates-haspdf)))))))
+
+      (if-let* ((candidates (or candidates-haspdf candidates-nopdf))
+                (choices (mapcar (lambda (c)
+                                   (with-current-buffer (marker-buffer c)
+                                     (goto-char (marker-position c))
+                                     (concat (file-name-nondirectory (buffer-file-name))
+                                             ": "
+                                             (org-get-heading 'no-tags 'no-todo 'no-priority 'no-comment))))
+                                 candidates))
+                (chosen (if (equal arg '(16))
+                            (nth (cl-position
+                                  (completing-read "Select entry: " choices) choices :test #'string=) candidates)
+                          (seq-random-elt candidates))))
+          (progn
+            (switch-to-buffer (marker-buffer chosen))
+            (goto-char (marker-position chosen))
+            (message "Jumped to TODO with ROAM_REFS"))
+        (message "No matching TODOs with ROAM_REFS found.")))))
+
+
+  (use-package my-org-biblio
   :ensure nil
   :no-require t
   :after (org biblio)
@@ -1824,7 +1930,6 @@ The DWIM behaviour of this command is as follows:
   ("C-c C-x i" . org-mru-clock-in)
   ("C-c C-x s" . org-mru-select-recent-task))
 
-
 (use-package org-appear
   :custom
   (org-appear-autolinks t)
@@ -1843,9 +1948,9 @@ The DWIM behaviour of this command is as follows:
 (use-package toc-org
   :hook (org-mode . toc-org-mode))
 
-(use-package org-pretty-table
-  :vc (:rev :newest :url "https://github.com/Fuco1/org-pretty-table")
-  :hook (org-mode . org-pretty-table-mode))
+;; (use-package org-pretty-table
+;;   :vc (:rev :newest :url "https://github.com/Fuco1/org-pretty-table")
+;;   :hook (org-mode . org-pretty-table-mode))
 
 (use-package bibtex-completion
   :custom
@@ -1916,9 +2021,6 @@ With a prefix ARG, remove start location."
   (org-journal-file-type 'monthly)
   (org-journal-time-format nil)
   (org-journal-created-property-timestamp-format "%F"))
-
-(use-package binder
-  :custom (binder-default-file-extension "org"))
 
 ;; (use-package inherit-org
 ;;   :vc (:rev :newset :url "https://github.com/chenyanming/inherit-org")
@@ -2027,8 +2129,6 @@ With a prefix ARG, remove start location."
 (use-package org-pandoc-import
   :vc (:rev :newest :url "https://github.com/tecosaur/org-pandoc-import"))
 
-(use-package org-web-tools)
-
 (use-package org-agenda-property
   :custom (org-agenda-property-list '(LOCATION)))
 
@@ -2057,8 +2157,6 @@ With a prefix ARG, remove start location."
 
 (use-package org-autolist
   :hook (org-mode . org-autolist-mode))
-
-(use-package ein)
 
 (use-package code-cells
   :hook (python-mode . code-cells-mode-maybe)
@@ -2116,7 +2214,7 @@ With a prefix ARG, remove start location."
 
   :custom
   (citar-bibliography my-bibliographies)
-  (citar-open-note-function 'orb-citar-edit-note)
+  ;; (citar-open-note-function 'orb-citar-edit-note)
   (citar-library-paths my-paper-directories)
   (citar-at-point-function 'embark-act)
   (citar-symbol-separator " ")
@@ -2132,7 +2230,6 @@ With a prefix ARG, remove start location."
   :no-require t
   :after org
   :init
-  (require 'org-roam-bibtex)
   (require 'citar)
   (defun my-citar-open-current-resource (files notes)
     "Open REFs of the node at point."
@@ -2248,23 +2345,6 @@ With a prefix ARG, remove start location."
   :bind (:map citar-map
               ("M-RET" . my-citar-embark-open-pdf)))
 
-(use-package citar-org-roam
-  :hook (org-roam-mode . citar-org-roam-mode)
-  :preface
-  (defun my-add-roam-ref ()
-    (interactive)
-    (progn
-      (search-forward "begin_src")
-      (forward-line)
-      (let* ((text (buffer-substring (line-beginning-position) (line-end-position)))
-             (drop-keyword (replace-regexp-in-string ".*{" "" text))
-             (key (substring drop-keyword 0 -1))
-             (roam-ref (format "@%s" key)))
-        (org-roam-property-add "ROAM_REFS" roam-ref))
-      (org-forward-heading-same-level 1)))
-  :custom
-  (citar-org-roam-note-title-template "${title}"))
-
 (use-package citar-org
   :ensure citar
   :after (citar oc)
@@ -2273,7 +2353,6 @@ With a prefix ARG, remove start location."
   (org-cite-insert-processor 'citar)
   (org-cite-follow-processor 'citar)
   (org-cite-activate-processor 'citar)
-  (citar-file-note-org-include '(org-id org-roam-ref))
   :bind (:map org-mode-map ("C-c i c" . org-cite-insert)))
 
 (use-package tex :ensure auctex
@@ -2636,28 +2715,51 @@ With a prefix ARG, remove start location."
   (plantuml-jar-path "/usr/share/java/plantuml.jar")
   (org-plantuml-jar-path plantuml-jar-path))
 
-;; (use-package org-super-links
-;;   :vc (:rev :newest :url "https://github.com/toshism/org-super-links" :branch "develop" :main-file "org-super-links.el")
-;;   :bind (("C-c s s" . org-super-links-link)
-;;          ("C-c s l" . org-super-links-store-link)
-;;          ("C-c s d" . org-super-links-delete-link)
-;;          ("C-c s i" . org-super-links-insert-link))
-;;   :custom
-;;   (org-super-links-link-prefix 'org-super-links-link-prefix-timestamp))
+(use-package org-node
+  :after org
+  :hook (org-mode . org-node-backlink-mode)
+  :config (org-node-cache-mode)
+  :custom
+  (org-node-extra-id-dirs (list my-notes-directory))
+  :bind
+  (:map org-mode-map
+        ("C-c n f" . org-node-find)
+        ("C-c n i" . org-node-insert-link)))
 
-;; (use-package org-node
-;;   :after org
-;;   :config (org-node-cache-mode)
-;;   :bind
-;;   (:map org-mode-map
-;;         ("C-c n f" . org-node-find)
-;;         ("C-c n i" . org-node-insert-link) ))
+(use-package citar-org-node
+  :hook (org-mode . citar-org-node-mode))
 
 (use-package whole-line-or-region
   :hook (org-mode . whole-line-or-region-local-mode) ;; For some reason org-mode overrides global
   :custom
   (whole-line-or-region-global-mode t))
 
+(use-package gptel
+  :custom
+  (gptel-model 'gemini-2.0-flash-exp)
+  :preface
+  (defun my-gptel ()
+    (interactive)
+    (pop-to-buffer (gptel "*gptel*")))
+  (defun my/gptel-write-buffer ()
+    "Save buffer to disk when starting gptel"
+    (unless (buffer-file-name (current-buffer))
+      (let ((suffix (format-time-string "%Y%m%dT%H%M" (current-time)))
+            (chat-dir (concat no-littering-var-directory "gptel")))
+        (unless (file-directory-p chat-dir)
+          (make-directory chat-dir :parents))
+        (write-file (expand-file-name (concat "gptel-" suffix ".txt") chat-dir)))))
+  :config
+  (add-hook 'gptel-mode-hook #'my/gptel-write-buffer)
+  (setq gptel-backend (gptel-make-gemini
+                     "Gemini"
+                   :key (auth-info-password (car (auth-source-search :host "emacs.llm.openai")))
+                   :stream t))
+  :bind
+  ("C-c j g" . my-gptel)
+  (:map gptel-mode-map
+        ("C-c ?" . gptel-menu)
+        ("C-?" . gptel-menu)))
 
 (provide 'init)
 

@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 (setq-default package-enable-at-startup nil)
 
 (setq gc-cons-threshold 64000000
