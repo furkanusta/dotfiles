@@ -38,6 +38,7 @@
                            (lambda (file) (not (s-starts-with? "." (f-filename file))))
                            (f-glob "*.bib" my-bibliography-directory)))
 
+
 (defun prot/keyboard-quit-dwim ()
   "Do-What-I-Mean behaviour for a general `keyboard-quit'.
 
@@ -61,6 +62,9 @@ The DWIM behaviour of this command is as follows:
     (abort-recursive-edit))
    (t
     (keyboard-quit))))
+
+;; WSL: WSL1 has "-Microsoft", WSL2 has "-microsoft-standard"
+(defvar my-running-under-wsl (string-match "-[Mm]icrosoft" operating-system-release))
 
 (defun my-switch-theme ()
   "Switch theme between light and dark theme."
@@ -199,7 +203,7 @@ The DWIM behaviour of this command is as follows:
   ;; (advice-add 'kill-region :before #'my-mark-line)
   (add-to-list 'exec-path (f-expand "~/.local/bin"))
   (add-to-list 'delete-frame-functions #'(lambda (frame_) (recentf-save-list)))
-  (add-to-list 'delete-frame-functions #'(lambda (frame_) (bookmark-save)))
+;;  (add-to-list 'delete-frame-functions #'(lambda (frame_) (bookmark-save)))
   :bind
   ("M-u" . upcase-dwim)
   ("M-l" . downcase-dwim)
@@ -224,8 +228,7 @@ The DWIM behaviour of this command is as follows:
   ([remap fill-paragraph] . endless/fill-or-unfill)
   (:map prog-mode-map ("<tab>" . indent-for-tab-command)))
 
-(use-package files
-  :ensure nil
+(use-package files :ensure nil
   :preface
   (defun my-color-log-files ()
     (when (string= (file-name-extension (buffer-file-name)) "log")
@@ -294,8 +297,7 @@ The DWIM behaviour of this command is as follows:
 (use-package saveplace :ensure nil
   :custom (save-place-mode 1))
 
-(use-package uniquify
-  :ensure nil
+(use-package uniquify :ensure nil
   :custom
   (uniquify-buffer-name-style 'reverse)
   (uniquify-separator " • ")
@@ -316,12 +318,11 @@ The DWIM behaviour of this command is as follows:
   :bind ("C-c o l" . goto-address-at-point))
 
 (use-package bookmark
-  :hook (kill-emacs . bookmark-save)
+  ;; :hook (kill-emacs . bookmark-save)
   :custom
   (bookmark-watch-bookmark-file 'silent))
 
-(use-package window
-  :ensure nil
+(use-package window :ensure nil
   :preface
   (defun hide-titlebar-when-maximized (frame)
     (if (eq 'maximized (alist-get 'fullscreen (frame-parameters frame)))
@@ -443,15 +444,12 @@ The DWIM behaviour of this command is as follows:
   (dired-sidebar-close-sidebar-on-file-open t)
   :bind ("C-c t d" . dired-sidebar-toggle-sidebar))
 
-(use-package casual-dired
+(use-package casual-suite
   :bind
   ("C-x C-? d" . casual-dired-tmenu)
+  ("C-x C-? b" . casual-bookmarks-tmenu)
   (:map dired-mode-map
         ("?" . casual-dired-tmenu)))
-
-(use-package casual-bookmarks
-  :bind
-  ("C-x C-? b" . casual-bookmarks-tmenu))
 
 (use-package elfeed
   :hook ((elfeed-new-entry . ime-elfeed-podcast-tagger))
@@ -708,9 +706,9 @@ The DWIM behaviour of this command is as follows:
   ("C-c c f" . consult-flymake)
   ("C-c c o" . consult-outline)
   ("C-c c i" . consult-imenu)
-  ("C-c h s" . my-consult-ripgrep)
+  ("C-c h s" . my-consult-ripgrep-here)
   ("C-c h a" . my-consult-rga-here)
-  ("C-c h S" . my-consult-ripgrep-here)
+  ("C-c h S" . my-consult-ripgrep)
   ("C-c h f" . consult-fd)
   ("C-c c s" . consult-isearch-history)
   ("C-s" . consult-line-symbol-at-point)
@@ -963,8 +961,15 @@ The DWIM behaviour of this command is as follows:
 (use-package zygospore
   :bind ("C-x 1" . zygospore-toggle-delete-other-windows))
 
+
 ;; (use-package fill-column-indicator
 ;;   :hook (prog-mode . fci-mode))
+
+(use-package goto-line-preview
+  :bind ([remap goto-line] . goto-line-preview))
+
+(use-package display-fill-column-indicator
+  :hook (prog-mode . display-fill-column-indicator-mode))
 
 (use-package beginend
   :config (beginend-global-mode))
@@ -1044,7 +1049,7 @@ The DWIM behaviour of this command is as follows:
   :init
   (doom-modeline-def-modeline 'main
     '(bar workspace-name window-number buffer-info remote-host buffer-position word-count)
-    '(misc-info persp-name grip irc github debug repl lsp indent-info process vcs check time)))
+    '(misc-info persp-name grip irc github debug repl lsp indent-info process vcs time)))
 
 (use-package diminish)
 
@@ -1108,8 +1113,7 @@ The DWIM behaviour of this command is as follows:
 (use-package highlight-numbers
   :hook (prog-mode . highlight-numbers-mode))
 
-(use-package project
-  :ensure nil
+(use-package project :ensure nil
   :preface (defun my-open-readme ()
              (interactive)
              (let* ((project-root (project-root (project-current t)))
@@ -1146,12 +1150,14 @@ The DWIM behaviour of this command is as follows:
   (persp-mode . persp-mode-project-bridge-mode))
 
 (use-package magit
-  :bind ("C-c g s" . magit-status)
   :init (setq magit-define-global-key-bindings nil)
   :custom
   (magit-define-global-key-bindings nil)
   (magit-blame-echo-style 'headings)
-  (magit-repository-directories (list (cons (file-truename "~/Projects") 1))))
+  (magit-remote-git-executable "/tool/pandora64/.package/git-2.37.0/bin/git")
+  (magit-repository-directories (list (cons (file-truename "~/Projects") 1)))
+  :bind
+  ("C-c g s" . magit-status-quick))
 
 (use-package magit-todos
   :hook (magit-mode . magit-todos-mode))
@@ -1197,8 +1203,14 @@ The DWIM behaviour of this command is as follows:
 (use-package vterm
   :commands (vterm-next-prompt vterm-prev-prompt)
   :defines (vterm-mode-map vterm-copy-mode-map)
-  :hook (vterm-mode . set-no-process-query-on-exit)
+  :hook
+  ((vterm-mode . set-no-process-query-on-exit)
+   (vterm-mode . my/vterm-source-bashrc))
   :preface
+  (defun my/vterm-source-bashrc ()
+    (interactive)
+    (vterm-send-string "source ~/.bash_profile")
+    (vterm-send-return))
   (defun vterm-cd-other-buffer ()
     (interactive)
     (let* ((buffer (current-buffer))
@@ -1220,6 +1232,7 @@ The DWIM behaviour of this command is as follows:
   :config
   (add-to-list 'display-buffer-alist (cons "\\*vterm" use-other-window-alist))
   (add-to-list 'vterm-tramp-shells '("ssh" "/bin/bash"))
+  (add-to-list 'vterm-tramp-shells '("scpx" "/bin/bash"))
   :custom
   (vterm-copy-exclude-prompt t)
   (vterm-shell (getenv "SHELL"))
@@ -1250,14 +1263,18 @@ The DWIM behaviour of this command is as follows:
     (setq my-compilation-start-time (current-time)))
   (defun my-compilation-finish-function (buf why)
     (let* ((elapsed  (time-subtract nil my-compilation-start-time))
-           (msg (format "Elapsed: %s" (format-time-string "%T.%N" elapsed t))))
-      (if (get-buffer-window "*compilation*")
-          (when (string-match "finished" why)
-  	        (bury-buffer "*compilation*")
-            (popper-close-latest))
-        (save-excursion (goto-char (point-max)) (insert msg))
-        (alert (format "Emacs: %s at %s" why (buffer-name buf)))
-        (message "Compilation %s: %s" (string-trim-right why) msg))))
+           (msg (format "Elapsed: %s" (format-time-string "%T.%N" elapsed t)))
+           (alert-msg (format "Emacs[Compilation]: %s at %s" why (buffer-name buf))))
+      (when (string= buf "*compilation*")
+        (with-current-buffer buf
+          ;; (when (string-match "finished" why)
+  	      ;;   (bury-buffer buf)
+          ;;   (popper-close-latest))
+          (save-excursion (goto-char (point-max)) (insert msg))
+          (if my-running-under-wsl
+              (start-process "wsl-notify-send.exe" nil "wsl-notify-send.exe" alert-msg)
+            (alert alert-msg))
+          (message alert-msg)))))
   :hook   (compilation-start . my-compilation-start-hook)
   :custom (compilation-scroll-output t)
   :config (add-hook 'compilation-finish-functions #'my-compilation-finish-function)
@@ -1395,7 +1412,10 @@ The DWIM behaviour of this command is as follows:
               ("C-c TAB" . hs-toggle-hiding)))
 
 (use-package cc-mode :ensure nil
-  :mode ("\\.h\\'" . c++-mode)
+  :mode
+  ("\\.h\\'" . c++-mode)
+  ("\\.h\\.pp\\'" . c++-mode)
+  ("\\.cc\\.pp\\'" . c++-mode)
   :custom
   (c-default-style '((java-mode . "java")
                      (awk-mode . "awk")
@@ -1469,6 +1489,13 @@ The DWIM behaviour of this command is as follows:
 (use-package tramp-container :ensure nil)
 
 (use-package verilog-mode
+  :mode
+  ("\\.v\\'" . verilog-mode)
+  ("\\.sv\\'" . verilog-mode)
+  ("\\.v\\.pp\\'" . verilog-mode)
+  ("\\.sv\\.pp\\'" . verilog-mode)
+  ("\\.gv\\'" . verilog-mode)
+  ("\\.gsv\\'" . verilog-mode)
   :custom
   ;; (verilog-auto-inst-sort t)
   (verilog-library-directories '("." "../sim" "../rtl"))
@@ -1548,9 +1575,13 @@ The DWIM behaviour of this command is as follows:
               ("C-c l C-SPC" . sp-select-next-thing-exchange)
               ("C-c l k" . sp-kill-sexp)))
 
+(use-package jinja2-mode
+  :mode
+  ("\\.jinja\\'" . jinja2-mode)
+  ("\\.rgr.pp\\'" . jinja2-mode))
+
 (use-package web-mode
   :hook (web-mode . disable-smartparens)
-  :mode "\\.jinja\\'"
   :config
   (require 'jinja2-mode)
   (defun disable-smartparens ()
@@ -1583,6 +1614,8 @@ The DWIM behaviour of this command is as follows:
   :custom (js-indent-level 2))
 
 (use-package python
+  :mode
+  ("\\.pf\\'" . python-mode)
   :custom
   (python-indent-guess-indent-offset-verbose nil)
   :config
@@ -1661,11 +1694,6 @@ The DWIM behaviour of this command is as follows:
         ("C-c C-." . org-time-stamp-inactive)
         ("DEL" . org-delete-backward-char)
         ("M-q" . nil)))
-
-(use-package org-id
-  :ensure nil
-  :custom
-  (org-id-link-to-org-use-id t))
 
 (use-package my-org-bibtex
   :ensure nil
@@ -2225,8 +2253,7 @@ With a prefix ARG, remove start location."
                                citar-indicator-cited-icons))
   (add-to-list 'completion-at-point-functions 'citar-capf))
 
-(use-package my-citar-org
-  :ensure nil
+(use-package my-citar-org :ensure nil
   :no-require t
   :after org
   :init
@@ -2479,15 +2506,10 @@ With a prefix ARG, remove start location."
 
 (use-package xref)
 
-
 (use-package avy
   :bind
-  ("C-c j j" . avy-goto-char-timer)
-  ("C-c j c" . avy-goto-char)
-  ("C-c j r" . avy-resume)
-  :config
-  (add-to-list 'ahs-disabled-commands 'avy-goto-char)
-  (add-to-list 'ahs-disabled-commands 'avy-goto-char-timer))
+  ("C-c j j" . avy-goto-char-2)
+  ("C-c j J" . avy-goto-char))
 
 (use-package ace-link
   :bind
@@ -2556,9 +2578,8 @@ With a prefix ARG, remove start location."
         ("C-M-n" . pdf-move-down-other-frame)
         ("C-M-p" . pdf-move-up-other-frame)))
 
-(use-package pdf-tools-note
+(use-package pdf-tools-note :ensure nil
   :no-require t
-  :ensure nil
   :after (org-noter pdf-tools)
   :defines org-noter-insert-note
   :preface
@@ -2593,7 +2614,9 @@ With a prefix ARG, remove start location."
   :demand t
   :custom
   (vundo-glyph-alist vundo-unicode-symbols)
-  :bind ("C-x u" . vundo))
+  :bind
+  ("C-]" . undo-redo)
+  ("C-x u" . vundo))
 
 (use-package undo-fu-session
   :custom
@@ -2617,16 +2640,16 @@ With a prefix ARG, remove start location."
               ("C-c o p" . outline-previous-heading)))
 
 (use-package apheleia
-  :hook
-  (python-mode . apheleia-mode)
-  ;; (verilog-ext-mode . apheleia-mode)
+;;  :hook  (python-mode . apheleia-mode)
   :custom
   (apheleia-remote-algorithm 'local))
 
 ;; detached.el
 
-(use-package consult-tramp
-  :vc (:rev :newest :url "https://github.com/Ladicle/consult-tramp"))
+;;(use-package consult-tramp
+;;  :vc (:rev :newest :url "https://github.com/Ladicle/consult-tramp"))
+;;  :custom
+;;  (consult-tramp-method "scpx"))
 
 (use-package gnutls
   :if (memq window-system '(pc w32))
@@ -2645,9 +2668,8 @@ With a prefix ARG, remove start location."
      :remap '(verilog-mode)
      :url "https://github.com/tree-sitter/tree-sitter-verilog")))
 
-(use-package emacs-wsl
-  :if (executable-find "clip.exe")
-  :ensure nil
+(use-package emacs-wsl :ensure nil
+  :if my-running-under-wsl
   :demand t
   :no-require t
   :preface
@@ -2681,7 +2703,8 @@ With a prefix ARG, remove start location."
 
 (use-package vc
   :custom
-  (vc-handled-backends '(Git))
+  (vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)" vc-ignore-dir-regexp tramp-file-name-regexp))
+  (vc-handled-backends '())
   :init
   (remove-hook 'find-file-hooks 'vc-find-file-hook))
 
@@ -2762,5 +2785,7 @@ With a prefix ARG, remove start location."
         ("C-?" . gptel-menu)))
 
 (provide 'init)
-
 ;;; init.el ends here
+;; //ssh:furkanu@xirengips01:~/
+(put 'narrow-to-region 'disabled nil)
+(put 'downcase-region 'disabled nil)

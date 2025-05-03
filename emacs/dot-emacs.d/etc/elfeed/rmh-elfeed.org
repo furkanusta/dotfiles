@@ -1,4 +1,4 @@
-* Blogs                                                              :elfeed:programming:
+* Blogs                                                              :elfeed:
 ** CPP :cpp:
 *** [[http://blog.regehr.org/feed][Regehr]]
 *** [[http://arne-mertz.de/feed/][Simplify C++!]]
@@ -6,6 +6,7 @@
 *** [[https://thephd.dev/feed.xml][The Pasture]]
 *** [[https://xania.org/feed.atom][Matt Godbolt’s blog]]
 *** [[https://awesomekling.github.io/feed.xml][Andreas Kling]]
+*** [[https://old.reddit.com/r/cpp/top.rss?t=week][/r/cpp]]
 ** Linux :linux:
 *** [[http://planet.gnome.org/rss20.xml][Planet GNOME]] :gnome:
 ** Uncategorized                                                      :other:
@@ -52,6 +53,7 @@
 ** [[https://www.youtube.com/feeds/videos.xml?channel_id=UCsvn_Po0SmunchJYOWpOxMg][videogamedunkey]]
 ** [[https://www.youtube.com/feeds/videos.xml?channel_id=UCCpTaib_e5C6Q95qwazq8OA][Anatolian Rock Revival Project]]
 ** [[https://www.youtube.com/feeds/videos.xml?channel_id=UC2eEGT06FrWFU6VBnPOR9lg][Girlfriend Reviews]]
+** [[https://www.youtube.com/c/ilkercanikligilflutv/videos][Flu TV]]
 * Emacs                                                               :elfeed:emacs:
 ** [[http://endlessparentheses.com/atom.xml][Endless Parentheses]]
 ** [[https://protesilaos.com/feeds/][Prot]]
@@ -73,6 +75,7 @@
 ** [[https://irreal.org/blog/?feed=rss2][Irreal]]
 ** [[https://oremacs.com/atom.xml][(or emacs]]
 ** [[https://tsdh.org/rss.xml][tsdh.org]]
+** [[https://old.reddit.com/r/orgmode/top.rss?t=week][/r/orgmode]]
 ** [[https://emacsredux.com/atom.xml][Emacs Redux]]
 ** [[https://old.reddit.com/r/emacs/top.rss?t=week][/r/emacs]] :reddit:
 ** [[https://emacstil.com/feed.xml][Emacs TIL]]
@@ -85,8 +88,6 @@
 ** [[https://fpgacoding.com/feed/][FPGA Coding]]
 * Reddit                                                               :elfeed:reddit:
 ** Programming                                                         :prog:
-** [[https://old.reddit.com/r/cpp/top.rss?t=week][/r/cpp]]
-** [[https://old.reddit.com/r/orgmode/top.rss?t=week][/r/orgmode]]
 ** [[https://old.reddit.com/r/python/top.rss?t=month][/r/Python]]
 ** [[https://old.reddit.com/r/ruby/top.rss?t=month][/r/ruby]]
 ** [[https://old.reddit.com/r/java/top.rss?t=month][/r/java]]
