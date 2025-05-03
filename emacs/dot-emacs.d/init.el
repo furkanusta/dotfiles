@@ -1774,7 +1774,7 @@ Prioritize entries without NOPDF tag."
         (with-current-buffer (find-file-noselect file)
           (org-map-entries
            (lambda ()
-             (when (and (org-get-todo-state) (org-entry-get (point) "ROAM_REFS"))
+             (when (and (org-entry-is-todo-p) (org-entry-get (point) "ROAM_REFS"))
                (if (member "NOPDF" (org-get-tags))
                    (push (point-marker) candidates-nopdf)
                  (push (point-marker) candidates-haspdf)))))))
@@ -1793,53 +1793,13 @@ Prioritize entries without NOPDF tag."
                           (seq-random-elt candidates))))
           (progn
             (switch-to-buffer (marker-buffer chosen))
+            (goto-char (marker-position chosen))
             (delete-other-windows)
-            (org-back-to-heading t)
-            (recenter-top-bottom 0)
             (my-citar-open-current-file)
-            (message "Jumped to TODO with ROAM_REFS"))
+            (my-open-citar-note))
         (message "No matching TODOs with ROAM_REFS found."))))
-
-;; (defun my-org-goto-or-create-notes-heading ()
-;;   "Go to the 'Notes' subheading in the current Org entry.
-;; If it doesn't exist, create it at the end of the entry."
-;;   (interactive)
-;;   (let ((notes-heading-found nil)
-;;         (original-pos (point)))
-;;     ;; Save the current view/outline state
-;;     (save-excursion
-;;       (save-restriction
-;;         ;; Narrow to the current entry if inside one, otherwise work on the whole buffer
-;;         (if (org-before-first-heading-p)
-;;             (goto-char (point-min)) ; Start from the beginning if not in an entry
-;;           (org-back-to-heading t)) ; Go to the start of the current entry
-
-;;         ;; Search for the "Notes" heading within the current scope (entry or buffer)
-;;         (when (re-search-forward "^\\*+ Notes$" nil t)
-;;           ;; If found, move to the end of the heading's content
-;;           (goto-char (match-end 0)) ; Move to the end of the heading line
-;;           (org-end-of-subtree t)    ; Move to the end of the subtree
-;;           (setq notes-heading-found t))))
-
-;;     ;; If the "Notes" heading was found, we are already at its end due to save-excursion
-;;     (if notes-heading-found
-;;         (message "Jumped to 'Notes' heading.")
-;;       ;; If not found, create it
-;;       (progn
-;;         (goto-char (point-max)) ; Go to the end of the buffer
-;;         ;; Find the end of the current entry or the buffer
-;;         (if (org-before-first-heading-p)
-;;             (goto-char (point-max)) ; If no headings, just go to end
-;;           (org-back-to-heading t)
-;;           (org-end-of-subtree t)) ; Go to the end of the current entry's subtree
-
-;;         (insert "\n* Notes\n") ; Insert the new heading
-;;         (org-cycle)           ; Ensure it's visible if outline is collapsed
-;;         (org-end-of-subtree t) ; Move to the end of the newly created heading
-;;         (message "Created and jumped to 'Notes' heading.")))))
-
-)
-
+  :bind
+  ("C-c n r" . my/select-random-todo-with-roam-refs))
 
   (use-package my-org-biblio
   :ensure nil
@@ -2529,8 +2489,12 @@ Prioritize entries without NOPDF tag."
     ;; (require 'citar)
     (let* ((key (file-name-sans-extension (file-name-nondirectory (buffer-file-name))))
            (note (car (gethash key (citar-get-notes key)))))
+    (delete-other-windows)
+    (split-window-right)
     (citar-open-note note)
-    (my-create-or-goto-notes)))
+    (let ((start (point)))
+      (my-create-or-goto-notes)
+      (narrow-to-region start (point)))))
   (defun my-create-or-goto-notes ()
   "Return all subheadings under the current heading."
   (interactive)
