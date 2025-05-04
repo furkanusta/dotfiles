@@ -72,7 +72,7 @@ The DWIM behaviour of this command is as follows:
   "Switch theme between light and dark theme."
   (interactive)
   (let* ((my-dark-theme 'tangonov)
-         (my-light-theme 'leuven)
+         (my-light-theme 'ef-kassio)
          (current-theme (car custom-enabled-themes)) ;; Assume single theme
          (new-theme (if (eq current-theme my-dark-theme) my-light-theme my-dark-theme)))
     (disable-theme current-theme)
@@ -1056,6 +1056,8 @@ The DWIM behaviour of this command is as follows:
 
 (use-package diminish)
 
+(use-package ef-themes)
+
 (use-package tangonov-theme
   ;; :after (custom org-faces)
   :demand t
@@ -1075,7 +1077,7 @@ The DWIM behaviour of this command is as follows:
          ("M-\\"   . popper-cycle)
          ("C-M-\\"   . popper-toggle-type))
   :custom
-  (popper-reference-buffers '("\\*Messages\\*" "Output\\*$" help-mode compilation-mode))
+  (popper-reference-buffers '("\\*Messages\\*" "Output\\*$" help-mode compilation-mode "gptel-"))
   (popper-display-function #'popper-select-popup-at-bottom)
   (popper-mode +1))
 
@@ -1402,7 +1404,7 @@ The DWIM behaviour of this command is as follows:
   (add-to-list 'project-rootfile-list "pyproject.toml")
   (add-to-list 'project-rootfile-list ".project")
   (add-to-list 'project-rootfile-list ".github")
-  (push 'project-find-functions #'project-rootfile-try-detect))
+  (add-to-list 'project-find-functions #'project-rootfile-try-detect t))
 
 (use-package makefile-executor
   :hook (makefile-mode . makefile-executor-mode)
@@ -1768,6 +1770,7 @@ Prioritize entries without NOPDF tag."
                                     (full-path (seq-find (lambda (f) (string-suffix-p chosen f)) all-files)))
                                (list full-path)))
                             (t all-files)))
+           (candidates-inprogress ())
            (candidates-haspdf ())
            (candidates-nopdf ()))
       (dolist (file selected-files)
@@ -1777,9 +1780,11 @@ Prioritize entries without NOPDF tag."
              (when (and (org-entry-is-todo-p) (org-entry-get (point) "ROAM_REFS"))
                (if (member "NOPDF" (org-get-tags))
                    (push (point-marker) candidates-nopdf)
-                 (push (point-marker) candidates-haspdf)))))))
+                 (if (string= (car (org-entry-is-todo-p)) "IN-PROGRESS")
+                     (push (point-marker) candidates-inprogress)
+                   (push (point-marker) candidates-haspdf))))))))
 
-      (if-let* ((candidates (or candidates-haspdf candidates-nopdf))
+      (if-let* ((candidates (or candidates-inprogress candidates-haspdf candidates-nopdf))
                 (choices (mapcar (lambda (c)
                                    (with-current-buffer (marker-buffer c)
                                      (goto-char (marker-position c))
@@ -1898,11 +1903,28 @@ Prioritize entries without NOPDF tag."
   :bind ("C-c c a" . org-agenda))
 
 (use-package org-refile :ensure org
+  :preface
+  (defun my/org-refile-contents-only ()
+    "Refile only the content of the current heading (and remove the leftover heading)"
+    (interactive)
+    (save-excursion
+      (call-interactively 'org-refile)
+      (let* ((refile-bm-name (plist-get org-bookmark-names-plist :last-refile))
+             (refile-file (bookmark-prop-get refile-bm-name 'filename))
+             (refile-pos (bookmark-prop-get refile-bm-name 'position)))
+        (with-current-buffer (find-file-noselect refile-file)
+          (goto-char refile-pos)
+          (org-promote-subtree)
+          (beginning-of-line)
+          (kill-whole-line)))))
   :custom
-  (org-refile-use-outline-path t)
+  ;; (org-refile-use-outline-path t)
+  (org-outline-path-complete-in-steps t)
   (org-refile-targets '((nil :maxlevel . 9)
-                        (org-agenda-files :maxlevel . 9)))
-  (org-refile-allow-creating-parent-nodes 'confirm))
+                        (org-agenda-files :maxlevel . 2)))
+  (org-refile-allow-creating-parent-nodes 'confirm)
+  :bind
+  ("C-c C-S-w" . my/org-refile-contents-only))
 
 (use-package org-clock :ensure org
   :preface
@@ -1975,9 +1997,6 @@ Prioritize entries without NOPDF tag."
   (bibtex-completion-notes-path my-notes-directory)
   (bibtex-completion-additional-search-fields '(keywords))
   (bibtex-completion-library-path (list my-papers-directory)))
-
-(use-package org-pdftools
-  :hook (org-mode . org-pdftools-setup-link))
 
 (use-package org-special-block-extras)
 
@@ -2492,6 +2511,7 @@ Prioritize entries without NOPDF tag."
     (delete-other-windows)
     (split-window-right)
     (citar-open-note note)
+    (org-fold-show-subtree)
     (let ((start (point)))
       (my-create-or-goto-notes)
       (narrow-to-region start (point)))))
@@ -2687,6 +2707,8 @@ Prioritize entries without NOPDF tag."
   :config (org-node-cache-mode)
   :custom
   (org-node-extra-id-dirs (list my-notes-directory))
+  (org-node-alter-candidates t)
+  (org-node-warn-title-collisions nil)
   :bind
   (:map org-mode-map
         ("C-c n f" . org-node-find)
@@ -2704,9 +2726,19 @@ Prioritize entries without NOPDF tag."
   :custom
   (gptel-model 'gemini-2.0-flash-exp)
   :preface
-  (defun my-gptel ()
+  (defun my-create-or-switch-to-gptel ()
+    "Switch to the first buffer starting with 'gptel-' and ending with '.txt'.
+If no such buffer exists, call the `gptel` function."
     (interactive)
-    (pop-to-buffer (gptel "*gptel*")))
+    (let ((target-buffer
+           (seq-find (lambda (buf)
+                       (let ((name (buffer-name buf)))
+                         (and (string-prefix-p "gptel-" name)
+                              (string-suffix-p ".txt" name))))
+                     (buffer-list))))
+      (if target-buffer
+          (pop-to-buffer target-buffer)
+        (pop-to-buffer (gptel "*Gemini*")))))
   (defun my/gptel-write-buffer ()
     "Save buffer to disk when starting gptel"
     (unless (buffer-file-name (current-buffer))
@@ -2722,8 +2754,10 @@ Prioritize entries without NOPDF tag."
                    :key (auth-info-password (car (auth-source-search :host "emacs.llm.openai")))
                    :stream t))
   :bind
-  ("C-c j g" . my-gptel)
+  ("C-c j g" . my-create-or-switch-to-gptel)
+  ("C-|" . my-create-or-switch-to-gptel)
   (:map gptel-mode-map
+        ("C-\\" . popper-toggle)
         ("C-c ?" . gptel-menu)
         ("C-?" . gptel-menu)))
 
