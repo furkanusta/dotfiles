@@ -1175,6 +1175,15 @@ The DWIM behaviour of this command is as follows:
   (magit-blame-echo-style 'headings)
   (magit-remote-git-executable "/tool/pandora64/.package/git-2.37.0/bin/git")
   (magit-repository-directories (list (cons (file-truename "~/Projects") 1)))
+  (magit-auto-revert-mode nil)
+  (magit-save-repository-buffers nil)
+  (magit-uniquify-buffer-names nil)
+  :config
+  (defun my-magit-auto-revert-mode-advice (orig-fun &rest args)
+    (unless (and buffer-file-name (file-remote-p buffer-file-name))
+      (apply orig-fun args)))
+  (advice-add 'magit-turn-on-auto-revert-mode-if-desired
+              :around #'my-magit-auto-revert-mode-advice)
   :bind
   ("C-c g s" . magit-status-quick))
 
@@ -1224,8 +1233,12 @@ The DWIM behaviour of this command is as follows:
   :defines (vterm-mode-map vterm-copy-mode-map)
   :hook
   ((vterm-mode . set-no-process-query-on-exit)
+   (vterm-mode . disable-hl-line-mode)
    (vterm-mode . my/vterm-source-bashrc))
   :preface
+  (defun disable-hl-line-mode ()
+    (when (or hl-line-mode global-hl-line-mode)
+      (call-interactively #'hl-line-mode)))
   (defun my/vterm-source-bashrc ()
     (interactive)
     (vterm-send-string "source ~/.bash_profile")
@@ -1259,6 +1272,7 @@ The DWIM behaviour of this command is as follows:
   (:map vterm-mode-map
         ("C-y" . vterm-yank)
         ("M-y" . vterm-yank-pop)
+        ("M-:" . eval-expression)
         ("C-<return>" . vterm-cd-other-buffer)
         ("C-S-<return>" . vterm-toggle-insert-cd))
   (:map vterm-copy-mode-map
@@ -1331,11 +1345,16 @@ The DWIM behaviour of this command is as follows:
             (interactive)
             (tramp-cleanup-all-connections)
             (tramp-cleanup-all-buffers))
-  (add-to-list 'tramp-remote-path "~/.local/bin")
+  (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
+  (add-to-list 'tramp-remote-path "/home/furkanu/.local/bin")
+  (add-to-list 'tramp-remote-path "/tool/pandora64/.package/git-2.37.0/bin")
+  ;; (add-to-list tramp-connection-properties (list (regexp-quote "/ssh:") "direct-async-process" t)))
+  (add-to-list 'tramp-connection-properties (list (regexp-quote "/rsync:") "direct-async-process" t))
   :custom
   (remote-file-name-inhibit-locks t)
-  (tramp-default-method "ssh")
-  (tramp-encoding-shell (getenv "SHELL"))
+  (remote-file-name-inhibit-cache nil)
+  (tramp-default-method "scpx")
+  (tramp-histfile-override nil)
   (tramp-backup-directory-alist backup-directory-alist))
 
 (use-package auto-highlight-symbol
@@ -2581,13 +2600,26 @@ Prioritize entries without NOPDF tag."
   :demand t
   :custom
   (vundo-glyph-alist vundo-unicode-symbols)
+  (vundo-compact-display t)
   :bind
   ("C-]" . undo-redo)
   ("C-x u" . vundo))
 
+(use-package undo-fu
+  :custom
+  (undo-limit 67108864)
+  (undo-strong-limit 100663296)
+  (undo-outer-limit 1006632960)
+  :bind
+  ([remap undo] . undo-fu-only-undo)
+  ([remap redo] . undo-fu-only-redo)
+  )
+
 (use-package undo-fu-session
   :custom
-  (undo-fu-session-global-mode t))
+  (undo-fu-session-global-mode t)
+  (undo-fu-session-compression 'zst)
+)
 
 (use-package sudo-edit)
 
