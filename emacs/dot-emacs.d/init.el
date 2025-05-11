@@ -1066,7 +1066,7 @@ The DWIM behaviour of this command is as follows:
 (use-package tangonov-theme
   ;; :after (custom org-faces)
   :demand t
-  :custom-face
+  :config
   ;; Orange, Green, Blue, Red (I was used to this in my previous theme and different order messes my
   ;; brain)
   (custom-set-faces
@@ -2702,7 +2702,7 @@ Prioritize entries without NOPDF tag."
 
 (use-package vc
   :custom
-  (vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)" vc-ignore-dir-regexp tramp-file-name-regexp))
+  ;; (vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)" vc-ignore-dir-regexp tramp-file-name-regexp))
   (vc-handled-backends '(Git)))
 
 (use-package verilog-ext
