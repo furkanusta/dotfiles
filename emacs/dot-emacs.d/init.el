@@ -147,7 +147,6 @@ The DWIM behaviour of this command is as follows:
   (add-to-list 'default-frame-alist '(fullscreen . maximized))
   (prefer-coding-system 'utf-8)
   (set-language-environment "UTF-8")
-  (load-theme 'tangonov t)
   (setq-default user-full-name "Furkan Usta"
                 delete-by-moving-to-trash t
                 tab-width 4
@@ -198,7 +197,7 @@ The DWIM behaviour of this command is as follows:
   (large-file-warning-threshold (* 1024 1024 1024)) ;; 1GB
   (confirm-nonexistent-file-or-buffer nil)
   (mark-even-if-inactive nil)
-  (global-visual-line-mode t)
+  ;; (global-visual-line-mode t)
   :preface
   (defun my-mark-line (beg end &optional region)
     (if mark-active (list (region-beginning) (region-end))
@@ -207,6 +206,7 @@ The DWIM behaviour of this command is as follows:
   ;; (advice-add 'kill-ring-save :before #'my-mark-line)
   ;; (advice-add 'kill-region :before #'my-mark-line)
   (add-to-list 'exec-path (f-expand "~/.local/bin"))
+  (add-to-list 'exec-path "/home/furkanu/.local/bin")
   (add-to-list 'delete-frame-functions #'(lambda (frame_) (recentf-save-list)))
 ;;  (add-to-list 'delete-frame-functions #'(lambda (frame_) (bookmark-save)))
   :bind
@@ -1352,8 +1352,12 @@ The DWIM behaviour of this command is as follows:
   (add-to-list 'tramp-connection-properties (list (regexp-quote "/rsync:") "direct-async-process" t))
   :custom
   (remote-file-name-inhibit-locks t)
+  (tramp-use-scp-direct-remote-copying)
+  (remote-file-name-inhibit-auto-save-visited t)
   (remote-file-name-inhibit-cache nil)
   (tramp-default-method "scpx")
+  (tramp-copy-size-limit (* 1024 1024)) ;; 1MB
+
   (tramp-histfile-override nil)
   (tramp-backup-directory-alist backup-directory-alist))
 
@@ -1401,7 +1405,8 @@ The DWIM behaviour of this command is as follows:
                                                      '(("~/.local/prog/digestif/digestif.sh")
                                                        ("texlab")))))
   (add-to-list 'completion-at-point-functions #'eglot-completion-at-point)
-  (setf (plist-get eglot-events-buffer-config :size) 0)
+  :custom
+  (eglot-events-buffer-size 0)
   :bind
   (:map eglot-mode-map)
   ("M-/" . eglot-find-declaration))
@@ -1427,7 +1432,8 @@ The DWIM behaviour of this command is as follows:
   (add-to-list 'project-rootfile-list "pyproject.toml")
   (add-to-list 'project-rootfile-list ".project")
   (add-to-list 'project-rootfile-list ".github")
-  (add-to-list 'project-find-functions #'project-rootfile-try-detect t))
+  ;; (add-to-list 'project-find-functions #'project-rootfile-try-detect t) ;; TODO: Disable on remote
+  )
 
 (use-package makefile-executor
   :hook (makefile-mode . makefile-executor-mode)
@@ -1527,13 +1533,6 @@ The DWIM behaviour of this command is as follows:
 (use-package tramp-container :ensure nil)
 
 (use-package verilog-mode
-  :mode
-  ("\\.v\\'" . verilog-mode)
-  ("\\.sv\\'" . verilog-mode)
-  ("\\.v\\.pp\\'" . verilog-mode)
-  ("\\.sv\\.pp\\'" . verilog-mode)
-  ("\\.gv\\'" . verilog-mode)
-  ("\\.gsv\\'" . verilog-mode)
   :custom
   ;; (verilog-auto-inst-sort t)
   (verilog-library-directories '("." "../sim" "../rtl"))
@@ -2432,8 +2431,8 @@ Prioritize entries without NOPDF tag."
 (use-package immortal-scratch
   :custom (immortal-scratch-mode t))
 
-(use-package persistent-scratch
-  :config (persistent-scratch-setup-default))
+;; (use-package persistent-scratch
+;;   :config (persistent-scratch-setup-default))
 
 (use-package visual-regexp-steroids
   :demand t
@@ -2698,31 +2697,39 @@ Prioritize entries without NOPDF tag."
   (advice-add #'kill-ring-save :after #'wsl--send-kill-ring)
   :bind
   ("C-k" . kill-line)
-  ("C-M-y" . wsl-yank))
-
-(use-package vc
-  :custom
-  ;; (vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)" vc-ignore-dir-regexp tramp-file-name-regexp))
-  (vc-handled-backends '(Git)))
+  ("C-M-y" . wsl-yank)
+  (:map org-mode-map
+  ("C-M-y" . wsl-yank)))
 
 (use-package verilog-ext
-  ;; :hook (verilog-mode . verilog-ext-mode)
+  :hook (verilog-ts-mode . verilog-ext-mode)
   :config
-  ;; (verilog-ext-mode-setup)
-  (setq verilog-ext-feature-list (remove 'block-end-comments verilog-ext-feature-list))
+  (verilog-ext-mode-setup)
+  :custom
+  (verilog-ext-feature-list '(font-lock xref capf hierarchy eglot
+                                        flycheck beautify navigation template formatter compilation
+                                        imenu which-func hideshow typedefs time-stamp ports))
   :bind
   (:map verilog-ext-mode-map
-        ("C-<tab>" . company-complete)))
+        ("C-<tab>" . completion-at-point)))
+
+(use-package verilog-ts-mode
+  :after verilog
+  :mode
+  ("\\.v\\'" . verilog-ts-mode)
+  ("\\.sv\\'" . verilog-ts-mode)
+  ("\\.v\\.pp\\'" . verilog-ts-mode)
+  ("\\.sv\\.pp\\'" . verilog-ts-mode)
+  ("\\.gv\\'" . verilog-ts-mode)
+  ("\\.gsv\\'" . verilog-ts-mode)
+  :custom
+  (verilog-ts-beautify-instance-extra t))
 
 (use-package citre
   :hook (verilog-ext-mode . citre-mode)
   :bind
   (:map citre-mode-map
         ("C-c C-l j" . citre-jump)))
-
-(use-package verilog-ts-mode
-  :after verilog
-  :vc (:rev :newest :url "https://github.com/gmlarumbe/verilog-ext"))
 
 (use-package tree-sitter-indent
   :hook (verilog-ts-mode . tree-sitter-indent-mode))
@@ -2733,14 +2740,20 @@ Prioritize entries without NOPDF tag."
   (plantuml-jar-path "/usr/share/java/plantuml.jar")
   (org-plantuml-jar-path plantuml-jar-path))
 
+(use-package org-mem
+  :custom
+  (org-mem-watch-dirs (list my-notes-directory))
+  (org-mem-do-warn-title-collisions nil))
+
 (use-package org-node
   :after org
   :hook (org-mode . org-node-backlink-mode)
-  :config (org-node-cache-mode)
+  :config
+  (setq org-mem-do-sync-with-org-id t)
+  (org-mem-updater-mode)
+  (org-node-cache-mode)
   :custom
-  (org-node-extra-id-dirs (list my-notes-directory))
   (org-node-alter-candidates t)
-  (org-node-warn-title-collisions nil)
   :bind
   (:map org-mode-map
         ("C-c n f" . org-node-find)
@@ -2805,6 +2818,8 @@ If no such buffer exists, call the `gptel` function."
          (real-next-project (if (= 16 prev) (completing-read "Select project" projects nil t) next-project))
          (other-filename (string-replace file-project real-next-project buffer-file-name)))
     (find-file other-filename)))
+
+(use-package init-work :load-path "elisp/")
 
 (provide 'init)
 ;;; init.el ends here
