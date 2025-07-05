@@ -1001,6 +1001,7 @@ The DWIM behaviour of this command is as follows:
 
 (use-package dashboard
   :if (daemonp)
+  :demand t
   :hook (dashboard-mode . page-break-lines-mode)
   :commands dashboard-insert-section dashboard-insert-heading dashboard-subseq
   :preface
@@ -1038,6 +1039,7 @@ The DWIM behaviour of this command is as follows:
   (dashboard-page-separator "\n\f\n")
   (dashboard-projects-backend 'project-el)
   (dashboard-projects-switch-function 'project-persp-switch-project)
+  (dashboard-agenda-sort-strategy '(priority-down time-up))
   (dashboard-items '((scratch . 2)
                      (recents  . 5)
                      (bookmarks . 5)
@@ -1045,7 +1047,7 @@ The DWIM behaviour of this command is as follows:
                      (agenda . 5)))
   (dashboard-banner-logo-title "Emacs"))
 
-(use-package all-the-icons)
+(use-package all-the-icons :demand t)
 
 (use-package doom-modeline
   :custom
@@ -1060,8 +1062,7 @@ The DWIM behaviour of this command is as follows:
 
 (use-package diminish)
 
-(use-package ef-themes
-  :init (load-theme 'ef-kassio t))
+(use-package ef-themes)
 
 (use-package tangonov-theme
   ;; :after (custom org-faces)
@@ -2798,6 +2799,8 @@ If no such buffer exists, call the `gptel` function."
   (:map gptel-mode-map
         ("C-\\" . popper-toggle)
         ("C-c ?" . gptel-menu)
+        ("C-c RET" . gptel-send)
+        ("C-c C-RET" . gptel-send)
         ("C-?" . gptel-menu)))
 
 (setq gptel-model 'gpt-4o)
