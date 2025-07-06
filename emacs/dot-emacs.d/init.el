@@ -1533,6 +1533,12 @@ The DWIM behaviour of this command is as follows:
 (use-package tramp-container :ensure nil)
 
 (use-package verilog-mode
+  :mode
+  ;; Treesitter mode cannot handle Jinja syntax
+  ("\\.v\\.pp\\'" . verilog-mode)
+  ("\\.sv\\.pp\\'" . verilog-mode)
+  ("\\.gv\\'" . verilog-mode)
+  ("\\.gsv\\'" . verilog-mode)
   :custom
   ;; (verilog-auto-inst-sort t)
   (verilog-library-directories '("." "../sim" "../rtl"))
@@ -2714,14 +2720,6 @@ Prioritize entries without NOPDF tag."
         ("C-<tab>" . completion-at-point)))
 
 (use-package verilog-ts-mode
-  :after verilog
-  :mode
-  ("\\.v\\'" . verilog-ts-mode)
-  ("\\.sv\\'" . verilog-ts-mode)
-  ("\\.v\\.pp\\'" . verilog-ts-mode)
-  ("\\.sv\\.pp\\'" . verilog-ts-mode)
-  ("\\.gv\\'" . verilog-ts-mode)
-  ("\\.gsv\\'" . verilog-ts-mode)
   :custom
   (verilog-ts-beautify-instance-extra t))
 
@@ -2730,9 +2728,6 @@ Prioritize entries without NOPDF tag."
   :bind
   (:map citre-mode-map
         ("C-c C-l j" . citre-jump)))
-
-(use-package tree-sitter-indent
-  :hook (verilog-ts-mode . tree-sitter-indent-mode))
 
 (use-package plantuml-mode
   :custom
@@ -2805,6 +2800,12 @@ If no such buffer exists, call the `gptel` function."
         ("C-\\" . popper-toggle)
         ("C-c ?" . gptel-menu)
         ("C-?" . gptel-menu)))
+
+(setq gptel-model 'gpt-4o)
+(setq gptel-backend (gptel-make-gh-copilot "Copilot"))
+
+(use-package copilot
+  :vc (:url "https://github.com/copilot-emacs/copilot.el" :rev :newest :branch "main"))
 
 (defun my-switch-file-in-other-project (prev)
   (interactive "p")
