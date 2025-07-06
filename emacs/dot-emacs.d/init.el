@@ -2807,19 +2807,6 @@ If no such buffer exists, call the `gptel` function."
 (use-package copilot
   :vc (:url "https://github.com/copilot-emacs/copilot.el" :rev :newest :branch "main"))
 
-(defun my-switch-file-in-other-project (prev)
-  (interactive "p")
-  (let* ((projects '("amd_asic_src" "asic2" "asic3" "asic4" "asic5" "asic6"))
-         (volume-root "/scpx:atletx7:/proj/vulcano_src0/furkanu/")
-         (file-project (substring buffer-file-name
-                                  (length volume-root)
-                                  (string-search "/" buffer-file-name (1+ (length volume-root)))))
-         (curr-project (-elem-index file-project projects))
-         (next-project (nth (% (+ (if (= 4 prev) -1 1) curr-project (length projects)) (length projects)) projects))
-         (real-next-project (if (= 16 prev) (completing-read "Select project" projects nil t) next-project))
-         (other-filename (string-replace file-project real-next-project buffer-file-name)))
-    (find-file other-filename)))
-
 (use-package init-work :load-path "elisp/")
 
 (provide 'init)
