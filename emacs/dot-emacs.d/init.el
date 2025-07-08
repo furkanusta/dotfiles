@@ -1,8 +1,8 @@
 ;;; -*- lexical-binding: t -*-
 ;; Initialization
 (setq custom-file (concat user-emacs-directory "custom.el"))
-;; (when (file-exists-p custom-file)
-;;   (load custom-file))
+(when (file-exists-p custom-file)
+  (load custom-file))
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
@@ -205,6 +205,7 @@ The DWIM behaviour of this command is as follows:
   :config
   ;; (advice-add 'kill-ring-save :before #'my-mark-line)
   ;; (advice-add 'kill-region :before #'my-mark-line)
+  (load-theme my-dark-theme)
   (add-to-list 'exec-path (f-expand "~/.local/bin"))
   (add-to-list 'exec-path "/home/furkanu/.local/bin")
   (add-to-list 'delete-frame-functions #'(lambda (frame_) (recentf-save-list)))
@@ -865,10 +866,7 @@ The DWIM behaviour of this command is as follows:
         (corfu-candidate-overlay-complete-at-point)
       (indent-for-tab-command)))
   :bind
-  ("C-<iso-lefttab>" . corfu-candidate-overlay-complete-at-point)
-  ;; (:map prog-mode-map
-  ;;       ("<tab>" . my-insert-corfu-or-tab))
-  )
+  ("C-<iso-lefttab>" . corfu-candidate-overlay-complete-at-point))
 
 (use-package corfu-history
   :ensure corfu
@@ -1340,6 +1338,11 @@ The DWIM behaviour of this command is as follows:
         ("<tab>" . nil)
         ("M-i" . yas-expand)))
 
+(use-package vc
+  :custom
+  (vc-handled-backends '(Git))
+  (vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)" vc-ignore-dir-regexp tramp-file-name-regexp)))
+
 (use-package tramp
   :commands (tramp-cleanup-all-connections tramp-cleanup-all-buffers)
   :config (defun tramp-done ()
@@ -1352,7 +1355,7 @@ The DWIM behaviour of this command is as follows:
   (connection-local-set-profile-variables 'remote-direct-async-process '((tramp-direct-async-process . t)))
   :custom
   (remote-file-name-inhibit-locks t)
-  (tramp-use-scp-direct-remote-copying)
+  (tramp-use-scp-direct-remote-copying t)
   (remote-file-name-inhibit-auto-save-visited t)
   (remote-file-name-inhibit-cache nil)
   (tramp-default-method "scpx")
@@ -1557,8 +1560,8 @@ The DWIM behaviour of this command is as follows:
   (verilog-indent-level-declaration 4)
   (verilog-indent-level-module 4))
 
-(use-package graphviz-dot-mode
-  :custom (graphviz-dot-indent-width 4))
+;; (use-package graphviz-dot-mode
+;;   :custom (graphviz-dot-indent-width 4))
 
 (use-package elisp-mode :ensure nil)
 
@@ -2791,7 +2794,7 @@ If no such buffer exists, call the `gptel` function."
   (add-hook 'gptel-mode-hook #'my/gptel-write-buffer)
   (setq gptel-backend (gptel-make-gemini
                      "Gemini"
-                   :key (auth-info-password (car (auth-source-search :host "emacs.llm.openai")))
+                   :key (auth-info-password (car (auth-source-search :host "gemini")))
                    :stream t))
   :bind
   ("C-c j g" . my-create-or-switch-to-gptel)
