@@ -15,8 +15,8 @@
 
 (setq use-package-enable-imenu-support t)
 (setq use-package-compute-statistics t)
-;; (setq use-package-always-defer t)
-(setq-default use-package-always-ensure t)
+(setq use-package-always-defer t)
+;; (setq-default use-package-always-ensure t)
 
 (require 'use-package)
 (use-package dash :demand t)
@@ -445,18 +445,6 @@ The DWIM behaviour of this command is as follows:
 (use-package dired-async :ensure async
   :hook (dired-mode . dired-async-mode))
 
-(use-package dired-sidebar
-  :custom
-  (dired-sidebar-close-sidebar-on-file-open t)
-  :bind ("C-c t d" . dired-sidebar-toggle-sidebar))
-
-(use-package casual-suite
-  :bind
-  ("C-x C-? d" . casual-dired-tmenu)
-  ("C-x C-? b" . casual-bookmarks-tmenu)
-  (:map dired-mode-map
-        ("?" . casual-dired-tmenu)))
-
 (use-package elfeed
   :hook ((elfeed-new-entry . ime-elfeed-podcast-tagger))
   :preface
@@ -500,20 +488,6 @@ The DWIM behaviour of this command is as follows:
            (search-entry (when search-entries (car search-entries)))
            (elfeed-entry (or elfeed-show-entry search-entry)))
       elfeed-entry))
-  (defun elfeed-youtube-dl ()
-    "Youtube-DL link"
-    (interactive)
-    (let* ((entry (elfeed-get-show-or-search-entry))
-           (url (when entry (elfeed-entry-link entry)))
-           (default-directory (expand-file-name "~/Downloads")))
-      (when url (async-shell-command (format "yt-dlp %s" url)))
-      (elfeed-search-untag-all-unread)))
-  (defun elfeed-mpv ()
-    (interactive)
-    (let* ((entry (elfeed-get-show-or-search-entry))
-           (url (when entry (elfeed-entry-link entry))))
-      (when url (start-process "elfeed-mpv" nil "mpv" url))
-      (elfeed-search-untag-all-unread)))
   (defun elfeed-open-eww ()
     (interactive)
     (let* ((entry (elfeed-get-show-or-search-entry))
@@ -523,9 +497,7 @@ The DWIM behaviour of this command is as follows:
   :bind (:map elfeed-search-mode-map
               ("P" . pocket-reader-add-link)
               ("M-w" . elfeed-copy-link-at-point)
-              ("d" . elfeed-youtube-dl)
-              ("e" . elfeed-open-eww)
-              ("m" . elfeed-mpv)))
+              ("e" . elfeed-open-eww)))
 
 (use-package elfeed-show :ensure elfeed
   :after elfeed
@@ -913,12 +885,6 @@ The DWIM behaviour of this command is as follows:
   :config
   (consult-customize consult-yasnippet :preview-key '(:debounce 0.01 any)))
 
-(use-package focus
-  :bind ("C-c C-f" . focus-mode) ;; Might be unnecessary
-  (:map focus-mode-map
-        ("C-c C-n" . focus-next-thing)
-        ("C-c C-p" . focus-prev-thing)))
-
 (use-package expand-region
   :custom
   (expand-region-contract-fast-key "{")
@@ -964,10 +930,6 @@ The DWIM behaviour of this command is as follows:
 
 (use-package zygospore
   :bind ("C-x 1" . zygospore-toggle-delete-other-windows))
-
-
-;; (use-package fill-column-indicator
-;;   :hook (prog-mode . fci-mode))
 
 (use-package goto-line-preview
   :bind ([remap goto-line] . goto-line-preview))
@@ -1143,23 +1105,43 @@ The DWIM behaviour of this command is as follows:
 
 (use-package persp-mode
   ;; :hook (after-init . persp-mode)
+  :preface
+  (defvar persp-consult-source
+    (list :name     "Persp"
+          :narrow   ?w
+          :category 'buffer
+          :state    #'consult--buffer-state
+          :history  'buffer-name-history
+          :default  t
+          :items
+          #'(lambda ()
+              (mapcar #'buffer-name
+                      (persp-filter-out-bad-buffers)))))
   :custom
   (persp-autokill-persp-when-removed-last-buffer 'kill)
   (persp-keymap-prefix (kbd "C-c w"))
-  (persp-init-frame-behvaiour nil)
+  (persp-init-frame-behaviour nil)
   (persp-autokill-buffer-on-remove 'kill-weak)
-  (persp-nil-hidden t)
+  (persp-nil-hidden nil)
   (persp-reset-windows-on-nil-window-conf nil)
-  (persp-remove-buffer-from-nil-persp-behaviour nil)
-  (persp-kill-foreign-buffer-behaviour nil)
+  (persp-remove-buffers-from-nil-persp-behaviour nil)
+  (persp-kill-foreign-buffer-behaviour 'kill)
   (persp-auto-resume-time -1)
+  (persp-switch-to-added-buffer nil)
+  (persp-set-last-persp-for-new-frames nil)
+  ;; (persp-add-buffer-on-after-change-major-mode 'free)
   :config
   (add-to-list 'window-persistent-parameters '(winner-ring . t))
+
+  (consult-customize consult--source-buffer :hidden nil :default nil)
+  (add-to-list 'consult-buffer-sources persp-consult-source)
+
   :bind
   (:map persp-key-map
         ("c" . persp-kill)))
 
 (use-package persp-mode-project-bridge
+  :vc (:rev :newest :url "https://github.com/CIAvash/persp-mode-project-bridge")
   :hook
   (persp-mode-project-bridge-mode . (lambda ()
                                       (if persp-mode-project-bridge-mode
@@ -1232,12 +1214,9 @@ The DWIM behaviour of this command is as follows:
   :defines (vterm-mode-map vterm-copy-mode-map)
   :hook
   ((vterm-mode . set-no-process-query-on-exit)
-   (vterm-mode . disable-hl-line-mode)
+   (vterm-mode . disable-line-numbers)
    (vterm-mode . my/vterm-source-bashrc))
   :preface
-  (defun disable-hl-line-mode ()
-    (when (or hl-line-mode global-hl-line-mode)
-      (call-interactively #'hl-line-mode)))
   (defun my/vterm-source-bashrc ()
     (interactive)
     (vterm-send-string "source ~/.bash_profile")
@@ -1260,6 +1239,26 @@ The DWIM behaviour of this command is as follows:
          (move-beginning-of-line nil)
          (re-search-backward "\\] .*\\$ " nil 'move)
          (re-search-forward "\\] \\$ " nil 'move))
+  (defun my-vterm-persp-toggle (&optional args)
+    "Vterm toggle.
+Optional argument ARGS ."
+    (interactive "P")
+    (cond
+     ((derived-mode-p 'vterm-mode)
+      (vterm-toggle-hide))
+     ((get-current-persp)
+      (if-let* ((curr-persp (get-current-persp))
+                (buffers (persp-buffers curr-persp))
+                (buffer-names (seq-map (lambda (buf) (buffer-name buf)) buffers))
+                (vterm-buffer (car (seq-filter (lambda (buf) (string-prefix-p "*vterm" buf)) buffer-names))))
+          (pop-to-buffer vterm-buffer)
+        (vterm (concat "*vterm " (persp-name curr-persp)))
+        (persp-add-buffer)))
+     ((get-buffer vterm-buffer-name)
+      (pop-to-buffer vterm-buffer-name))
+     (t
+      (vterm vterm-buffer-name))))
+
   :config
   (add-to-list 'display-buffer-alist (cons "\\*vterm" use-other-window-alist))
   (add-to-list 'vterm-tramp-shells '("ssh" "/bin/bash"))
@@ -1278,15 +1277,15 @@ The DWIM behaviour of this command is as follows:
         ("C-<" . vterm-prev-prompt)
         ("C->" . vterm-next-prompt)))
 
-(use-package vterm-toggle
-  :custom (vterm-toggle-cd-auto-create-buffer nil)
-  :bind
-  ("<f8>" . vterm-toggle)
-  (:map vterm-mode-map
-        ("<f8>" . vterm-toggle)
-        ("C-c C-n"  . vterm-toggle-forward)
-        ("C-c C-p"  . vterm-toggle-backward)
-        ("C-<return>" . vterm-toggle-insert-cd)))
+;; (use-package vterm-toggle
+;;   :custom (vterm-toggle-cd-auto-create-buffer nil)
+;;   :bind
+;;   ("<f8>" . vterm-toggle)
+;;   (:map vterm-mode-map
+;;         ("<f8>" . vterm-toggle)
+;;         ("C-c C-n"  . vterm-toggle-forward)
+;;         ("C-c C-p"  . vterm-toggle-backward)
+;;         ("C-<return>" . vterm-toggle-insert-cd)))
 
 (use-package compile :ensure nil
   :preface
@@ -2620,14 +2619,12 @@ Prioritize entries without NOPDF tag."
   (undo-outer-limit 1006632960)
   :bind
   ([remap undo] . undo-fu-only-undo)
-  ([remap redo] . undo-fu-only-redo)
-  )
+  ([remap redo] . undo-fu-only-redo))
 
 (use-package undo-fu-session
   :custom
   (undo-fu-session-global-mode t)
-  (undo-fu-session-compression 'zst)
-)
+  (undo-fu-session-compression 'zst))
 
 (use-package sudo-edit)
 
@@ -2647,16 +2644,13 @@ Prioritize entries without NOPDF tag."
               ("C-c o p" . outline-previous-heading)))
 
 (use-package apheleia
-;;  :hook  (python-mode . apheleia-mode)
   :custom
   (apheleia-remote-algorithm 'local))
 
 ;; detached.el
 
-;;(use-package consult-tramp
-;;  :vc (:rev :newest :url "https://github.com/Ladicle/consult-tramp"))
-;;  :custom
-;;  (consult-tramp-method "scpx"))
+(use-package consult-tramp
+ :vc (:rev :newest :url "https://github.com/Ladicle/consult-tramp"))
 
 (use-package gnutls
   :if (memq window-system '(pc w32))
