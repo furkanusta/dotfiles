@@ -1348,8 +1348,7 @@ The DWIM behaviour of this command is as follows:
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
   (add-to-list 'tramp-remote-path "/home/furkanu/.local/bin")
   (add-to-list 'tramp-remote-path "/tool/pandora64/.package/git-2.37.0/bin")
-  ;; (add-to-list tramp-connection-properties (list (regexp-quote "/ssh:") "direct-async-process" t)))
-  (add-to-list 'tramp-connection-properties (list (regexp-quote "/rsync:") "direct-async-process" t))
+  (connection-local-set-profile-variables 'remote-direct-async-process '((tramp-direct-async-process . t)))
   :custom
   (remote-file-name-inhibit-locks t)
   (tramp-use-scp-direct-remote-copying)
