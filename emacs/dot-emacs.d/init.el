@@ -1103,51 +1103,24 @@ The DWIM behaviour of this command is as follows:
   (:map project-prefix-map
         ("F" . projection-find-other-file)))
 
-(use-package persp-mode
-  ;; :hook (after-init . persp-mode)
-  :preface
-  (defvar persp-consult-source
-    (list :name     "Persp"
-          :narrow   ?w
-          :category 'buffer
-          :state    #'consult--buffer-state
-          :history  'buffer-name-history
-          :default  t
-          :items
-          #'(lambda ()
-              (mapcar #'buffer-name
-                      (persp-filter-out-bad-buffers)))))
-  :custom
-  (persp-autokill-persp-when-removed-last-buffer 'kill)
-  (persp-keymap-prefix (kbd "C-c w"))
-  (persp-init-frame-behaviour nil)
-  (persp-autokill-buffer-on-remove 'kill-weak)
-  (persp-nil-hidden nil)
-  (persp-reset-windows-on-nil-window-conf nil)
-  (persp-remove-buffers-from-nil-persp-behaviour nil)
-  (persp-kill-foreign-buffer-behaviour 'kill)
-  (persp-auto-resume-time -1)
-  (persp-switch-to-added-buffer nil)
-  (persp-set-last-persp-for-new-frames nil)
-  ;; (persp-add-buffer-on-after-change-major-mode 'free)
+(use-package perspective
   :config
-  (add-to-list 'window-persistent-parameters '(winner-ring . t))
-
+  ;; (setq switch-to-prev-buffer-skip
+  ;;       (lambda (win buff bury-or-kill)
+  ;;         (not (persp-is-current-buffer buff))))
   (consult-customize consult--source-buffer :hidden nil :default nil)
   (add-to-list 'consult-buffer-sources persp-consult-source)
+  :init
+  (persp-mode t)
+  :custom
+  (persp-mode-prefix-key (kbd "C-c w")))
 
-  :bind
-  (:map persp-key-map
-        ("c" . persp-kill)))
-
-(use-package persp-mode-project-bridge
-  :vc (:rev :newest :url "https://github.com/CIAvash/persp-mode-project-bridge")
-  :hook
-  (persp-mode-project-bridge-mode . (lambda ()
-                                      (if persp-mode-project-bridge-mode
-                                          (persp-mode-project-bridge-find-perspectives-for-all-buffers)
-                                        (persp-mode-project-bridge-kill-perspectives))))
-  (persp-mode . persp-mode-project-bridge-mode))
+(use-package perspective-project-bridge
+  :after perspective project
+  :defines perspective-project-bridge-funcs
+  :init
+  (setq perspective-project-bridge-funcs (list #'my-open-readme #'project-find-file))
+  (perspective-project-bridge-mode t))
 
 (use-package magit
   :init (setq magit-define-global-key-bindings nil)
@@ -1245,20 +1218,20 @@ Optional argument ARGS ."
     (interactive "P")
     (cond
      ((derived-mode-p 'vterm-mode)
-      (vterm-toggle-hide))
-     ((get-current-persp)
-      (if-let* ((curr-persp (get-current-persp))
+      (delete-window)) ;; TODO
+     ((persp-curr)
+      (if-let* ((curr-persp (persp-curr))
                 (buffers (persp-buffers curr-persp))
                 (buffer-names (seq-map (lambda (buf) (buffer-name buf)) buffers))
-                (vterm-buffer (car (seq-filter (lambda (buf) (string-prefix-p "*vterm" buf)) buffer-names))))
+                (persp-vterm-name (concat "*vterm: " (persp-name curr-persp) " *"))
+                (vterm-buffer (car (seq-filter (lambda (buf) (string-equal persp-vterm-name buf)) buffer-names))))
           (pop-to-buffer vterm-buffer)
-        (vterm (concat "*vterm " (persp-name curr-persp)))
-        (persp-add-buffer)))
+        (vterm persp-vterm-name)
+        (persp-add-buffer persp-vterm-name)))
      ((get-buffer vterm-buffer-name)
       (pop-to-buffer vterm-buffer-name))
      (t
       (vterm vterm-buffer-name))))
-
   :config
   (add-to-list 'display-buffer-alist (cons "\\*vterm" use-other-window-alist))
   (add-to-list 'vterm-tramp-shells '("ssh" "/bin/bash"))
@@ -1267,7 +1240,9 @@ Optional argument ARGS ."
   (vterm-copy-exclude-prompt t)
   (vterm-shell (getenv "SHELL"))
   :bind
+  ("<f8>" . my-vterm-persp-toggle)
   (:map vterm-mode-map
+        ("<f8>" . my-vterm-persp-toggle)
         ("C-y" . vterm-yank)
         ("M-y" . vterm-yank-pop)
         ("M-:" . eval-expression)
@@ -1276,16 +1251,6 @@ Optional argument ARGS ."
   (:map vterm-copy-mode-map
         ("C-<" . vterm-prev-prompt)
         ("C->" . vterm-next-prompt)))
-
-;; (use-package vterm-toggle
-;;   :custom (vterm-toggle-cd-auto-create-buffer nil)
-;;   :bind
-;;   ("<f8>" . vterm-toggle)
-;;   (:map vterm-mode-map
-;;         ("<f8>" . vterm-toggle)
-;;         ("C-c C-n"  . vterm-toggle-forward)
-;;         ("C-c C-p"  . vterm-toggle-backward)
-;;         ("C-<return>" . vterm-toggle-insert-cd)))
 
 (use-package compile :ensure nil
   :preface
