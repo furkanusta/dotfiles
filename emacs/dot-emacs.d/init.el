@@ -2686,7 +2686,9 @@ Prioritize entries without NOPDF tag."
   (verilog-ts-beautify-instance-extra t))
 
 (use-package citre
-  :hook (verilog-ext-mode . citre-mode)
+  ;; :hook (verilog-ext-mode . citre-mode)
+  :config
+  (require 'citre-config)
   :bind
   (:map citre-mode-map
         ("C-c C-l j" . citre-jump)))
@@ -2765,13 +2767,7 @@ If no such buffer exists, call the `gptel` function."
         ("C-c C-RET" . gptel-send)
         ("C-?" . gptel-menu)))
 
-(setq gptel-model 'gpt-4o)
-(setq gptel-backend (gptel-make-gh-copilot "Copilot"))
-
-(use-package copilot
-  :vc (:url "https://github.com/copilot-emacs/copilot.el" :rev :newest :branch "main"))
-
-(use-package init-work :load-path "elisp/")
+(use-package init-work :demand t  :load-path "elisp/")
 
 (provide 'init)
 ;;; init.el ends here
