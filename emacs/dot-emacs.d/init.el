@@ -1312,13 +1312,11 @@ Optional argument ARGS ."
 
 (use-package tramp
   :commands (tramp-cleanup-all-connections tramp-cleanup-all-buffers)
-  :config (defun tramp-done ()
-            (interactive)
-            (tramp-cleanup-all-connections)
-            (tramp-cleanup-all-buffers))
-  (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
-  (add-to-list 'tramp-remote-path "/home/furkanu/.local/bin")
-  (add-to-list 'tramp-remote-path "/tool/pandora64/.package/git-2.37.0/bin")
+  :config
+  (defun tramp-done ()
+    (interactive)
+    (tramp-cleanup-all-connections)
+    (tramp-cleanup-all-buffers))
   (connection-local-set-profile-variables 'remote-direct-async-process '((tramp-direct-async-process . t)))
   :custom
   (remote-file-name-inhibit-locks t)
