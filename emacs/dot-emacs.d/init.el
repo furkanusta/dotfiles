@@ -965,6 +965,10 @@ The DWIM behaviour of this command is as follows:
   :hook (dashboard-mode . page-break-lines-mode)
   :commands dashboard-insert-section dashboard-insert-heading dashboard-subseq
   :preface
+  (defun dashboard-project-switch-function (root)
+    (dired root)
+    (my-open-readme))
+
   (defun dashboard-insert-scratch (list-size)
     (dashboard-insert-section
      "Shortcuts:"
@@ -998,7 +1002,7 @@ The DWIM behaviour of this command is as follows:
   (dashboard-set-file-icons t)
   (dashboard-page-separator "\n\f\n")
   (dashboard-projects-backend 'project-el)
-  (dashboard-projects-switch-function 'project-persp-switch-project)
+  (dashboard-projects-switch-function 'dashboard-project-switch-function)
   (dashboard-agenda-sort-strategy '(priority-down time-up))
   (dashboard-items '((scratch . 2)
                      (recents  . 5)
@@ -1304,8 +1308,7 @@ Optional argument ARGS ."
 
 (use-package vc
   :custom
-  (vc-handled-backends '(Git))
-  (vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)" vc-ignore-dir-regexp tramp-file-name-regexp)))
+  (vc-handled-backends '(Git)))
 
 (use-package tramp
   :commands (tramp-cleanup-all-connections tramp-cleanup-all-buffers)
@@ -1396,11 +1399,10 @@ Optional argument ARGS ."
   :defer nil
   :after project
   :config
+  ;; (add-to-list 'project-find-functions #'project-rootfile-try-detect t)
   (add-to-list 'project-rootfile-list "pyproject.toml")
   (add-to-list 'project-rootfile-list ".project")
-  (add-to-list 'project-rootfile-list ".github")
-  ;; (add-to-list 'project-find-functions #'project-rootfile-try-detect t) ;; TODO: Disable on remote
-  )
+  (add-to-list 'project-rootfile-list ".github"))
 
 (use-package makefile-executor
   :hook (makefile-mode . makefile-executor-mode)
@@ -2709,6 +2711,7 @@ Prioritize entries without NOPDF tag."
   :hook (org-mode . org-node-backlink-mode)
   :config
   (setq org-mem-do-sync-with-org-id t)
+  (setq org-node-backlink-protect-org-super-links nil)
   (org-mem-updater-mode)
   (org-node-cache-mode)
   :custom
