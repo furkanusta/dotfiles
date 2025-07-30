@@ -2732,7 +2732,9 @@ Prioritize entries without NOPDF tag."
 (use-package gptel
   :custom
   (gptel-model 'gemini-2.0-flash-exp)
+  (gptel-default-mode 'org-mode)
   :preface
+  (defun my-gptel-file-ext () (if (eq gptel-default-mode 'markdown-mode) ".md"".org"))
   (defun my-create-or-switch-to-gptel ()
     "Switch to the first buffer starting with 'gptel-' and ending with '.txt'.
 If no such buffer exists, call the `gptel` function."
@@ -2741,21 +2743,27 @@ If no such buffer exists, call the `gptel` function."
            (seq-find (lambda (buf)
                        (let ((name (buffer-name buf)))
                          (and (string-prefix-p "gptel-" name)
-                              (string-suffix-p ".txt" name))))
+                              (string-suffix-p (my-gptel-file-ext) name))))
                      (buffer-list))))
       (if target-buffer
-          (pop-to-buffer target-buffer)
-        (pop-to-buffer (gptel "*Gemini*")))))
-  (defun my/gptel-write-buffer ()
+          (if (eq target-buffer (current-buffer))
+              (popper-toggle)
+            (pop-to-buffer target-buffer))
+        (pop-to-buffer (my/gptel-new-chat)))))
+  (defun my/gptel-new-chat ()
     "Save buffer to disk when starting gptel"
-    (unless (buffer-file-name (current-buffer))
-      (let ((suffix (format-time-string "%Y%m%dT%H%M" (current-time)))
-            (chat-dir (concat no-littering-var-directory "gptel")))
+    (let* ((ts (format-time-string "%Y%m%dT%H%M" (current-time)))
+           (chat-dir (concat no-littering-var-directory "gptel"))
+           (file (expand-file-name (concat "gptel-" ts (my-gptel-file-ext)) chat-dir))
+           (buffer (gptel file nil nil t)))
+      (with-current-buffer buffer
         (unless (file-directory-p chat-dir)
           (make-directory chat-dir :parents))
-        (write-file (expand-file-name (concat "gptel-" suffix ".txt") chat-dir)))))
+        (write-file file)
+        (set-visited-file-name file)
+        (set-buffer-modified-p nil))
+      buffer))
   :config
-  (add-hook 'gptel-mode-hook #'my/gptel-write-buffer)
   (setq gptel-backend (gptel-make-gemini
                      "Gemini"
                    :key (auth-info-password (car (auth-source-search :host "gemini")))
